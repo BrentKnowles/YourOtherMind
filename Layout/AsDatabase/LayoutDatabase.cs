@@ -130,7 +130,7 @@ namespace Layout
 				MyDatabase.InsertData(tmpDatabaseConstants.table_name, 
 				                      tmpDatabaseConstants.Columns,
 				                      new object[tmpDatabaseConstants.ColumnCount]
-				                      {"",LayoutGUID, XMLAsString, "this status update"});
+				                      {"NULL",LayoutGUID, XMLAsString, "this status update"});
 
 				//TODO: Test that "" will still allow an automincrement on ID
 

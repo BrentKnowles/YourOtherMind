@@ -37,7 +37,7 @@ namespace Layout
 
 			bar.Items.Add (addNote);
 
-			Notes = new LayoutXML("fakeguid");
+			Notes = new LayoutDatabase("fakeguid2");
 
 			for (int i = 0; i < 2; i++) {
 				NoteDataXML xml = new NoteDataXML ();
