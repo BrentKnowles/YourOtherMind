@@ -24,7 +24,7 @@ namespace Layout
 		/// </param>
 		void LoadFrom(string GUID);
 
-		string SaveTo ();
+		void SaveTo ();
 
 		/// <summary>
 		/// Gets the notes.

@@ -63,7 +63,7 @@ namespace Layout
 		/// <returns>
 		/// The to.
 		/// </returns>
-		public string SaveTo ()
+		public void SaveTo ()
 		{
 			if (LayoutGUID == CoreUtilities.Constants.BLANK) {
 				throw new Exception ("GUID need to be set before calling SaveTo");
@@ -133,7 +133,7 @@ namespace Layout
 				Console.WriteLine(ex.ToString());
 			}
 			//testthis?
-			return XMLAsString;
+		//	return XMLAsString;
 		}
 
 		/*Not needed?
