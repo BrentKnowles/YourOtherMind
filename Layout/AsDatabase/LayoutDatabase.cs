@@ -47,8 +47,10 @@ namespace Layout
 		/// <returns>
 		/// The test database.
 		/// </returns>
-		private SqlLiteDatabase CreateTestDatabase()
+		private BaseDatabase CreateTestDatabase()
 		{
+			//This is only place in this code where we reference the TYPE of database being used
+
 			SqlLiteDatabase db = new SqlLiteDatabase ("yomdata.s3db");
 			db.CreateTableIfDoesNotExist (tmpDatabaseConstants.table_name, new string[4] {tmpDatabaseConstants.ID, tmpDatabaseConstants.GUID, tmpDatabaseConstants.XML,
 				tmpDatabaseConstants.STATUS}, 
@@ -87,7 +89,7 @@ namespace Layout
 		
 		public void LoadFrom ()
 		{
-			SqlLiteDatabase MyDatabase = CreateTestDatabase ();
+			BaseDatabase MyDatabase = CreateTestDatabase ();
 			
 			if (MyDatabase == null) {
 				throw new Exception ("Unable to create database in SaveTo");
@@ -148,7 +150,7 @@ namespace Layout
 			}
 			string XMLAsString = CoreUtilities.Constants.BLANK;
 
-			SqlLiteDatabase MyDatabase = CreateTestDatabase ();
+			BaseDatabase MyDatabase = CreateTestDatabase ();
 
 			if (MyDatabase == null) {
 				throw new Exception("Unable to create database in SaveTo");
