@@ -49,9 +49,9 @@ namespace Layout
 			return System.IO.Path.Combine ("",LayoutGUID+".xml");
 		}
 
-		public void LoadFrom (string GUID)
+		public void LoadFrom ()
 		{
-			LayoutGUID = GUID;
+			throw new Exception("not done");
 
 
 		}

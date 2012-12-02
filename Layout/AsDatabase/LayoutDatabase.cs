@@ -10,13 +10,24 @@ namespace Layout
 	/// </summary>
 	public class LayoutDatabase : LayoutInterface
 	{
-		//variables
+		#region members
+
+		//This is the list of notes
 		private List<NoteDataInterface> dataForThisLayout= null;
+		//These are the OTHER variables (like status) associated with this note
+		private object[] data= null;
+		public string Status {
+			get { return data [0].ToString();}
+			set { data[0] = value;}
+		}
+
 
 		// This is the GUID for the page. It comes from
-		//  (a) Either set during the Load Method
-		//  (b) When a New Layout is Created
+		//  
+		//  (a) When a New Layout is Created or  a Layout Loaded (in both cases constructor is called
 		private string LayoutGUID = CoreUtilities.Constants.BLANK;
+
+		#endregion
 		public LayoutDatabase (string GUID)
 		{
 			dataForThisLayout = new List<NoteDataInterface> ();
@@ -26,6 +37,7 @@ namespace Layout
 			// Create the database
 			// will always try to create the database if it is not present. The means creating the pages table too.
 			CreateTestDatabase();
+			data = new object[1];
 
 		}
 
@@ -73,11 +85,53 @@ namespace Layout
 			return LayoutGUID;
 		}
 		
-		public void LoadFrom (string GUID)
+		public void LoadFrom ()
 		{
-			LayoutGUID = GUID;
+			SqlLiteDatabase MyDatabase = CreateTestDatabase ();
 			
-			
+			if (MyDatabase == null) {
+				throw new Exception ("Unable to create database in SaveTo");
+			}
+
+
+
+			// we only care about FIRST ROW. THere should never be two matches on a GUID
+			object[] result = MyDatabase.GetValues (tmpDatabaseConstants.table_name, new string[2] {
+				tmpDatabaseConstants.STATUS,
+				tmpDatabaseConstants.XML
+			}
+			, tmpDatabaseConstants.GUID, LayoutGUID) [0];
+
+
+			// deserialize from database and load into memor
+			if (result != null) {
+
+				Status = result [0].ToString ();
+				//dataForThisLayout
+				System.IO.StringReader reader = new System.IO.StringReader (result [1].ToString ());
+				System.Xml.Serialization.XmlSerializer test = new System.Xml.Serialization.XmlSerializer(typeof(System.Collections.Generic.List<NoteDataXML>));
+
+				// have to load it in an as array of target type and then convert
+				List<NoteDataXML> ListAsDataObjectsOfType = (System.Collections.Generic.List<NoteDataXML>)test.Deserialize (reader);
+
+				dataForThisLayout = new List<NoteDataInterface>();
+				for (int i = 0; i < ListAsDataObjectsOfType.Count; i++)
+				{
+				dataForThisLayout.Add (ListAsDataObjectsOfType[i]);
+				}
+
+				//ListAsDataObjectsOfType.CopyTo(dataForThisLayout);
+
+				// = new NoteDataXML[dataForThisLayout.Count];
+				//dataForThisLayout.CopyTo (ListAsDataObjectsOfType);
+
+			} else {
+				throw new Exception("LoadFrom failed to load the object from the database");
+			}
+
+
+
+
 		}
 		/// <summary>
 		/// Saves to the XML file.
@@ -126,18 +180,30 @@ namespace Layout
 
 				// here is where we need to test whether the Data exists
 
+				if (MyDatabase.Exists(tmpDatabaseConstants.table_name, tmpDatabaseConstants.GUID, LayoutGUID) == false)
+				    {
+					Console.WriteLine("We have new data. Adding it.");
 				// IF NOT, Insert
 				MyDatabase.InsertData(tmpDatabaseConstants.table_name, 
 				                      tmpDatabaseConstants.Columns,
 				                      new object[tmpDatabaseConstants.ColumnCount]
 				                      {"NULL",LayoutGUID, XMLAsString, "this status update"});
 
-				//TODO: Test that "" will still allow an automincrement on ID
+				}
+				else
+				{
+					//TODO: Still need to save all the object properties out. And existing data.
+					Console.WriteLine("We are UPDATING existing Row." + LayoutGUID);
 
-
-				// TODO IF Data does exist then we need to do an update
-
-
+				MyDatabase.UpdateSpecificColumnData(tmpDatabaseConstants.table_name, 
+					                                    new string[3]{"guid", "xml", "status"},
+				                                    new object[tmpDatabaseConstants.ColumnCount-1]
+				                                    {
+						LayoutGUID as string, 
+						XMLAsString as string, 
+						"this status NOW UPDATED!" as string},
+				tmpDatabaseConstants.GUID, LayoutGUID);
+				}
 
 
 

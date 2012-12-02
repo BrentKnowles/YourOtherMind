@@ -194,7 +194,7 @@ namespace database
 		/// Where value.
 		/// </param>
 		/// <returns>False if unable to update row because the GUID did not match any GUID</returns>
-		public override bool UpdateSpecificColumnData (string tableName, string[] ColumnToAddTo, string[] ValueToAdd, string WhereColumn, string WhereValue)
+		public override bool UpdateSpecificColumnData (string tableName, string[] ColumnToAddTo, object[] ValueToAdd, string WhereColumn, string WhereValue)
 		{
 
 			if (ColumnToAddTo.Length != ValueToAdd.Length) {
@@ -276,6 +276,49 @@ namespace database
 		{
 			throw new Exception("Not implemented");
 		}
+
+		/// <summary>
+		/// Exists the specified Column and ColumnValue.
+		/// </summary>
+		/// <param name='Column'>
+		/// Column.
+		/// </param>
+		/// <param name='ColumnValue'>
+		/// Column value.
+		/// </param>
+		/// <returns>T</returns>true if there is a row with this column and this value
+		public override bool Exists(string Table, string Column, string ColumnValue)
+		{
+			bool found = false;
+			SQLiteConnection sqliteCon = new SQLiteConnection (Connection_String);
+			sqliteCon.Open ();
+			try {
+				
+				
+				// Execute query on database
+				//string selectSQL = "SELECT name, username FROM AppUser";
+				string selectSQL = String.Format ("SELECT * FROM {0} where {1} = '{2}'", Table, Column, ColumnValue);
+				//string selectSQL = String.Format ("SELECT {0} FROM {1} LIMIT 1", columnToReturn, tableName, columnToTest, Test);
+				SQLiteCommand selectCommand = new SQLiteCommand (selectSQL, sqliteCon);
+				SQLiteDataReader dataReader = selectCommand.ExecuteReader ();
+
+
+
+				// Iterate every record in the AppUser table
+				while (dataReader.Read()) {
+					// if we find ONE row, it means success, no?
+					found = true;
+					break;
+
+				}
+				dataReader.Close ();
+				sqliteCon.Close ();
+			} catch (Exception ex) {
+				Console.WriteLine(ex.ToString());
+			}
+			return found;
+		}
+
 		public override void InsertData (string tableName, string[] columns, object[] values)
 		{
 

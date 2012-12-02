@@ -104,7 +104,7 @@ namespace database
 					result =  result + ",";
 				}
 				// TODO Make this better. For NULL we do not wrap in quotes
-				if (s=="NULL")
+				if (s.ToString()=="NULL")
 				{
 					result = result + String.Format ("{0}",s.ToString());
 				}
@@ -117,7 +117,7 @@ namespace database
 			return result;
 			
 		}
-
+	
 
 		/// <summary>
 		/// Searchs the database. TO DO: Will use the full-text functionality, though I'll need 
@@ -134,6 +134,8 @@ namespace database
 		/// </param>
 		public abstract string[] SearchDatabase (string SearchTerm, string Params);
 
+		public abstract bool Exists(string Table, string Column, string ColumnValue);
+
 		public abstract  List<object[]> GetValues (string tableName, string[] columnToReturn, string columnToTest, string Test);
 
 		/// <summary>
@@ -149,7 +151,7 @@ namespace database
 		/// Values.
 		/// </param>
 		public abstract void InsertData(string tableName, string[] columns, object[] values);
-		public abstract bool UpdateSpecificColumnData (string tableName, string[] ColumnToAddTo, string[] ValueToAdd, string WhereColumn, string WhereValue);
+		public abstract bool UpdateSpecificColumnData (string tableName, string[] ColumnToAddTo, object[] ValueToAdd, string WhereColumn, string WhereValue);
 
 		/// <summary>
 		/// Will export the entire database to the specified file

@@ -31,26 +31,22 @@ namespace Layout
 			bar.Parent = this;
 			bar.Visible = true;
 			bar.Dock = DockStyle.Top;
-			ToolStripButton addNote = new ToolStripButton ("boom");
-
-			addNote.Click += HandleAddClick;
-
-			bar.Items.Add (addNote);
-
-			Notes = new LayoutDatabase("fakeguid2");
-
-			for (int i = 0; i < 2; i++) {
-				NoteDataXML xml = new NoteDataXML ();
-				xml.Caption = "tree frog" + i.ToString();
 
 
+			ToolStripButton addNote = new ToolStripButton ("Add a Layout with 2 notes");
+						addNote.Click += HandleAddClick;
+						bar.Items.Add (addNote);
 
-				Notes.Add (xml);
+			ToolStripButton showNotes = new ToolStripButton("Show Notes in Current Layout");
+			showNotes.Click += HandleShowNotesClick;
+			bar.Items.Add (showNotes);
 
-				xml.CreateParent ();
-			}
 
-			Notes.SaveTo();
+			ToolStripButton EditSystem = new ToolStripButton("Add a Note to System Layout");
+			EditSystem.Click += HandleEditNoteClick;
+			bar.Items.Add (EditSystem);
+
+
 
 			/*TODO:
 			Thoughts: Does the NoteData actually create the Panel (i.e., flip the ownership around)
@@ -58,28 +54,69 @@ namespace Layout
 			 Also play with the Unit test example that StackOverflow had, this seems interest
 			 */
 		}
+		void HandleEditNoteClick (object sender, EventArgs e)
+		{
+			// Modify the informatin in the SYSTEM NOTE
+
+			Notes = new LayoutDatabase("system");
+			Notes.LoadFrom ();
+
+
+			NoteDataXML xml = new NoteDataXML ();
+			xml.Caption = "alien brains taste yum2";
+				
+			
+			Notes.Add (xml);
+			Notes.SaveTo ();
+		}
+		void HandleShowNotesClick (object sender, EventArgs e)
+		{
+			if (null != Notes) {
+				foreach (NoteDataInterface data in Notes.GetNotes()) {
+					NewMessage.Show (data.Caption);
+					Console.WriteLine (((NoteDataXML)data).JustXMLONLYTest);
+					//data.CreateParent(); This is bad design though: use the itnerface.
+				}
+			}
+				else
+				{
+					Console.WriteLine("No notes loaded");
+				}
+		}
 
 		public void LoadLayout (string GUID)
 		{
+			// FIXME NOTE: This is required by interface but I don't know for sure if this is way I want to di
+			//TODO
+			throw new Exception("NOT DONE");
+			/*
 			// To Do: Not done yet, obviously
 			Notes.LoadFrom (GUID);
 			// Notes now contain the file contents
 			// Now we have to create the Visual Representation
 			foreach (NoteDataInterface data in Notes.GetNotes()) {
 				data.CreateParent();
-			}
+			}*/
 		}
 
 		void HandleAddClick (object sender, EventArgs e)
 		{
 
-			foreach (NoteDataInterface data in Notes.GetNotes()) {
-				NewMessage.Show (data.Caption);
-				Console.WriteLine(((NoteDataXML)data).JustXMLONLYTest);
-				//data.CreateParent(); This is bad design though: use the itnerface.
+
+		Notes = new LayoutDatabase(System.Guid.NewGuid().ToString());
+		//	Notes = new LayoutDatabase("system");
+			
+			for (int i = 0; i < 2; i++) {
+				NoteDataXML xml = new NoteDataXML ();
+				xml.Caption = "tree frog" + i.ToString();
+				
+				
+				
+				Notes.Add (xml);
+				
+				xml.CreateParent ();
 			}
-
-
+			Notes.SaveTo();
 
 		}
 	}
