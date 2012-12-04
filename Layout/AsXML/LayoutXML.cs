@@ -8,11 +8,14 @@ namespace Layout
 	/// </summary>
 	public class LayoutXML : LayoutInterface
 	{
+		#region variables
 		//variables
 		private List<NoteDataInterface> dataForThisLayout= null;
 		// This is the GUID for the page. It comes from
 		//  (a) Either set during the Load Method
 		//  (b) When a New Layout is Created
+
+		#endregion
 		private string LayoutGUID = CoreUtilities.Constants.BLANK;
 		public LayoutXML (string GUID)
 		{
@@ -20,6 +23,8 @@ namespace Layout
 			LayoutGUID = GUID;
 
 		}
+
+
 		/// <summary>
 		/// Gets the notes. Gets the notes. (Read-only only so that ONLY this class is able to modify the contents of the list)
 		/// </summary>

@@ -117,7 +117,19 @@ namespace database
 			return result;
 			
 		}
-	
+		public bool ColumnExists(System.Data.IDataReader reader, string columnName)
+		{
+			for (int i = 0; i < reader.FieldCount; i++)
+			{
+				if (reader.GetName(i) == columnName)
+				{
+					return true;
+				}
+			}
+			
+			return false;
+		}
+
 
 		/// <summary>
 		/// Searchs the database. TO DO: Will use the full-text functionality, though I'll need 
@@ -133,6 +145,10 @@ namespace database
 		/// Parameters.
 		/// </param>
 		public abstract string[] SearchDatabase (string SearchTerm, string Params);
+
+
+	//	public abstract void AddColumn(string table, string newColumn, string newColumnType);
+
 
 		public abstract bool Exists(string Table, string Column, string ColumnValue);
 

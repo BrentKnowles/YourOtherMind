@@ -5,8 +5,11 @@ namespace Layout
 
 	public interface NoteDataInterface
 	{
-		// Fields
+		#region variables
 		string Caption {get; set;}
+		string GuidForNote {get;set;}
+		#endregion
+
 		NotePanelInterface Parent {get;set;}
 
 

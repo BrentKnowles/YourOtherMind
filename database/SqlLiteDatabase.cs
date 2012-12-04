@@ -1,6 +1,8 @@
 using System;
 using System.Data.SQLite;
 using System.Collections.Generic;
+using CoreUtilities;
+
 namespace database
 {
 	/// <summary>
@@ -30,6 +32,8 @@ namespace database
 				return result;
 			}
 		}
+
+
 
 		/// <summary>
 		/// Creates the table if does not exist.
@@ -81,7 +85,14 @@ namespace database
 					// Commit the changes into the database
 					sqlTransaction.Commit();
 				} // end using
-				
+
+
+				//When we create teh table, we can also add additional columns that may
+				// not have been present in the original
+				AddMissingColumn(Table, Columns, Types);
+
+
+
 				// Close the database connection
 				sqliteCon.Close();
 			} catch (Exception ex) {
@@ -172,6 +183,64 @@ namespace database
 			return ReturnList;
 		}
 
+
+		/// <summary>
+		/// If we are adding data from a column, then add it, if not present
+		/// </summary>
+		/// <param name='columns'>
+		/// Columns.
+		/// </param>
+		protected bool AddMissingColumn (string table, string[] columns, string[] types)
+		{
+			bool result = false;
+			if (columns.Length != types.Length) {
+				throw new Exception("column size must match type size");
+			}
+
+			SQLiteConnection sqliteCon = new SQLiteConnection (Connection_String);
+			sqliteCon.Open ();
+
+			string selectSQL = String.Format ("SELECT * FROM {0} LIMIT 1", table); 
+			//string selectSQL = String.Format ("SELECT {0} FROM {1} LIMIT 1", columnToReturn, tableName, columnToTest, Test);
+			SQLiteCommand selectCommand = new SQLiteCommand (selectSQL, sqliteCon);
+			SQLiteDataReader dataReader = selectCommand.ExecuteReader ();
+			for (int i = 0; i < columns.Length; i++)
+			{
+				string column = columns[i];
+				if (ColumnExists(dataReader, column) == false)
+				{
+					// column does not exist, add it
+					lg.Instance.Line("AddMissingColumn", ProblemType.MESSAGE, "This column does not exist " + column);
+					//AddColumn(table, column, types[i]);
+					result = true;
+
+					// Now add the column
+					if (CoreUtilities.Constants.BLANK == column)
+					{
+						throw new Exception("Table cannot be blank.");
+					}
+					if (CoreUtilities.Constants.BLANK == column || CoreUtilities.Constants.BLANK == types[i]) {
+						throw new Exception("column not defined");
+					}
+
+					selectSQL = String.Format ("ALTER TABLE {0} ADD COLUMN {1} {2};", table, column, types[i]);
+					lg.Instance.Line("SqlLiteDatabase.AddMissingColumn", ProblemType.TEMPORARY, selectSQL);									
+					using (SQLiteTransaction sqlTransaction = sqliteCon.BeginTransaction()) {
+						SQLiteCommand command = new SQLiteCommand (selectSQL, sqliteCon);
+						command .ExecuteNonQuery ();
+						sqlTransaction.Commit ();
+					}
+
+
+				}
+			}
+			dataReader.Close ();
+			sqliteCon.Close ();
+			return result;
+		}
+
+
+
 		/// <summary>
 		/// Updates specific data.
 		/// 
@@ -201,6 +270,9 @@ namespace database
 				throw new Exception("Arrays of Columns and Values for those columns must be the same length");
 			}
 
+		
+
+
 			bool ReturnValue = false;
 			// hacking for rtf http://stackoverflow.com/questions/751172/system-data-sqlite-parameter-issue
 			SQLiteParameter param = new SQLiteParameter("@myrtf");
@@ -225,6 +297,8 @@ namespace database
 					
 					SQLiteConnection sqliteCon = new SQLiteConnection (Connection_String);
 					sqliteCon.Open ();
+					
+
 					using (SQLiteTransaction sqlTransaction = sqliteCon.BeginTransaction()) {
 						SQLiteCommand command = new SQLiteCommand (sqlStatement, sqliteCon);
 
@@ -321,7 +395,9 @@ namespace database
 
 		public override void InsertData (string tableName, string[] columns, object[] values)
 		{
-
+			if (columns.Length != values.Length) {
+				throw new Exception("Must be same number of columns and column values");
+			}
 		
 
 			string vals = "";
@@ -336,6 +412,7 @@ namespace database
 			
 					SQLiteConnection sqliteCon = new SQLiteConnection (Connection_String);
 					sqliteCon.Open ();
+					
 					using (SQLiteTransaction sqlTransaction = sqliteCon.BeginTransaction()) {
 						SQLiteCommand command = new SQLiteCommand (sqlStatement, sqliteCon);
 						command .ExecuteNonQuery ();

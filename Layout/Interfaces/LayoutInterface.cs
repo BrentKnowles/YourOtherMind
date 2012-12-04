@@ -33,6 +33,7 @@ namespace Layout
 		/// The notes.
 		/// </returns>
 		System.Collections.ObjectModel.ReadOnlyCollection<NoteDataInterface>  GetNotes();
+
 	}
 }
 

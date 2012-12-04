@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Xml.Serialization;
 using database;
 using Layout.data;
+using CoreUtilities;
 namespace Layout
 {
 	/// <summary>
@@ -19,6 +20,16 @@ namespace Layout
 		public string Status {
 			get { return data [0].ToString();}
 			set { data[0] = value;}
+		}
+		/// <summary>
+		/// Gets or sets the name for this Layout.
+		/// </summary>
+		/// <value>
+		/// The name.
+		/// </value>
+		public string Name {
+			get { return data [0].ToString ();}
+			set { data [1] = value;}
 		}
 
 
@@ -37,7 +48,7 @@ namespace Layout
 			// Create the database
 			// will always try to create the database if it is not present. The means creating the pages table too.
 			CreateTestDatabase();
-			data = new object[1];
+			data = new object[2];
 
 		}
 
@@ -52,14 +63,9 @@ namespace Layout
 			//This is only place in this code where we reference the TYPE of database being used
 
 			SqlLiteDatabase db = new SqlLiteDatabase ("yomdata.s3db");
-			db.CreateTableIfDoesNotExist (tmpDatabaseConstants.table_name, new string[4] {tmpDatabaseConstants.ID, tmpDatabaseConstants.GUID, tmpDatabaseConstants.XML,
-				tmpDatabaseConstants.STATUS}, 
-			new string[4] {
-				"INTEGER",
-				"TEXT UNIQUE",
-				"LONGTEXT",
-				"TEXT"
-			}, String.Format ("{0}", tmpDatabaseConstants.ID)
+			db.CreateTableIfDoesNotExist (tmpDatabaseConstants.table_name, 
+			    tmpDatabaseConstants.Columns, 
+			tmpDatabaseConstants.Types, String.Format ("{0}", tmpDatabaseConstants.ID)
 			);
 			return db;
 		}
@@ -75,7 +81,7 @@ namespace Layout
 
 			return dataForThisLayout.AsReadOnly();
 		}
-		
+
 		/// <summary>
 		/// Creates the name of the file.
 		/// </summary>
@@ -92,7 +98,7 @@ namespace Layout
 			BaseDatabase MyDatabase = CreateTestDatabase ();
 			
 			if (MyDatabase == null) {
-				throw new Exception ("Unable to create database in SaveTo");
+				throw new Exception ("Unable to create database in LoadFrom");
 			}
 
 
@@ -184,33 +190,36 @@ namespace Layout
 
 				if (MyDatabase.Exists(tmpDatabaseConstants.table_name, tmpDatabaseConstants.GUID, LayoutGUID) == false)
 				    {
-					Console.WriteLine("We have new data. Adding it.");
+					lg.Instance.Line("LayoutDatabase.SaveTo", ProblemType.MESSAGE, "We have new data. Adding it.");
 				// IF NOT, Insert
 				MyDatabase.InsertData(tmpDatabaseConstants.table_name, 
 				                      tmpDatabaseConstants.Columns,
 				                      new object[tmpDatabaseConstants.ColumnCount]
-				                      {"NULL",LayoutGUID, XMLAsString, "this status update"});
+				                      {"NULL",LayoutGUID, XMLAsString, "this status update", "New Note"});
 
 				}
 				else
 				{
 					//TODO: Still need to save all the object properties out. And existing data.
-					Console.WriteLine("We are UPDATING existing Row." + LayoutGUID);
 
+					lg.Instance.Line("LayoutDatabase.SaveTo", ProblemType.MESSAGE, "We are UPDATING existing Row." + LayoutGUID);
 				MyDatabase.UpdateSpecificColumnData(tmpDatabaseConstants.table_name, 
-					                                    new string[3]{"guid", "xml", "status"},
+					                                    new string[tmpDatabaseConstants.ColumnCount-1]{tmpDatabaseConstants.GUID, tmpDatabaseConstants.XML, tmpDatabaseConstants.STATUS,
+						tmpDatabaseConstants.NAME},
 				                                    new object[tmpDatabaseConstants.ColumnCount-1]
 				                                    {
 						LayoutGUID as string, 
 						XMLAsString as string, 
-						"this status NOW UPDATED!" as string},
+						"this status NOW UPDATED!" as string
+					,Name},
 				tmpDatabaseConstants.GUID, LayoutGUID);
 				}
 
 
 
 			} catch (Exception ex) {
-				Console.WriteLine(ex.ToString());
+
+				lg.Instance.Line("LayoutDatabase.SaveTo", ProblemType.EXCEPTION, "We are UPDATING existing Row." + ex.ToString());
 			}
 		
 		}
