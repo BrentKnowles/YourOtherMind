@@ -1,6 +1,7 @@
 using System;
 using System.Xml;
 using System.Xml.Serialization;
+using System.Drawing;
 namespace Layout
 {
 	// TODO:
@@ -40,8 +41,30 @@ namespace Layout
 		public string Caption {
 			get {return caption;}
 			set{ caption = value;}
+					}
+
+		private Point location = new Point(200,200);
+		/// <summary>
+		/// Gets or sets the location.
+		/// </summary>
+		/// <value>
+		/// The location.
+		/// </value>
+		public Point Location {
+			get { return location;}
+			set { 
+
+				location = value;
+			// TODO Can never have Interface actions here. They must occur elsewhere.
+			}
+		}
 
 
+		private NotePanel parent;
+		[XmlIgnore]
+		public NotePanel Parent {
+			get{ return parent;}
+			set{ parent = value;}
 		}
 		#endregion
 		#region variables_new
@@ -56,14 +79,30 @@ namespace Layout
 		}
 		#endregion;
 
-		public void CreateParent()
+		public void UpdateLocation ()
 		{
+			if (Parent == null) {
+				throw new Exception("Parent must not be null");
+			}
+			Parent.Location = Location;
 		}
-		[XmlIgnore]
-		public NotePanelInterface Parent {
-			get{ return null;}
-			set{}
+
+		public void CreateParent(LayoutPanel Layout)
+		{
+			Parent = new NotePanel(this);
+
+
+
+			Parent.Visible = true;
+			Parent.Location = Location;
+			Parent.Dock = System.Windows.Forms.DockStyle.None;
+			Parent.Height = 100;
+			Parent.Width = 100;
+
+			Layout.Controls.Add ( Parent);
 		}
+
+
 	}
 }
 

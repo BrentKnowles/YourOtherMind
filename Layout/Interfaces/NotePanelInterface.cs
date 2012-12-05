@@ -2,11 +2,9 @@ using System;
 
 namespace Layout
 {
-	public class NotePanelInterface
+	public interface NotePanelInterface 
 	{
-		public NotePanelInterface ()
-		{
-		}
+
 	}
 }
 

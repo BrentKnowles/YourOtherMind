@@ -22,7 +22,7 @@ namespace Layout
 		/// <param name='GUID'>
 		/// The unique identifier representing this Layout
 		/// </param>
-		void LoadFrom();
+		void LoadFrom(LayoutPanel parent);
 
 		void SaveTo ();
 

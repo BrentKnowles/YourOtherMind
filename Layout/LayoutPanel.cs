@@ -112,7 +112,11 @@ namespace Layout
 
 		void HandlePropertyValueChanged (object s, PropertyValueChangedEventArgs e)
 		{
+
+			((NoteDataXML)grid.SelectedObject).UpdateLocation();
+			// when list is updated we are no longer the selected object
 			UpdateListOfNotes();
+
 		}
 
 		void HandleSelectedIndexChanged (object sender, EventArgs e)
@@ -173,7 +177,7 @@ namespace Layout
 		public void LoadLayout (string GUID)
 		{
 			Notes = new LayoutDatabase(GUID);
-			Notes.LoadFrom ();
+			Notes.LoadFrom (this);
 			UpdateListOfNotes();
 	
 
@@ -186,7 +190,7 @@ namespace Layout
 			xml.GuidForNote = System.Guid.NewGuid().ToString();
 			Notes.Add (xml);
 			
-			xml.CreateParent ();
+			xml.CreateParent (this);
 
 			UpdateListOfNotes ();
 		}

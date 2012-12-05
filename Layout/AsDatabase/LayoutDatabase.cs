@@ -93,7 +93,7 @@ namespace Layout
 			return LayoutGUID;
 		}
 		
-		public void LoadFrom ()
+		public void LoadFrom (LayoutPanel Layout)
 		{
 			BaseDatabase MyDatabase = CreateTestDatabase ();
 			
@@ -126,6 +126,7 @@ namespace Layout
 				for (int i = 0; i < ListAsDataObjectsOfType.Count; i++)
 				{
 				dataForThisLayout.Add (ListAsDataObjectsOfType[i]);
+				ListAsDataObjectsOfType[i].CreateParent(Layout);
 				}
 
 				//ListAsDataObjectsOfType.CopyTo(dataForThisLayout);
