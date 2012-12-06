@@ -5,7 +5,7 @@ namespace database
 	/// <summary>
 	/// Base database.
 	/// </summary>
-	abstract public class BaseDatabase
+	abstract public class BaseDatabase : IDisposable
 	{
 		public BaseDatabase (string database)
 		{
@@ -23,6 +23,7 @@ namespace database
 			set{ database_name = value;}
 		}
 
+		public abstract void Dispose();
 
 
 
@@ -149,7 +150,7 @@ namespace database
 
 	//	public abstract void AddColumn(string table, string newColumn, string newColumnType);
 
-
+		public abstract void DropTableIfExists(string Table);
 		public abstract bool Exists(string Table, string Column, string ColumnValue);
 
 		public abstract  List<object[]> GetValues (string tableName, string[] columnToReturn, string columnToTest, string Test);
@@ -168,7 +169,7 @@ namespace database
 		/// </param>
 		public abstract void InsertData(string tableName, string[] columns, object[] values);
 		public abstract bool UpdateSpecificColumnData (string tableName, string[] ColumnToAddTo, object[] ValueToAdd, string WhereColumn, string WhereValue);
-
+		public abstract bool TableExists (string Table);
 		/// <summary>
 		/// Will export the entire database to the specified file
 		/// </summary>

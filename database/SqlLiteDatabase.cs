@@ -33,7 +33,12 @@ namespace database
 			}
 		}
 
+		public override void Dispose()
+		{
+			//this = null;
+			this.Database_Name = "";
 
+		}
 
 		/// <summary>
 		/// Creates the table if does not exist.
@@ -135,6 +140,9 @@ namespace database
 			if (columnToReturn == null || columnToReturn.Length <= 0) {
 				throw new Exception ("At least one column is required, to know what you want from the database.");
 			}
+			if (columnToReturn.Length > 0 && columnToReturn [0] == "") {
+				throw new Exception("Columns must be defined");
+			}
 
 			string ColumnsToReturnForQuery = base.ColumnArrayToStringForInserting (columnToReturn);
 
@@ -174,7 +182,7 @@ namespace database
 				dataReader.Close ();
 				sqliteCon.Close ();
 			} catch (Exception ex) {
-				Console.WriteLine(ex.ToString());
+				throw new Exception(ex.ToString());
 			}
 			if (ReturnList == null || 0 == ReturnList.Count)
 			{
@@ -424,6 +432,32 @@ namespace database
 				throw new Exception("Trying to add a value that is already present in the unqiue colum");
 			}
 		}
+		/// <summary>
+		/// Tables the exists.
+		/// </summary>
+		/// <returns>
+		/// <c>true</c>, if exists was tabled, <c>false</c> otherwise.
+		/// </returns>
+		/// <param name='Table'>
+		/// Table.
+		/// </param>
+		public override bool TableExists (string Table)
+		{
+			bool result = false;
+			SQLiteConnection sqliteCon = new SQLiteConnection (Connection_String);
+			sqliteCon.Open ();
+			string selectTables = "Select name from sqlite_master where type='table' order by name;";
+			SQLiteCommand selectCommand = new SQLiteCommand (selectTables, sqliteCon);
+			SQLiteDataReader dataReader = selectCommand.ExecuteReader ();
+			while (dataReader.Read()) {
+				if (dataReader["name"].ToString() == Table){result = true; break;}
+
+			}
+			dataReader.Close ();
+			lg.Instance.Line("BackupDatabase", ProblemType.MESSAGE, "TABLES");
+			sqliteCon.Close ();
+			return result;
+		}
 
 		/// <summary>
 		/// Will export the entire database to the specified file
@@ -449,7 +483,7 @@ ORDER BY name;
 				string selectTables = "Select name from sqlite_master where type='table' order by name;";
 				SQLiteCommand selectCommand = new SQLiteCommand (selectTables, sqliteCon);
 				SQLiteDataReader dataReader = selectCommand.ExecuteReader ();
-				Console.WriteLine("TABLES");
+				lg.Instance.Line("BackupDatabase", ProblemType.MESSAGE, "TABLES");
 				System.Collections.ArrayList ListOfTables = new System.Collections.ArrayList();
 
 				while (dataReader.Read()) {
@@ -495,7 +529,19 @@ ORDER BY name;
 			}
 			Console.WriteLine ("--------------------------");
 		}
-
+		public override void DropTableIfExists (string Table)
+		{
+			SQLiteConnection sqliteCon = new SQLiteConnection (Connection_String);
+			sqliteCon.Open ();
+			string sql = String.Format ("drop table if exists {0}", Table);
+			try {
+				SQLiteCommand selectCommand = new SQLiteCommand (sql, sqliteCon);
+				selectCommand.ExecuteNonQuery ();
+			} catch (Exception ex) {
+				lg.Instance.Line("SqlLiteDatabase.DropTableIfExists",ProblemType.EXCEPTION, String.Format ("{0}, {1}", Table, ex.ToString()));
+			}
+			sqliteCon.Close ();
+		}
 
 	}
 }
