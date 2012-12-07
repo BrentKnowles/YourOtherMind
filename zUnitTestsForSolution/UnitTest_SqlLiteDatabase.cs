@@ -438,14 +438,57 @@ namespace Testing
 		[Test()]
 		public void GetText_ExpectBlankString()
 		{
-			Console.WriteLine ("Expectblankstring");
-			Assert.False (true);
+			SqlLiteDatabase db =CreateTestDatabase(String.Format ("{0}", tmpDatabaseConstants.GUID));
+			
+			output("database made");
+			
+			db.InsertData (tmpDatabaseConstants.table_name, new string[3] {	tmpDatabaseConstants.STATUS,tmpDatabaseConstants.XML,tmpDatabaseConstants.GUID
+			}, new object[3] {"boo status", "boo xml", "GUID_A"});
+			System.Collections.Generic.List<object[]> list = db.GetValues(tmpDatabaseConstants.table_name, new string[1]{tmpDatabaseConstants.STATUS}, tmpDatabaseConstants.GUID, "GUID_B");
+			// expect an empty list
+			Assert.AreEqual(list.Count, 0);
+			//Assert.IsNull(list);
+
+			db.Dispose();
 		}
 		[Test()]
 		public void GetText_ExpectExactResult()
 		{
-			Assert.False (true);
+			SqlLiteDatabase db =CreateTestDatabase(String.Format ("{0}", tmpDatabaseConstants.GUID));
+			
+			output("database made");
+			
+			db.InsertData (tmpDatabaseConstants.table_name, new string[3] {	tmpDatabaseConstants.STATUS,tmpDatabaseConstants.XML,tmpDatabaseConstants.GUID
+			}, new object[3] {"boo status", "boo xml", "GUID_A"});
+			System.Collections.Generic.List<object[]> list = db.GetValues(tmpDatabaseConstants.table_name, new string[1]{tmpDatabaseConstants.STATUS}, tmpDatabaseConstants.GUID, "GUID_A");
+			output (list[0][0].ToString());
+			if (list == null) Assert.True (false);
+			Assert.AreEqual(list[0][0].ToString(), "boo status");
+			db.Dispose();
 		}
+		[Test]
+		public void GetText_MultipleRowsExactMatch()
+		{
+			SqlLiteDatabase db =CreateTestDatabase(String.Format ("{0}", tmpDatabaseConstants.GUID));
+			
+			output("database made");
+			
+			db.InsertData (tmpDatabaseConstants.table_name, new string[3] {	tmpDatabaseConstants.STATUS,tmpDatabaseConstants.XML,tmpDatabaseConstants.GUID
+			}, new object[3] {"boo status", "boo xml", "GUID_A"});
+			db.InsertData (tmpDatabaseConstants.table_name, new string[3] {	tmpDatabaseConstants.STATUS,tmpDatabaseConstants.XML,tmpDatabaseConstants.GUID
+			}, new object[3] {"boo status", "boo xml", "GUID_B"});
+			db.InsertData (tmpDatabaseConstants.table_name, new string[3] {	tmpDatabaseConstants.STATUS,tmpDatabaseConstants.XML,tmpDatabaseConstants.GUID
+			}, new object[3] {"boo status", "boo xml", "GUID_C"});
+			db.InsertData (tmpDatabaseConstants.table_name, new string[3] {	tmpDatabaseConstants.STATUS,tmpDatabaseConstants.XML,tmpDatabaseConstants.GUID
+			}, new object[3] {"boo status2", "boo xml", "GUID_D"});
+
+			System.Collections.Generic.List<object[]> list = db.GetValues(tmpDatabaseConstants.table_name, new string[1]{tmpDatabaseConstants.GUID}, tmpDatabaseConstants.STATUS, "boo status");
+			output (list.Count);
+			Assert.AreEqual (3, list.Count);
+
+			db.Dispose();
+		}
+
 		/*if (CoreUtilities.Constants.BLANK == tableName) {
 			throw new Exception("You must provide a table to query");
 		}
@@ -460,6 +503,43 @@ namespace Testing
 #endregion
 
 		#region general
+
+
+		
+		[Test()]
+		public void CreateFakeDatabaseAndBackup()
+		{
+			SqlLiteDatabase db =CreateTestDatabase(String.Format ("{0}", tmpDatabaseConstants.GUID));
+			db.InsertData (tmpDatabaseConstants.table_name, new string[3] {	tmpDatabaseConstants.STATUS,tmpDatabaseConstants.XML,tmpDatabaseConstants.GUID
+			}, new object[3] {"boo status", "boo xml", "GUID_A"});
+
+			//not sure how to set this test up. Force File Write? Then test if file exists?
+			// or shoudl this return a Stream?
+			
+
+			db.BackupDatabase("");
+			Assert.False (true);
+		}
+		/// <summary>
+		/// If a primary key is not specified then it should throw an exception
+		/// </summary>
+		[Test()]
+		[ExpectedException]
+		public void CreateTableWithNoPrimaryKey()
+		{
+			SqlLiteDatabase db =CreateTestDatabase(String.Format ("{0}", ""));
+		}
+
+		/// <summary>
+		/// Should be no problems if creating two tables one after another, if they are the same table
+		/// </summary>
+		[Test()]
+		public void CreateTableIfDoesNotExist_Test()
+		{
+			SqlLiteDatabase db =CreateTestDatabase(String.Format ("{0}", tmpDatabaseConstants.GUID));
+			db =CreateTestDatabase(String.Format ("{0}", tmpDatabaseConstants.GUID));
+		}
+
 		[Test()]
 		[ExpectedException]
 		public void Test_FailOnInvalidDatabaseName()
@@ -473,55 +553,158 @@ namespace Testing
 			SqlLiteDatabase db =CreateTestDatabase(String.Format ("{0}", tmpDatabaseConstants.GUID));
 			db.Dispose();
 
-			Assert.That (delegate {db.GetValues(tmpDatabaseConstants.table_name, new string[1]{tmpDatabaseConstants.STATUS}, tmpDatabaseConstants.GUID, "GUID_A"); },Throws.Exception );
-		}
-		#endregion
-
-
-
-		[Test()]
-		[ExpectedException]
-		public void UpdateSpecificColumnData_FailsWhenUnevenColumns()
-		{
-
+			Assert.That (delegate {db.GetValues(tmpDatabaseConstants.table_name, new string[1]{tmpDatabaseConstants.STATUS}, tmpDatabaseConstants.GUID, "GUID_A"); },
+			   Throws.Exception );
 		}
 
 		[Test()]
 		[ExpectedException]
 		public void CreateTableIfDoesNotExist_CreateUnevenTable()
 		{
+			UnitTest_Class_Database db = new UnitTest_Class_Database (test_database_name);
+			
 
+			try {
+				
+				db.DropTableIfExists(tmpDatabaseConstants.table_name);
+			} catch (Exception ex) {
+				output (String.Format ("Unable to drop table {0}", ex.ToString()));
+			}
+			
+			db.CreateTableIfDoesNotExist (tmpDatabaseConstants.table_name, new string[4] 
+			                              {tmpDatabaseConstants.ID, tmpDatabaseConstants.GUID, tmpDatabaseConstants.XML,
+				tmpDatabaseConstants.STATUS}, 
+			new string[3] {
+				"INTEGER",
+				"TEXT UNIQUE",
+				"LONGTEXT"
+
+			}, tmpDatabaseConstants.GUID
+			);
+			db.Dispose();
 		}
 
+		#endregion
 
+		#region update
+		/// <summary>
+		/// Nothing should be updated if entered the wrong GUID  to update (and it shoudl return false)
+		/// </summary>
 		[Test()]
 		public void RowDoesNotExistOnUpdate()
 		{
-			// would be expected a particular return value
-			Assert.False (true);
+			SqlLiteDatabase db =CreateTestDatabase(String.Format ("{0}", tmpDatabaseConstants.GUID));
+			db.InsertData (tmpDatabaseConstants.table_name, new string[3] {	tmpDatabaseConstants.STATUS,tmpDatabaseConstants.XML,tmpDatabaseConstants.GUID
+			}, new object[3] {"boo status", "boo xml", "GUID_A"});
+
+
+			// we fail to update
+
+			Assert.AreEqual(false, db.UpdateSpecificColumnData(tmpDatabaseConstants.table_name, new string[1] {tmpDatabaseConstants.STATUS},
+			new object[1] {"snakes!"}, tmpDatabaseConstants.GUID, "GUID_B"));
+
+			// there is a problem with updating specific column data AND not having the right GUID. Crashes rest of unit tests
+
+			Assert.AreEqual("boo status",  db.GetValues(tmpDatabaseConstants.table_name, new string[1]{tmpDatabaseConstants.STATUS}, tmpDatabaseConstants.GUID, "GUID_A")[0][0].ToString());
+			
+			db.Dispose();
 		}
-		[Test()]
-		public void RowDoesExistOnUpdate()
-		{
-			// would be expected a particular return value
-			Assert.False (true);
-		}
-		[Test()]
-		public void CreateFakeDatabaseAndBackup()
-		{
-			UnitTest_Class_Database test = new UnitTest_Class_Database("nUnitTest");
-			test.BackupDatabase("");
-			Assert.False (true);
-		}
-		/// <summary>
-		/// If a primary key is not specified then it should throw an exception
-		/// </summary>
+
+
 		[Test()]
 		[ExpectedException]
-		public void CreateTableIfDoesNotExist_Test()
+		public void UpdateSpecificColumnData_FailsWhenUnevenColumns()
 		{
-			Assert.False (true);
+			SqlLiteDatabase db =CreateTestDatabase(String.Format ("{0}", tmpDatabaseConstants.GUID));
+			db.InsertData (tmpDatabaseConstants.table_name, new string[3] {	tmpDatabaseConstants.STATUS,tmpDatabaseConstants.XML,tmpDatabaseConstants.GUID
+			}, new object[3] {"boo status", "boo xml", "GUID_A"});
+
+			db.UpdateSpecificColumnData(tmpDatabaseConstants.table_name, new string[2] {tmpDatabaseConstants.XML, tmpDatabaseConstants.STATUS},
+			new object[1] {"snakes!"}, tmpDatabaseConstants.GUID, "GUID_A");
+
+			db.Dispose();
 		}
+		[Test()]
+		public void UpdateDataWorks ()
+		{
+			SqlLiteDatabase db =CreateTestDatabase(String.Format ("{0}", tmpDatabaseConstants.GUID));
+			db.InsertData (tmpDatabaseConstants.table_name, new string[3] {	tmpDatabaseConstants.STATUS,tmpDatabaseConstants.XML,tmpDatabaseConstants.GUID
+			}, new object[3] {"boo status", "boo xml", "GUID_A"});
+
+			db.UpdateSpecificColumnData(tmpDatabaseConstants.table_name, new string[1] {tmpDatabaseConstants.STATUS},
+			new object[1] {"snakes!"}, tmpDatabaseConstants.GUID, "GUID_A");
+
+			Assert.AreEqual("snakes!", db.GetValues(tmpDatabaseConstants.table_name, new string[1]{tmpDatabaseConstants.STATUS}, tmpDatabaseConstants.GUID, "GUID_A")[0][0].ToString());
+
+			db.Dispose();
+		}
+	
+		[Test()]
+		[ExpectedException()]
+		public void UpdateInvalidTable()
+		{
+			SqlLiteDatabase db =CreateTestDatabase(String.Format ("{0}", tmpDatabaseConstants.GUID));
+			db.InsertData (tmpDatabaseConstants.table_name, new string[3] {	tmpDatabaseConstants.STATUS,tmpDatabaseConstants.XML,tmpDatabaseConstants.GUID
+			}, new object[3] {"boo status", "boo xml", "GUID_A"});
+			
+			db.UpdateSpecificColumnData("", new string[1] {tmpDatabaseConstants.STATUS},
+			new object[1] {"snakes!"}, tmpDatabaseConstants.GUID, "GUID_A");
+			db.Dispose();
+		}
+
+		[Test()]
+		[ExpectedException()]
+		public void UpdateNullColumns()
+		{
+			SqlLiteDatabase db =CreateTestDatabase(String.Format ("{0}", tmpDatabaseConstants.GUID));
+			db.InsertData (tmpDatabaseConstants.table_name, new string[3] {	tmpDatabaseConstants.STATUS,tmpDatabaseConstants.XML,tmpDatabaseConstants.GUID
+			}, new object[3] {"boo status", "boo xml", "GUID_A"});
+			
+			db.UpdateSpecificColumnData(tmpDatabaseConstants.table_name,null,
+			new object[1] {"snakes!"}, tmpDatabaseConstants.GUID, "GUID_A");
+			db.Dispose();
+		}
+		[Test()]
+		[ExpectedException()]
+		public void UpdateNullValues()
+		{
+			SqlLiteDatabase db =CreateTestDatabase(String.Format ("{0}", tmpDatabaseConstants.GUID));
+			db.InsertData (tmpDatabaseConstants.table_name, new string[3] {	tmpDatabaseConstants.STATUS,tmpDatabaseConstants.XML,tmpDatabaseConstants.GUID
+			}, new object[3] {"boo status", "boo xml", "GUID_A"});
+			
+			db.UpdateSpecificColumnData(tmpDatabaseConstants.table_name, new string[1] {tmpDatabaseConstants.STATUS},
+			null, tmpDatabaseConstants.GUID, "GUID_A");
+			db.Dispose();
+		}
+		[Test()]
+		[ExpectedException()]
+		public void UpdateEmptyWhereColumn()
+		{
+			SqlLiteDatabase db =CreateTestDatabase(String.Format ("{0}", tmpDatabaseConstants.GUID));
+			db.InsertData (tmpDatabaseConstants.table_name, new string[3] {	tmpDatabaseConstants.STATUS,tmpDatabaseConstants.XML,tmpDatabaseConstants.GUID
+			}, new object[3] {"boo status", "boo xml", "GUID_A"});
+			
+			db.UpdateSpecificColumnData(tmpDatabaseConstants.table_name, new string[1] {tmpDatabaseConstants.STATUS},
+			new object[1] {"snakes!"}, "", "GUID_A");
+		}
+		[Test()]
+		[ExpectedException()]
+		public void UpdateEmptyWhereValue()
+		{
+			SqlLiteDatabase db =CreateTestDatabase(String.Format ("{0}", tmpDatabaseConstants.GUID));
+			db.InsertData (tmpDatabaseConstants.table_name, new string[3] {	tmpDatabaseConstants.STATUS,tmpDatabaseConstants.XML,tmpDatabaseConstants.GUID
+			}, new object[3] {"boo status", "boo xml", "GUID_A"});
+			
+			db.UpdateSpecificColumnData(tmpDatabaseConstants.table_name, new string[1] {tmpDatabaseConstants.STATUS},
+			new object[1] {"snakes!"}, tmpDatabaseConstants.GUID, "");
+		}
+
+		#endregion
+
+
+
+
+
 	}
 }
 

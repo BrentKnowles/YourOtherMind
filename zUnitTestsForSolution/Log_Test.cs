@@ -1,6 +1,6 @@
 using System;
 using NUnit.Framework;
-namespace zUnitTestsForSolution
+namespace Testing
 {
 	[TestFixture]
 	public class Log_Test
@@ -11,6 +11,7 @@ namespace zUnitTestsForSolution
 		[Test]
 		public void TestLoudness()
 		{
+			Assert.True (false);
 		}
 	}
 }

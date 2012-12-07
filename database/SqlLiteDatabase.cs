@@ -275,10 +275,20 @@ namespace database
 		{
 
 			if (ColumnToAddTo.Length != ValueToAdd.Length) {
-				throw new Exception("Arrays of Columns and Values for those columns must be the same length");
+				throw new Exception ("Arrays of Columns and Values for those columns must be the same length");
 			}
 
-		
+			if (ColumnToAddTo == null || ValueToAdd == null) {
+				throw new Exception ("Must have a valid Column and Value array");
+			}
+
+			if (WhereColumn == "") {
+				throw new Exception ("Must supply a WhereColumn");
+			}
+			if (WhereValue == "") {
+				throw new Exception ("must supply a Where Value");
+			}
+
 
 
 			bool ReturnValue = false;
@@ -321,21 +331,26 @@ namespace database
 
 						if (1 == command .ExecuteNonQuery ())
 					{
-						sqlTransaction.Commit ();
+						
 						ReturnValue = true;
 					}
 					else
 					{
 						ReturnValue = false;
 					}
-					
+
+						/// What I learned 
+						/// I thought the commit shouldn't happen when a RETURNVALUE=FALSE occurred because there was no point
+						/// But this actually hung the database. You need your commits
+						sqlTransaction.Commit ();
 
 
 					sqliteCon.Close ();
 					}
 				}
 			} catch (Exception ex) {
-				Console.WriteLine(ex.ToString() + sqlStatement);
+				//Console.WriteLine(ex.ToString() + sqlStatement);
+				throw new Exception(ex.ToString());
 			}
 			return ReturnValue;
 		}
