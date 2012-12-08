@@ -475,23 +475,24 @@ namespace database
 		}
 
 		/// <summary>
-		/// Will export the entire database to the specified file
+		/// Will export the entire database to a string and you can do what you want with it.
 		/// </summary>
 		/// <param name='file'>
 		/// File.
 		/// </param>
-		public override void BackupDatabase (string file)
+		public override string BackupDatabase ()
 		{
 
 
+			string result = "";
 			/*Proper backup
 			 * SELECT name FROM sqlite_master
 WHERE type='table'
 ORDER BY name;
 */
 			try {
-				Console.WriteLine ("--------------------------");
-				Console.WriteLine ("**Just a hack for testing**");
+				result = ("--------------------------") + Environment.NewLine;
+				result = result + ("**Just a hack for testing**")+ Environment.NewLine;
 				SQLiteConnection sqliteCon = new SQLiteConnection (Connection_String);
 				sqliteCon.Open ();
 
@@ -502,7 +503,7 @@ ORDER BY name;
 				System.Collections.ArrayList ListOfTables = new System.Collections.ArrayList();
 
 				while (dataReader.Read()) {
-					Console.WriteLine(dataReader["name"].ToString());
+					result = result + (dataReader["name"].ToString())+ Environment.NewLine;
 					ListOfTables.Add (dataReader["name"].ToString());
 				}
 				dataReader.Close ();
@@ -510,7 +511,7 @@ ORDER BY name;
 
 				foreach (string Table in ListOfTables)
 				{
-					Console.WriteLine("Writing Table = " + Table);
+					result = result + ("Writing Table = " + Table)+ Environment.NewLine;;
 
 				// Now write individual tables
 					string selectSQL = String.Format ("SELECT * from {0}", Table);
@@ -523,10 +524,10 @@ ORDER BY name;
 
 					for (int i = 0 ; i < dataReader.FieldCount; i++)
 					{
-						Console.Write (dataReader.GetName(i) + " |" +   dataReader[i].ToString());
-						Console.WriteLine ("");
+							result = result +  (dataReader.GetName(i) + " |" +   dataReader[i].ToString())+ Environment.NewLine;
+					//	Console.WriteLine ("");
 					}
-					Console.WriteLine ("*******************");
+					result = result + ("*******************") + Environment.NewLine;
 					/*Console.WriteLine("**Reading a line**");
 					string id = dataReader["id"].ToString();
 					string guid = dataReader["guid"].ToString();
@@ -536,13 +537,15 @@ ORDER BY name;
 					//Console.WriteLine ("Name: " + dataReader.GetString (0)					                   + " Username: " + dataReader.GetString (1));
 					*/
 				}
+				
+				} // Writing out tables
 				dataReader.Close ();
 				sqliteCon.Close ();
-				} // Writing out tables
 			} catch (Exception ex) {
-				Console.WriteLine(ex.ToString());
+				lg.Instance.Line("BackupDatabase", ProblemType.EXCEPTION,ex.ToString());
 			}
-			Console.WriteLine ("--------------------------");
+			result = result +  ("--------------------------")+ Environment.NewLine;
+			return result;
 		}
 		public override void DropTableIfExists (string Table)
 		{

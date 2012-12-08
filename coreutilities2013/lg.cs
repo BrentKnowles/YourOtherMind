@@ -5,10 +5,12 @@ namespace CoreUtilities
 	/// <summary>
 	/// Lg. New logging class. TODO: Refcator to Log. once old class removed
 	/// </summary>
-	public class lg : BaseSingleton, iLogging
+	public class lg : iLogging
 	{
 
 		#region variables
+		protected static volatile lg instance;
+		protected static object syncRoot = new Object();
 
 		private Loud _Loudness;
 		public Loud Loudness { get { return _Loudness; } set { _Loudness = value; }}

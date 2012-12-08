@@ -10,9 +10,11 @@ namespace CoreUtilities
 	/// Did not want to implement like this but I was unable to get GetText.Net to create the dlls from the .PO files (it creates them
 	/// but they crash). In case I need to move to a different solution I want to wrap it all, simply.
 	/// </summary>
-	public class Loc : BaseSingleton
+	public class Loc 
 	{
 		public GettextResourceManager Cat = null;
+		protected static volatile Loc instance;
+		protected static object syncRoot = new Object();
 
 		public Loc()
 		{

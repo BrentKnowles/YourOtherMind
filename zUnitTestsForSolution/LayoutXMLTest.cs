@@ -1,8 +1,8 @@
 using System;
 using NUnit.Framework;
 using Layout;
-
-namespace Testing
+// Will only finish writing tests for this if I end up using class
+namespace NotUsed
 {
 	[TestFixture]
 	public class LayoutXMLTest

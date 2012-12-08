@@ -11,11 +11,18 @@ namespace Layout
 	/// </summary>
 	public class LayoutDatabase : LayoutInterface
 	{
-		#region members
+		#region variables
+
+		// we keep this as a protected string so that unit testing can override it 
+		protected virtual string YOM_DATABASE {
+			get { return "yomdata.s3db";}
+		}
+
 
 		//This is the list of notes
 		private List<NoteDataInterface> dataForThisLayout= null;
 		//These are the OTHER variables (like status) associated with this note
+		private const  int data_size = 2; // size of data array
 		private object[] data= null;
 		public string Status {
 			get { return data [0].ToString();}
@@ -47,22 +54,23 @@ namespace Layout
 
 			// Create the database
 			// will always try to create the database if it is not present. The means creating the pages table too.
-			CreateTestDatabase();
-			data = new object[2];
+			CreateDatabase();
+			data = new object[data_size];
 
 		}
 
 		/// <summary>
-		/// just a testing wrapper
+		/// Wrapper function for creating the database
+		/// This is only place in this code where we reference the TYPE of database being used
 		/// </summary>
 		/// <returns>
-		/// The test database.
+		/// 
 		/// </returns>
-		private BaseDatabase CreateTestDatabase()
+		private BaseDatabase CreateDatabase()
 		{
-			//This is only place in this code where we reference the TYPE of database being used
 
-			SqlLiteDatabase db = new SqlLiteDatabase ("yomdata.s3db");
+
+			SqlLiteDatabase db = new SqlLiteDatabase (YOM_DATABASE);
 			db.CreateTableIfDoesNotExist (tmpDatabaseConstants.table_name, 
 			    tmpDatabaseConstants.Columns, 
 			tmpDatabaseConstants.Types, String.Format ("{0}", tmpDatabaseConstants.ID)
@@ -95,7 +103,7 @@ namespace Layout
 		
 		public void LoadFrom (LayoutPanel Layout)
 		{
-			BaseDatabase MyDatabase = CreateTestDatabase ();
+			BaseDatabase MyDatabase = CreateDatabase ();
 			
 			if (MyDatabase == null) {
 				throw new Exception ("Unable to create database in LoadFrom");
@@ -157,7 +165,7 @@ namespace Layout
 			}
 			string XMLAsString = CoreUtilities.Constants.BLANK;
 
-			BaseDatabase MyDatabase = CreateTestDatabase ();
+			BaseDatabase MyDatabase = CreateDatabase ();
 
 			if (MyDatabase == null) {
 				throw new Exception("Unable to create database in SaveTo");

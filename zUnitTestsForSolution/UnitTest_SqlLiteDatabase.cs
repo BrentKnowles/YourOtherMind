@@ -26,9 +26,9 @@ namespace Testing
 			Console.WriteLine(s);
 		}
 
-		private UnitTest_Class_Database CreateTestDatabase (string primarykey)
+		private FAKE_SqlLiteDatabase CreateTestDatabase (string primarykey)
 		{
-			UnitTest_Class_Database db = new UnitTest_Class_Database (test_database_name);
+			FAKE_SqlLiteDatabase db = new FAKE_SqlLiteDatabase (test_database_name);
 
 			try {
 
@@ -66,7 +66,7 @@ namespace Testing
 		[Test()]
 		public void ColumnArrayToStringForInserting()
 		{
-			UnitTest_Class_Database test = new UnitTest_Class_Database("nUnitTest");
+			FAKE_SqlLiteDatabase test = new FAKE_SqlLiteDatabase("nUnitTest");
 			string columns = test.TestColumnArrayToStringForInserting(new string[3] {"dog", "cat", "fish"});
 			//Console.WriteLine(columns);
 			Assert.AreEqual(columns, "dog,cat,fish");
@@ -87,7 +87,7 @@ namespace Testing
 		public void AddingToUniqueColumn()
 		{
 			// Create a test database
-			UnitTest_Class_Database db =CreateTestDatabase(String.Format ("{0}", tmpDatabaseConstants.GUID));
+			FAKE_SqlLiteDatabase db =CreateTestDatabase(String.Format ("{0}", tmpDatabaseConstants.GUID));
 		Console.WriteLine("First insert should work");
 			db.InsertData (tmpDatabaseConstants.table_name, new string[3] {
 				tmpDatabaseConstants.STATUS,
@@ -121,20 +121,20 @@ namespace Testing
 		public void AddMissingColumn_Test_ColumnDidNotExistAndWeDetectedItCorrectly()
 		{
 			// Create a test database
-			UnitTest_Class_Database db =CreateTestDatabase(String.Format ("{0}", tmpDatabaseConstants.ID));
+			FAKE_SqlLiteDatabase db =CreateTestDatabase(String.Format ("{0}", tmpDatabaseConstants.ID));
 			db.InsertData (tmpDatabaseConstants.table_name, new string[3] {
 				tmpDatabaseConstants.STATUS,
 				tmpDatabaseConstants.XML,
 				tmpDatabaseConstants.GUID
 			}
 			, new object[3] {"boo status", "boo xml", "GUID_A"});
-			db.BackupDatabase("");
+			output(db.BackupDatabase());
 			// add ColumnA to it
 			bool result = db.TestAddMissingColumn(tmpDatabaseConstants.table_name, new string[1] {"boomer"},
 			new string[1] {"TEXT"});
 			// check return value is true
 			Assert.True(result);
-			db.BackupDatabase("");
+			output(db.BackupDatabase());
 			// add ColumnA to it again. This time return value should be false (because we did not need to add the column)
 			result = db.TestAddMissingColumn(tmpDatabaseConstants.table_name, new string[1] {"boomer"},
 			new string[1] {"TEXT"});
@@ -147,7 +147,7 @@ namespace Testing
 		{
 
 			// Create a test database
-			UnitTest_Class_Database db =CreateTestDatabase(String.Format ("{0}", tmpDatabaseConstants.ID));
+			FAKE_SqlLiteDatabase db =CreateTestDatabase(String.Format ("{0}", tmpDatabaseConstants.ID));
 			db.InsertData (tmpDatabaseConstants.table_name, new string[3] {
 				tmpDatabaseConstants.STATUS,
 				tmpDatabaseConstants.XML,
@@ -164,7 +164,7 @@ namespace Testing
 		public void TableDoesExist ()
 		{
 
-			UnitTest_Class_Database db = new UnitTest_Class_Database (test_database_name);
+			FAKE_SqlLiteDatabase db = new FAKE_SqlLiteDatabase (test_database_name);
 			db.DropTableIfExists(tmpDatabaseConstants.table_name);
 			output ("here1");
 			Assert.False (db.TableExists (tmpDatabaseConstants.table_name));
@@ -185,7 +185,7 @@ namespace Testing
 		[Test]
 		public void DropTableTest ()
 		{
-			UnitTest_Class_Database db = CreateTestDatabase (String.Format ("{0}", tmpDatabaseConstants.ID));
+			FAKE_SqlLiteDatabase db = CreateTestDatabase (String.Format ("{0}", tmpDatabaseConstants.ID));
 			output ("here");
 			try {
 				db.InsertData (tmpDatabaseConstants.table_name, new string[3] {
@@ -215,7 +215,7 @@ namespace Testing
 			bool result = false;
 			output ("here1");
 				// Create a test database
-				UnitTest_Class_Database db = CreateTestDatabase (String.Format ("{0}", tmpDatabaseConstants.ID));
+				FAKE_SqlLiteDatabase db = CreateTestDatabase (String.Format ("{0}", tmpDatabaseConstants.ID));
 			output ("here");
 			try {
 				db.InsertData (tmpDatabaseConstants.table_name, new string[3] {
@@ -238,7 +238,7 @@ namespace Testing
 		public void GuidDoesNotExist()
 		{
 			// Create a test database
-			UnitTest_Class_Database db =CreateTestDatabase(String.Format ("{0}", tmpDatabaseConstants.ID));
+			FAKE_SqlLiteDatabase db =CreateTestDatabase(String.Format ("{0}", tmpDatabaseConstants.ID));
 			db.InsertData (tmpDatabaseConstants.table_name, new string[3] {	tmpDatabaseConstants.STATUS,tmpDatabaseConstants.XML,tmpDatabaseConstants.GUID
 			}, new object[3] {"boo status", "boo xml", "GUID_A"});
 			
@@ -505,20 +505,81 @@ namespace Testing
 		#region general
 
 
-		
+		/// <summary>
+		///  Should test with at least 3 tables
+		/// </summary>
 		[Test()]
 		public void CreateFakeDatabaseAndBackup()
 		{
 			SqlLiteDatabase db =CreateTestDatabase(String.Format ("{0}", tmpDatabaseConstants.GUID));
 			db.InsertData (tmpDatabaseConstants.table_name, new string[3] {	tmpDatabaseConstants.STATUS,tmpDatabaseConstants.XML,tmpDatabaseConstants.GUID
 			}, new object[3] {"boo status", "boo xml", "GUID_A"});
+			db.InsertData (tmpDatabaseConstants.table_name, new string[3] {	tmpDatabaseConstants.STATUS,tmpDatabaseConstants.XML,tmpDatabaseConstants.GUID
+			}, new object[3] {"boo status2", "boo xml2", "GUID_A2"});
+			db.Dispose();
+
+
+			db = new FAKE_SqlLiteDatabase (test_database_name);
+			
+
+			try {
+				
+				db.DropTableIfExists(tmpDatabaseConstants.table_name+"_b");
+			} catch (Exception ex) {
+				output (String.Format ("Unable to drop table {0}", ex.ToString()));
+			}
+			
+			db.CreateTableIfDoesNotExist (tmpDatabaseConstants.table_name+"_b", new string[4] 
+			                              {tmpDatabaseConstants.ID, tmpDatabaseConstants.GUID, tmpDatabaseConstants.XML,
+				tmpDatabaseConstants.STATUS}, 
+			new string[4] {
+				"INTEGER",
+				"TEXT UNIQUE",
+				"LONGTEXT",
+				"TEXT"
+			}, tmpDatabaseConstants.GUID
+			);
+
+
+			db.InsertData (tmpDatabaseConstants.table_name+"_b", new string[3] {	tmpDatabaseConstants.STATUS,tmpDatabaseConstants.XML,tmpDatabaseConstants.GUID
+			}, new object[3] {"boo status", "boo xml", "GUID_B"});
+
+
+
+
+			db.Dispose();
+			db = new FAKE_SqlLiteDatabase (test_database_name);
+			
+			
+			try {
+				
+				db.DropTableIfExists(tmpDatabaseConstants.table_name+"_c");
+			} catch (Exception ex) {
+				output (String.Format ("Unable to drop table {0}", ex.ToString()));
+			}
+			
+			db.CreateTableIfDoesNotExist (tmpDatabaseConstants.table_name+"_c", new string[4] 
+			                              {tmpDatabaseConstants.ID, tmpDatabaseConstants.GUID, tmpDatabaseConstants.XML,
+				tmpDatabaseConstants.STATUS}, 
+			new string[4] {
+				"INTEGER",
+				"TEXT UNIQUE",
+				"LONGTEXT",
+				"TEXT"
+			}, tmpDatabaseConstants.GUID
+			);
+
+			db.InsertData (tmpDatabaseConstants.table_name+"_c", new string[3] {	tmpDatabaseConstants.STATUS,tmpDatabaseConstants.XML,tmpDatabaseConstants.GUID
+			}, new object[3] {"boo status", "boo xml", "GUID_C"});
+
 
 			//not sure how to set this test up. Force File Write? Then test if file exists?
 			// or shoudl this return a Stream?
-			
-
-			db.BackupDatabase("");
-			Assert.False (true);
+			string result = db.BackupDatabase();
+			output(result.Length);
+			output(result);
+			Assert.AreEqual(486, result.Length);
+			//Assert.False (true);
 		}
 		/// <summary>
 		/// If a primary key is not specified then it should throw an exception
@@ -544,7 +605,7 @@ namespace Testing
 		[ExpectedException]
 		public void Test_FailOnInvalidDatabaseName()
 		{
-			UnitTest_Class_Database db = new UnitTest_Class_Database ("");
+			FAKE_SqlLiteDatabase db = new FAKE_SqlLiteDatabase ("");
 
 		}
 		[Test()]
@@ -561,7 +622,7 @@ namespace Testing
 		[ExpectedException]
 		public void CreateTableIfDoesNotExist_CreateUnevenTable()
 		{
-			UnitTest_Class_Database db = new UnitTest_Class_Database (test_database_name);
+			FAKE_SqlLiteDatabase db = new FAKE_SqlLiteDatabase (test_database_name);
 			
 
 			try {

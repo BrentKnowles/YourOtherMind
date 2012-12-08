@@ -176,7 +176,7 @@ namespace database
 		/// <param name='file'>
 		/// File.
 		/// </param>
-		public abstract void BackupDatabase(string file);
+		public abstract string BackupDatabase();
 		
 
 		/// <summary>

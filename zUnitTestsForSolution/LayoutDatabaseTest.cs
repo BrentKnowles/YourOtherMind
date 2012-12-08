@@ -1,7 +1,8 @@
 using System;
 using NUnit.Framework;
 using Layout.data;
-
+using Layout;
+// Use FakeLayoutDatabase, not the real one to avoid messing with the data files
 namespace Testing
 {
 	[TestFixture]
@@ -19,6 +20,13 @@ namespace Testing
 			// The reas on they could not be the same is that I needed a constant for array initialization
 			Assert.AreEqual(tmpDatabaseConstants.ColumnCount, tmpDatabaseConstants.Columns.Length);
 
+		}
+		[Test]
+		[ExpectedException]
+		public void  SaveTo_BlankGUID ()
+		{
+			FakeLayoutDatabase layout = new FakeLayoutDatabase("");
+			layout.SaveTo ();
 		}
 	}
 }
