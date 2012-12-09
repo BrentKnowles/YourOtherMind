@@ -84,6 +84,10 @@ namespace Layout
 			LoadLayout.Click +=	LoadLayoutClick;
 			bar.Items.Add (LoadLayout);
 
+			ToolStripButton AddText = new ToolStripButton("Add TExtbox");
+			AddText.Click +=	TextBoxClick;
+			bar.Items.Add (AddText);
+
 
 			list = new ListBox();
 			list.SelectedIndexChanged += HandleSelectedIndexChanged;
@@ -114,11 +118,21 @@ namespace Layout
 		{
 
 			((NoteDataXML)grid.SelectedObject).UpdateLocation();
+			((NoteDataXML)grid.SelectedObject).Update(this);
 			// when list is updated we are no longer the selected object
 			UpdateListOfNotes();
 
 		}
+		void TextBoxClick(object sender, EventArgs e)
+		{
+			NoteDataXML_RichText xml = new NoteDataXML_RichText ();
 
+			Notes.Add (xml);
+			
+			xml.CreateParent (this);
+			
+			UpdateListOfNotes ();
+		}
 		void HandleSelectedIndexChanged (object sender, EventArgs e)
 		{
 			grid.SelectedObject = (NoteDataXML)list.SelectedItem;
@@ -179,15 +193,14 @@ namespace Layout
 			Notes = new LayoutDatabase(GUID);
 			Notes.LoadFrom (this);
 			UpdateListOfNotes();
-	
+			NewMessage.Show (String.Format ("Name={0}, Status={1}",Notes.Name, Notes.Status));
 
 		}
 
 		public void AddNote ()
 		{
 			NoteDataXML xml = new NoteDataXML ();
-			xml.Caption = "Blank Note";
-			xml.GuidForNote = System.Guid.NewGuid().ToString();
+
 			Notes.Add (xml);
 			
 			xml.CreateParent (this);

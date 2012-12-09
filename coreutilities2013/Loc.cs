@@ -23,14 +23,22 @@ namespace CoreUtilities
 		/// <summary>
 		/// 
 		/// </summary>
-		public void ChangeLocale (string Locale)
+		public bool ChangeLocale (string Locale)
 		{
-			Console.WriteLine ("needs finished imp");
-			string locale = Locale; //"en-US";//"fr-FR";
-			System.Threading.Thread.CurrentThread.CurrentUICulture = new CultureInfo (locale);
+			bool result = false;
 
-			// I think we have to reinitialize this now
-			Cat = new GettextResourceManager (); 
+			if (Locale != "") {
+				Console.WriteLine ("needs finished imp");
+				string locale = Locale; //"en-US";//"fr-FR";
+				System.Threading.Thread.CurrentThread.CurrentUICulture = new CultureInfo (locale);
+
+				// I think we have to reinitialize this now
+				Cat = new GettextResourceManager (); 
+			} else {
+				lg.Instance.Line("Loc.ChangeLocale", ProblemType.ERROR, String.Format ("{0} is an invalid Locale", Locale));
+
+			}
+			return result;
 		}
 
 

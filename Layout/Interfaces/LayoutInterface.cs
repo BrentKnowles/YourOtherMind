@@ -8,6 +8,15 @@ namespace Layout
 	/// </summary>
 	public interface LayoutInterface
 	{
+
+
+
+		#region variables
+		string Status {get;set;}
+		string Name { get; set; }
+		#endregion
+
+
 		// The list of Notes
 		//List<NoteDataInterface> DataForThisLayout {get; set;}
 		void Add(NoteDataInterface note);
@@ -22,9 +31,11 @@ namespace Layout
 		/// <param name='GUID'>
 		/// The unique identifier representing this Layout
 		/// </param>
-		void LoadFrom(LayoutPanel parent);
+		bool LoadFrom(LayoutPanel parent);
 
 		void SaveTo ();
+
+		string Backup();
 
 		/// <summary>
 		/// Gets the notes.

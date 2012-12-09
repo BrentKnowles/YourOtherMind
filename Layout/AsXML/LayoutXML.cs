@@ -6,7 +6,7 @@ namespace Layout
 	/// <summary>
 	/// Effectively the FILE in memory for a particular Layout
 	/// </summary>
-	public class LayoutXML : LayoutInterface
+	public class LayoutXML /*: LayoutInterface*/
 	{
 		#region variables
 		//variables
@@ -24,6 +24,10 @@ namespace Layout
 
 		}
 
+		public string Backup()
+		{
+			return "???";
+		}
 
 		/// <summary>
 		/// Gets the notes. Gets the notes. (Read-only only so that ONLY this class is able to modify the contents of the list)

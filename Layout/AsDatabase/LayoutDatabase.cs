@@ -18,6 +18,8 @@ namespace Layout
 			get { return "yomdata.s3db";}
 		}
 
+		// TODO: this variable is stored on LOAD and a simple message is written out on Save if it is less than it started out being
+		protected int debug_ObjectCount = 0;
 
 		//This is the list of notes
 		private List<NoteDataInterface> dataForThisLayout= null;
@@ -35,7 +37,7 @@ namespace Layout
 		/// The name.
 		/// </value>
 		public string Name {
-			get { return data [0].ToString ();}
+			get { return data [1].ToString ();}
 			set { data [1] = value;}
 		}
 
@@ -57,8 +59,19 @@ namespace Layout
 			CreateDatabase();
 			data = new object[data_size];
 
-		}
+			// defaults
+			Status = " default status";
+			Name = "default name";
 
+		}
+		/// <summary>
+		/// Backup the entire layout database, NOT just this layout (though I could tweak it to do so)
+		/// </summary>
+		public string Backup ()
+		{
+			SqlLiteDatabase db = new SqlLiteDatabase (YOM_DATABASE);
+			return db.BackupDatabase();
+		}
 		/// <summary>
 		/// Wrapper function for creating the database
 		/// This is only place in this code where we reference the TYPE of database being used
@@ -80,7 +93,11 @@ namespace Layout
 
 		/// <summary>
 		/// Gets the notes. Gets the notes. (Read-only only so that ONLY this class is able to modify the contents of the list)
-		/// </summary>
+		/// 
+		/// USAGE: foreach (NoteDataXML notes in layout.GetNotes())
+		///  or
+		/// As a Datasource
+	    /// </summary>
 		/// <returns>
 		/// The notes. READ ONLY
 		/// </returns>
@@ -100,32 +117,58 @@ namespace Layout
 		{
 			return LayoutGUID;
 		}
-		
-		public void LoadFrom (LayoutPanel Layout)
+
+		public Type[] ListOfTypesToStoreInXML ()
+		{
+			return new Type[2] {typeof(NoteDataXML), typeof(NoteDataXML_RichText)};
+		}
+
+		/// <summary>
+		/// Loads from the appropriate Data Location. If pass Layout as null this is a REMOTE NOTE load, meaning we are grabbing this information without
+		///    the layout being loaded into a LayoutPanel.
+		/// </summary>
+		/// <param name='GUID'>
+		/// The unique identifier representing this Layout
+		/// </param>
+		/// <returns>
+		/// <c>true</c>, if from was loaded, <c>false</c> otherwise.
+		/// </returns>
+		/// <param name='Layout'>
+		/// 
+		/// </param>
+		public bool LoadFrom (LayoutPanel LayoutPanelToLoadNoteOnto)
 		{
 			BaseDatabase MyDatabase = CreateDatabase ();
 			
 			if (MyDatabase == null) {
 				throw new Exception ("Unable to create database in LoadFrom");
 			}
-
+			bool Success = false;
 
 
 			// we only care about FIRST ROW. THere should never be two matches on a GUID
-			object[] result = MyDatabase.GetValues (tmpDatabaseConstants.table_name, new string[2] {
-				tmpDatabaseConstants.STATUS,
-				tmpDatabaseConstants.XML
-			}
-			, tmpDatabaseConstants.GUID, LayoutGUID) [0];
+
+			List<object[]> myList =  MyDatabase.GetValues (tmpDatabaseConstants.table_name, tmpDatabaseConstants.Columns
+			                      , tmpDatabaseConstants.GUID, LayoutGUID);
+			if (myList != null && myList.Count > 0)
+			{
+
+			object[] result = myList[0];
 
 
 			// deserialize from database and load into memor
-			if (result != null) {
+			if (result != null && result.Length > 0) {
 
-				Status = result [0].ToString ();
+
+				// Fill in LAYOUT specific details
+				Status = result [3].ToString ();
+				Name = result [4].ToString ();
+				// Fill in XML details
+
 				//dataForThisLayout
-				System.IO.StringReader reader = new System.IO.StringReader (result [1].ToString ());
-				System.Xml.Serialization.XmlSerializer test = new System.Xml.Serialization.XmlSerializer(typeof(System.Collections.Generic.List<NoteDataXML>));
+				System.IO.StringReader reader = new System.IO.StringReader (result [2].ToString ());
+				System.Xml.Serialization.XmlSerializer test = new System.Xml.Serialization.XmlSerializer(typeof(System.Collections.Generic.List<NoteDataXML>),
+					                                                                                         ListOfTypesToStoreInXML());
 
 				// have to load it in an as array of target type and then convert
 				List<NoteDataXML> ListAsDataObjectsOfType = (System.Collections.Generic.List<NoteDataXML>)test.Deserialize (reader);
@@ -134,20 +177,18 @@ namespace Layout
 				for (int i = 0; i < ListAsDataObjectsOfType.Count; i++)
 				{
 				dataForThisLayout.Add (ListAsDataObjectsOfType[i]);
-				ListAsDataObjectsOfType[i].CreateParent(Layout);
+				if (null != LayoutPanelToLoadNoteOnto)
+				{
+					ListAsDataObjectsOfType[i].CreateParent(LayoutPanelToLoadNoteOnto);
 				}
-
-				//ListAsDataObjectsOfType.CopyTo(dataForThisLayout);
-
-				// = new NoteDataXML[dataForThisLayout.Count];
-				//dataForThisLayout.CopyTo (ListAsDataObjectsOfType);
-
-			} else {
-				throw new Exception("LoadFrom failed to load the object from the database");
-			}
+				}
+				Success = true;
+					debug_ObjectCount = ListAsDataObjectsOfType.Count;
+				}
+			} 
 
 
-
+			return Success;
 
 		}
 		/// <summary>
@@ -179,14 +220,30 @@ namespace Layout
 				NoteDataXML[] ListAsDataObjectsOfType = new NoteDataXML[dataForThisLayout.Count];
 				dataForThisLayout.CopyTo (ListAsDataObjectsOfType);
 				
-			
+				// doing some data tracking to try to detect save failures later
+				if (ListAsDataObjectsOfType.Length < debug_ObjectCount)
+				{
+					lg.Instance.Line("LayoutDatabase.SaveTo", ProblemType.WARNING, String.Format ("Less objects being saved than loaded. Loaded {0}. Saved {0}.",
+					                                                                              ListAsDataObjectsOfType.Length , debug_ObjectCount));
+				}
+
+				foreach (NoteDataInterface note in ListAsDataObjectsOfType)
+				{
+					// saves the actual UI elements
+					note.Save();
+
+				}
+				debug_ObjectCount = ListAsDataObjectsOfType.Length;
 			
 			  System.Xml.Serialization.XmlSerializer x3 = 
 					new System.Xml.Serialization.XmlSerializer (typeof(NoteDataXML[]), 
-					                                            new Type[1] {typeof(NoteDataXML)});
-				
-				
+					                                            ListOfTypesToStoreInXML());
 
+				/*This worked but would need to iterate and get a list of all potential types present, not just the first, else it will fail withmixed types
+				System.Xml.Serialization.XmlSerializer x4 = 
+					new System.Xml.Serialization.XmlSerializer (ListAsDataObjectsOfType.GetType(), 
+					                                            new Type[1] {ListAsDataObjectsOfType[0].GetType()});
+*/
 				System.IO.StringWriter sw = new System.IO.StringWriter();
 				//sw.Encoding = "";
 				x3.Serialize (sw, ListAsDataObjectsOfType);
@@ -204,7 +261,7 @@ namespace Layout
 				MyDatabase.InsertData(tmpDatabaseConstants.table_name, 
 				                      tmpDatabaseConstants.Columns,
 				                      new object[tmpDatabaseConstants.ColumnCount]
-				                      {"NULL",LayoutGUID, XMLAsString, "this status update", "New Note"});
+				                      {"NULL",LayoutGUID, XMLAsString, Status,Name});
 
 				}
 				else
@@ -219,7 +276,7 @@ namespace Layout
 				                                    {
 						LayoutGUID as string, 
 						XMLAsString as string, 
-						"this status NOW UPDATED!" as string
+						Status as string
 					,Name},
 				tmpDatabaseConstants.GUID, LayoutGUID);
 				}
@@ -228,7 +285,8 @@ namespace Layout
 
 			} catch (Exception ex) {
 
-				lg.Instance.Line("LayoutDatabase.SaveTo", ProblemType.EXCEPTION, "We are UPDATING existing Row." + ex.ToString());
+				throw new Exception(String.Format ("Must call CreateParent before calling Save or Update!! Exception: {0}", ex.ToString()));
+				//lg.Instance.Line("LayoutDatabase.SaveTo", ProblemType.EXCEPTION, ex.ToString());
 			}
 		
 		}
@@ -245,9 +303,11 @@ namespace Layout
 		/// <param name='note'>
 		/// Note.
 		/// </param>
-		public void Add(NoteDataInterface note)
+		public void Add (NoteDataInterface note)
 		{
-			dataForThisLayout.Add((NoteDataXML)note);
+			if (null != note) {
+				dataForThisLayout.Add ((NoteDataXML)note);
+			}
 		}
 		//would this list actually be a NoteDataList BARTER type of class that stores the List
 		//this class is actually what ANOTHER page might call (for Random Tables)

@@ -4,15 +4,15 @@ namespace CoreUtilities
 {
 
 
-	public enum Loud{CRITICAL, TRIVIAL, DEFAULT,OFF};
-	public enum ProblemType {MESSAGE, ERROR, TEMPORARY,EXCEPTION};
+	public enum Loud {ACRITICAL=0, BDEFAULT=1,CTRIVIAL=2, DOFF=3};
+	public enum ProblemType {MESSAGE, ERROR, TEMPORARY,EXCEPTION, WARNING};
 	public interface iLogging
 	{
 
 
 		Loud Loudness {get; set;}
-		void Line(string Routine, ProblemType Problem, string Details);
-		void Line(string Routine, ProblemType Problem, string Details, Loud Loudness);
+		bool Line(string Routine, ProblemType Problem, string Details);
+		bool Line(string Routine, ProblemType Problem, string Details, Loud Loudness);
 	}
 }
 

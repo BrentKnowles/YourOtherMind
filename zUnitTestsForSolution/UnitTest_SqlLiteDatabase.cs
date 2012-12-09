@@ -15,16 +15,7 @@ namespace Testing
 		#region SetupFunctions
 
 		const string test_database_name ="UNITTESTING.s3db";
-		/// <summary>
-		/// just a wrapper for console out
-		/// </summary>
-		/// <param name='s'>
-		/// S.
-		/// </param>
-		private void output(object s)
-		{
-			Console.WriteLine(s);
-		}
+	
 
 		private FAKE_SqlLiteDatabase CreateTestDatabase (string primarykey)
 		{
@@ -39,13 +30,13 @@ namespace Testing
 				//GC.Collect();
 				//System.IO.File.Delete (test_database_name);
 			} catch (Exception ex) {
-				output ("Unable to delete file " + ex.ToString ());
+				_w.output ("Unable to delete file " + ex.ToString ());
 			}
 			try {
 
 				db.DropTableIfExists(tmpDatabaseConstants.table_name);
 			} catch (Exception ex) {
-				output (String.Format ("Unable to drop table {0}", ex.ToString()));
+				_w.output (String.Format ("Unable to drop table {0}", ex.ToString()));
 			}
 
 			db.CreateTableIfDoesNotExist (tmpDatabaseConstants.table_name, new string[4] 
@@ -128,13 +119,13 @@ namespace Testing
 				tmpDatabaseConstants.GUID
 			}
 			, new object[3] {"boo status", "boo xml", "GUID_A"});
-			output(db.BackupDatabase());
+			_w.output(db.BackupDatabase());
 			// add ColumnA to it
 			bool result = db.TestAddMissingColumn(tmpDatabaseConstants.table_name, new string[1] {"boomer"},
 			new string[1] {"TEXT"});
 			// check return value is true
 			Assert.True(result);
-			output(db.BackupDatabase());
+			_w.output(db.BackupDatabase());
 			// add ColumnA to it again. This time return value should be false (because we did not need to add the column)
 			result = db.TestAddMissingColumn(tmpDatabaseConstants.table_name, new string[1] {"boomer"},
 			new string[1] {"TEXT"});
@@ -166,11 +157,11 @@ namespace Testing
 
 			FAKE_SqlLiteDatabase db = new FAKE_SqlLiteDatabase (test_database_name);
 			db.DropTableIfExists(tmpDatabaseConstants.table_name);
-			output ("here1");
+			_w.output ("here1");
 			Assert.False (db.TableExists (tmpDatabaseConstants.table_name));
-			output ("here");
+			_w.output ("here");
 			CreateTestDatabase (String.Format ("{0}", tmpDatabaseConstants.ID));
-			output ("here");
+			_w.output ("here");
 			try {
 				db.InsertData (tmpDatabaseConstants.table_name, new string[3] {
 					tmpDatabaseConstants.STATUS,
@@ -186,7 +177,7 @@ namespace Testing
 		public void DropTableTest ()
 		{
 			FAKE_SqlLiteDatabase db = CreateTestDatabase (String.Format ("{0}", tmpDatabaseConstants.ID));
-			output ("here");
+			_w.output ("here");
 			try {
 				db.InsertData (tmpDatabaseConstants.table_name, new string[3] {
 					tmpDatabaseConstants.STATUS,
@@ -211,12 +202,12 @@ namespace Testing
 		[Test()]
 		public void GuidDoesExist ()
 		{
-			output ("GUIDDOESEXIST");
+			_w.output ("GUIDDOESEXIST");
 			bool result = false;
-			output ("here1");
+			_w.output ("here1");
 				// Create a test database
 				FAKE_SqlLiteDatabase db = CreateTestDatabase (String.Format ("{0}", tmpDatabaseConstants.ID));
-			output ("here");
+			_w.output ("here");
 			try {
 				db.InsertData (tmpDatabaseConstants.table_name, new string[3] {
 				tmpDatabaseConstants.STATUS,
@@ -228,11 +219,11 @@ namespace Testing
 				 result = db.TestAddMissingColumn (tmpDatabaseConstants.table_name, new string[1] {"boomer"},
 			new string[1] {"TEXT"});
 			} catch (Exception ex) {
-				output(ex.ToString ());
+				_w.output(ex.ToString ());
 			}
-			output ("here");
+			_w.output ("here");
 			Assert.True (db.Exists(tmpDatabaseConstants.table_name, tmpDatabaseConstants.GUID, "GUID_A"));
-			output (result);
+			_w.output (result);
 		}
 		[Test()]
 		public void GuidDoesNotExist()
@@ -256,11 +247,11 @@ namespace Testing
 		public void GetMultipleRowsWhenMultipleRowsMatch ()
 		{
 		
-			output ("**Get data Test**");
+			_w.output ("**Get data Test**");
 
 				SqlLiteDatabase db =CreateTestDatabase(String.Format ("{0}", tmpDatabaseConstants.GUID));
 			
-			output("database made");
+			_w.output("database made");
 
 			db.InsertData (tmpDatabaseConstants.table_name, new string[3] {
 				tmpDatabaseConstants.STATUS,
@@ -269,7 +260,7 @@ namespace Testing
 			}
 			, new object[3] {"boo status", "boo xml", "GUID_A"});
 
-			output("first roww");
+			_w.output("first roww");
 			db.InsertData (tmpDatabaseConstants.table_name, new string[3] {
 				tmpDatabaseConstants.STATUS,
 				tmpDatabaseConstants.XML,
@@ -318,7 +309,7 @@ namespace Testing
 			
 			SqlLiteDatabase db =CreateTestDatabase(String.Format ("{0}", tmpDatabaseConstants.GUID));
 			
-			output("database made");
+			_w.output("database made");
 			
 			db.InsertData (tmpDatabaseConstants.table_name, new string[3] {	tmpDatabaseConstants.STATUS,tmpDatabaseConstants.XML,tmpDatabaseConstants.GUID
 			}, new object[3] {"boo status", "boo xml", "GUID_A"});
@@ -331,7 +322,7 @@ namespace Testing
 		{
 			SqlLiteDatabase db =CreateTestDatabase(String.Format ("{0}", tmpDatabaseConstants.GUID));
 			
-			output("database made");
+			_w.output("database made");
 			
 			db.InsertData (tmpDatabaseConstants.table_name, new string[3] {	tmpDatabaseConstants.STATUS,tmpDatabaseConstants.XML,tmpDatabaseConstants.GUID
 			}, new object[3] {"boo status", "boo xml", "GUID_A"});
@@ -344,7 +335,7 @@ namespace Testing
 		{
 			SqlLiteDatabase db =CreateTestDatabase(String.Format ("{0}", tmpDatabaseConstants.GUID));
 			
-			output("database made");
+			_w.output("database made");
 			
 			db.InsertData (tmpDatabaseConstants.table_name, new string[3] {	tmpDatabaseConstants.STATUS,tmpDatabaseConstants.XML,tmpDatabaseConstants.GUID
 			}, new object[3] {"boo status", "boo xml", "GUID_A"});
@@ -358,7 +349,7 @@ namespace Testing
 		{
 			SqlLiteDatabase db =CreateTestDatabase(String.Format ("{0}", tmpDatabaseConstants.GUID));
 			
-			output("database made");
+			_w.output("database made");
 			
 			db.InsertData (tmpDatabaseConstants.table_name, new string[3] {	tmpDatabaseConstants.STATUS,tmpDatabaseConstants.XML,tmpDatabaseConstants.GUID
 			}, new object[3] {"boo status", "boo xml", "GUID_A"});
@@ -373,7 +364,7 @@ namespace Testing
 			
 			SqlLiteDatabase db =CreateTestDatabase(String.Format ("{0}", tmpDatabaseConstants.GUID));
 			
-			output("database made");
+			_w.output("database made");
 			db.InsertData (tmpDatabaseConstants.table_name, new string[3] {	tmpDatabaseConstants.STATUS,tmpDatabaseConstants.XML,tmpDatabaseConstants.GUID
 			}, new object[3] {"boo status", "boo xml", "GUID_A"});
 			db.GetValues(tmpDatabaseConstants.table_name, new string[1]{tmpDatabaseConstants.STATUS}, tmpDatabaseConstants.GUID, "GUID_A");
@@ -387,7 +378,7 @@ namespace Testing
 		
 			SqlLiteDatabase db =CreateTestDatabase(String.Format ("{0}", tmpDatabaseConstants.GUID));
 			
-			output("database made");
+			_w.output("database made");
 			
 			db.InsertData (tmpDatabaseConstants.table_name, new string[3] {	tmpDatabaseConstants.STATUS,tmpDatabaseConstants.XML,tmpDatabaseConstants.GUID
 			}, new object[3] {"boo status", "boo xml", "GUID_A"});
@@ -404,7 +395,7 @@ namespace Testing
 			
 			SqlLiteDatabase db =CreateTestDatabase(String.Format ("{0}", tmpDatabaseConstants.GUID));
 			
-			output("database made");
+			_w.output("database made");
 			
 			db.InsertData (tmpDatabaseConstants.table_name, new string[3] {	tmpDatabaseConstants.STATUS,tmpDatabaseConstants.XML,tmpDatabaseConstants.GUID
 			}, new object[3] {"boo status", "boo xml", "GUID_A"});
@@ -440,7 +431,7 @@ namespace Testing
 		{
 			SqlLiteDatabase db =CreateTestDatabase(String.Format ("{0}", tmpDatabaseConstants.GUID));
 			
-			output("database made");
+			_w.output("database made");
 			
 			db.InsertData (tmpDatabaseConstants.table_name, new string[3] {	tmpDatabaseConstants.STATUS,tmpDatabaseConstants.XML,tmpDatabaseConstants.GUID
 			}, new object[3] {"boo status", "boo xml", "GUID_A"});
@@ -456,12 +447,12 @@ namespace Testing
 		{
 			SqlLiteDatabase db =CreateTestDatabase(String.Format ("{0}", tmpDatabaseConstants.GUID));
 			
-			output("database made");
+			_w.output("database made");
 			
 			db.InsertData (tmpDatabaseConstants.table_name, new string[3] {	tmpDatabaseConstants.STATUS,tmpDatabaseConstants.XML,tmpDatabaseConstants.GUID
 			}, new object[3] {"boo status", "boo xml", "GUID_A"});
 			System.Collections.Generic.List<object[]> list = db.GetValues(tmpDatabaseConstants.table_name, new string[1]{tmpDatabaseConstants.STATUS}, tmpDatabaseConstants.GUID, "GUID_A");
-			output (list[0][0].ToString());
+			_w.output (list[0][0].ToString());
 			if (list == null) Assert.True (false);
 			Assert.AreEqual(list[0][0].ToString(), "boo status");
 			db.Dispose();
@@ -471,7 +462,7 @@ namespace Testing
 		{
 			SqlLiteDatabase db =CreateTestDatabase(String.Format ("{0}", tmpDatabaseConstants.GUID));
 			
-			output("database made");
+			_w.output("database made");
 			
 			db.InsertData (tmpDatabaseConstants.table_name, new string[3] {	tmpDatabaseConstants.STATUS,tmpDatabaseConstants.XML,tmpDatabaseConstants.GUID
 			}, new object[3] {"boo status", "boo xml", "GUID_A"});
@@ -483,7 +474,7 @@ namespace Testing
 			}, new object[3] {"boo status2", "boo xml", "GUID_D"});
 
 			System.Collections.Generic.List<object[]> list = db.GetValues(tmpDatabaseConstants.table_name, new string[1]{tmpDatabaseConstants.GUID}, tmpDatabaseConstants.STATUS, "boo status");
-			output (list.Count);
+			_w.output (list.Count);
 			Assert.AreEqual (3, list.Count);
 
 			db.Dispose();
@@ -526,7 +517,7 @@ namespace Testing
 				
 				db.DropTableIfExists(tmpDatabaseConstants.table_name+"_b");
 			} catch (Exception ex) {
-				output (String.Format ("Unable to drop table {0}", ex.ToString()));
+				_w.output (String.Format ("Unable to drop table {0}", ex.ToString()));
 			}
 			
 			db.CreateTableIfDoesNotExist (tmpDatabaseConstants.table_name+"_b", new string[4] 
@@ -555,7 +546,7 @@ namespace Testing
 				
 				db.DropTableIfExists(tmpDatabaseConstants.table_name+"_c");
 			} catch (Exception ex) {
-				output (String.Format ("Unable to drop table {0}", ex.ToString()));
+				_w.output (String.Format ("Unable to drop table {0}", ex.ToString()));
 			}
 			
 			db.CreateTableIfDoesNotExist (tmpDatabaseConstants.table_name+"_c", new string[4] 
@@ -576,8 +567,8 @@ namespace Testing
 			//not sure how to set this test up. Force File Write? Then test if file exists?
 			// or shoudl this return a Stream?
 			string result = db.BackupDatabase();
-			output(result.Length);
-			output(result);
+			_w.output(result.Length);
+			_w.output(result);
 			Assert.AreEqual(486, result.Length);
 			//Assert.False (true);
 		}
@@ -629,7 +620,7 @@ namespace Testing
 				
 				db.DropTableIfExists(tmpDatabaseConstants.table_name);
 			} catch (Exception ex) {
-				output (String.Format ("Unable to drop table {0}", ex.ToString()));
+				_w.output (String.Format ("Unable to drop table {0}", ex.ToString()));
 			}
 			
 			db.CreateTableIfDoesNotExist (tmpDatabaseConstants.table_name, new string[4] 

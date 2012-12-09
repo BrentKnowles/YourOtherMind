@@ -12,7 +12,7 @@ namespace CoreUtilities
 		protected static volatile lg instance;
 		protected static object syncRoot = new Object();
 
-		private Loud _Loudness;
+		private Loud _Loudness = Loud.BDEFAULT;// We show default and louder but not Trivial
 		public Loud Loudness { get { return _Loudness; } set { _Loudness = value; }}
 #endregion;
 
@@ -40,29 +40,28 @@ namespace CoreUtilities
 		}
 
 
-		public void Line(string Routine, ProblemType Problem, string Details)
+		public bool Line(string Routine, ProblemType Problem, string Details)
 		{
 		
-			if (Loudness < this.Loudness)
-			{
-				// if this message is not loud enough we don't post it
-				return;
-			}
-			Line(Routine, Problem, Details, Loud.CRITICAL);
+		
+			return Line(Routine, Problem, Details, Loud.ACRITICAL);
 		}
 
-		public void Line (string Routine, ProblemType Problem, string Details, Loud Loudness)
+		public bool Line (string Routine, ProblemType Problem, string Details, Loud myLoudness)
 		{
+		
 
-			if (Loudness < this.Loudness)
+			if ((this.Loudness == Loud.DOFF) || (this.Loudness < myLoudness))
 			{
+				//Console.WriteLine ("exiting log");
 				// if this message is not loud enough we don't post it
-				return;
+				return false;
 			}
-			string log = (String.Format("{0}, Problem: {1}, {2}", Routine, Problem, Details));
+			string log = (String.Format("{0}, TYPE: {1}, {2}", Routine, Problem.ToString (), Details));
 
 			// *TODO: Change this text writing later
 			Console.WriteLine(log);
+			return true;
 		}
 
 	}

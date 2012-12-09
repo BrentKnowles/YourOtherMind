@@ -15,7 +15,7 @@ namespace Layout
 	{
 		#region variables
 		NoteDataInterface Child;
-		Label Caption;
+
 		#endregion variables
 
 		public NotePanel (NoteDataInterface child)
@@ -24,12 +24,6 @@ namespace Layout
 			Child = child;
 
 
-
-			Caption = new Label();
-			Caption.Parent = this;
-			Caption.Dock = DockStyle.Top;
-
-			Caption.Text = child.Caption;
 
 		}
 	}

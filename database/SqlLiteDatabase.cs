@@ -186,7 +186,7 @@ namespace database
 			}
 			if (ReturnList == null || 0 == ReturnList.Count)
 			{
-				Console.WriteLine("GetValues query returned an empty list");
+			 lg.Instance.Line("SqlLiteDatabase.GetValues", ProblemType.MESSAGE,"GetValues query returned an empty list");
 			}
 			return ReturnList;
 		}

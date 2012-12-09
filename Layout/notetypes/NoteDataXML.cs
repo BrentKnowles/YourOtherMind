@@ -2,6 +2,9 @@ using System;
 using System.Xml;
 using System.Xml.Serialization;
 using System.Drawing;
+using System.Windows.Forms;
+using CoreUtilities;
+
 namespace Layout
 {
 	// TODO:
@@ -24,6 +27,8 @@ namespace Layout
 		#region variables_frominterface
 		public NoteDataXML () 
 		{
+			Caption = Loc.Instance.Cat.GetString("Blank Note");
+			GuidForNote = System.Guid.NewGuid().ToString();
 		}
 		private string _GuidForNote;
 		/// <summary>
@@ -37,7 +42,7 @@ namespace Layout
 			get { return _GuidForNote; } set { _GuidForNote = value; } 
 		}
 	
-		private string caption = BLANK;
+		private string caption = CoreUtilities.Constants.BLANK;
 		public string Caption {
 			get {return caption;}
 			set{ caption = value;}
@@ -58,7 +63,11 @@ namespace Layout
 			// TODO Can never have Interface actions here. They must occur elsewhere.
 			}
 		}
-
+		private string rtf  = CoreUtilities.Constants.BLANK ;
+		public string RTF {
+			get { return rtf;}
+			set { rtf = value;}
+		}
 
 		private NotePanel parent;
 		[XmlIgnore]
@@ -79,6 +88,25 @@ namespace Layout
 		}
 		#endregion;
 
+
+		public virtual void Save()
+		{
+			// save UI elements to XML fiellds
+		}
+
+		/// <summary>
+		/// Recreates the interface, usually called when something like Caption is changed. Use UpdateLocation for position only changes
+		/// </summary>
+		/// <param name='Layout'>
+		/// Layout.
+		/// </param>
+		public void Update (LayoutPanel Layout)
+		{
+			Parent.Dispose();
+			//Parent = null;
+			CreateParent(Layout);
+		}
+
 		public void UpdateLocation ()
 		{
 			if (Parent == null) {
@@ -87,7 +115,7 @@ namespace Layout
 			Parent.Location = Location;
 		}
 
-		public void CreateParent(LayoutPanel Layout)
+		public virtual void CreateParent(LayoutPanel Layout)
 		{
 			Parent = new NotePanel(this);
 
@@ -99,7 +127,19 @@ namespace Layout
 			Parent.Height = 100;
 			Parent.Width = 100;
 
+
 			Layout.Controls.Add ( Parent);
+
+			Label CaptionLabel;
+			
+			CaptionLabel = new Label();
+			CaptionLabel.Parent = Parent;
+			CaptionLabel.Dock = DockStyle.Top;
+			
+			CaptionLabel.Text = this.Caption;
+
+
+
 		}
 
 

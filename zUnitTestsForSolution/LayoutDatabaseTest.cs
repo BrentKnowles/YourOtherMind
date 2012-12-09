@@ -11,6 +11,18 @@ namespace Testing
 		public LayoutDatabaseTest ()
 		{
 		}
+
+
+		#region general
+		private void _setupforlayoutests()
+		{
+			FakeLayoutDatabase layout = new FakeLayoutDatabase("testguid");
+			FAKE_SqlLiteDatabase db = new FAKE_SqlLiteDatabase(layout.GetDatabaseName ());
+			db.DropTableIfExists(tmpDatabaseConstants.table_name);
+			// drop the table
+		}
+		#endregion
+
 		[Test]
 		public void EnsureThatDatabaseColumnsEqualsDefinedCount ()
 		{
@@ -21,6 +33,24 @@ namespace Testing
 			Assert.AreEqual(tmpDatabaseConstants.ColumnCount, tmpDatabaseConstants.Columns.Length);
 
 		}
+
+		[Test]
+		public void TryToEditReadOnly ()
+		{
+			FakeLayoutDatabase layout = new FakeLayoutDatabase("testguid");
+			NoteDataXML note = new NoteDataXML();
+			note.Caption = "boo";
+			layout.Add(note);
+			for (int i = 0; i < layout.GetNotes().Count ; i++)
+			{
+				_w.output(layout.GetNotes()[i].Caption);
+				layout.GetNotes()[i].Caption = "snake";
+				_w.output(layout.GetNotes()[i].Caption);
+				_w.output("NOTE: I know this test will fail because I can make the list readonly but not the objects on the list. (and honestly, maybe this is how it needs to work!)");
+				Assert.AreEqual(layout.GetNotes()[i].Caption, "boo");
+			}
+			//System.Collections.Generic.List<NoteDataXML> list = layout.GetNotes();
+		}
 		[Test]
 		[ExpectedException]
 		public void  SaveTo_BlankGUID ()
@@ -28,6 +58,226 @@ namespace Testing
 			FakeLayoutDatabase layout = new FakeLayoutDatabase("");
 			layout.SaveTo ();
 		}
+
+		[Test]
+		public void TryToAddANullNote()
+		{
+			// no failure should happen. Simply should not be allowed to to do this.
+			FakeLayoutDatabase layout = new FakeLayoutDatabase("testguid");
+			NoteDataXML note = new NoteDataXML();
+			note.Caption = "boo";
+			layout.Add(note);
+			// we should have one note in the list. Now add null
+			layout.Add (null);
+			Assert.AreEqual(1, layout.GetNotes().Count);
+		}
+
+		[Test]
+		public void SaveAndLoadTest_Works ()
+		{
+			_setupforlayoutests();
+			int count = 25;
+			FakeLayoutDatabase layout = new FakeLayoutDatabase ("testguid");
+			LayoutPanel layoutPanel = new LayoutPanel();
+			layout.LoadFrom(layoutPanel);
+			NoteDataXML note = new NoteDataXML ();
+			for (int i = 0; i < count; i++) {
+				note.Caption = "boo" + i.ToString();
+				layout.Add (note);
+			}
+
+			layout.SaveTo();
+			_w.output("save worked");
+			layout = new FakeLayoutDatabase ("testguid");
+
+			layout.LoadFrom(layoutPanel);
+
+		//	_w.output (layout.Backup ());
+			_w.output(layout.GetNotes().Count.ToString());
+			Assert.AreEqual(count, layout.GetNotes().Count);
+
+
+		}
+		[Test]
+		public void LoadSomethingNotThere()
+		{
+			_setupforlayoutests();
+
+			FakeLayoutDatabase layout = new FakeLayoutDatabase ("testguid");
+			LayoutPanel layoutPanel = new LayoutPanel();
+			bool result = layout.LoadFrom(layoutPanel);
+			_w.output("made it");
+			Assert.AreEqual(false, result);
+		}
+
+
+
+
+		/// <summary>
+		/// Saves the and load stress load.
+		/// 
+		/// Does several larger saves and loads lookign to see if any objects get lost
+		/// </summary>
+		[Test]
+		public void SaveAndLoadStressLoad()
+		{
+			_setupforlayoutests();
+			int count = 200;
+			FakeLayoutDatabase layout = new FakeLayoutDatabase ("testguid");
+			LayoutPanel layoutPanel = new LayoutPanel();
+
+			NoteDataXML note = new NoteDataXML ();
+			for (int i = 0; i < count; i++) {
+				note.Caption = "boo" + i.ToString();
+				layout.Add (note);
+			}
+			_w.output(String.Format ("{0} Notes in Layout before save", layout.GetNotes().Count.ToString()));
+			layout.SaveTo();
+
+			_w.output(String.Format ("{0} Objects Saved", layout.ObjectsSaved().ToString()));
+			layout = new FakeLayoutDatabase ("testguid");
+			
+			layout.LoadFrom(layoutPanel);
+
+			_w.output(String.Format ("{0} Objects Loaded", layout.GetNotes().Count));
+			//NOT DONE YET
+			Assert.AreEqual (200, layout.GetNotes().Count); 
+		}
+
+
+		[Test]
+		[ExpectedException]
+		public void TryToSaveWithoutCreatingAParent()
+		{
+			Type TypeToTest = typeof(NoteDataXML_RichText);
+			// 1. write data to notes
+			_setupforlayoutests ();
+			int count = 25;
+			FakeLayoutDatabase layout = new FakeLayoutDatabase ("testguid");
+			LayoutPanel layoutPanel = new LayoutPanel ();
+			
+			NoteDataInterface note = null; 
+			for (int i = 0; i < count; i++) {
+				note = (NoteDataInterface)Activator.CreateInstance(TypeToTest);//new NoteDataXML ();
+			//	note.CreateParent(layoutPanel);
+				note.Caption = "boo" + i.ToString ();
+				layout.Add (note);
+			}
+			
+			
+			note = (NoteDataInterface)Activator.CreateInstance(TypeToTest);
+			note.Caption = "snake";
+			string guid = note.GuidForNote;
+			//note.CreateParent(layoutPanel);
+			_w.output("new guid" + guid);
+			layout.Add (note);
+			layout.SaveTo ();
+		}
+
+		/// <summary>
+		/// Creates the lots of notes to test different types and return proper caption.
+		/// 
+		/// Testing NOTE: You must CreateParent when building items. Else the save cannot work.
+		/// 
+		/// </summary>
+		/// <returns>
+		/// The lots of notes to test different types and return proper caption.
+		/// </returns>
+		/// <param name='TestCaption'>
+		/// Test caption.
+		/// </param>
+		/// <param name='TypeToTest'>
+		/// Type to test.
+		/// </param>
+		private string CreateLotsOfNotesToTestDifferentTypesAndReturnProperCaption (string TestCaption, Type TypeToTest)
+		{
+
+			// 1. write data to notes
+			_setupforlayoutests ();
+			int count = 25;
+			FakeLayoutDatabase layout = new FakeLayoutDatabase ("testguid");
+			LayoutPanel layoutPanel = new LayoutPanel ();
+			
+			NoteDataInterface note = null; 
+			for (int i = 0; i < count; i++) {
+				note = (NoteDataInterface)Activator.CreateInstance(TypeToTest);//new NoteDataXML ();
+				note.CreateParent(layoutPanel);
+				note.Caption = "boo" + i.ToString ();
+				layout.Add (note);
+			}
+			
+			
+			note = (NoteDataInterface)Activator.CreateInstance(TypeToTest);
+			note.Caption = TestCaption;
+			string guid = note.GuidForNote;
+			note.CreateParent(layoutPanel);
+			_w.output("new guid" + guid);
+			layout.Add (note);
+			layout.SaveTo ();
+			_w.output ("save worked");
+			
+			// 2. Now we pretend that later one, elsewhere in code, we need to get access to this (i.e., a Random Table)
+			
+			layout = new FakeLayoutDatabase ("testguid");
+			
+			layout.LoadFrom (null);
+			//	_w.output (layout.Backup ());
+			_w.output(layout.GetNotes().Count.ToString());
+			foreach (NoteDataXML _note in layout.GetNotes()) {
+				
+				if( _note.GuidForNote == guid)
+				{
+					_w.output(_note.Caption);
+					return note.Caption;
+				}
+				
+			}
+			return "<error>";
+		}
+		[Test]
+		public void TryMixedTypeSave()
+		{
+			// 1. write data to notes
+			_setupforlayoutests ();
+			int count = 25;
+			FakeLayoutDatabase layout = new FakeLayoutDatabase ("testguid");
+			LayoutPanel layoutPanel = new LayoutPanel ();
+			
+			NoteDataInterface note = null; 
+			for (int i = 0; i < count; i++) {
+				note = (NoteDataInterface)Activator.CreateInstance(typeof(NoteDataXML));//new NoteDataXML ();
+				note.CreateParent(layoutPanel);
+				note.Caption = "boo" + i.ToString ();
+				layout.Add (note);
+			}
+			
+			// store a SECOND TYPE into the mix
+			note = (NoteDataInterface)Activator.CreateInstance(typeof(NoteDataXML_RichText));
+			note.Caption = "textnote";
+			string guid = note.GuidForNote;
+			note.CreateParent(layoutPanel);
+			_w.output("new guid" + guid);
+			layout.Add (note);
+			layout.SaveTo ();
+		}
+		[Test]
+		public void RemoteGrabNote_base ()
+		{
+
+			string result = CreateLotsOfNotesToTestDifferentTypesAndReturnProperCaption("fishy", typeof(NoteDataXML));
+
+			Assert.AreEqual("fishy", result);
+		}
+		[Test]
+		public void RemoteGrabNote_text ()
+		{
+			
+			string result = CreateLotsOfNotesToTestDifferentTypesAndReturnProperCaption("fishytexts", typeof(NoteDataXML_RichText));
+			
+			Assert.AreEqual("fishytexts", result);
+			
+		}
+
 	}
 }
 
