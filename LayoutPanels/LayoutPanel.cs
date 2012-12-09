@@ -2,7 +2,7 @@ using System;
 using System.Windows.Forms;
 using System.Drawing;
 using System.Collections.Generic;
-
+using LayoutPanels;
 using CoreUtilities;
 /*This is Just an Experiment.
  * 
@@ -17,7 +17,7 @@ using CoreUtilities;
  */
 namespace Layout
 {
-	public class LayoutPanel : Panel, LayoutPanelInterface
+	public class LayoutPanel : LayoutPanelBase, LayoutPanelInterface
 	{
 		#region TEMPVARIABLES
 
@@ -89,6 +89,11 @@ namespace Layout
 			bar.Items.Add (AddText);
 
 
+			
+			ToolStripButton AddPanel = new ToolStripButton("Add Panel");
+			AddPanel.Click +=	PanelBoxClick;
+			bar.Items.Add (AddPanel);
+
 			list = new ListBox();
 			list.SelectedIndexChanged += HandleSelectedIndexChanged;
 			list.Parent = this;
@@ -133,6 +138,18 @@ namespace Layout
 			
 			UpdateListOfNotes ();
 		}
+
+		void PanelBoxClick(object sender, EventArgs e)
+		{
+			NoteDataXML_Panel xml = new NoteDataXML_Panel ();
+			
+			Notes.Add (xml);
+			
+			xml.CreateParent (this);
+			
+			UpdateListOfNotes ();
+		}
+
 		void HandleSelectedIndexChanged (object sender, EventArgs e)
 		{
 			grid.SelectedObject = (NoteDataXML)list.SelectedItem;

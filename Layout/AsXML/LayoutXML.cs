@@ -58,7 +58,7 @@ namespace Layout
 			return System.IO.Path.Combine ("",LayoutGUID+".xml");
 		}
 
-		public void LoadFrom (LayoutPanel Layout)
+		public void LoadFrom (LayoutPanelBase Layout)
 		{
 			throw new Exception("not done");
 

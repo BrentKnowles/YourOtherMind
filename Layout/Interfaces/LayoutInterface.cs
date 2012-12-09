@@ -31,7 +31,7 @@ namespace Layout
 		/// <param name='GUID'>
 		/// The unique identifier representing this Layout
 		/// </param>
-		bool LoadFrom(LayoutPanel parent);
+		bool LoadFrom(LayoutPanelBase parent);
 
 		void SaveTo ();
 

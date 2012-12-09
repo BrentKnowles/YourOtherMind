@@ -118,10 +118,7 @@ namespace Layout
 			return LayoutGUID;
 		}
 
-		public Type[] ListOfTypesToStoreInXML ()
-		{
-			return new Type[2] {typeof(NoteDataXML), typeof(NoteDataXML_RichText)};
-		}
+
 
 		/// <summary>
 		/// Loads from the appropriate Data Location. If pass Layout as null this is a REMOTE NOTE load, meaning we are grabbing this information without
@@ -136,7 +133,7 @@ namespace Layout
 		/// <param name='Layout'>
 		/// 
 		/// </param>
-		public bool LoadFrom (LayoutPanel LayoutPanelToLoadNoteOnto)
+		public bool LoadFrom (LayoutPanelBase LayoutPanelToLoadNoteOnto)
 		{
 			BaseDatabase MyDatabase = CreateDatabase ();
 			
@@ -168,7 +165,7 @@ namespace Layout
 				//dataForThisLayout
 				System.IO.StringReader reader = new System.IO.StringReader (result [2].ToString ());
 				System.Xml.Serialization.XmlSerializer test = new System.Xml.Serialization.XmlSerializer(typeof(System.Collections.Generic.List<NoteDataXML>),
-					                                                                                         ListOfTypesToStoreInXML());
+					                                                                                         LayoutDetails.Instance.ListOfTypesToStoreInXML());
 
 				// have to load it in an as array of target type and then convert
 				List<NoteDataXML> ListAsDataObjectsOfType = (System.Collections.Generic.List<NoteDataXML>)test.Deserialize (reader);
@@ -237,7 +234,7 @@ namespace Layout
 			
 			  System.Xml.Serialization.XmlSerializer x3 = 
 					new System.Xml.Serialization.XmlSerializer (typeof(NoteDataXML[]), 
-					                                            ListOfTypesToStoreInXML());
+					                                            LayoutDetails.Instance.ListOfTypesToStoreInXML());
 
 				/*This worked but would need to iterate and get a list of all potential types present, not just the first, else it will fail withmixed types
 				System.Xml.Serialization.XmlSerializer x4 = 

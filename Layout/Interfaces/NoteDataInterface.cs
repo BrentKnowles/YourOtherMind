@@ -10,7 +10,13 @@ namespace Layout
 		#region UserSet
 		string Caption {get; set;}
 		Point Location {get; set;}
-		string RTF {get;set;}
+		/// <summary>
+		/// This field will be used to store RTF text in the TextBox, A Link to the picture file for Picture Notes, et cetera.
+		/// </summary>
+		/// <value>
+		/// The data1.
+		/// </value>
+		string Data1 {get;set;}
 
 		#endregion
 		#region System
@@ -30,9 +36,9 @@ namespace Layout
 		/// <param name='Layout'>
 		/// Layout.
 		/// </param>
-		void CreateParent(LayoutPanel Layout);
+		void CreateParent(LayoutPanelBase Layout);
 		void Save();
-		void Update(LayoutPanel Layout);
+		void Update(LayoutPanelBase Layout);
 
 
 		/// <summary>

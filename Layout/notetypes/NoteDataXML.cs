@@ -24,6 +24,9 @@ namespace Layout
 		#region constants
 		const string BLANK = "";
 		#endregion
+		#region UI
+		protected Label CaptionLabel;
+		#endregion
 		#region variables_frominterface
 		public NoteDataXML () 
 		{
@@ -64,7 +67,7 @@ namespace Layout
 			}
 		}
 		private string rtf  = CoreUtilities.Constants.BLANK ;
-		public string RTF {
+		public string Data1 {
 			get { return rtf;}
 			set { rtf = value;}
 		}
@@ -100,7 +103,7 @@ namespace Layout
 		/// <param name='Layout'>
 		/// Layout.
 		/// </param>
-		public void Update (LayoutPanel Layout)
+		public void Update (LayoutPanelBase Layout)
 		{
 			Parent.Dispose();
 			//Parent = null;
@@ -115,7 +118,7 @@ namespace Layout
 			Parent.Location = Location;
 		}
 
-		public virtual void CreateParent(LayoutPanel Layout)
+		public virtual void CreateParent(LayoutPanelBase Layout)
 		{
 			Parent = new NotePanel(this);
 
@@ -130,11 +133,12 @@ namespace Layout
 
 			Layout.Controls.Add ( Parent);
 
-			Label CaptionLabel;
+
 			
 			CaptionLabel = new Label();
 			CaptionLabel.Parent = Parent;
-			CaptionLabel.Dock = DockStyle.Top;
+			CaptionLabel.BackColor = Color.Green;
+			CaptionLabel.Dock = DockStyle.Fill;
 			
 			CaptionLabel.Text = this.Caption;
 

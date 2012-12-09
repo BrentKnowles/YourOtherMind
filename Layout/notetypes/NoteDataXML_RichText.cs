@@ -17,17 +17,18 @@ namespace Layout
 		public override void Save()
 		{
 			base.Save();
-			this.RTF = richBox.Rtf;
+			this.Data1 = richBox.Rtf;
 		}
 
-		public override void CreateParent (LayoutPanel Layout)
+		public override void CreateParent (LayoutPanelBase Layout)
 		{
 			base.CreateParent (Layout);
+			CaptionLabel.Dock = DockStyle.Top;
 			richBox = new RichTextBox();
 			richBox.Parent = Parent;
 			richBox.Dock = DockStyle.Fill;
 			richBox.BringToFront();
-			richBox.Rtf = this.RTF;
+			richBox.Rtf = this.Data1;
 		
 		}
 	}

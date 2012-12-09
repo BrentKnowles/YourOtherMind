@@ -278,6 +278,14 @@ namespace Testing
 			
 		}
 
+		[Test]
+		public void TestSavingRTFTextWorks()
+		{
+			// never want this vital field to break
+			Assert.False (true);
+		}
+
+
 	}
 }
 
