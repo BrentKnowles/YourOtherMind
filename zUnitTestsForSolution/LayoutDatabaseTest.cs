@@ -2,6 +2,7 @@ using System;
 using NUnit.Framework;
 using Layout.data;
 using Layout;
+using LayoutPanels;
 // Use FakeLayoutDatabase, not the real one to avoid messing with the data files
 namespace Testing
 {
@@ -377,7 +378,102 @@ namespace Testing
 			Assert.AreEqual (6, count2); 
 		}
 
+		[Test]
+		public void CountPanelsSubType ()
+		{
+			//-- do unit tests counting store 6 textboxes and know this (countbytype)
+			_setupforlayoutests ();
+			int count = 25;
+			FakeLayoutDatabase layout = new FakeLayoutDatabase ("testguid");
+			LayoutPanel layoutPanel = new LayoutPanel ();
+			
+			NoteDataXML note = new NoteDataXML ();
+			for (int i = 0; i < count; i++) {
+				note.CreateParent(layoutPanel);
+				note.Caption = "boo" + i.ToString ();
+				layout.Add (note);
+			}
+			_w.output (String.Format ("{0} Notes in Layout before save", layout.GetNotes ().Count.ToString ()));
+			
+			for (int i = 0; i < 6; i++) {
+				note = new NoteDataXML_Panel ();
+				note.CreateParent(layoutPanel);
 
+				note.Caption = "Panel";
+				layout.Add (note);
+				((NoteDataXML_Panel)note).Add10TestNotes();
+			}
+
+
+
+			
+			layout.SaveTo();
+			
+			_w.output(String.Format ("{0} Objects Saved", layout.ObjectsSaved().ToString()));
+			layout = new FakeLayoutDatabase ("testguid");
+			
+			layout.LoadFrom(layoutPanel);
+			
+			// now count RichText notes
+			int count2 = 0;
+			int subnotecount = 0;
+			foreach (NoteDataInterface _note in layout.GetNotes ())
+			{
+				if (_note.GetType() == typeof(NoteDataXML_Panel))
+				{
+					count2++;
+					subnotecount = subnotecount + ((NoteDataXML_Panel)_note).GetChildNotes().Count;
+				}
+				
+			}
+
+
+			// total note count should be (once I get GetNotes working on Child Notes = 60 + 6 + 25 = 91
+
+			_w.output(String.Format ("{0} Objects Loaded", layout.GetAllNotes().Count));
+			//NOT DONE YET
+			Assert.AreEqual (6, count2); 
+			Assert.AreEqual (60, subnotecount); 
+			Assert.AreEqual (91, layout.GetAllNotes().Count); 
+		}
+		[Test]
+		public void NoteShouldNotExist()
+		{
+			_setupforlayoutests ();
+			int count = 25;
+			FakeLayoutDatabase layout = new FakeLayoutDatabase ("testguid");
+			LayoutPanel layoutPanel = new LayoutPanel ();
+			
+			NoteDataXML note = new NoteDataXML ();
+			for (int i = 0; i < count; i++) {
+				note.CreateParent(layoutPanel);
+				note.Caption = "boo" + i.ToString ();
+				layout.Add (note);
+			}
+		//	layout.SaveTo(); no save, so note should not exist
+			
+			Assert.False (layout.Exists("testguid"));
+		}
+
+
+		[Test]
+		public void NoteExists()
+		{
+			_setupforlayoutests ();
+			int count = 25;
+			FakeLayoutDatabase layout = new FakeLayoutDatabase ("testguid");
+			LayoutPanel layoutPanel = new LayoutPanel ();
+			
+			NoteDataXML note = new NoteDataXML ();
+			for (int i = 0; i < count; i++) {
+				note.CreateParent(layoutPanel);
+				note.Caption = "boo" + i.ToString ();
+				layout.Add (note);
+			}
+			layout.SaveTo();
+
+			Assert.True (layout.Exists("testguid"));
+		}
 	}
 }
 

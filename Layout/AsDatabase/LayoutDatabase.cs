@@ -111,10 +111,53 @@ namespace Layout
 			);
 			return db;
 		}
+		/// <summary>
+		/// Adds the children. If a panel notetype
+		/// </summary>
+		/// <returns>
+		/// The children.
+		/// </returns>
+		/// <param name='data'>
+		/// Data.
+		/// </param>
+		/// <param name='result'>
+		/// Result.
+		/// </param>
+		private void AddChildrenToGetList (NoteDataInterface data,  System.Collections.ArrayList result)
+		{
+			lg.Instance.Line("AddChildrenToList", ProblemType.TEMPORARY, "checking...");
+			if ( data.IsPanel == true)
+			{
+				lg.Instance.Line("AddChildrenToList", ProblemType.TEMPORARY, "is a Panel...");
+				foreach (NoteDataInterface data2 in data.GetChildNotes())
+				{
+					lg.Instance.Line("AddChildrenToList", ProblemType.TEMPORARY, "scanning children...");
+					result.Add (data2);
+					AddChildrenToGetList(data2,  result);
+				}
+			}
 
+		}
+		/// <summary>
+		/// Gets all notes.
+		/// </summary>
+		/// <returns>
+		/// The all notes.
+		/// </returns>
+		public System.Collections.ArrayList GetAllNotes ()
+		{
+			System.Collections.ArrayList result = new System.Collections.ArrayList ();
+			foreach (NoteDataInterface data in dataForThisLayout) {
+				result.Add (data);
+				 AddChildrenToGetList(data,  result);
+
+			}
+			return result;
+
+		}
 		/// <summary>
 		/// Gets the notes. Gets the notes. (Read-only only so that ONLY this class is able to modify the contents of the list)
-		/// 
+		/// ONLY: Gets the notes on this layout. For children notes too then use GetAllNotes()
 		/// USAGE: foreach (NoteDataXML notes in layout.GetNotes())
 		///  or
 		/// As a Datasource
@@ -307,6 +350,17 @@ namespace Layout
 				//lg.Instance.Line("LayoutDatabase.SaveTo", ProblemType.EXCEPTION, ex.ToString());
 			}
 		
+		}
+		/// <summary>
+		/// Does the specified GUID exist?
+		/// </summary>
+		/// <param name='GUID'>
+		/// GUI.
+		/// </param>
+		public bool Exists (string GUID)
+		{
+			BaseDatabase MyDatabase = CreateDatabase ();
+			return MyDatabase.Exists (tmpDatabaseConstants.table_name, tmpDatabaseConstants.GUID, GUID);
 		}
 		
 		/*Not needed?

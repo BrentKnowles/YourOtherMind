@@ -24,6 +24,10 @@ namespace Layout
 		#region System
 		string GuidForNote {get;set;}
 		NotePanel Parent {get;set;}
+
+		// I did not want to do this but because panels are implemented "further down the chain" I need these two functions here
+		bool IsPanel{get;} 
+		System.Collections.ObjectModel.ReadOnlyCollection<NoteDataInterface>  GetChildNotes();
 		#endregion
 		#endregion
 

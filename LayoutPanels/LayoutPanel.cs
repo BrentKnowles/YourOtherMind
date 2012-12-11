@@ -26,31 +26,14 @@ namespace Layout
 		PropertyGrid grid = null;
 		#endregion
 
-		#region variables
-		private string _guid = Constants.BLANK;
-		private bool _saverequired = false;
-		// storing reference to Interface, allowing a data swapout later
 		LayoutInterface Notes = null;
-		/// <summary>
-		/// The GUID associated with this LayoutPanel. If blank there is no Layout loaded.
-		/// </summary>
-		/// <value>
-		/// The GUI.
-		/// </value>
-		public string GUID {
-			get { return _guid;}
-			set { _guid = value;}
+		#region gui
+		private Panel noteCanvas;
+		override public Panel NoteCanvas {
+			get { return noteCanvas;}
+			set { noteCanvas = value;}
 		}
-		/// <summary>
-		/// If true this layout needs to be saved
-		/// </summary>
-		/// <value>
-		/// <c>true</c> if saved required; otherwise, <c>false</c>.
-		/// </value>
-		public bool SaveRequired {
-			get{ return _saverequired;}
-			set { _saverequired = value;}
-		}
+
 		#endregion
 		public LayoutPanel ()
 		{
@@ -73,7 +56,7 @@ namespace Layout
 
 
 			this.BackColor = Color.Pink;
-			this.AutoScroll = true;
+
 
 			ToolStrip bar = new ToolStrip ();
 			bar.Parent = this;
@@ -127,6 +110,12 @@ namespace Layout
 			label.Parent = this;
 			label.Dock = DockStyle.Bottom;
 
+
+			NoteCanvas = new Panel();
+			NoteCanvas.Dock = DockStyle.Fill;
+			NoteCanvas.Parent = this;
+			NoteCanvas.BringToFront();
+			this.AutoScroll = true;
 
 			/*TODO:
 			Thoughts: Does the NoteData actually create the Panel (i.e., flip the ownership around)
@@ -191,7 +180,7 @@ namespace Layout
 
 		}
 
-		public void SaveLayout ()
+		public override void SaveLayout ()
 		{
 			if (null != Notes) {
 				Notes.SaveTo();
@@ -217,20 +206,25 @@ namespace Layout
 			this.list.DisplayMember = "Caption";
 			this.list.ValueMember = "GuidForNote";
 		}
-		public void LoadLayout (string GUID)
+		public override void LoadLayout (string GUID)
 		{
+			// disable autoscroll because if an object is loaded off-screen before others it changes the centering of every object
+			NoteCanvas.AutoScroll = false;
+
 			Notes = new LayoutDatabase (GUID);
 			if (Notes.LoadFrom (this) == false) {
-				Notes = null;
-				NewMessage.Show ("That note does not exist");
+				lg.Instance.Line("LayoutPanel.LoadLayout", ProblemType.MESSAGE, "This note is blank still.");
+				//Notes = null;
+				//NewMessage.Show ("That note does not exist");
 			} else {
 				UpdateListOfNotes ();
 			//	NewMessage.Show (String.Format ("Name={0}, Status={1}", Notes.Name, Notes.Status));
 			}
 
+			NoteCanvas.AutoScroll = true;
 		}
 
-		public void AddNote ()
+		public override void AddNote ()
 		{
 			NoteDataXML xml = new NoteDataXML ();
 
@@ -249,13 +243,18 @@ namespace Layout
 
 			// if textbox is blank the GUID is generated autoamtically
 			GUID = this.text.Text;
-			if (Constants.BLANK == GUID) GUID = System.Guid.NewGuid().ToString();
-			Notes = new LayoutDatabase(GUID);
-		//	Notes = new LayoutDatabase("system");
+			// check to see if exists already
+			if (Notes != null && Notes.Exists (GUID)) {
+				NewMessage.Show("that layout exists already");
+			} else {
+				if (Constants.BLANK == GUID)
+					GUID = System.Guid.NewGuid ().ToString ();
+				Notes = new LayoutDatabase (GUID);
+				//	Notes = new LayoutDatabase("system");
 			
-			AddNote ();
+				AddNote ();
 
-
+			}
 			// Remove saving, make user do itNotes.SaveTo();
 
 		}

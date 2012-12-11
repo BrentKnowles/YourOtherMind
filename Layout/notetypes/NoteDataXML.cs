@@ -19,14 +19,12 @@ namespace Layout
 	/// Because I intend to store the entire Note data inside an XML that is inside a table this would work with either XML or database representations.
 	/// </summary>
 	[Serializable]
-	public class NoteDataXML : NoteDataInterface
+	public partial class NoteDataXML : NoteDataInterface
 	{
 		#region constants
 		const string BLANK = "";
 		#endregion
-		#region UI
-		protected Label CaptionLabel;
-		#endregion
+
 		#region variables_frominterface
 		public NoteDataXML () 
 		{
@@ -95,11 +93,17 @@ namespace Layout
 			get { return "boo";}
 		}
 		#endregion;
-
+		public virtual bool IsPanel {
+			get { return false;}
+		}
+		public virtual System.Collections.ObjectModel.ReadOnlyCollection<NoteDataInterface> GetChildNotes()
+		{
+			return null;
+		}
 
 		public virtual void Save()
 		{
-			// save UI elements to XML fiellds
+			// save UI elements to XML fiellds, *if* necessary
 		}
 
 		/// <summary>
@@ -131,70 +135,9 @@ namespace Layout
 		}
 
 
-		//TODO Partial class for the interface elements??
+	
 
-		public virtual void CreateParent(LayoutPanelBase Layout)
-		{
-			Parent = new NotePanel(this);
-
-
-
-			Parent.Visible = true;
-			Parent.Location = Location;
-			Parent.Dock = System.Windows.Forms.DockStyle.None;
-			Parent.Height = Height;
-			Parent.Width = Width;
-
-
-			Layout.Controls.Add ( Parent);
-
-
-			
-			CaptionLabel = new Label();
-			CaptionLabel.MouseDown+= HandleMouseDown;
-			CaptionLabel.MouseUp+= HandleMouseUp;
-			CaptionLabel.MouseLeave+= HandleMouseLeave;
-			CaptionLabel.MouseMove+= HandleMouseMove;
-			CaptionLabel.Parent = Parent;
-			CaptionLabel.BackColor = Color.Green;
-			CaptionLabel.Dock = DockStyle.Fill;
-			
-			CaptionLabel.Text = this.Caption;
-
-
-
-		}
-
-		void HandleMouseMove (object sender, MouseEventArgs e)
-		{
-			if (e.Button == MouseButtons.Left) {
-				this.location.X += e.X - PanelMouseDownLocation.X;
-				
-				this.location.Y += e.Y - PanelMouseDownLocation.Y;
-				UpdateLocation ();
-			}
-		}
-
-		void HandleMouseLeave (object sender, EventArgs e)
-		{
-			CaptionLabel.BackColor = Color.Green;
-		}
-
-		void HandleMouseUp (object sender, MouseEventArgs e)
-		{
-			CaptionLabel.BackColor = Color.Green;
-		}
-		Point PanelMouseDownLocation ;
-		void HandleMouseDown (object sender, MouseEventArgs e)
-		{
-			if (e.Button == MouseButtons.Left) {
-				// start moving
-				CaptionLabel.BackColor = Color.Red;
-				PanelMouseDownLocation = e.Location;
-			}
-
-		}
-
+	
 
 	}
 }

@@ -8,6 +8,21 @@ namespace LayoutPanels
 {
 	public class NoteDataXML_Panel :NoteDataXML
 	{
+		#region gui
+		protected LayoutPanel panelLayout;
+		#endregion
+		#region variable
+		public override bool IsPanel {
+			get { return true;}
+		}
+		#endregion
+		#region testingstub
+		public void Add10TestNotes()
+		{
+			for (int i=0; i <10; i++)
+				panelLayout.AddNote ();
+		}
+		#endregion
 		// This is where it gets tricky. Need to modify the list of valid data types to store!
 		public NoteDataXML_Panel () : base()
 		{
@@ -18,10 +33,22 @@ namespace LayoutPanels
 
 		}
 
+		/// <summary>
+		/// Gets the child notes.
+		/// </summary>
+		public  override System.Collections.ObjectModel.ReadOnlyCollection<NoteDataInterface>  GetChildNotes()
+		{
+			LayoutDatabase layout = new LayoutDatabase(this.GuidForNote);
+			layout.LoadFrom(null);
+			return layout.GetNotes();
+
+		}
+
 		public override void Save()
 		{
 			base.Save();
 
+			panelLayout.SaveLayout ();
 		}
 		
 		public override void CreateParent (LayoutPanelBase Layout)
@@ -29,7 +56,10 @@ namespace LayoutPanels
 			base.CreateParent (Layout);
 		CaptionLabel.Dock = DockStyle.Top;
 
-			LayoutPanel panelLayout = new LayoutPanel();
+			panelLayout = new LayoutPanel();
+
+			// load the layout based on the note
+			panelLayout.LoadLayout(this.GuidForNote);
 			panelLayout.Parent = Parent;
 			panelLayout.Visible = true;
 			panelLayout.Dock = DockStyle.Fill;

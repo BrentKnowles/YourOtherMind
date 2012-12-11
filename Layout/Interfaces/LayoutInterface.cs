@@ -36,7 +36,7 @@ namespace Layout
 		void SaveTo ();
 
 		string Backup();
-
+		bool Exists (string GUID);
 		/// <summary>
 		/// Gets the notes.
 		/// </summary>
