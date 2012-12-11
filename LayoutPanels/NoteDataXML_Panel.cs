@@ -2,6 +2,7 @@ using System;
 using Layout;
 using System.Windows.Forms;
 using System.Drawing;
+using CoreUtilities;
 
 namespace LayoutPanels
 {
@@ -10,6 +11,11 @@ namespace LayoutPanels
 		// This is where it gets tricky. Need to modify the list of valid data types to store!
 		public NoteDataXML_Panel () : base()
 		{
+			Caption = Loc.Instance.Cat.GetString("PANEL");
+
+
+
+
 		}
 
 		public override void Save()
@@ -21,11 +27,13 @@ namespace LayoutPanels
 		public override void CreateParent (LayoutPanelBase Layout)
 		{
 			base.CreateParent (Layout);
-			CaptionLabel.Dock = DockStyle.Top;
+		CaptionLabel.Dock = DockStyle.Top;
 
 			LayoutPanel panelLayout = new LayoutPanel();
 			panelLayout.Parent = Parent;
 			panelLayout.Visible = true;
+			panelLayout.Dock = DockStyle.Fill;
+			panelLayout.BringToFront();
 			
 		}
 	}

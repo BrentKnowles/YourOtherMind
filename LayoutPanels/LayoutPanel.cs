@@ -54,7 +54,26 @@ namespace Layout
 		#endregion
 		public LayoutPanel ()
 		{
+
+
+			//TO DO  Adding a Dyanmic Type: THIS SHOULD ONLY HAPPEN ONCE. For this I could use a variable on the singleton but for
+			// others, it has to happen as part of the Plugin registration??
+			Type[] typeList = LayoutDetails.Instance.TypeList;
+			
+			Type[] newTypeList = new Type[typeList.Length + 1];
+
+			for (int i = 0; i < typeList.Length; i++)
+			{
+				newTypeList[i] = typeList[i];
+			}
+
+			newTypeList[newTypeList.Length-1] = typeof(NoteDataXML_Panel);
+			LayoutDetails.Instance.TypeList = newTypeList;
+
+
+
 			this.BackColor = Color.Pink;
+			this.AutoScroll = true;
 
 			ToolStrip bar = new ToolStrip ();
 			bar.Parent = this;
@@ -71,9 +90,6 @@ namespace Layout
 						addNote.Click += HandleAddClick;
 						bar.Items.Add (addNote);
 
-			ToolStripButton showNotes = new ToolStripButton("SaveLayout");
-			showNotes.Click += SaveNoteClick;
-			bar.Items.Add (showNotes);
 
 
 			ToolStripButton EditSystem = new ToolStripButton("Add a Note to CURRENT Layout");
@@ -192,11 +208,7 @@ namespace Layout
 			}
 		}
 
-		void SaveNoteClick (object sender, EventArgs e)
-		{
-			SaveLayout ();
 
-		}
 		private void UpdateListOfNotes ()
 		{
 			this.list.DataSource = null;
@@ -207,10 +219,14 @@ namespace Layout
 		}
 		public void LoadLayout (string GUID)
 		{
-			Notes = new LayoutDatabase(GUID);
-			Notes.LoadFrom (this);
-			UpdateListOfNotes();
-			NewMessage.Show (String.Format ("Name={0}, Status={1}",Notes.Name, Notes.Status));
+			Notes = new LayoutDatabase (GUID);
+			if (Notes.LoadFrom (this) == false) {
+				Notes = null;
+				NewMessage.Show ("That note does not exist");
+			} else {
+				UpdateListOfNotes ();
+			//	NewMessage.Show (String.Format ("Name={0}, Status={1}", Notes.Name, Notes.Status));
+			}
 
 		}
 

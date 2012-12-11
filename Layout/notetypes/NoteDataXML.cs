@@ -51,6 +51,11 @@ namespace Layout
 			set{ caption = value;}
 					}
 
+		int height = 100;
+		int width = 100;
+		public int Height { get { return height; } set { height = value; }}
+		public int Width { get { return width; } set { width = value; }}
+
 		private Point location = new Point(200,200);
 		/// <summary>
 		/// Gets or sets the location.
@@ -105,18 +110,28 @@ namespace Layout
 		/// </param>
 		public void Update (LayoutPanelBase Layout)
 		{
+			Save ();
 			Parent.Dispose();
 			//Parent = null;
 			CreateParent(Layout);
 		}
-
+		/// <summary>
+		/// Updates the location, called when location is set outside actual movement.
+		/// TODO: Generalize this to UpdateAppearance?
+		/// Also update sizea
+		/// </summary>
 		public void UpdateLocation ()
 		{
 			if (Parent == null) {
 				throw new Exception("Parent must not be null");
 			}
 			Parent.Location = Location;
+			Parent.Height = Height;
+			Parent.Width = Width;
 		}
+
+
+		//TODO Partial class for the interface elements??
 
 		public virtual void CreateParent(LayoutPanelBase Layout)
 		{
@@ -127,8 +142,8 @@ namespace Layout
 			Parent.Visible = true;
 			Parent.Location = Location;
 			Parent.Dock = System.Windows.Forms.DockStyle.None;
-			Parent.Height = 100;
-			Parent.Width = 100;
+			Parent.Height = Height;
+			Parent.Width = Width;
 
 
 			Layout.Controls.Add ( Parent);
@@ -136,6 +151,10 @@ namespace Layout
 
 			
 			CaptionLabel = new Label();
+			CaptionLabel.MouseDown+= HandleMouseDown;
+			CaptionLabel.MouseUp+= HandleMouseUp;
+			CaptionLabel.MouseLeave+= HandleMouseLeave;
+			CaptionLabel.MouseMove+= HandleMouseMove;
 			CaptionLabel.Parent = Parent;
 			CaptionLabel.BackColor = Color.Green;
 			CaptionLabel.Dock = DockStyle.Fill;
@@ -143,6 +162,36 @@ namespace Layout
 			CaptionLabel.Text = this.Caption;
 
 
+
+		}
+
+		void HandleMouseMove (object sender, MouseEventArgs e)
+		{
+			if (e.Button == MouseButtons.Left) {
+				this.location.X += e.X - PanelMouseDownLocation.X;
+				
+				this.location.Y += e.Y - PanelMouseDownLocation.Y;
+				UpdateLocation ();
+			}
+		}
+
+		void HandleMouseLeave (object sender, EventArgs e)
+		{
+			CaptionLabel.BackColor = Color.Green;
+		}
+
+		void HandleMouseUp (object sender, MouseEventArgs e)
+		{
+			CaptionLabel.BackColor = Color.Green;
+		}
+		Point PanelMouseDownLocation ;
+		void HandleMouseDown (object sender, MouseEventArgs e)
+		{
+			if (e.Button == MouseButtons.Left) {
+				// start moving
+				CaptionLabel.BackColor = Color.Red;
+				PanelMouseDownLocation = e.Location;
+			}
 
 		}
 

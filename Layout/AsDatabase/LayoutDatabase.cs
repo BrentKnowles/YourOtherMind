@@ -65,6 +65,27 @@ namespace Layout
 
 		}
 		/// <summary>
+		/// Gets the note by GUI.
+		/// </summary>
+		/// <returns>
+		/// The note by GUI. 
+		/// Null if not found.
+		/// </returns>
+		/// <param name='GUID'>
+		/// GUI.
+		/// </param>
+		public NoteDataInterface GetNoteByGUID (string GUID)
+		{
+			foreach (NoteDataInterface note in GetNotes ()) {
+				if (note.GuidForNote == GUID)
+				{
+					return note;
+				}
+			}
+			return null;
+		}
+
+		/// <summary>
 		/// Backup the entire layout database, NOT just this layout (though I could tweak it to do so)
 		/// </summary>
 		public string Backup ()

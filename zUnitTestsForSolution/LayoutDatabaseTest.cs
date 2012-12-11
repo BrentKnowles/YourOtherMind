@@ -281,8 +281,100 @@ namespace Testing
 		[Test]
 		public void TestSavingRTFTextWorks()
 		{
-			// never want this vital field to break
-			Assert.False (true);
+			Type TypeToTest = typeof(NoteDataXML_RichText);
+			// 1. write data to notes
+			_setupforlayoutests ();
+			int count = 15;
+			FakeLayoutDatabase layout = new FakeLayoutDatabase ("testguid");
+			LayoutPanel layoutPanel = new LayoutPanel ();
+			
+			NoteDataInterface note = null; 
+			for (int i = 0; i < count; i++) {
+				note = (NoteDataInterface)Activator.CreateInstance(TypeToTest);//new NoteDataXML ();
+					note.CreateParent(layoutPanel);
+				note.Caption = "boo" + i.ToString ();
+				layout.Add (note);
+			}
+			
+			
+			note = (NoteDataInterface)Activator.CreateInstance(TypeToTest);
+			note.Caption = "snake";
+			string guid = note.GuidForNote;
+			string teststring = "\nthe test is this ";
+			
+
+			note.Data1=(@"{\rtf1\ansi\ansicpg1252\deff0\deflang4105{\fonttbl{\f0\fnil\fcharset0 Microsoft Sans Serif;}}"+
+			                         @"\viewkind4\uc1\pard\f0\fs17\par the test is this }");
+			
+				
+		//	note.Data1=String.Format (@"{\rtf1\ansi\ansicpg1252\deff0\deflang4105{\fonttbl{\f0\fnil\fcharset0 Microsoft Sans Serif;}}\viewkind4\uc1\pard\f0\fs17\par {0} \par}", teststring);
+
+				//"This is the story of the bird.";
+			note.CreateParent(layoutPanel);
+			_w.output("new guid" + guid);
+
+			layout.Add (note);
+			layout.SaveTo ();
+
+			layout = new FakeLayoutDatabase ("testguid");
+			
+			layout.LoadFrom(layoutPanel);
+			
+			_w.output(String.Format ("{0} Objects Loaded", layout.GetNotes().Count));
+
+			NoteDataInterface result = layout.GetNoteByGUID(guid);
+			string astest = ((NoteDataXML_RichText)result).GetAsText();
+			_w.output(result.Data1);
+			_w.output (astest);
+			Assert.AreEqual(teststring, astest);
+
+		}
+
+		[Test]
+		public void CountSpecificSubType ()
+		{
+			//-- do unit tests counting store 6 textboxes and know this (countbytype)
+			_setupforlayoutests ();
+			int count = 25;
+			FakeLayoutDatabase layout = new FakeLayoutDatabase ("testguid");
+			LayoutPanel layoutPanel = new LayoutPanel ();
+			
+			NoteDataXML note = new NoteDataXML ();
+			for (int i = 0; i < count; i++) {
+				note.CreateParent(layoutPanel);
+				note.Caption = "boo" + i.ToString ();
+				layout.Add (note);
+			}
+			_w.output (String.Format ("{0} Notes in Layout before save", layout.GetNotes ().Count.ToString ()));
+
+			for (int i = 0; i < 6; i++) {
+				note = new NoteDataXML_RichText ();
+				note.CreateParent(layoutPanel);
+				note.Caption = "richText";
+				layout.Add (note);
+			}
+
+			layout.SaveTo();
+			
+			_w.output(String.Format ("{0} Objects Saved", layout.ObjectsSaved().ToString()));
+			layout = new FakeLayoutDatabase ("testguid");
+			
+			layout.LoadFrom(layoutPanel);
+
+			// now count RichText notes
+			int count2 = 0;
+			foreach (NoteDataInterface _note in layout.GetNotes ())
+			{
+				if (_note.GetType() == typeof(NoteDataXML_RichText))
+				    {
+					count2++;
+				}
+
+				}
+
+			_w.output(String.Format ("{0} Objects Loaded", layout.GetNotes().Count));
+			//NOT DONE YET
+			Assert.AreEqual (6, count2); 
 		}
 
 

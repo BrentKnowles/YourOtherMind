@@ -10,6 +10,8 @@ namespace Layout
 		#region UserSet
 		string Caption {get; set;}
 		Point Location {get; set;}
+		int Height {get;set;}
+		int Width{get;set;}
 		/// <summary>
 		/// This field will be used to store RTF text in the TextBox, A Link to the picture file for Picture Notes, et cetera.
 		/// </summary>

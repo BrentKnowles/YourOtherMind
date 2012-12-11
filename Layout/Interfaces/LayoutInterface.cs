@@ -44,7 +44,7 @@ namespace Layout
 		/// The notes.
 		/// </returns>
 		System.Collections.ObjectModel.ReadOnlyCollection<NoteDataInterface>  GetNotes();
-
+		NoteDataInterface GetNoteByGUID(string GUID);
 	}
 }
 
