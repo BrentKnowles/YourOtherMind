@@ -9,6 +9,7 @@ namespace CoreUtilities
 	{
 
 		public static string BLANK="";
+		public static string ERROR="<ERROR>";
 	}
 }
 

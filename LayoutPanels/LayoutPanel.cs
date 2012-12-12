@@ -22,7 +22,6 @@ namespace Layout
 		#region TEMPVARIABLES
 
 		TextBox text = null;
-		ListBox list = null;
 		PropertyGrid grid = null;
 		#endregion
 
@@ -39,11 +38,12 @@ namespace Layout
 		{
 
 
-			//TO DO  Adding a Dyanmic Type: THIS SHOULD ONLY HAPPEN ONCE. For this I could use a variable on the singleton but for
-			// others, it has to happen as part of the Plugin registration??
-			Type[] typeList = LayoutDetails.Instance.TypeList;
-			
-			Type[] newTypeList = new Type[typeList.Length + 1];
+
+
+			//Type[] typeList = LayoutDetails.Instance.TypeList;
+			LayoutDetails.Instance.AddToList(typeof(NoteDataXML_Panel), "Panel");
+
+			/*Type[] newTypeList = new Type[typeList.Length + 1];
 
 			for (int i = 0; i < typeList.Length; i++)
 			{
@@ -52,7 +52,7 @@ namespace Layout
 
 			newTypeList[newTypeList.Length-1] = typeof(NoteDataXML_Panel);
 			LayoutDetails.Instance.TypeList = newTypeList;
-
+*/
 
 
 			this.BackColor = Color.Pink;
@@ -69,35 +69,24 @@ namespace Layout
 			text.Visible = true;
 			text.Dock = DockStyle.Bottom;
 
-			ToolStripButton addNote = new ToolStripButton ("Add a Layout");
+			ToolStripButton addNote = new ToolStripButton ("Add a Layout (remove me)");
 						addNote.Click += HandleAddClick;
 						bar.Items.Add (addNote);
 
 
 
-			ToolStripButton EditSystem = new ToolStripButton("Add a Note to CURRENT Layout");
-			EditSystem.Click += HandleEditNoteClick;
-			bar.Items.Add (EditSystem);
+			ToolStripDropDownButton AddNote = new ToolStripDropDownButton("Add Note");
+			AddNote.DropDownOpening += HandleAddNoteDropDownOpening;
+			bar.Items.Add (AddNote);
+		
 
 			ToolStripButton LoadLayout = new ToolStripButton("Load Layout");
 			LoadLayout.Click +=	LoadLayoutClick;
 			bar.Items.Add (LoadLayout);
 
-			ToolStripButton AddText = new ToolStripButton("Add TExtbox");
-			AddText.Click +=	TextBoxClick;
-			bar.Items.Add (AddText);
 
 
-			
-			ToolStripButton AddPanel = new ToolStripButton("Add Panel");
-			AddPanel.Click +=	PanelBoxClick;
-			bar.Items.Add (AddPanel);
 
-			list = new ListBox();
-			list.SelectedIndexChanged += HandleSelectedIndexChanged;
-			list.Parent = this;
-			list.Width = 125;
-			list.Dock = DockStyle.Left;
 
 			grid = new PropertyGrid();
 			grid.Parent = this;
@@ -123,6 +112,79 @@ namespace Layout
 			 Also play with the Unit test example that StackOverflow had, this seems interest
 			 */
 		}
+		/// <summary>
+		/// Create buttons with the list of types we can make
+		/// </summary>
+		/// <param name='sender'>
+		/// Sender.
+		/// </param>
+		/// <param name='e'>
+		/// E.
+		/// </param>
+		void HandleAddNoteDropDownOpening (object sender, EventArgs e)
+		{
+			(sender as ToolStripDropDownButton).DropDownItems.Clear ();
+
+			foreach (Type t in LayoutDetails.Instance.ListOfTypesToStoreInXML()) {
+				ToolStripButton AddNote = new ToolStripButton(LayoutDetails.Instance.GetNameFromType(t));
+
+				AddNote.Tag = t;
+
+				AddNote.Click += HandleAddNoteClick;
+				(sender as ToolStripDropDownButton).DropDownItems.Add (AddNote);
+
+			}
+
+
+
+
+
+		}
+		/// <summary>
+		/// Generic Handle for adding notes by type
+		/// </summary>
+		/// <param name='sender'>
+		/// Sender.
+		/// </param>
+		/// <param name='e'>
+		/// E.
+		/// </param>
+		void HandleAddNoteClick (object sender, EventArgs e)
+		{
+
+			if (Notes == null) {
+				NewMessage.Show (Loc.Instance.Cat.GetString("Load or create a note first"));
+				return;
+			}
+
+			if ((sender as ToolStripButton).Tag == null) {
+				Console.WriteLine ("LayoutPanel.HandleAddNoteClick", ProblemType.WARNING, "Unable to Add a Note of this Type Because Tag was Null");
+			} else {
+				//Type t = typeof(NoteDataXML);
+				//Console.WriteLine (t.Assembly.FullName.ToString());
+				//Console.WriteLine (t.AssemblyQualifiedName.ToString());
+				//string TypeToTest =  (sender as ToolStripButton).Tag.ToString ();
+				//NoteDataInterface note = (NoteDataInterface)Activator.CreateInstance ("LayoutPanels", TypeToTest);
+				Type TypeTest = Type.GetType ( ((Type)(sender as ToolStripButton).Tag).AssemblyQualifiedName);
+
+				//Type TypeTest = Type.GetType (t.AssemblyQualifiedName.ToString());
+
+				if (null != TypeTest)
+				{
+				NoteDataInterface note = (NoteDataInterface)Activator.CreateInstance ( TypeTest);
+			
+				Notes.Add (note);
+			
+				note.CreateParent (this);
+			
+				UpdateListOfNotes ();
+				}
+				else
+				{
+					lg.Instance.Line("LayoutPanel.HandleAddNoteClick", ProblemType.ERROR, String.Format ("{0} Type not found", TypeTest.ToString()));
+				}
+			}
+		}
 
 		void HandlePropertyValueChanged (object s, PropertyValueChangedEventArgs e)
 		{
@@ -133,32 +195,11 @@ namespace Layout
 			UpdateListOfNotes();
 
 		}
-		void TextBoxClick(object sender, EventArgs e)
-		{
-			NoteDataXML_RichText xml = new NoteDataXML_RichText ();
+	
 
-			Notes.Add (xml);
-			
-			xml.CreateParent (this);
-			
-			UpdateListOfNotes ();
-		}
 
-		void PanelBoxClick(object sender, EventArgs e)
-		{
-			NoteDataXML_Panel xml = new NoteDataXML_Panel ();
-			
-			Notes.Add (xml);
-			
-			xml.CreateParent (this);
-			
-			UpdateListOfNotes ();
-		}
 
-		void HandleSelectedIndexChanged (object sender, EventArgs e)
-		{
-			grid.SelectedObject = (NoteDataXML)list.SelectedItem;
-		}
+
 
 		void LoadLayoutClick (object sender, EventArgs e)
 		{
@@ -171,10 +212,7 @@ namespace Layout
 		void HandleEditNoteClick (object sender, EventArgs e)
 		{
 			// Modify the informatin in the SYSTEM NOTE
-			if (Notes == null) {
-				NewMessage.Show ("Load or create a note first");
-				return;
-			}
+
 
 			AddNote ();
 
@@ -200,11 +238,10 @@ namespace Layout
 
 		private void UpdateListOfNotes ()
 		{
-			this.list.DataSource = null;
-			this.list.Items.Clear ();
-			this.list.DataSource = Notes.GetNotes();
-			this.list.DisplayMember = "Caption";
-			this.list.ValueMember = "GuidForNote";
+
+
+			Notes.UpdateListOfNotes();
+		
 		}
 		public override void LoadLayout (string GUID)
 		{
@@ -236,6 +273,7 @@ namespace Layout
 		}
 
 
+
 		void HandleAddClick (object sender, EventArgs e)
 		{
 			// creates a new LAYOUT
@@ -257,6 +295,16 @@ namespace Layout
 			}
 			// Remove saving, make user do itNotes.SaveTo();
 
+		}
+		public override List<NoteDataInterface> GetAvailableFolders ()
+		{
+			return Notes.GetAvailableFolders();
+
+		}
+
+		public override void MoveNote (string GUIDOfNoteToMove,  string GUIDOfLayoutToMoveItTo)
+		{
+			Notes.MoveNote(GUIDOfNoteToMove, GUIDOfLayoutToMoveItTo);
 		}
 	}
 }

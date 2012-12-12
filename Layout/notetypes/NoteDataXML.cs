@@ -119,6 +119,9 @@ namespace Layout
 			//Parent = null;
 			CreateParent(Layout);
 		}
+
+
+
 		/// <summary>
 		/// Updates the location, called when location is set outside actual movement.
 		/// TODO: Generalize this to UpdateAppearance?
@@ -132,10 +135,13 @@ namespace Layout
 			Parent.Location = Location;
 			Parent.Height = Height;
 			Parent.Width = Width;
+
+
+
 		}
 
 
-	
+
 
 	
 

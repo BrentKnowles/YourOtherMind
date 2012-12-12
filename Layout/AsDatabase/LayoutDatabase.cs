@@ -362,7 +362,39 @@ namespace Layout
 			BaseDatabase MyDatabase = CreateDatabase ();
 			return MyDatabase.Exists (tmpDatabaseConstants.table_name, tmpDatabaseConstants.GUID, GUID);
 		}
-		
+		/// <summary>
+		/// Gets the available folders. (notes in this collection that are of the folder type
+		/// </summary>
+		/// <returns>
+		/// The available folders.
+		/// </returns>
+		public System.Collections.Generic.List<NoteDataInterface> GetAvailableFolders ()
+		{
+			System.Collections.Generic.List<NoteDataInterface> result = new System.Collections.Generic.List<NoteDataInterface> ();
+			foreach (NoteDataInterface note in GetNotes ()) {
+				if (true == note.IsPanel)
+					result.Add (note);
+			}
+			return result;
+		}
+		/// <summary>
+		/// Moves the note from one Layout to another.
+		/// 
+		/// THe layout that is OWNING this currently is the one that called the MOVE
+		/// </summary>
+		/// <param name='GUIDOfNoteToMove'>
+		/// GUID of note to move.
+		/// </param>
+		/// <param name='GUIDOfLayoutToMoveItTo'>
+		/// GUID of layout to move it to.
+		/// </param>
+		public void MoveNote (string GUIDOfNoteToMove, string GUIDOfLayoutToMoveItTo)
+		{
+			string GUIDOfLayoutThatOwnsIt = this.LayoutGUID;
+			Console.WriteLine(String.Format ("{0} {1} {2}", GUIDOfNoteToMove, GUIDOfLayoutThatOwnsIt, GUIDOfLayoutToMoveItTo));
+		}
+
+
 		/*Not needed?
 		private List<NoteDataInterface> DataForThisLayout {
 			get { return dataForThisLayout;}
@@ -381,8 +413,21 @@ namespace Layout
 				dataForThisLayout.Add ((NoteDataXML)note);
 			}
 		}
-		//would this list actually be a NoteDataList BARTER type of class that stores the List
-		//this class is actually what ANOTHER page might call (for Random Tables)
+		/// <summary>
+		/// Searches for a NoteList note and calls its update function [does it call them all? Yeah, probably]
+		/// </summary>
+		public void UpdateListOfNotes ()
+		{
+			// search for a NoteDataXLM_NOteList
+			foreach (NoteDataInterface note in GetNotes ()) {
+				if (note is NoteDataXML_NoteList)
+				{
+					(note as NoteDataXML_NoteList).UpdateList(GetNotes ());
+				}
+			}
+
+
+		}
 	}
 }
 

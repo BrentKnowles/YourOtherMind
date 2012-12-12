@@ -41,6 +41,9 @@ namespace Layout
 		public abstract  void LoadLayout(string GUID);
 		
 		public abstract  void AddNote();
+
+		public abstract System.Collections.Generic.List<NoteDataInterface> GetAvailableFolders();
+		public abstract void MoveNote (string GUIDOfNoteToMove, string GUIDOfLayoutToMoveItTo);
 	}
 }
 

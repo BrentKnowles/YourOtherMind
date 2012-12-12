@@ -434,6 +434,7 @@ namespace Testing
 			//NOT DONE YET
 			Assert.AreEqual (6, count2); 
 			Assert.AreEqual (60, subnotecount); 
+			Assert.AreEqual (count2, layout.GetAvailableFolders().Count);
 			Assert.AreEqual (91, layout.GetAllNotes().Count); 
 		}
 		[Test]
