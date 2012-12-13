@@ -347,6 +347,7 @@ namespace Layout
 
 				} catch (Exception ex) {
 					AmSaving = false;
+					Console.WriteLine("save exception happened");
 					throw new Exception (String.Format ("Must call CreateParent before calling Save or Update!! Exception: {0}", ex.ToString ()));
 					//lg.Instance.Line("LayoutDatabase.SaveTo", ProblemType.EXCEPTION, ex.ToString());
 				}

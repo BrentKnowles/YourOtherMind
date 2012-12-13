@@ -173,6 +173,7 @@ namespace Testing
 			_w.output("new guid" + guid);
 			layout.Add (note);
 			layout.SaveTo ();
+			_w.output ("save worked");
 		}
 
 		/// <summary>
