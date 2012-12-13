@@ -22,7 +22,7 @@ namespace Layout
 		#region TEMPVARIABLES
 
 		TextBox text = null;
-		PropertyGrid grid = null;
+
 		#endregion
 
 		LayoutInterface Notes = null;
@@ -41,7 +41,9 @@ namespace Layout
 
 
 			//Type[] typeList = LayoutDetails.Instance.TypeList;
-			LayoutDetails.Instance.AddToList(typeof(NoteDataXML_Panel), "Panel");
+
+
+			LayoutDetails.Instance.AddToList(typeof(NoteDataXML_Panel), new NoteDataXML_Panel().RegisterType());
 
 			/*Type[] newTypeList = new Type[typeList.Length + 1];
 
@@ -88,11 +90,7 @@ namespace Layout
 
 
 
-			grid = new PropertyGrid();
-			grid.Parent = this;
-			grid.Width = 125;
-			grid.Dock = DockStyle.Right;
-			grid.PropertyValueChanged += HandlePropertyValueChanged;
+
 
 			Label label = new Label();
 			label.Text = "Remember to save";
@@ -111,6 +109,15 @@ namespace Layout
 			 The NoteData will never REFERENCE the actual GUI elements however.
 			 Also play with the Unit test example that StackOverflow had, this seems interest
 			 */
+		}
+		public override string Backup ()
+		{
+			if (Notes == null) {
+				NewMessage.Show (Loc.Instance.Cat.GetString("Please load a layout first"));
+				return "";
+			} else {
+				return Notes.Backup();
+			}
 		}
 		/// <summary>
 		/// Create buttons with the list of types we can make
@@ -178,6 +185,7 @@ namespace Layout
 				note.CreateParent (this);
 			
 				UpdateListOfNotes ();
+				SetSaveRequired (true); // TODO: Also need to go through and hook delegates/callbacks for when a note itself changes.
 				}
 				else
 				{
@@ -186,15 +194,7 @@ namespace Layout
 			}
 		}
 
-		void HandlePropertyValueChanged (object s, PropertyValueChangedEventArgs e)
-		{
-
-			((NoteDataXML)grid.SelectedObject).UpdateLocation();
-			((NoteDataXML)grid.SelectedObject).Update(this);
-			// when list is updated we are no longer the selected object
-			UpdateListOfNotes();
-
-		}
+	
 	
 
 
@@ -221,13 +221,16 @@ namespace Layout
 		public override void SaveLayout ()
 		{
 			if (null != Notes) {
-				Notes.SaveTo();
-				/*
-				foreach (NoteDataInterface data in Notes.GetNotes()) {
-					NewMessage.Show (data.Caption);
-					Console.WriteLine (((NoteDataXML)data).JustXMLONLYTest);
-					//data.CreateParent(); This is bad design though: use the itnerface.
-				}*/
+				lg.Instance.Line("LayoutPanel.SaveLayout", ProblemType.MESSAGE, "Saved");
+				if (Notes.SaveTo() == true)
+				{
+				SetSaveRequired (false);
+				}
+				else
+				{
+					NewMessage.Show (Loc.Instance.Cat.GetString("This note is already being saved. Try again."));
+				}
+
 			}
 			else
 			{
@@ -236,7 +239,7 @@ namespace Layout
 		}
 
 
-		private void UpdateListOfNotes ()
+		public override void UpdateListOfNotes ()
 		{
 
 
@@ -245,6 +248,10 @@ namespace Layout
 		}
 		public override void LoadLayout (string GUID)
 		{
+
+			// ToDO: Check for save first!
+
+			NoteCanvas.Controls.Clear ();
 			// disable autoscroll because if an object is loaded off-screen before others it changes the centering of every object
 			NoteCanvas.AutoScroll = false;
 
@@ -305,6 +312,11 @@ namespace Layout
 		public override void MoveNote (string GUIDOfNoteToMove,  string GUIDOfLayoutToMoveItTo)
 		{
 			Notes.MoveNote(GUIDOfNoteToMove, GUIDOfLayoutToMoveItTo);
+		}
+
+		public override void SetSaveRequired (bool NeedSave)
+		{
+			_saverequired = NeedSave;
 		}
 	}
 }

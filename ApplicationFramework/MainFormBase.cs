@@ -6,21 +6,45 @@ namespace appframe
 {
 	public class MainFormBase :  System.Windows.Forms.Form
 	{
+		#region variables
+
+		private string FindMenu {
+			get { return Loc.Instance.Cat.GetString ("File");}
+		}
+		private ToolStripMenuItem FindMenuItem;
+
+		#endregion
+
 		#region gui
 		protected MenuStrip MainMenu;
+
+
+
 		#endregion
 		public MainFormBase ()
 		{
 			//Mono.Unix.Catalog.Init ("yom", "strings");
 			//Console.WriteLine(Mono.Unix.Catalog.GetString("Hello world!"));
 			MainMenu = new MenuStrip();
-			ToolStripMenuItem item = new ToolStripMenuItem(Loc.Instance.Cat.GetString("File"));
+			FindMenuItem = new ToolStripMenuItem(FindMenu);
 			
-			MainMenu.Items.Add (item);
+			MainMenu.Items.Add (FindMenuItem);
 			this.Controls.Add(MainMenu);
 			
 
 		}
+		/// <summary>
+		/// Gets the file menu.
+		/// </summary>
+		/// <returns>
+		/// The file menu.
+		/// </returns>
+		public ToolStripMenuItem GetFileMenu ()
+		{
+			return FindMenuItem;
+			//return (ToolStripMenuItem)MainMenu.Items.Find (FindMenu, true)[0];
+		}
+
 
 		/// <summary>
 		/// Pushes screens across both monitors

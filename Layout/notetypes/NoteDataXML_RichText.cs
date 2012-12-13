@@ -15,10 +15,12 @@ namespace Layout
 			Caption = Loc.Instance.Cat.GetString("Text Note");
 		}
 
-		public override void Save()
+		public override void Save ()
 		{
-			base.Save();
-			this.Data1 = richBox.Rtf;
+			base.Save ();
+			if (richBox != null) {
+				this.Data1 = richBox.Rtf;
+			}
 		}
 		/// <summary>
 		/// returns the text as text
@@ -40,7 +42,20 @@ namespace Layout
 			richBox.Dock = DockStyle.Fill;
 			richBox.BringToFront();
 			richBox.Rtf = this.Data1;
+			richBox.TextChanged+= HandleTextChanged;
 		
+		}
+
+		void HandleTextChanged (object sender, EventArgs e)
+		{
+			this.SetSaveRequired(true);
+		}
+		/// <summary>
+		/// Registers the type.
+		/// </summary>
+		public override string RegisterType()
+		{
+			return Loc.Instance.Cat.GetString("Text");
 		}
 	}
 }

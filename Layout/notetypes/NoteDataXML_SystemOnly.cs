@@ -1,4 +1,5 @@
 using System;
+using CoreUtilities;
 
 namespace Layout
 {
@@ -12,6 +13,13 @@ namespace Layout
 	{
 		public NoteDataXML_SystemOnly ()
 		{
+		}
+		/// <summary>
+		/// Registers the type.
+		/// </summary>
+		public override string RegisterType()
+		{
+			return Loc.Instance.Cat.GetString("System");
 		}
 	}
 }

@@ -9,7 +9,10 @@ namespace Layout
 		}
 		#region variables
 		private string _guid = CoreUtilities.Constants.BLANK;
-		private bool _saverequired = false;
+		protected bool _saverequired = false;
+
+
+
 		// storing reference to Interface, allowing a data swapout later
 
 		/// <summary>
@@ -28,10 +31,12 @@ namespace Layout
 		/// <value>
 		/// <c>true</c> if saved required; otherwise, <c>false</c>.
 		/// </value>
-		public bool SaveRequired {
+		public bool GetSaveRequired {
 			get{ return _saverequired;}
-			set { _saverequired = value;}
+		//	set { _saverequired = value;} Must set this through function
 		}
+
+
 #endregion
 
 		#region gui
@@ -44,6 +49,9 @@ namespace Layout
 
 		public abstract System.Collections.Generic.List<NoteDataInterface> GetAvailableFolders();
 		public abstract void MoveNote (string GUIDOfNoteToMove, string GUIDOfLayoutToMoveItTo);
+		public abstract string Backup();
+		public abstract void SetSaveRequired(bool NeedSave);
+		public abstract void UpdateListOfNotes ();
 	}
 }
 

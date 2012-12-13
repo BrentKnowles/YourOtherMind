@@ -475,6 +475,52 @@ namespace Testing
 
 			Assert.True (layout.Exists("testguid"));
 		}
+		[Test]
+		public void SaveNotequired()
+		{	_setupforlayoutests ();
+			int count = 25;
+			FakeLayoutDatabase layout = new FakeLayoutDatabase ("testguid");
+			LayoutPanel layoutPanel = new LayoutPanel ();
+			
+			NoteDataXML_RichText note = new NoteDataXML_RichText ();
+			for (int i = 0; i < count; i++) {
+				note.CreateParent(layoutPanel);
+				note.Caption = "boo" + i.ToString ();
+				//note.UpdateLocation();
+				layout.Add (note);
+			}
+			// cannot actually save becaue LayoutPanel is just fake for this test
+			// but we check that the flag was set correclty -- i..e, nothing improtant changes, nothing needs tob e saved
+			//	layout.SaveTo(); 
+			//layoutPanel.SaveLayout();
+			Assert.False (layoutPanel.GetSaveRequired);	
+			
+		}
+
+		[Test]
+		public void SaveRequired()
+		{	_setupforlayoutests ();
+			int count = 25;
+			FakeLayoutDatabase layout = new FakeLayoutDatabase ("testguid");
+			LayoutPanel layoutPanel = new LayoutPanel ();
+			
+			NoteDataXML_RichText note = new NoteDataXML_RichText ();
+			for (int i = 0; i < count; i++) {
+				note.CreateParent(layoutPanel);
+				note.Caption = "boo" + i.ToString ();
+				note.UpdateLocation();
+				layout.Add (note);
+			}
+			//layout.SaveTo(); 
+			Assert.True (layoutPanel.GetSaveRequired);	
+
+		}
+
+		[Test]
+		public void MoveNoteTest()
+		{
+			Assert.True (false);
+		}
 	}
 }
 

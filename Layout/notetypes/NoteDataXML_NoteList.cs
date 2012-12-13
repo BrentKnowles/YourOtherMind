@@ -1,6 +1,6 @@
 using System;
 using System.Windows.Forms;
-
+using CoreUtilities;
 namespace Layout
 {
 	/// <summary>
@@ -48,6 +48,16 @@ namespace Layout
 		{
 			//grid.SelectedObject = (NoteDataXML)list.SelectedItem;
 		}
+		/// <summary>
+		/// Registers the type.
+		/// </summary>
+		public override string RegisterType()
+		{
+			return Loc.Instance.Cat.GetString("List");
+		}
+		
+	
 	}
+
 }
 

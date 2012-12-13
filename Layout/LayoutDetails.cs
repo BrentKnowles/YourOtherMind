@@ -12,17 +12,26 @@ namespace Layout
 		protected static volatile LayoutDetails instance;
 		protected static object syncRoot = new Object();
 		
-
-#endregion;
+		public string Path {
+			get {
+				string path = System.IO.Path.Combine (Environment.GetFolderPath (Environment.SpecialFolder.MyDocuments), "YOMDEBUG");
+				if (!System.IO.Directory.Exists (path)) {
+					System.IO.Directory.CreateDirectory(path);
+				}
+				return path;
+			}
+		}
+		#endregion;
 		public LayoutDetails ()
 		{
 			//TypeList = new Type[4] {typeof(NoteDataXML), typeof(NoteDataXML_RichText), typeof(NoteDataXML_NoteList), typeof(NoteDataXML_SystemOnly)};
 			TypeList = new ArrayList();
 			NameList = new ArrayList();
-			AddToList(typeof(NoteDataXML),Loc.Instance.Cat.GetString("Label"));
-			AddToList(typeof(NoteDataXML_RichText),Loc.Instance.Cat.GetString("Text"));
-			AddToList (typeof(NoteDataXML_NoteList),Loc.Instance.Cat.GetString("List"));
-			AddToList (typeof(NoteDataXML_SystemOnly),Loc.Instance.Cat.GetString("System**"));
+
+			AddToList(typeof(NoteDataXML),new NoteDataXML().RegisterType());
+			AddToList(typeof(NoteDataXML_RichText),new NoteDataXML_RichText().RegisterType ());
+			AddToList (typeof(NoteDataXML_NoteList),new NoteDataXML_NoteList().RegisterType());
+			AddToList (typeof(NoteDataXML_SystemOnly),new NoteDataXML_SystemOnly().RegisterType());
 
 
 		}

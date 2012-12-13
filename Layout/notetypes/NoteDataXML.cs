@@ -30,6 +30,7 @@ namespace Layout
 		{
 			Caption = Loc.Instance.Cat.GetString("Blank Note");
 			GuidForNote = System.Guid.NewGuid().ToString();
+		
 		}
 		private string _GuidForNote;
 		/// <summary>
@@ -103,7 +104,7 @@ namespace Layout
 
 		public virtual void Save()
 		{
-			// save UI elements to XML fiellds, *if* necessary
+			// save additional UI elements to XML fiellds, *if* necessary
 		}
 
 		/// <summary>
@@ -135,12 +136,17 @@ namespace Layout
 			Parent.Location = Location;
 			Parent.Height = Height;
 			Parent.Width = Width;
-
+			SetSaveRequired(true);
 
 
 		}
-
-
+		/// <summary>
+		/// Registers the type.
+		/// </summary>
+		public virtual string RegisterType()
+		{
+			return Loc.Instance.Cat.GetString("Label");
+		}
 
 
 	

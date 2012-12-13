@@ -15,12 +15,13 @@ namespace Layout
 
 		// we keep this as a protected string so that unit testing can override it 
 		protected virtual string YOM_DATABASE {
-			get { return "yomdata.s3db";}
+			get { return System.IO.Path.Combine (LayoutDetails.Instance.Path, "yomdata.s3db");}
 		}
 
-		// TODO: this variable is stored on LOAD and a simple message is written out on Save if it is less than it started out being
+		// just a debug counter to see if anything weird is happening on save and load
 		protected int debug_ObjectCount = 0;
-
+		// keeps track of whether we are tryign to save. Only one at a time allowed
+		private bool AmSaving = false;
 		//This is the list of notes
 		private List<NoteDataInterface> dataForThisLayout= null;
 		//These are the OTHER variables (like status) associated with this note
@@ -248,7 +249,8 @@ namespace Layout
 				}
 			} 
 
-
+			long workingSet = System.Diagnostics.Process.GetCurrentProcess().WorkingSet64;
+			lg.Instance.Line("LoadFrom", ProblemType.TEMPORARY, workingSet.ToString());
 			return Success;
 
 		}
@@ -260,96 +262,101 @@ namespace Layout
 		/// <returns>
 		/// The to.
 		/// </returns>
-		public void SaveTo ()
+		public bool SaveTo ()
 		{
-			if (LayoutGUID == CoreUtilities.Constants.BLANK) {
-				throw new Exception ("GUID need to be set before calling SaveTo");
-			}
-			string XMLAsString = CoreUtilities.Constants.BLANK;
+			bool saveworked= false;
+			if (false == AmSaving) {
+				AmSaving = true;
 
-			BaseDatabase MyDatabase = CreateDatabase ();
+				if (LayoutGUID == CoreUtilities.Constants.BLANK) {
+					throw new Exception ("GUID need to be set before calling SaveTo");
+				}
+				string XMLAsString = CoreUtilities.Constants.BLANK;
 
-			if (MyDatabase == null) {
-				throw new Exception("Unable to create database in SaveTo");
-			}
+				BaseDatabase MyDatabase = CreateDatabase ();
 
-
-			// we are storing a LIST of NoteDataXML objects
-			//	CoreUtilities.General.Serialize(dataForThisLayout, CreateFileName());
-			try {
-				
-				NoteDataXML[] ListAsDataObjectsOfType = new NoteDataXML[dataForThisLayout.Count];
-				dataForThisLayout.CopyTo (ListAsDataObjectsOfType);
-				
-				// doing some data tracking to try to detect save failures later
-				if (ListAsDataObjectsOfType.Length < debug_ObjectCount)
-				{
-					lg.Instance.Line("LayoutDatabase.SaveTo", ProblemType.WARNING, String.Format ("Less objects being saved than loaded. Loaded {0}. Saved {0}.",
-					                                                                              ListAsDataObjectsOfType.Length , debug_ObjectCount));
+				if (MyDatabase == null) {
+					throw new Exception ("Unable to create database in SaveTo");
 				}
 
-				foreach (NoteDataInterface note in ListAsDataObjectsOfType)
-				{
-					// saves the actual UI elements
-					note.Save();
 
-				}
-				debug_ObjectCount = ListAsDataObjectsOfType.Length;
+				// we are storing a LIST of NoteDataXML objects
+				//	CoreUtilities.General.Serialize(dataForThisLayout, CreateFileName());
+				try {
+				
+					NoteDataXML[] ListAsDataObjectsOfType = new NoteDataXML[dataForThisLayout.Count];
+					dataForThisLayout.CopyTo (ListAsDataObjectsOfType);
+				
+					// doing some data tracking to try to detect save failures later
+					if (ListAsDataObjectsOfType.Length < debug_ObjectCount) {
+						lg.Instance.Line ("LayoutDatabase.SaveTo", ProblemType.WARNING, String.Format ("Less objects being saved than loaded. Loaded {0}. Saved {0}.",
+					                                                                              ListAsDataObjectsOfType.Length, debug_ObjectCount));
+					}
+
+					foreach (NoteDataInterface note in ListAsDataObjectsOfType) {
+						// saves the actual UI elements
+						note.Save ();
+
+					}
+					debug_ObjectCount = ListAsDataObjectsOfType.Length;
 			
-			  System.Xml.Serialization.XmlSerializer x3 = 
+					System.Xml.Serialization.XmlSerializer x3 = 
 					new System.Xml.Serialization.XmlSerializer (typeof(NoteDataXML[]), 
-					                                            LayoutDetails.Instance.ListOfTypesToStoreInXML());
+					                                            LayoutDetails.Instance.ListOfTypesToStoreInXML ());
 
-				/*This worked but would need to iterate and get a list of all potential types present, not just the first, else it will fail withmixed types
+					/*This worked but would need to iterate and get a list of all potential types present, not just the first, else it will fail withmixed types
 				System.Xml.Serialization.XmlSerializer x4 = 
 					new System.Xml.Serialization.XmlSerializer (ListAsDataObjectsOfType.GetType(), 
 					                                            new Type[1] {ListAsDataObjectsOfType[0].GetType()});
 */
-				System.IO.StringWriter sw = new System.IO.StringWriter();
-				//sw.Encoding = "";
-				x3.Serialize (sw, ListAsDataObjectsOfType);
-				//x3.Serialize (sw, ListAsDataObjectsOfType,ns, "utf-8");
-				XMLAsString =sw.ToString();
-				sw.Close ();
+					System.IO.StringWriter sw = new System.IO.StringWriter ();
+					//sw.Encoding = "";
+					x3.Serialize (sw, ListAsDataObjectsOfType);
+					//x3.Serialize (sw, ListAsDataObjectsOfType,ns, "utf-8");
+					XMLAsString = sw.ToString ();
+					sw.Close ();
 
 
-				// here is where we need to test whether the Data exists
+					// here is where we need to test whether the Data exists
 
-				if (MyDatabase.Exists(tmpDatabaseConstants.table_name, tmpDatabaseConstants.GUID, LayoutGUID) == false)
-				    {
-					lg.Instance.Line("LayoutDatabase.SaveTo", ProblemType.MESSAGE, "We have new data. Adding it.");
-				// IF NOT, Insert
-				MyDatabase.InsertData(tmpDatabaseConstants.table_name, 
+					if (MyDatabase.Exists (tmpDatabaseConstants.table_name, tmpDatabaseConstants.GUID, LayoutGUID) == false) {
+						lg.Instance.Line ("LayoutDatabase.SaveTo", ProblemType.MESSAGE, "We have new data. Adding it.");
+						// IF NOT, Insert
+						MyDatabase.InsertData (tmpDatabaseConstants.table_name, 
 				                      tmpDatabaseConstants.Columns,
 				                      new object[tmpDatabaseConstants.ColumnCount]
 				                      {"NULL",LayoutGUID, XMLAsString, Status,Name});
 
-				}
-				else
-				{
-					//TODO: Still need to save all the object properties out. And existing data.
+					} else {
+						//TODO: Still need to save all the object properties out. And existing data.
 
-					lg.Instance.Line("LayoutDatabase.SaveTo", ProblemType.MESSAGE, "We are UPDATING existing Row." + LayoutGUID);
-				MyDatabase.UpdateSpecificColumnData(tmpDatabaseConstants.table_name, 
-					                                    new string[tmpDatabaseConstants.ColumnCount-1]{tmpDatabaseConstants.GUID, tmpDatabaseConstants.XML, tmpDatabaseConstants.STATUS,
+						lg.Instance.Line ("LayoutDatabase.SaveTo", ProblemType.MESSAGE, "We are UPDATING existing Row." + LayoutGUID);
+						MyDatabase.UpdateSpecificColumnData (tmpDatabaseConstants.table_name, 
+					                                    new string[tmpDatabaseConstants.ColumnCount - 1]{tmpDatabaseConstants.GUID, tmpDatabaseConstants.XML, tmpDatabaseConstants.STATUS,
 						tmpDatabaseConstants.NAME},
-				                                    new object[tmpDatabaseConstants.ColumnCount-1]
+				                                    new object[tmpDatabaseConstants.ColumnCount - 1]
 				                                    {
 						LayoutGUID as string, 
 						XMLAsString as string, 
 						Status as string
 					,Name},
 				tmpDatabaseConstants.GUID, LayoutGUID);
+					}
+
+
+
+				} catch (Exception ex) {
+					AmSaving = false;
+					throw new Exception (String.Format ("Must call CreateParent before calling Save or Update!! Exception: {0}", ex.ToString ()));
+					//lg.Instance.Line("LayoutDatabase.SaveTo", ProblemType.EXCEPTION, ex.ToString());
 				}
-
-
-
-			} catch (Exception ex) {
-
-				throw new Exception(String.Format ("Must call CreateParent before calling Save or Update!! Exception: {0}", ex.ToString()));
-				//lg.Instance.Line("LayoutDatabase.SaveTo", ProblemType.EXCEPTION, ex.ToString());
+				AmSaving = false;
+				saveworked = true;
+			} else {
+				// we were already saving information when this was called again
+				saveworked = false;
 			}
-		
+			return saveworked;
 		}
 		/// <summary>
 		/// Does the specified GUID exist?
@@ -377,6 +384,16 @@ namespace Layout
 			}
 			return result;
 		}
+
+		private static bool FindGUID (NoteDataInterface note, string guid)
+		{
+			if (note.GuidForNote == "") {
+				return true;
+			} else {
+				return false;
+			}
+		}
+
 		/// <summary>
 		/// Moves the note from one Layout to another.
 		/// 
@@ -391,7 +408,36 @@ namespace Layout
 		public void MoveNote (string GUIDOfNoteToMove, string GUIDOfLayoutToMoveItTo)
 		{
 			string GUIDOfLayoutThatOwnsIt = this.LayoutGUID;
-			Console.WriteLine(String.Format ("{0} {1} {2}", GUIDOfNoteToMove, GUIDOfLayoutThatOwnsIt, GUIDOfLayoutToMoveItTo));
+
+			SaveTo ();
+
+			// grab note out of the list
+			NoteDataInterface NoteToMove = dataForThisLayout.Find (NoteDataInterface=>NoteDataInterface.GuidForNote == GUIDOfNoteToMove);
+			if (NoteToMove != null) {
+				Console.WriteLine ("moving " + NoteToMove.Caption);
+				LayoutDatabase newLayout = new LayoutDatabase(GUIDOfLayoutToMoveItTo);
+				newLayout.LoadFrom (null);
+				newLayout.Add (NoteToMove);
+				try
+				{
+					Console.WriteLine ("before save");
+				newLayout.SaveTo();
+					Console.WriteLine ("after save");
+				}
+				catch (Exception ex)
+				{
+					Console.WriteLine (ex.ToString());
+				}
+
+				// how to load new object
+				if (dataForThisLayout.Remove (NoteToMove) == false)
+				{
+					lg.Instance.Line("LayoutDatabase.MoveNote", ProblemType.WARNING,"Was unable to move this note");
+				}
+				//need to reload the Layout We Added To First before saving this layotu
+				//SaveTo();
+			}
+			Console.WriteLine(String.Format ("MOVE DONE {0} {1} {2}", GUIDOfNoteToMove, GUIDOfLayoutThatOwnsIt, GUIDOfLayoutToMoveItTo));
 		}
 
 

@@ -46,6 +46,7 @@ namespace Layout
 		void Save();
 		void Update(LayoutPanelBase Layout);
 
+		string RegisterType();
 
 		/// <summary>
 		/// Updates the location, called when location is set outside actual movement.

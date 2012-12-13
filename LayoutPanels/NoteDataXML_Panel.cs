@@ -66,6 +66,13 @@ namespace LayoutPanels
 			panelLayout.BringToFront();
 			
 		}
+		/// <summary>
+		/// Registers the type.
+		/// </summary>
+		public override string RegisterType()
+		{
+			return Loc.Instance.Cat.GetString("Panel");
+		}
 	}
 }
 

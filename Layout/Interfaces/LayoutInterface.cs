@@ -33,7 +33,7 @@ namespace Layout
 		/// </param>
 		bool LoadFrom(LayoutPanelBase parent);
 
-		void SaveTo ();
+		bool SaveTo ();
 
 		string Backup();
 		bool Exists (string GUID);
