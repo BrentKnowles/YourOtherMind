@@ -46,7 +46,7 @@ namespace Layout
 		System.Collections.ObjectModel.ReadOnlyCollection<NoteDataInterface>  GetNotes();
 		NoteDataInterface GetNoteByGUID(string GUID);
 		System.Collections.Generic.List<NoteDataInterface> GetAvailableFolders ();
-		void MoveNote (string GUIDOfNoteToMove, string GUIDOfLayoutToMoveItTo);
+		void MoveNote (NoteDataInterface NoteToMove);
 		void UpdateListOfNotes();
 	}
 }

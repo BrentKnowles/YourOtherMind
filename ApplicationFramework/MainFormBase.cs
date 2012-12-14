@@ -1,6 +1,7 @@
 using System;
 using System.Windows.Forms;
 using CoreUtilities;
+using Layout;
 
 namespace appframe
 {
@@ -30,8 +31,19 @@ namespace appframe
 			
 			MainMenu.Items.Add (FindMenuItem);
 			this.Controls.Add(MainMenu);
-			
+			this.FormClosing+= HandleFormClosing;
 
+		}
+
+		void HandleFormClosing (object sender, FormClosingEventArgs e)
+		{
+			if (CoreUtilities.File.CheckForFileError () == true) {
+				// if this is true it means the harddrive if failing to write
+				// which means we abort the app without proper shutdown
+				NewMessage.Show ("Your harddrive failed to write a TEST file. Because this might mean you are suffering harddrive failure we are aborting WITHOUT saving any existing files so that we do not CORRUPT them.");
+				// we also set a variable to inform others of this
+				LayoutDetails.Instance.ForceShutdown = true;
+			}
 		}
 		/// <summary>
 		/// Gets the file menu.

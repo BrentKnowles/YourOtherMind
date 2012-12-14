@@ -43,8 +43,11 @@ namespace Layout
 		/// Layout.
 		/// </param>
 		void CreateParent(LayoutPanelBase Layout);
-		void Save();
 		void Update(LayoutPanelBase Layout);
+		void Destroy();
+
+		void Save();
+
 
 		string RegisterType();
 

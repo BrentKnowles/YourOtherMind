@@ -19,7 +19,13 @@ namespace Testing
 		[Test]
 		public void TestForBlankFileThatIsNotBlank()
 		{
-			Assert.True (false);
+			Assert.False (CoreUtilities.File.DoesThisFileHaveErrors(@"C:\Users\Brent\Documents\Keeper\Files\brokenfiles2012\notbroken.txt"));
+		}
+
+		[Test]
+		public void TestForHdriveFailure()
+		{
+			Assert.False (CoreUtilities.File.CheckForFileError());
 		}
 	}
 }

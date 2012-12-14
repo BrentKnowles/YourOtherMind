@@ -72,8 +72,13 @@ namespace YOM2013
 
 		void HandleFormClosed (object sender, FormClosedEventArgs e)
 		{
-			if (true == CurrentLayout.GetSaveRequired) {
-				NewMessage.Show ("shoulda saved");
+			if (false == LayoutDetails.Instance.ForceShutdown) {
+				if (true == CurrentLayout.GetSaveRequired) {
+					NewMessage.Show ("shoulda saved");
+				}
+			} else {
+				// we DO NOT allow subforms to save in the situation where there might be corruption
+				NewMessage.Show ("Shutting down without saving due to file corruption");
 			}
 			Application.Exit ();
 		}

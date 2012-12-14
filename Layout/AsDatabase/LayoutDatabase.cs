@@ -406,17 +406,32 @@ namespace Layout
 		/// <param name='GUIDOfLayoutToMoveItTo'>
 		/// GUID of layout to move it to.
 		/// </param>
-		public void MoveNote (string GUIDOfNoteToMove, string GUIDOfLayoutToMoveItTo)
+		/// <returns>The Layout where the Note was Added to</returns>
+		public void MoveNote (NoteDataInterface NoteToMove)
 		{
+			//NoteDataInterface NoteToMove = dataForThisLayout.Find (NoteDataInterface => NoteDataInterface.GuidForNote == GUIDOfNoteToMove);
+			if (NoteToMove != null) {
+				NoteToMove.Destroy();
+				if (dataForThisLayout.Remove (NoteToMove) == false)
+				{
+					lg.Instance.Line("LayoutDatabase.MoveNote", ProblemType.WARNING,"Was unable to REmove this note");
+				}
+			}
+
+
+
+			/*
+			// Take 1 -- seemed too complicated
 			string GUIDOfLayoutThatOwnsIt = this.LayoutGUID;
 
 			SaveTo ();
+			LayoutDatabase newLayout = null;
 
 			// grab note out of the list
 			NoteDataInterface NoteToMove = dataForThisLayout.Find (NoteDataInterface=>NoteDataInterface.GuidForNote == GUIDOfNoteToMove);
 			if (NoteToMove != null) {
 				Console.WriteLine ("moving " + NoteToMove.Caption);
-				LayoutDatabase newLayout = new LayoutDatabase(GUIDOfLayoutToMoveItTo);
+				newLayout = new LayoutDatabase(GUIDOfLayoutToMoveItTo);
 				newLayout.LoadFrom (null);
 				newLayout.Add (NoteToMove);
 				try
@@ -433,12 +448,15 @@ namespace Layout
 				// how to load new object
 				if (dataForThisLayout.Remove (NoteToMove) == false)
 				{
-					lg.Instance.Line("LayoutDatabase.MoveNote", ProblemType.WARNING,"Was unable to move this note");
+					lg.Instance.Line("LayoutDatabase.MoveNote", ProblemType.WARNING,"Was unable to REmove this note");
 				}
-				//need to reload the Layout We Added To First before saving this layotu
+				// We do the rest of these steps in the LayoutPanel that called this routine
+				// need to reload the Layout We Added To First before saving this layotu
 				//SaveTo();
 			}
 			Console.WriteLine(String.Format ("MOVE DONE {0} {1} {2}", GUIDOfNoteToMove, GUIDOfLayoutThatOwnsIt, GUIDOfLayoutToMoveItTo));
+			return newLayout;*/
+		
 		}
 
 

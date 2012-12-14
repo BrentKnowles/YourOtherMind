@@ -82,6 +82,7 @@ namespace Layout
 			PropertyPanel.Parent = Parent;
 			PropertyPanel.Height = 300;
 			PropertyPanel.Dock = DockStyle.Top;
+			PropertyPanel.AutoScroll = true;
 
 			 propertyGrid = new PropertyGrid();
 			propertyGrid.SelectedObject = this;
@@ -91,6 +92,13 @@ namespace Layout
 
 			propertyGrid.Dock = DockStyle.Fill;
 
+			Button CommitChanges = new Button();
+			CommitChanges.Text = "commit";
+			CommitChanges.Parent = PropertyPanel;
+			CommitChanges.Dock = DockStyle.Bottom;
+			CommitChanges.Click += HandleCommitChangesClick;
+			CommitChanges.BringToFront();
+
 			GetAvailableFolders = _Layout.GetAvailableFolders;
 			MoveNote = _Layout.MoveNote;
 			SetSaveRequired = _Layout.SetSaveRequired;
@@ -98,12 +106,16 @@ namespace Layout
 			Layout = _Layout;
 		}
 
+		void HandleCommitChangesClick (object sender, EventArgs e)
+		{
+			((NoteDataXML)propertyGrid.SelectedObject).Update(Layout);
+		}
+
 		void HandlePropertyValueChanged (object s, PropertyValueChangedEventArgs e)
 		{
-			//((NoteDataXML)propertyGrid.SelectedObject).UpdateLocation();
-			((NoteDataXML)propertyGrid.SelectedObject).Update(Layout);
-			// when list is updated we are no longer the selected object
-			//Layout.UpdateListOfNotes();
+	// TODO: Finish reomving this if I don't need it
+
+	
 		}
 
 		void HandlePropertiesClick (object sender, EventArgs e)
@@ -111,9 +123,11 @@ namespace Layout
 
 			PropertyPanel.Visible = !PropertyPanel.Visible;
 			if (PropertyPanel.Visible == true) {
+
 				// TODO just a hack until sizing is in
-				Height = 500;
-				Width = 500;
+				Height = 200;
+				Width = 200;
+				PropertyPanel.AutoScroll = true;
 				//PropertyPanel.SendToBack();
 				//CaptionLabel.BringToFront();
 			CaptionLabel.SendToBack();
@@ -170,9 +184,25 @@ namespace Layout
 		void HandleMouseMove (object sender, MouseEventArgs e)
 		{
 			if (e.Button == MouseButtons.Left) {
-				this.location.X += e.X - PanelMouseDownLocation.X;
+
+
+				int X = this.location.X + e.X - PanelMouseDownLocation.X;
+				int Y = this.location.Y += e.Y - PanelMouseDownLocation.Y;
+				// do not allow to drag off screen into non-scrollable terrain
+				if (X < 0 )
+				{
+					X = 0;
+
+				}
+				if (Y < 0)
+				{
+					Y = 0;
+
+				}
+				this.Location = new Point(X,Y);
+				//this.location.X += e.X - PanelMouseDownLocation.X;
 				
-				this.location.Y += e.Y - PanelMouseDownLocation.Y;
+				//this.location.Y += e.Y - PanelMouseDownLocation.Y;
 				UpdateLocation ();
 			}
 		}

@@ -145,7 +145,8 @@ namespace Testing
 			Assert.AreEqual (200, layout.GetNotes().Count); 
 		}
 
-
+		/*// I made the decision to suppress Errors (hence not required CreateParent, for the purpose of MOVING notes
+		// This violated an earlier decision I had made and I had to disable the TryToSaveWithoutCreating a Parent Exception
 		[Test]
 		[ExpectedException]
 		public void TryToSaveWithoutCreatingAParent()
@@ -174,7 +175,7 @@ namespace Testing
 			layout.Add (note);
 			layout.SaveTo ();
 			_w.output ("save worked");
-		}
+		}*/
 
 		/// <summary>
 		/// Creates the lots of notes to test different types and return proper caption.

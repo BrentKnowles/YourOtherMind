@@ -21,12 +21,16 @@ namespace CoreUtilities
 		public static bool DoesThisFileHaveErrors (string file)
 		{
 			bool foundRealText = false;
+			//System.Text.RegularExpressions.Regex r = new System.Text.RegularExpressions.Regex("^[a-zA-Z0-9]*$");
 			using (StreamReader sr = new StreamReader(file))
 			{
 				String line = sr.ReadToEnd();
-				if (System.Text.RegularExpressions.Regex.IsMatch(line, @"^[a-zA-Z0-9]+$"))
+				//Console.WriteLine (line);
+				//if (string.IsNullOrWhiteSpace(line) == false)
+			//	if (r.IsMatch(line))
+				if (line.IndexOfAny(new char[5]{'a','i','o','u','e'}) > -1)
 				{
-
+					//Console.WriteLine ("found text");
 					foundRealText = true;
 
 				}
@@ -51,9 +55,14 @@ namespace CoreUtilities
 		/// 
 		/// 
 		/// </summary>
-		public static bool CheckForFileError()
+		public static bool CheckForFileError ()
 		{
-			return false;
+			string oldfile = Path.GetTempFileName();
+			using (StreamWriter sw = new StreamWriter(oldfile)) {
+				sw.Write ("This is a test file from coreutilities in YOM to make sure harddrive failure is not happening.");
+			}
+		
+			return DoesThisFileHaveErrors(oldfile);
 		}
 	}
 }

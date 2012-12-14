@@ -11,7 +11,9 @@ namespace Layout
 		#region variables
 		protected static volatile LayoutDetails instance;
 		protected static object syncRoot = new Object();
-		
+		// in rare case of harddrive failure this variable can be set and checked when the application closes to prevent saving empty files (December 2012)
+		// for YOM this is Set ONLY IN MainformBase
+		public bool ForceShutdown = false; 
 		public string Path {
 			get {
 				string path = System.IO.Path.Combine (Environment.GetFolderPath (Environment.SpecialFolder.MyDocuments), "YOMDEBUG");

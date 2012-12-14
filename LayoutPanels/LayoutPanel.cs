@@ -308,10 +308,60 @@ namespace Layout
 			return Notes.GetAvailableFolders();
 
 		}
-
-		public override void MoveNote (string GUIDOfNoteToMove,  string GUIDOfLayoutToMoveItTo)
+		public void AddNote(NoteDataInterface note)
 		{
-			Notes.MoveNote(GUIDOfNoteToMove, GUIDOfLayoutToMoveItTo);
+			Notes.Add (note);
+		}
+		public override void MoveNote (string GUIDOfNoteToMove, string GUIDOfLayoutToMoveItTo)
+		{
+			// Take 1 was using LayoutDatabase
+
+			// Take 2 - just manipulating the note arrays here and then saving?
+
+			//  a. find note we want to move
+			NoteDataXML_Panel newPanel = null;
+			NoteDataInterface movingNote = null;
+
+			foreach (NoteDataInterface note in Notes.GetNotes ()) {
+				if (note.GuidForNote == GUIDOfLayoutToMoveItTo && note.IsPanel == true) {
+					newPanel = (NoteDataXML_Panel)note;
+				}
+				if (note.GuidForNote == GUIDOfNoteToMove) {
+					movingNote = note;
+
+				}
+			}
+
+			if (newPanel == null || movingNote == null) {
+				NewMessage.Show (Loc.Instance.Cat.GetString ("Destination or note was null. No move"));
+				                 return;
+			}
+
+			// remove note
+			Notes.MoveNote(movingNote);
+			// add note
+			newPanel.AddNote(movingNote);
+			movingNote.Location = new Point(0,0);
+			SaveLayout();
+			// must save before calling this
+			newPanel.Update(this);
+
+
+			//  b. 
+
+
+			/*Take 1
+			Notes.MoveNote (GUIDOfNoteToMove, GUIDOfLayoutToMoveItTo);
+			foreach (NoteDataInterface note in Notes.GetNotes ()) {
+				if (note.GuidForNote == GUIDOfLayoutToMoveItTo)
+				{
+					note.CreateParent(this);
+				}
+			}
+			SaveLayout();
+			*/
+			// need to reload the Layout We Added To First before saving this layotu
+			//SaveTo();
 		}
 
 		public override void SetSaveRequired (bool NeedSave)

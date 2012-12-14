@@ -67,6 +67,7 @@ namespace Layout
 			set { 
 
 				location = value;
+
 			// TODO Can never have Interface actions here. They must occur elsewhere.
 			}
 		}
@@ -120,7 +121,15 @@ namespace Layout
 			//Parent = null;
 			CreateParent(Layout);
 		}
-
+		/// <summary>
+		/// Destroy this instance.
+		/// 
+		/// Called during a move (and probably a delete when they get there
+		/// </summary>
+		public void Destroy()
+		{
+			Parent.Dispose ();
+		}
 
 
 		/// <summary>

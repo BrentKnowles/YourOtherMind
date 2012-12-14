@@ -43,7 +43,16 @@ namespace LayoutPanels
 			return layout.GetNotes();
 
 		}
-
+		/// <summary>
+		/// Adds the note. (during a move operation. Called from LayoutPanel)
+		/// </summary>
+		/// <param name='note'>
+		/// Note.
+		/// </param>
+		public void AddNote (NoteDataInterface note)
+		{
+			panelLayout.AddNote (note);
+		}
 		public override void Save()
 		{
 			base.Save();
@@ -54,6 +63,7 @@ namespace LayoutPanels
 		public override void CreateParent (LayoutPanelBase Layout)
 		{
 			base.CreateParent (Layout);
+			Parent.BorderStyle = BorderStyle.Fixed3D;
 		CaptionLabel.Dock = DockStyle.Top;
 
 			panelLayout = new LayoutPanel();

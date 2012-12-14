@@ -18,6 +18,8 @@ namespace Layout
 		public override void Save ()
 		{
 			base.Save ();
+			// I made the decision to suppress Errors (hence not required CreateParent, for the purpose of MOVING notes
+			// This violated an earlier decision I had made and I had to disable the TryToSaveWithoutCreating a Parent Exception
 			if (richBox != null) {
 				this.Data1 = richBox.Rtf;
 			}
