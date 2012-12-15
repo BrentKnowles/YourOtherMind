@@ -17,10 +17,13 @@ namespace LayoutPanels
 		}
 		#endregion
 		#region testingstub
-		public void Add10TestNotes()
+		public void Add10TestNotes ()
 		{
-			for (int i=0; i <10; i++)
-				panelLayout.AddNote ();
+			for (int i=0; i <10; i++) {
+				NoteDataXML note = new NoteDataXML();
+				note.Caption = "hello there " + i.ToString();
+				panelLayout.AddNote (note);
+			}
 		}
 		#endregion
 		// This is where it gets tricky. Need to modify the list of valid data types to store!

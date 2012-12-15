@@ -23,6 +23,25 @@ namespace Layout
 				return path;
 			}
 		}
+		private string yom_database= Constants.BLANK;
+		// Moved from LayoutDatabase into ths so it can more easily be overridden by unit tests
+		// We return the standard name for database, with the path UNLESS it has been overridden by a set WHICH should only happen during unit testing
+		public virtual string YOM_DATABASE {
+			get { 
+				string path = "";
+				if (yom_database == Constants.BLANK) {
+					 path =  System.IO.Path.Combine (LayoutDetails.Instance.Path, "yomdata.s3db");
+
+				} else
+					 path=yom_database;
+
+				return path;
+			}
+			set {
+				yom_database = value;
+			}
+		}
+
 		#endregion;
 		public LayoutDetails ()
 		{

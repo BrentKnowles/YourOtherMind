@@ -25,7 +25,7 @@ namespace Layout
 
 		#endregion
 
-		LayoutInterface Notes = null;
+		protected LayoutInterface Notes = null;
 		#region gui
 		private Panel noteCanvas;
 		override public Panel NoteCanvas {
@@ -34,7 +34,9 @@ namespace Layout
 		}
 
 
+
 		ToolStrip tabsBar = null;
+		ToolStrip headerBar = null;
 
 		#endregion
 		// set in NoteDataXML_Panel so that a child Layout will tell a higher level to save, if needed
@@ -54,13 +56,10 @@ namespace Layout
 		}
 		public void HeaderToolbar ()
 		{
-			ToolStrip headerBar = new ToolStrip();
+			headerBar = new ToolStrip();
 			headerBar.Parent = this;
 			headerBar.Dock = DockStyle.Top;
-			
-			ToolStripLabel bold = new ToolStripLabel();
-			bold.Text = "Label name";
-			headerBar.Items.Add (bold);
+
 		}
 
 
@@ -119,10 +118,10 @@ namespace Layout
 
 
 			this.BackColor = Color.Pink;
-			if (ParentGUID == Constants.BLANK) BuildFormatToolbar();
+			if (!GetIsChild) BuildFormatToolbar();
 			TabsBar ();
-			if (ParentGUID == Constants.BLANK) LayoutToolbar();
-			if (ParentGUID == Constants.BLANK) HeaderToolbar();
+			LayoutToolbar();
+			if (!GetIsChild) HeaderToolbar();
 
 
 
@@ -198,6 +197,16 @@ namespace Layout
 
 		}
 		/// <summary>
+		/// Counts the notes. Added for testing
+		/// </summary>
+		/// <returns>
+		/// The notes.
+		/// </returns>
+		public int CountNotes()
+		{
+			return Notes.GetAllNotes().Count;
+		}
+		/// <summary>
 		/// Generic Handle for adding notes by type
 		/// </summary>
 		/// <param name='sender'>
@@ -258,14 +267,7 @@ namespace Layout
 
 		}
 
-		void HandleEditNoteClick (object sender, EventArgs e)
-		{
-			// Modify the informatin in the SYSTEM NOTE
 
-
-			AddNote ();
-
-		}
 
 		public override void SaveLayout ()
 		{
@@ -295,8 +297,18 @@ namespace Layout
 			Notes.UpdateListOfNotes();
 		
 		}
+		private void UpdateHeader ()
+		{
+			if (GetIsChild == false) {
+				ToolStripLabel bold = new ToolStripLabel ();
+				bold.Text = Notes.Name;
+				headerBar.Items.Add (bold);
+			}
+		}
 		public override void LoadLayout (string _GUID)
 		{
+
+
 			// super important to track parent child relationships
 			GUID = _GUID;
 			// ToDO: Check for save first!
@@ -315,6 +327,7 @@ namespace Layout
 				//Notes = null;
 				//NewMessage.Show ("That note does not exist");
 			} else {
+				UpdateHeader();
 				UpdateListOfNotes ();
 			//	NewMessage.Show (String.Format ("Name={0}, Status={1}", Notes.Name, Notes.Status));
 			}
@@ -327,37 +340,38 @@ namespace Layout
 		/// </summary>
 		public void RefreshTabs ()
 		{
-			tabsBar.Items.Clear ();
-			// redraw the list of tabs
-			foreach (NoteDataInterface note in Notes.GetNotes()) {
-				ToolStripButton but = new ToolStripButton();
-				but.Text = note.Caption;
-				but.Tag = note.GuidForNote;
-				tabsBar.Items.Add (but);
+			Console.WriteLine (">>> refresh tabs <<<");
+			if (Notes.ShowTabs == true) {
+				tabsBar.Visible = true;
+				tabsBar.Items.Clear ();
+				// redraw the list of tabs
+				foreach (NoteDataInterface note in Notes.GetNotes()) {
+					if (tabsBar.Items.Count > 0) {
+						// insert sep
+						ToolStripSeparator sep = new ToolStripSeparator ();
+						tabsBar.Items.Add (sep);
+					}
+					ToolStripButton but = new ToolStripButton ();
+					but.Text = note.Caption;
+					but.Tag = note.GuidForNote;
 
+					tabsBar.Items.Add (but);
+
+				}
+			} else {
+				tabsBar.Visible = false;
 			}
 		}
 
-		public override void AddNote ()
+		/// <summary>
+		/// Must be called when creating a new layout
+		/// </summary>
+		/// <param name='GUID'>
+		/// GUI.
+		/// </param>
+		public override void NewLayout (string _GUID)
 		{
-			NoteDataXML xml = new NoteDataXML ();
-
-			Notes.Add (xml);
-			
-			xml.CreateParent (this);
-
-			UpdateListOfNotes ();
-		}
-
-
-
-		void HandleAddClick (object sender, EventArgs e)
-		{
-			// creates a new LAYOUT
-
-
-			// if textbox is blank the GUID is generated autoamtically
-			GUID = this.text.Text;
+			GUID= _GUID;
 			// check to see if exists already
 			if (Notes != null && Notes.IsLayoutExists (GUID)) {
 				NewMessage.Show("that layout exists already");
@@ -366,10 +380,21 @@ namespace Layout
 					GUID = System.Guid.NewGuid ().ToString ();
 				Notes = new LayoutDatabase (GUID);
 				//	Notes = new LayoutDatabase("system");
-			
-				AddNote ();
-
+				NoteDataXML newNote = new NoteDataXML();
+				AddNote (newNote);
+				
 			}
+		}
+
+		void HandleAddClick (object sender, EventArgs e)
+		{
+			// creates a new LAYOUT
+
+
+			// if textbox is blank the GUID is generated autoamtically
+			//GUID = this.text.Text;
+			NewLayout (this.text.Text);
+
 			// Remove saving, make user do itNotes.SaveTo();
 
 		}
@@ -381,6 +406,9 @@ namespace Layout
 		public void AddNote(NoteDataInterface note)
 		{
 			Notes.Add (note);
+			// added to simplilfy things but need to test
+			note.CreateParent(this);
+			RefreshTabs ();
 		}
 		public override void MoveNote (string GUIDOfNoteToMove, string GUIDOfLayoutToMoveItTo)
 		{
@@ -401,7 +429,9 @@ namespace Layout
 
 				}
 			}
-
+			if (movingNote != null) {
+				movingNote.Save ();
+			}
 
 			if ("up" == GUIDOfLayoutToMoveItTo) {
 				// we want to move OUT of this folder
@@ -412,40 +442,32 @@ namespace Layout
 				} else {
 					if (movingNote != null) {
 						Notes.RemoveNote (movingNote);
+
 						bool done = false;
 						LayoutPanel upstreamLayout = null;
 						Control source = this;
-						while (!done)
-						{
+						while (!done) {
 							// search for appropriate parent? Is this a HACK
 							Control control = source.Parent;
-							if (control is LayoutPanel)
-							{
-								if ((control as LayoutPanel).GUID == this.ParentGUID)
-								{
+							if (control is LayoutPanel) {
+								if ((control as LayoutPanel).GUID == this.ParentGUID) {
 									// we are the layoutpanel we need to be on
-									done= true;
+									done = true;
 									upstreamLayout = (LayoutPanel)control;
 								}
 							}
-							if (false == done)
-							{
-								if (source.Parent == null)
-								{
+							if (false == done) {
+								if (source.Parent == null) {
 									done = true;
-								}
-								else
+								} else
 									source = source.Parent;
 							}
 						}
 
-						//TODO:  OK: this is working *BUT* not showing up until reload
-						upstreamLayout.AddNote(movingNote);
-						movingNote.CreateParent(upstreamLayout);
-						//NewMessage.Show ("not done" + upstreamLayout.GUID);
-						//AddNote (movingNote);
-						// attempt the move
-						//newPanel = 
+
+						upstreamLayout.AddNote (movingNote);
+
+					
 					}
 				}
 			} else {
@@ -456,18 +478,23 @@ namespace Layout
 				}
 
 				// remove note
+			
 				Notes.RemoveNote (movingNote);
 				// add note
 				newPanel.AddNote (movingNote);
 			}
-			movingNote.Location = new Point (0, 0);
+			try {
+				movingNote.Location = new Point (0, 0);
+			} catch (Exception) {
+				lg.Instance.Line("LayoutPanel.MoveNote", ProblemType.WARNING, "problem setting location of note. Ok if this is unit testing");
+			}
 			SaveLayout ();
 			// must save before calling this
 			if (newPanel != null) {
 				newPanel.Update (this);
 			}
 
-
+			this.RefreshTabs();
 			//  b. 
 
 

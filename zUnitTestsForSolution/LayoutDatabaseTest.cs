@@ -17,6 +17,8 @@ namespace Testing
 		#region general
 		private void _setupforlayoutests()
 		{
+			_w.output("boo");
+			LayoutDetails.Instance.YOM_DATABASE = "yom_test_database.s3db";
 			FakeLayoutDatabase layout = new FakeLayoutDatabase("testguid");
 			FAKE_SqlLiteDatabase db = new FAKE_SqlLiteDatabase(layout.GetDatabaseName ());
 			db.DropTableIfExists(tmpDatabaseConstants.table_name);
@@ -383,9 +385,13 @@ namespace Testing
 		[Test]
 		public void CountPanelsSubType ()
 		{
+			_w.output("here");
 			//-- do unit tests counting store 6 textboxes and know this (countbytype)
 			_setupforlayoutests ();
+
+			_w.output("here");
 			int count = 25;
+
 			FakeLayoutDatabase layout = new FakeLayoutDatabase ("testguid");
 			LayoutPanel layoutPanel = new LayoutPanel (CoreUtilities.Constants.BLANK);
 			
@@ -544,11 +550,7 @@ namespace Testing
 			Assert.False (layout.IsNoteExistsInLayout (guid2find));
 		}
 
-		[Test]
-		public void MoveNoteTest()
-		{
-			Assert.True (false);
-		}
+
 	}
 }
 

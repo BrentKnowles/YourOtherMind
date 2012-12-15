@@ -94,7 +94,7 @@ namespace Layout
 			propertyGrid.Dock = DockStyle.Fill;
 
 			Button CommitChanges = new Button();
-			CommitChanges.Text = "commit";
+			CommitChanges.Text = Loc.Instance.Cat.GetString("Update Note");
 			CommitChanges.Parent = PropertyPanel;
 			CommitChanges.Dock = DockStyle.Bottom;
 			CommitChanges.Click += HandleCommitChangesClick;
@@ -150,15 +150,19 @@ namespace Layout
 		/// </param>
 		void HandleMenuFolderMouseEnter (object sender, EventArgs e)
 		{
+			// Draw Potential Folders
 			(sender as ToolStripDropDownButton).DropDownItems.Clear ();
-			ToolStripMenuItem up = (ToolStripMenuItem)(sender as ToolStripDropDownButton).DropDownItems.Add (Loc.Instance.Cat.GetString("Out of Folder"));
+			ToolStripMenuItem up = (ToolStripMenuItem)(sender as ToolStripDropDownButton).DropDownItems.Add (Loc.Instance.Cat.GetString ("Out of Folder"));
 			up.Tag = "up";
-			up.Click+= HandleMenuFolderClick;
+			up.Click += HandleMenuFolderClick;
 
 			foreach (NoteDataInterface note in GetAvailableFolders()) {
-				ToolStripMenuItem item = (ToolStripMenuItem)(sender as ToolStripDropDownButton).DropDownItems.Add (note.Caption);
-				item.Click+= HandleMenuFolderClick;
-				item.Tag = note.GuidForNote;
+				// we do not add ourselves
+				if (note.GuidForNote != this.GuidForNote) {
+					ToolStripMenuItem item = (ToolStripMenuItem)(sender as ToolStripDropDownButton).DropDownItems.Add (note.Caption);
+					item.Click += HandleMenuFolderClick;
+					item.Tag = note.GuidForNote;
+				}
 			}
 
 		}

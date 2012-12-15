@@ -9,6 +9,7 @@ namespace Layout
 		string GUID { get; set; }
 		bool GetSaveRequired {get;}
 		 string ParentGUID {get;set;}
+		bool GetIsChild { get; }
 		#endregion
 		#region gui
 		Panel NoteCanvas {get;set;}
@@ -17,7 +18,7 @@ namespace Layout
 		void SaveLayout();
 		void LoadLayout(string GUID);
 		string Backup();
-		void AddNote();
+		//void AddNote();
 
 	}
 

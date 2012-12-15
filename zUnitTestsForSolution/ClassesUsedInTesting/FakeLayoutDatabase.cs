@@ -5,9 +5,7 @@ namespace Testing
 {
 	public class FakeLayoutDatabase: LayoutDatabase
 	{
-		protected override string YOM_DATABASE {
-			get { return "TEST_YOM_DATABASE.s3db";}
-		}
+
 
 		/// <summary>
 		/// debug tracking to look for save failures.
@@ -23,7 +21,7 @@ namespace Testing
 
 		public string GetDatabaseName ()
 		{
-			return YOM_DATABASE;
+			return LayoutDetails.Instance.YOM_DATABASE;
 		}
 
 		// we override this to prevent actually wrecking the real database.

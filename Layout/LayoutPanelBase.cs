@@ -22,7 +22,21 @@ namespace Layout
 			get { return parentGUID;}
 			set { parentGUID = value;}
 		}
-
+		/// <summary>
+		/// Wraps the lookup to see if I am a child (by checking my parentGUID)
+		/// </summary>
+		/// <value>
+		/// <c>true</c> if get is child; otherwise, <c>false</c>.
+		/// </value>
+		public  bool GetIsChild {
+			get {
+				if (ParentGUID == Constants.BLANK)
+				{
+					return false;
+				}
+				return true;
+			}
+		}
 		// storing reference to Interface, allowing a data swapout later
 
 		/// <summary>
@@ -55,13 +69,14 @@ namespace Layout
 		public abstract void SaveLayout();
 		public abstract  void LoadLayout(string GUID);
 		
-		public abstract  void AddNote();
+	//	public abstract  void AddNote();
 
 		public abstract System.Collections.Generic.List<NoteDataInterface> GetAvailableFolders();
 		public abstract void MoveNote (string GUIDOfNoteToMove, string GUIDOfLayoutToMoveItTo);
 		public abstract string Backup();
 		public abstract void SetSaveRequired(bool NeedSave);
 		public abstract void UpdateListOfNotes ();
+		public abstract void NewLayout (string _GUID);
 	}
 }
 

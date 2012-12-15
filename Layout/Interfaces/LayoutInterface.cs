@@ -14,6 +14,7 @@ namespace Layout
 		#region variables
 		string Status {get;set;}
 		string Name { get; set; }
+		bool ShowTabs { get; set; }
 		#endregion
 
 
@@ -44,6 +45,7 @@ namespace Layout
 		/// The notes.
 		/// </returns>
 		System.Collections.ObjectModel.ReadOnlyCollection<NoteDataInterface>  GetNotes();
+		System.Collections.ArrayList GetAllNotes ();
 		NoteDataInterface GetNoteByGUID(string GUID);
 		System.Collections.Generic.List<NoteDataInterface> GetAvailableFolders ();
 		bool IsNoteExistsInLayout(string NoteGUID);

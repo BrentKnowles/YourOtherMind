@@ -13,10 +13,7 @@ namespace Layout
 	{
 		#region variables
 
-		// we keep this as a protected string so that unit testing can override it 
-		protected virtual string YOM_DATABASE {
-			get { return System.IO.Path.Combine (LayoutDetails.Instance.Path, "yomdata.s3db");}
-		}
+
 
 		// just a debug counter to see if anything weird is happening on save and load
 		protected int debug_ObjectCount = 0;
@@ -25,7 +22,7 @@ namespace Layout
 		//This is the list of notes
 		private List<NoteDataInterface> dataForThisLayout= null;
 		//These are the OTHER variables (like status) associated with this note
-		private const  int data_size = 2; // size of data array
+		private const  int data_size = 3; // size of data array
 		private object[] data= null;
 		public string Status {
 			get { return data [0].ToString();}
@@ -42,7 +39,10 @@ namespace Layout
 			set { data [1] = value;}
 		}
 
-
+		public bool ShowTabs {
+			get { return (bool)data [2];}
+			set { data [2] = value;}
+		}
 		// This is the GUID for the page. It comes from
 		//  
 		//  (a) When a New Layout is Created or  a Layout Loaded (in both cases constructor is called
@@ -63,6 +63,7 @@ namespace Layout
 			// defaults
 			Status = " default status";
 			Name = "default name";
+			ShowTabs = true;
 
 		}
 		/// <summary>
@@ -91,7 +92,7 @@ namespace Layout
 		/// </summary>
 		public string Backup ()
 		{
-			SqlLiteDatabase db = new SqlLiteDatabase (YOM_DATABASE);
+			SqlLiteDatabase db = new SqlLiteDatabase (LayoutDetails.Instance.YOM_DATABASE);
 			return db.BackupDatabase();
 		}
 		/// <summary>
@@ -105,7 +106,7 @@ namespace Layout
 		{
 
 
-			SqlLiteDatabase db = new SqlLiteDatabase (YOM_DATABASE);
+			SqlLiteDatabase db = new SqlLiteDatabase (LayoutDetails.Instance.YOM_DATABASE);
 			db.CreateTableIfDoesNotExist (tmpDatabaseConstants.table_name, 
 			    tmpDatabaseConstants.Columns, 
 			tmpDatabaseConstants.Types, String.Format ("{0}", tmpDatabaseConstants.ID)
@@ -225,6 +226,15 @@ namespace Layout
 				// Fill in LAYOUT specific details
 				Status = result [3].ToString ();
 				Name = result [4].ToString ();
+					if (result[5].ToString() != Constants.BLANK)
+					{
+					ShowTabs = (bool)result[5];
+					}
+					else
+					{
+						//ToDo: This does not seem growable easily
+						ShowTabs = true;
+					}
 				// Fill in XML details
 
 				//dataForThisLayout
@@ -325,7 +335,7 @@ namespace Layout
 						MyDatabase.InsertData (tmpDatabaseConstants.table_name, 
 				                      tmpDatabaseConstants.Columns,
 				                      new object[tmpDatabaseConstants.ColumnCount]
-				                      {"NULL",LayoutGUID, XMLAsString, Status,Name});
+				                      {"NULL",LayoutGUID, XMLAsString, Status,Name,ShowTabs});
 
 					} else {
 						//TODO: Still need to save all the object properties out. And existing data.
@@ -333,13 +343,14 @@ namespace Layout
 						lg.Instance.Line ("LayoutDatabase.SaveTo", ProblemType.MESSAGE, "We are UPDATING existing Row." + LayoutGUID);
 						MyDatabase.UpdateSpecificColumnData (tmpDatabaseConstants.table_name, 
 					                                    new string[tmpDatabaseConstants.ColumnCount - 1]{tmpDatabaseConstants.GUID, tmpDatabaseConstants.XML, tmpDatabaseConstants.STATUS,
-						tmpDatabaseConstants.NAME},
+						tmpDatabaseConstants.NAME, tmpDatabaseConstants.SHOWTABS},
 				                                    new object[tmpDatabaseConstants.ColumnCount - 1]
 				                                    {
 						LayoutGUID as string, 
 						XMLAsString as string, 
 						Status as string
-					,Name},
+					,Name,
+						ShowTabs},
 				tmpDatabaseConstants.GUID, LayoutGUID);
 					}
 

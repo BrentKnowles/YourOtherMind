@@ -21,6 +21,7 @@ namespace Layout
 
 		public NoteDataXML_NoteList () : base()
 		{
+			Caption = Loc.Instance.Cat.GetString("Note List");
 		}
 
 		public override void CreateParent (LayoutPanelBase Layout)
