@@ -45,6 +45,11 @@ namespace YOM2013
 			} else {
 
 
+				ToolStripMenuItem New = new ToolStripMenuItem (Loc.Instance.Cat.GetString ("New Layout"));
+				file.DropDownItems.Add(New);
+				//	((ToolStripMenuItem)MainMenu.Items [0]).DropDownItems.Add (Save);
+				New.Click += HandleNewClick;
+
 					ToolStripMenuItem Save = new ToolStripMenuItem (Loc.Instance.Cat.GetString ("Save"));
 				file.DropDownItems.Add(Save);
 			//	((ToolStripMenuItem)MainMenu.Items [0]).DropDownItems.Add (Save);
@@ -58,6 +63,16 @@ namespace YOM2013
 
 			//Screens_AcrossTwo();
 
+		}
+
+		void HandleNewClick (object sender, EventArgs e)
+		{
+			if (true == CurrentLayout.GetSaveRequired) {
+				NewMessage.Show ("shoulda saved");
+			}
+			string guid = System.Guid.NewGuid().ToString();
+			//CurrentLayout = new LayoutPanel(Constants.BLANK);
+			CurrentLayout.NewLayout (guid);
 		}
 
 		void HandleBackupClick (object sender, EventArgs e)

@@ -79,6 +79,14 @@ namespace LayoutPanels
 			panelLayout.Visible = true;
 			panelLayout.Dock = DockStyle.Fill;
 			panelLayout.BringToFront();
+
+
+			ToolStripButton ShowTabs = new ToolStripButton(Loc.Instance.GetString("Show Tabs?"));
+			ShowTabs.CheckOnClick = true;
+			ShowTabs.Checked = panelLayout.ShowTabs;
+			ShowTabs.CheckedChanged+= HandleCheckedChanged;
+			
+			properties.DropDownItems.Add (ShowTabs);
 			
 		}
 		/// <summary>
@@ -88,6 +96,14 @@ namespace LayoutPanels
 		{
 			return Loc.Instance.Cat.GetString("Panel");
 		}
+
+		void HandleCheckedChanged (object sender, EventArgs e)
+		{
+			panelLayout.ShowTabs = !panelLayout.ShowTabs;
+			panelLayout.RefreshTabs();
+			SetSaveRequired(true);
+		}
+
 	}
 }
 

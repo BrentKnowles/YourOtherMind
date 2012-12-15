@@ -22,7 +22,7 @@ namespace Layout
 		#region TEMPVARIABLES
 
 		TextBox text = null;
-
+		HeaderBar header = null;
 		#endregion
 
 		protected LayoutInterface Notes = null;
@@ -36,7 +36,7 @@ namespace Layout
 
 
 		ToolStrip tabsBar = null;
-		ToolStrip headerBar = null;
+
 
 		#endregion
 		// set in NoteDataXML_Panel so that a child Layout will tell a higher level to save, if needed
@@ -54,13 +54,7 @@ namespace Layout
 			bold.Text = "BOLD";
 			formatBar.Items.Add (bold);
 		}
-		public void HeaderToolbar ()
-		{
-			headerBar = new ToolStrip();
-			headerBar.Parent = this;
-			headerBar.Dock = DockStyle.Top;
 
-		}
 
 
 		public void TabsBar()
@@ -78,9 +72,7 @@ namespace Layout
 			bar.Visible = true;
 			bar.Dock = DockStyle.Top;
 
-			ToolStripButton addNote = new ToolStripButton ("Add a Layout (remove me)");
-			addNote.Click += HandleAddClick;
-			bar.Items.Add (addNote);
+
 			
 			
 			
@@ -94,6 +86,14 @@ namespace Layout
 			bar.Items.Add (LoadLayout);
 		}
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Layout.LayoutPanel"/> class.
+		/// 
+		/// The GUID needs to be blank unless this is a CHILD note of another Layout.
+		/// </summary>
+		/// <param name='GUID'>
+		/// GUI.
+		/// </param>
 		public LayoutPanel (string GUID)
 		{
 			ParentGUID = GUID;
@@ -103,7 +103,7 @@ namespace Layout
 			//Type[] typeList = LayoutDetails.Instance.TypeList;
 
 
-			LayoutDetails.Instance.AddToList(typeof(NoteDataXML_Panel), new NoteDataXML_Panel().RegisterType());
+			LayoutDetails.Instance.AddToList (typeof(NoteDataXML_Panel), new NoteDataXML_Panel ().RegisterType ());
 
 			/*Type[] newTypeList = new Type[typeList.Length + 1];
 
@@ -118,10 +118,11 @@ namespace Layout
 
 
 			this.BackColor = Color.Pink;
-			if (!GetIsChild) BuildFormatToolbar();
+			if (!GetIsChild)
+				BuildFormatToolbar ();
 			TabsBar ();
-			LayoutToolbar();
-			if (!GetIsChild) HeaderToolbar();
+			LayoutToolbar ();
+
 
 
 
@@ -153,11 +154,7 @@ namespace Layout
 			NoteCanvas.BringToFront();
 			this.AutoScroll = true;
 
-			/*TODO:
-			Thoughts: Does the NoteData actually create the Panel (i.e., flip the ownership around)
-			 The NoteData will never REFERENCE the actual GUI elements however.
-			 Also play with the Unit test example that StackOverflow had, this seems interest
-			 */
+
 		}
 		public override string Backup ()
 		{
@@ -297,14 +294,9 @@ namespace Layout
 			Notes.UpdateListOfNotes();
 		
 		}
-		private void UpdateHeader ()
-		{
-			if (GetIsChild == false) {
-				ToolStripLabel bold = new ToolStripLabel ();
-				bold.Text = Notes.Name;
-				headerBar.Items.Add (bold);
-			}
-		}
+
+
+	
 		public override void LoadLayout (string _GUID)
 		{
 
@@ -327,18 +319,29 @@ namespace Layout
 				//Notes = null;
 				//NewMessage.Show ("That note does not exist");
 			} else {
-				UpdateHeader();
+				if (this.header != null) header.UpdateHeader();
 				UpdateListOfNotes ();
 			//	NewMessage.Show (String.Format ("Name={0}, Status={1}", Notes.Name, Notes.Status));
 			}
 
 			NoteCanvas.AutoScroll = true;
 			RefreshTabs();
+			if (!GetIsChild) {
+				if (header != null) header.Dispose();
+				header = new HeaderBar(this, this.Notes);
+				
+			}
+			SetSaveRequired(false);
 		}
+		override public bool ShowTabs 
+		{ get { return Notes.ShowTabs; } set {
+				Notes.ShowTabs = value; 
+			} }
+		
 		/// <summary>
 		/// Refreshs the tabs.
 		/// </summary>
-		public void RefreshTabs ()
+		public override void RefreshTabs ()
 		{
 			Console.WriteLine (">>> refresh tabs <<<");
 			if (Notes.ShowTabs == true) {
@@ -376,28 +379,27 @@ namespace Layout
 			if (Notes != null && Notes.IsLayoutExists (GUID)) {
 				NewMessage.Show("that layout exists already");
 			} else {
-				if (Constants.BLANK == GUID)
-					GUID = System.Guid.NewGuid ().ToString ();
+				// if somehow we haven't not supplied a GUID then provide one now
+				if (Constants.BLANK == GUID) GUID = System.Guid.NewGuid ().ToString ();
+
+
+				noteCanvas.Controls.Clear ();
+					//
 				Notes = new LayoutDatabase (GUID);
 				//	Notes = new LayoutDatabase("system");
 				NoteDataXML newNote = new NoteDataXML();
 				AddNote (newNote);
+			
+				if (!GetIsChild) {
+					if (header != null) header.Dispose();
+					header = new HeaderBar(this, this.Notes);
 				
+
+				}
 			}
 		}
 
-		void HandleAddClick (object sender, EventArgs e)
-		{
-			// creates a new LAYOUT
 
-
-			// if textbox is blank the GUID is generated autoamtically
-			//GUID = this.text.Text;
-			NewLayout (this.text.Text);
-
-			// Remove saving, make user do itNotes.SaveTo();
-
-		}
 		public override List<NoteDataInterface> GetAvailableFolders ()
 		{
 			return Notes.GetAvailableFolders();

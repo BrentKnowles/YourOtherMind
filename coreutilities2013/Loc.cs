@@ -21,6 +21,17 @@ namespace CoreUtilities
 			Cat = new GettextResourceManager (); 
 		}
 		/// <summary>
+		/// Wrapper for Cat.GetString for faster code entry
+		/// </summary>
+		/// <param name='msg'>
+		/// Message.
+		/// </param>
+		public string GetString(string msg)
+		{
+			return Cat.GetString(msg);
+		}
+
+		/// <summary>
 		/// 
 		/// </summary>
 		public bool ChangeLocale (string Locale)

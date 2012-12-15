@@ -14,7 +14,9 @@ namespace Layout
 		// this holds the PropertyGrid
 		protected Panel PropertyPanel; 
 		protected PropertyGrid propertyGrid;
-
+		// the properties button on header
+		protected ToolStripDropDownButton properties; 
+		protected ToolStripLabel captionLabel;
 
 		#endregion
 
@@ -57,7 +59,7 @@ namespace Layout
 			CaptionLabel.Dock = DockStyle.Fill;
 			CaptionLabel.GripStyle = ToolStripGripStyle.Hidden;
 			//CaptionLabel.Text = this.Caption;
-			ToolStripLabel captionLabel = new ToolStripLabel(this.Caption);
+			 captionLabel = new ToolStripLabel(this.Caption);
 
 			captionLabel.MouseDown+= HandleMouseDown;
 			captionLabel.MouseUp+= HandleMouseUp;
@@ -67,8 +69,13 @@ namespace Layout
 			if (Caption == "") NewMessage.Show ("Caption is blank");
 
 
-			ToolStripDropDownButton properties = new ToolStripDropDownButton();
-			properties.DropDownItems.Add ("test");
+			properties = new ToolStripDropDownButton(Loc.Instance.GetString("*"));
+			ToolStripTextBox captionEditor = new ToolStripTextBox();
+			captionEditor.Text = Caption;
+			captionEditor.TextChanged+= HandleCaptionTextChanged;
+			captionEditor.KeyDown += HandleCaptionEditorKeyDown;
+			properties.DropDownItems.Add (captionEditor);
+
 			CaptionLabel.Items.Add (properties);
 			ToolStripSeparator sep =  new ToolStripSeparator();
 			sep.Width = 0;
@@ -128,6 +135,23 @@ namespace Layout
 
 			Layout = _Layout;
 		}
+
+		void HandleCaptionEditorKeyDown (object sender, KeyEventArgs e)
+		{
+			if (e.KeyCode == Keys.Enter) {
+				// commit the change to the caption
+				Caption = (sender as ToolStripTextBox).Text;
+				SetSaveRequired (true);
+				// so we don't need to call update for such a simple change
+				captionLabel.Text = Caption; 
+			}
+		}
+
+		void HandleCaptionTextChanged (object sender, EventArgs e)
+		{
+			
+		}
+
 
 		void HandleCommitChangesClick (object sender, EventArgs e)
 		{

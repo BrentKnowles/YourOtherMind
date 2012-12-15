@@ -60,6 +60,16 @@ namespace Layout
 		//	set { _saverequired = value;} Must set this through function
 		}
 
+		/// <summary>
+		/// Wrapper around the show tab variable for access from individual notes (layoutpanel notes)
+		/// </summary>
+		/// <value>
+		/// <c>true</c> if show tabs; otherwise, <c>false</c>.
+		/// </value>
+		abstract public bool ShowTabs { get; set; }
+			
+
+
 
 #endregion
 
@@ -77,6 +87,7 @@ namespace Layout
 		public abstract void SetSaveRequired(bool NeedSave);
 		public abstract void UpdateListOfNotes ();
 		public abstract void NewLayout (string _GUID);
+		public abstract void RefreshTabs ();
 	}
 }
 
