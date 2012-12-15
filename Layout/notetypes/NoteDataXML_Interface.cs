@@ -9,7 +9,7 @@ namespace Layout
 	public partial class NoteDataXML
 	{
 		#region UI
-		protected Label CaptionLabel;
+		protected ToolStrip CaptionLabel;
 		protected ContextMenuStrip contextMenu;
 		// this holds the PropertyGrid
 		protected Panel PropertyPanel; 
@@ -47,7 +47,7 @@ namespace Layout
 			}
 			
 			
-			CaptionLabel = new Label();
+			CaptionLabel = new ToolStrip();
 			CaptionLabel.MouseDown+= HandleMouseDown;
 			CaptionLabel.MouseUp+= HandleMouseUp;
 			CaptionLabel.MouseLeave+= HandleMouseLeave;
@@ -55,10 +55,32 @@ namespace Layout
 			CaptionLabel.Parent = Parent;
 			CaptionLabel.BackColor = Color.Green;
 			CaptionLabel.Dock = DockStyle.Fill;
+			CaptionLabel.GripStyle = ToolStripGripStyle.Hidden;
+			//CaptionLabel.Text = this.Caption;
+			ToolStripLabel captionLabel = new ToolStripLabel(this.Caption);
 
-			CaptionLabel.Text = this.Caption;
+			captionLabel.MouseDown+= HandleMouseDown;
+			captionLabel.MouseUp+= HandleMouseUp;
+			captionLabel.MouseLeave+= HandleMouseLeave;
+			captionLabel.MouseMove+= HandleMouseMove;
+			CaptionLabel.Items.Add (captionLabel);
+			if (Caption == "") NewMessage.Show ("Caption is blank");
+
+
+			ToolStripDropDownButton properties = new ToolStripDropDownButton();
+			properties.DropDownItems.Add ("test");
+			CaptionLabel.Items.Add (properties);
+			ToolStripSeparator sep =  new ToolStripSeparator();
+			sep.Width = 0;
+			sep.BackColor = CaptionLabel.BackColor;
+			sep.ForeColor = CaptionLabel.ForeColor;
+			//HACK for some reason labels inside of panels don't draw LAST toolstripitem on LOAD (on only on load!) 
+			CaptionLabel.Items.Add (sep);
 
 			contextMenu = new ContextMenuStrip();
+
+		
+
 
 			ToolStripDropDownButton menuFolder = new ToolStripDropDownButton();
 			menuFolder.Text = Loc.Instance.Cat.GetString("Folder");

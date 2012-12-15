@@ -34,7 +34,29 @@ namespace Layout
 		{
 			return richBox.Text;
 		}
-
+		/// <summary>
+		/// Overwrites the with RTF file.
+		/// </summary>
+		/// <param name='file'>
+		/// File.
+		/// </param>
+		public void DoOverwriteWithRTFFile (string file)
+		{
+			richBox.LoadFile(file);
+		}
+		/// <summary>
+		/// Checks to see if the richtext is empty
+		/// </summary>
+		/// <returns>
+		/// <c>true</c>, if text blank was riched, <c>false</c> otherwise.
+		/// </returns>
+		public bool GetIsRichTextBlank ()
+		{
+			if (richBox.Text == Constants.BLANK) {
+				return true;
+			}
+			return false;
+		}
 		public override void CreateParent (LayoutPanelBase Layout)
 		{
 			base.CreateParent (Layout);

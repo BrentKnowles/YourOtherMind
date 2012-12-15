@@ -59,7 +59,7 @@ namespace Layout
 		public int Height { get { return height; } set { height = value; }}
 		public int Width { get { return width; } set { width = value; }}
 
-		private Point location = new Point(200,200);
+		private Point location = new Point(0,0);
 		/// <summary>
 		/// Gets or sets the location.
 		/// </summary>
