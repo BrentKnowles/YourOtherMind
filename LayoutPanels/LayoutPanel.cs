@@ -33,10 +33,71 @@ namespace Layout
 			set { noteCanvas = value;}
 		}
 
-		#endregion
-		public LayoutPanel ()
-		{
 
+		ToolStrip tabsBar = null;
+
+		#endregion
+		// set in NoteDataXML_Panel so that a child Layout will tell a higher level to save, if needed
+		public Action<bool> SetSubNoteSaveRequired = null;
+		/// <summary>
+		/// Builds the format toolbar.
+		/// </summary>
+		private void BuildFormatToolbar ()
+		{
+			ToolStrip formatBar = new ToolStrip();
+			formatBar.Parent = this;
+			formatBar.Dock = DockStyle.Top;
+
+			ToolStripButton bold = new ToolStripButton();
+			bold.Text = "BOLD";
+			formatBar.Items.Add (bold);
+		}
+		public void HeaderToolbar ()
+		{
+			ToolStrip headerBar = new ToolStrip();
+			headerBar.Parent = this;
+			headerBar.Dock = DockStyle.Top;
+			
+			ToolStripLabel bold = new ToolStripLabel();
+			bold.Text = "Label name";
+			headerBar.Items.Add (bold);
+		}
+
+
+		public void TabsBar()
+		{
+			tabsBar = new ToolStrip();
+			tabsBar.Parent = this;
+			tabsBar.Dock = DockStyle.Top;
+
+			// RefreshTabs(); don't need to call it until after load
+		}
+		public void LayoutToolbar ()
+		{
+			ToolStrip bar = new ToolStrip ();
+			bar.Parent = this;
+			bar.Visible = true;
+			bar.Dock = DockStyle.Top;
+
+			ToolStripButton addNote = new ToolStripButton ("Add a Layout (remove me)");
+			addNote.Click += HandleAddClick;
+			bar.Items.Add (addNote);
+			
+			
+			
+			ToolStripDropDownButton AddNote = new ToolStripDropDownButton("Add Note");
+			AddNote.DropDownOpening += HandleAddNoteDropDownOpening;
+			bar.Items.Add (AddNote);
+			
+			
+			ToolStripButton LoadLayout = new ToolStripButton("Load Layout");
+			LoadLayout.Click +=	LoadLayoutClick;
+			bar.Items.Add (LoadLayout);
+		}
+
+		public LayoutPanel (string GUID)
+		{
+			ParentGUID = GUID;
 
 
 
@@ -58,12 +119,14 @@ namespace Layout
 
 
 			this.BackColor = Color.Pink;
+			if (ParentGUID == Constants.BLANK) BuildFormatToolbar();
+			TabsBar ();
+			if (ParentGUID == Constants.BLANK) LayoutToolbar();
+			if (ParentGUID == Constants.BLANK) HeaderToolbar();
 
 
-			ToolStrip bar = new ToolStrip ();
-			bar.Parent = this;
-			bar.Visible = true;
-			bar.Dock = DockStyle.Top;
+
+
 
 
 			text = new TextBox();
@@ -71,20 +134,7 @@ namespace Layout
 			text.Visible = true;
 			text.Dock = DockStyle.Bottom;
 
-			ToolStripButton addNote = new ToolStripButton ("Add a Layout (remove me)");
-						addNote.Click += HandleAddClick;
-						bar.Items.Add (addNote);
 
-
-
-			ToolStripDropDownButton AddNote = new ToolStripDropDownButton("Add Note");
-			AddNote.DropDownOpening += HandleAddNoteDropDownOpening;
-			bar.Items.Add (AddNote);
-		
-
-			ToolStripButton LoadLayout = new ToolStripButton("Load Layout");
-			LoadLayout.Click +=	LoadLayoutClick;
-			bar.Items.Add (LoadLayout);
 
 
 
@@ -203,9 +253,8 @@ namespace Layout
 
 		void LoadLayoutClick (object sender, EventArgs e)
 		{
-			GUID = this.text.Text;
-			if (Constants.BLANK == GUID) {NewMessage.Show ("You must specify a layout to load"); return;}
-			LoadLayout (GUID);
+
+				LoadLayout (this.text.Text);
 
 		}
 
@@ -242,18 +291,23 @@ namespace Layout
 		public override void UpdateListOfNotes ()
 		{
 
-
+			RefreshTabs();
 			Notes.UpdateListOfNotes();
 		
 		}
-		public override void LoadLayout (string GUID)
+		public override void LoadLayout (string _GUID)
 		{
-
+			// super important to track parent child relationships
+			GUID = _GUID;
 			// ToDO: Check for save first!
 
 			NoteCanvas.Controls.Clear ();
 			// disable autoscroll because if an object is loaded off-screen before others it changes the centering of every object
 			NoteCanvas.AutoScroll = false;
+
+
+			if (Constants.BLANK == GUID) {NewMessage.Show ("You must specify a layout to load"); return;}
+
 
 			Notes = new LayoutDatabase (GUID);
 			if (Notes.LoadFrom (this) == false) {
@@ -266,6 +320,22 @@ namespace Layout
 			}
 
 			NoteCanvas.AutoScroll = true;
+			RefreshTabs();
+		}
+		/// <summary>
+		/// Refreshs the tabs.
+		/// </summary>
+		public void RefreshTabs ()
+		{
+			tabsBar.Items.Clear ();
+			// redraw the list of tabs
+			foreach (NoteDataInterface note in Notes.GetNotes()) {
+				ToolStripButton but = new ToolStripButton();
+				but.Text = note.Caption;
+				but.Tag = note.GuidForNote;
+				tabsBar.Items.Add (but);
+
+			}
 		}
 
 		public override void AddNote ()
@@ -289,7 +359,7 @@ namespace Layout
 			// if textbox is blank the GUID is generated autoamtically
 			GUID = this.text.Text;
 			// check to see if exists already
-			if (Notes != null && Notes.Exists (GUID)) {
+			if (Notes != null && Notes.IsLayoutExists (GUID)) {
 				NewMessage.Show("that layout exists already");
 			} else {
 				if (Constants.BLANK == GUID)
@@ -332,19 +402,70 @@ namespace Layout
 				}
 			}
 
-			if (newPanel == null || movingNote == null) {
-				NewMessage.Show (Loc.Instance.Cat.GetString ("Destination or note was null. No move"));
-				                 return;
-			}
 
-			// remove note
-			Notes.MoveNote(movingNote);
-			// add note
-			newPanel.AddNote(movingNote);
-			movingNote.Location = new Point(0,0);
-			SaveLayout();
+			if ("up" == GUIDOfLayoutToMoveItTo) {
+				// we want to move OUT of this folder
+				if (Constants.BLANK == this.ParentGUID) {
+					// I do not have a parent which means UP maes no sense
+					NewMessage.Show (Loc.Instance.Cat.GetString ("This note does not have a parent. Cannot be moved."));
+					return;
+				} else {
+					if (movingNote != null) {
+						Notes.RemoveNote (movingNote);
+						bool done = false;
+						LayoutPanel upstreamLayout = null;
+						Control source = this;
+						while (!done)
+						{
+							// search for appropriate parent? Is this a HACK
+							Control control = source.Parent;
+							if (control is LayoutPanel)
+							{
+								if ((control as LayoutPanel).GUID == this.ParentGUID)
+								{
+									// we are the layoutpanel we need to be on
+									done= true;
+									upstreamLayout = (LayoutPanel)control;
+								}
+							}
+							if (false == done)
+							{
+								if (source.Parent == null)
+								{
+									done = true;
+								}
+								else
+									source = source.Parent;
+							}
+						}
+
+						//TODO:  OK: this is working *BUT* not showing up until reload
+						upstreamLayout.AddNote(movingNote);
+						movingNote.CreateParent(upstreamLayout);
+						//NewMessage.Show ("not done" + upstreamLayout.GUID);
+						//AddNote (movingNote);
+						// attempt the move
+						//newPanel = 
+					}
+				}
+			} else {
+
+				if (newPanel == null || movingNote == null) {
+					NewMessage.Show (Loc.Instance.Cat.GetString ("Destination or note was null. No move"));
+					return;
+				}
+
+				// remove note
+				Notes.RemoveNote (movingNote);
+				// add note
+				newPanel.AddNote (movingNote);
+			}
+			movingNote.Location = new Point (0, 0);
+			SaveLayout ();
 			// must save before calling this
-			newPanel.Update(this);
+			if (newPanel != null) {
+				newPanel.Update (this);
+			}
 
 
 			//  b. 
@@ -367,6 +488,9 @@ namespace Layout
 		public override void SetSaveRequired (bool NeedSave)
 		{
 			_saverequired = NeedSave;
+			if (SetSubNoteSaveRequired != null) {
+				SetSubNoteSaveRequired(NeedSave);
+			}
 		}
 	}
 }

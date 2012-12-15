@@ -1,5 +1,6 @@
 using System;
 using System.Windows.Forms;
+using CoreUtilities;
 namespace Layout
 {
 	public abstract class LayoutPanelBase : Panel, LayoutPanelInterface
@@ -10,8 +11,17 @@ namespace Layout
 		#region variables
 		private string _guid = CoreUtilities.Constants.BLANK;
 		protected bool _saverequired = false;
-
-
+		private string parentGUID = Constants.BLANK;
+		/// <summary>
+		/// Gets or sets the parent GUI. (Will be set by NoteDataXML_Panel) and refers to the Layout that owns this layout. That value in turn is used in the MoveNote code
+		/// </summary>
+		/// <value>
+		/// The parent GUI.
+		/// </value>
+		public string ParentGUID {
+			get { return parentGUID;}
+			set { parentGUID = value;}
+		}
 
 		// storing reference to Interface, allowing a data swapout later
 

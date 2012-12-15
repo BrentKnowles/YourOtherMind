@@ -32,7 +32,7 @@ namespace YOM2013
 
 			this.FormClosed += HandleFormClosed;
 			this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
-			CurrentLayout = new Layout.LayoutPanel ();
+			CurrentLayout = new Layout.LayoutPanel (CoreUtilities.Constants.BLANK);
 			CurrentLayout.Parent = this;
 			CurrentLayout.Visible = true;
 			CurrentLayout.Dock = System.Windows.Forms.DockStyle.Fill;

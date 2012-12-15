@@ -15,8 +15,7 @@ namespace Layout
 		protected Panel PropertyPanel; 
 		protected PropertyGrid propertyGrid;
 
-		//TODO was trying to avoid storing a reference to actual Layout but the need to update the list (and handle the Property grid) made it so)
-		protected LayoutPanelBase Layout;
+
 		#endregion
 
 
@@ -25,12 +24,14 @@ namespace Layout
 		Action<string,string> MoveNote;
 		protected Action<bool> SetSaveRequired;
 		protected delegate void delegate_UpdateListOfNotes();
+
+
 		//delegate_UpdateListOfNotes UpdateListOfNotes;
 		public virtual void CreateParent (LayoutPanelBase _Layout)
 		{
 			Parent = new NotePanel (this);
 			
-			
+
 			
 			Parent.Visible = true;
 			Parent.Location = Location;
@@ -108,6 +109,7 @@ namespace Layout
 
 		void HandleCommitChangesClick (object sender, EventArgs e)
 		{
+			Parent.AutoScroll = false;
 			((NoteDataXML)propertyGrid.SelectedObject).Update(Layout);
 		}
 
@@ -123,15 +125,17 @@ namespace Layout
 
 			PropertyPanel.Visible = !PropertyPanel.Visible;
 			if (PropertyPanel.Visible == true) {
-
+				Parent.AutoScroll = true;
 				// TODO just a hack until sizing is in
 				Height = 200;
 				Width = 200;
 				PropertyPanel.AutoScroll = true;
 				//PropertyPanel.SendToBack();
 				//CaptionLabel.BringToFront();
-			CaptionLabel.SendToBack();
+				CaptionLabel.SendToBack ();
 				UpdateLocation ();
+			} else {
+				Parent.AutoScroll = false;
 			}
 		}
 		/// <summary>
@@ -147,6 +151,10 @@ namespace Layout
 		void HandleMenuFolderMouseEnter (object sender, EventArgs e)
 		{
 			(sender as ToolStripDropDownButton).DropDownItems.Clear ();
+			ToolStripMenuItem up = (ToolStripMenuItem)(sender as ToolStripDropDownButton).DropDownItems.Add (Loc.Instance.Cat.GetString("Out of Folder"));
+			up.Tag = "up";
+			up.Click+= HandleMenuFolderClick;
+
 			foreach (NoteDataInterface note in GetAvailableFolders()) {
 				ToolStripMenuItem item = (ToolStripMenuItem)(sender as ToolStripDropDownButton).DropDownItems.Add (note.Caption);
 				item.Click+= HandleMenuFolderClick;

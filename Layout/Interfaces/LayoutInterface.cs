@@ -36,7 +36,7 @@ namespace Layout
 		bool SaveTo ();
 
 		string Backup();
-		bool Exists (string GUID);
+		bool IsLayoutExists (string GUID);
 		/// <summary>
 		/// Gets the notes.
 		/// </summary>
@@ -46,7 +46,8 @@ namespace Layout
 		System.Collections.ObjectModel.ReadOnlyCollection<NoteDataInterface>  GetNotes();
 		NoteDataInterface GetNoteByGUID(string GUID);
 		System.Collections.Generic.List<NoteDataInterface> GetAvailableFolders ();
-		void MoveNote (NoteDataInterface NoteToMove);
+		bool IsNoteExistsInLayout(string NoteGUID);
+		void RemoveNote (NoteDataInterface NoteToMove);
 		void UpdateListOfNotes();
 	}
 }

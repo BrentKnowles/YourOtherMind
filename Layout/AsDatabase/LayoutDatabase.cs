@@ -360,12 +360,30 @@ namespace Layout
 			return saveworked;
 		}
 		/// <summary>
+		/// Determines whether this instance is note exists in layout the specified NoteGUID.
+		/// </summary>
+		/// <returns>
+		/// <c>true</c> if this instance is note exists in layout the specified NoteGUID; otherwise, <c>false</c>.
+		/// </returns>
+		/// <param name='NoteGUID'>
+		/// Note GUI.
+		/// </param>
+		public bool IsNoteExistsInLayout (string NoteGUID)
+		{
+			NoteDataInterface NoteToMove = dataForThisLayout.Find (NoteDataInterface => NoteDataInterface.GuidForNote == NoteGUID);
+			if (NoteToMove != null) {
+				return true;
+			}
+			return false;
+
+		}
+		/// <summary>
 		/// Does the specified GUID exist?
 		/// </summary>
 		/// <param name='GUID'>
 		/// GUI.
 		/// </param>
-		public bool Exists (string GUID)
+		public bool IsLayoutExists (string GUID)
 		{
 			BaseDatabase MyDatabase = CreateDatabase ();
 			return MyDatabase.Exists (tmpDatabaseConstants.table_name, tmpDatabaseConstants.GUID, GUID);
@@ -407,7 +425,7 @@ namespace Layout
 		/// GUID of layout to move it to.
 		/// </param>
 		/// <returns>The Layout where the Note was Added to</returns>
-		public void MoveNote (NoteDataInterface NoteToMove)
+		public void RemoveNote (NoteDataInterface NoteToMove)
 		{
 			//NoteDataInterface NoteToMove = dataForThisLayout.Find (NoteDataInterface => NoteDataInterface.GuidForNote == GUIDOfNoteToMove);
 			if (NoteToMove != null) {

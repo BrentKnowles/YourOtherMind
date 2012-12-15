@@ -26,6 +26,10 @@ namespace Layout
 		#endregion
 
 		#region variables_frominterface
+		//TODO was trying to avoid storing a reference to actual Layout but the need to update the list (and handle the Property grid) made it so)
+		protected LayoutPanelBase Layout;
+
+
 		public NoteDataXML () 
 		{
 			Caption = Loc.Instance.Cat.GetString("Blank Note");

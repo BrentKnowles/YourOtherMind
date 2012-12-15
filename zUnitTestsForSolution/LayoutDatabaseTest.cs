@@ -79,7 +79,7 @@ namespace Testing
 			_setupforlayoutests();
 			int count = 25;
 			FakeLayoutDatabase layout = new FakeLayoutDatabase ("testguid");
-			LayoutPanel layoutPanel = new LayoutPanel();
+			LayoutPanel layoutPanel = new LayoutPanel(CoreUtilities.Constants.BLANK);
 			layout.LoadFrom(layoutPanel);
 			NoteDataXML note = new NoteDataXML ();
 			for (int i = 0; i < count; i++) {
@@ -105,7 +105,7 @@ namespace Testing
 			_setupforlayoutests();
 
 			FakeLayoutDatabase layout = new FakeLayoutDatabase ("testguid");
-			LayoutPanel layoutPanel = new LayoutPanel();
+			LayoutPanel layoutPanel = new LayoutPanel(CoreUtilities.Constants.BLANK);
 			bool result = layout.LoadFrom(layoutPanel);
 			_w.output("made it");
 			Assert.AreEqual(false, result);
@@ -125,7 +125,7 @@ namespace Testing
 			_setupforlayoutests();
 			int count = 200;
 			FakeLayoutDatabase layout = new FakeLayoutDatabase ("testguid");
-			LayoutPanel layoutPanel = new LayoutPanel();
+			LayoutPanel layoutPanel = new LayoutPanel(CoreUtilities.Constants.BLANK);
 
 			NoteDataXML note = new NoteDataXML ();
 			for (int i = 0; i < count; i++) {
@@ -199,7 +199,7 @@ namespace Testing
 			_setupforlayoutests ();
 			int count = 25;
 			FakeLayoutDatabase layout = new FakeLayoutDatabase ("testguid");
-			LayoutPanel layoutPanel = new LayoutPanel ();
+			LayoutPanel layoutPanel = new LayoutPanel (CoreUtilities.Constants.BLANK);
 			
 			NoteDataInterface note = null; 
 			for (int i = 0; i < count; i++) {
@@ -244,7 +244,7 @@ namespace Testing
 			_setupforlayoutests ();
 			int count = 25;
 			FakeLayoutDatabase layout = new FakeLayoutDatabase ("testguid");
-			LayoutPanel layoutPanel = new LayoutPanel ();
+			LayoutPanel layoutPanel = new LayoutPanel (CoreUtilities.Constants.BLANK);
 			
 			NoteDataInterface note = null; 
 			for (int i = 0; i < count; i++) {
@@ -289,7 +289,7 @@ namespace Testing
 			_setupforlayoutests ();
 			int count = 15;
 			FakeLayoutDatabase layout = new FakeLayoutDatabase ("testguid");
-			LayoutPanel layoutPanel = new LayoutPanel ();
+			LayoutPanel layoutPanel = new LayoutPanel (CoreUtilities.Constants.BLANK);
 			
 			NoteDataInterface note = null; 
 			for (int i = 0; i < count; i++) {
@@ -340,7 +340,7 @@ namespace Testing
 			_setupforlayoutests ();
 			int count = 25;
 			FakeLayoutDatabase layout = new FakeLayoutDatabase ("testguid");
-			LayoutPanel layoutPanel = new LayoutPanel ();
+			LayoutPanel layoutPanel = new LayoutPanel (CoreUtilities.Constants.BLANK);
 			
 			NoteDataXML note = new NoteDataXML ();
 			for (int i = 0; i < count; i++) {
@@ -387,7 +387,7 @@ namespace Testing
 			_setupforlayoutests ();
 			int count = 25;
 			FakeLayoutDatabase layout = new FakeLayoutDatabase ("testguid");
-			LayoutPanel layoutPanel = new LayoutPanel ();
+			LayoutPanel layoutPanel = new LayoutPanel (CoreUtilities.Constants.BLANK);
 			
 			NoteDataXML note = new NoteDataXML ();
 			for (int i = 0; i < count; i++) {
@@ -440,12 +440,12 @@ namespace Testing
 			Assert.AreEqual (91, layout.GetAllNotes().Count); 
 		}
 		[Test]
-		public void NoteShouldNotExist()
+		public void LayoutShouldNotExist()
 		{
 			_setupforlayoutests ();
 			int count = 25;
 			FakeLayoutDatabase layout = new FakeLayoutDatabase ("testguid");
-			LayoutPanel layoutPanel = new LayoutPanel ();
+			LayoutPanel layoutPanel = new LayoutPanel (CoreUtilities.Constants.BLANK);
 			
 			NoteDataXML note = new NoteDataXML ();
 			for (int i = 0; i < count; i++) {
@@ -455,17 +455,17 @@ namespace Testing
 			}
 		//	layout.SaveTo(); no save, so note should not exist
 			
-			Assert.False (layout.Exists("testguid"));
+			Assert.False (layout.IsLayoutExists("testguid"));
 		}
 
 
 		[Test]
-		public void NoteExists()
+		public void LayoutExists()
 		{
 			_setupforlayoutests ();
 			int count = 25;
 			FakeLayoutDatabase layout = new FakeLayoutDatabase ("testguid");
-			LayoutPanel layoutPanel = new LayoutPanel ();
+			LayoutPanel layoutPanel = new LayoutPanel (CoreUtilities.Constants.BLANK);
 			
 			NoteDataXML note = new NoteDataXML ();
 			for (int i = 0; i < count; i++) {
@@ -475,14 +475,14 @@ namespace Testing
 			}
 			layout.SaveTo();
 
-			Assert.True (layout.Exists("testguid"));
+			Assert.True (layout.IsLayoutExists("testguid"));
 		}
 		[Test]
 		public void SaveNotequired()
 		{	_setupforlayoutests ();
 			int count = 25;
 			FakeLayoutDatabase layout = new FakeLayoutDatabase ("testguid");
-			LayoutPanel layoutPanel = new LayoutPanel ();
+			LayoutPanel layoutPanel = new LayoutPanel (CoreUtilities.Constants.BLANK);
 			
 			NoteDataXML_RichText note = new NoteDataXML_RichText ();
 			for (int i = 0; i < count; i++) {
@@ -504,7 +504,7 @@ namespace Testing
 		{	_setupforlayoutests ();
 			int count = 25;
 			FakeLayoutDatabase layout = new FakeLayoutDatabase ("testguid");
-			LayoutPanel layoutPanel = new LayoutPanel ();
+			LayoutPanel layoutPanel = new LayoutPanel (CoreUtilities.Constants.BLANK);
 			
 			NoteDataXML_RichText note = new NoteDataXML_RichText ();
 			for (int i = 0; i < count; i++) {
@@ -516,6 +516,32 @@ namespace Testing
 			//layout.SaveTo(); 
 			Assert.True (layoutPanel.GetSaveRequired);	
 
+		}
+		[Test]
+		public void TestDeleteNote()
+		{
+			// add a note with specific label
+			LayoutPanel layoutPanel = new LayoutPanel (CoreUtilities.Constants.BLANK);
+			FakeLayoutDatabase layout = new FakeLayoutDatabase ("testguid");
+			NoteDataXML_RichText note = new NoteDataXML_RichText ();
+			string guid2find = "";
+			NoteDataInterface mynotetogo = null;
+			for (int i = 0; i < 1; i++) {
+				note.CreateParent(layoutPanel);
+				note.Caption = "boo" + i.ToString ();
+				note.UpdateLocation();
+				guid2find = note.GuidForNote;
+				layout.Add (note);
+				mynotetogo = note;
+			}
+			layout.SaveTo(); 
+			_w.output (guid2find);
+			Assert.True (layout.IsNoteExistsInLayout (guid2find));
+			_w.output("here");
+			// then delete it
+
+			layout.RemoveNote(mynotetogo);
+			Assert.False (layout.IsNoteExistsInLayout (guid2find));
 		}
 
 		[Test]
