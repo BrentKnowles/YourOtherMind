@@ -21,7 +21,7 @@ namespace Layout
 	{
 		#region TEMPVARIABLES
 
-		TextBox text = null;
+	
 		HeaderBar header = null;
 		#endregion
 
@@ -32,8 +32,20 @@ namespace Layout
 			get { return noteCanvas;}
 			set { noteCanvas = value;}
 		}
-
-
+		/// <summary>
+		/// A reference to the active note
+		/// </summary>
+		/// <value>
+		/// The current note.
+		/// </value>
+		public override NotePanelInterface CurrentNote {
+			get {
+				throw new System.NotImplementedException ();
+			}
+			set {
+				throw new System.NotImplementedException ();
+			}
+		}
 
 		ToolStrip tabsBar = null;
 		private bool issystem = false;
@@ -115,9 +127,7 @@ namespace Layout
 			bar.Items.Add (AddNote);
 			
 			
-			ToolStripButton LoadLayout = new ToolStripButton("Load Layout");
-			LoadLayout.Click +=	LoadLayoutClick;
-			bar.Items.Add (LoadLayout);
+
 
 			//ToolStripLabel CurrentNote
 		}
@@ -167,15 +177,9 @@ namespace Layout
 			if (!GetIsSystem) TabsBar ();
 			if (!GetIsSystem) LayoutToolbar ();
 
-			text = new TextBox();
-			text.Parent = this;
-			text.Visible = true;
-			text.Dock = DockStyle.Bottom;
 
-			Label label = new Label();
-			label.Text = "Remember to save";
-			label.Parent = this;
-			label.Dock = DockStyle.Bottom;
+
+
 
 
 			NoteCanvas = new Panel();
@@ -287,12 +291,7 @@ namespace Layout
 
 
 
-		void LoadLayoutClick (object sender, EventArgs e)
-		{
 
-				LoadLayout (this.text.Text);
-
-		}
 
 
 

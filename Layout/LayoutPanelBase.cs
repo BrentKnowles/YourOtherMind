@@ -70,7 +70,7 @@ namespace Layout
 		/// </value>
 		abstract public bool ShowTabs { get; set; }
 		abstract public bool GetIsSystem { get; set; }	
-
+		abstract public NotePanelInterface CurrentNote{ get; set; }
 
 
 #endregion

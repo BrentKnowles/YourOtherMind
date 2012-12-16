@@ -129,6 +129,9 @@ namespace Layout
 			CommitChanges.Click += HandleCommitChangesClick;
 			CommitChanges.BringToFront();
 
+
+			// Set up delegates
+
 			GetAvailableFolders = _Layout.GetAvailableFolders;
 			MoveNote = _Layout.MoveNote;
 			SetSaveRequired = _Layout.SetSaveRequired;

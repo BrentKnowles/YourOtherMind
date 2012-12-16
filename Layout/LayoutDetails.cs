@@ -11,6 +11,11 @@ namespace Layout
 		#region variables
 		protected static volatile LayoutDetails instance;
 		protected static object syncRoot = new Object();
+
+		public LayoutPanelBase CurrentLayout;
+
+		public Action<string> LoadLayoutRef= null;
+
 		// in rare case of harddrive failure this variable can be set and checked when the application closes to prevent saving empty files (December 2012)
 		// for YOM this is Set ONLY IN MainformBase
 		public bool ForceShutdown = false; 
@@ -56,8 +61,21 @@ namespace Layout
 
 
 		}
-
-
+		/// <summary>
+		/// This is how we decide to load a new layout. This is a link set in the MainForm
+		/// that calls the main LoadLayout routine therein.
+		/// </summary>
+		/// <param name='guid'>
+		/// GUID.
+		/// </param>
+		public void LoadLayout (string guid)
+		{
+			if (null != LoadLayoutRef) {
+				LoadLayoutRef (guid);
+			} else {
+				throw new Exception("A reference needs to be set in the MainForm to the method to use when loading a new method. That did not happen today.");
+			}
+		}
 		// other PLACES will modify this list, when registering new types
 		private ArrayList TypeList = null;
 		private ArrayList NameList = null;
@@ -108,10 +126,7 @@ namespace Layout
 			return ArrayOfTypes;
 		}
 
-		public LayoutPanelBase CurrentLayout()
-		{
-			throw new Exception("not done");
-		}
+	
 
 		public static LayoutDetails Instance
 		{

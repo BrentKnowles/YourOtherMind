@@ -10,12 +10,13 @@ namespace YOM2013
 		#region gui
 		Layout.LayoutPanel CurrentLayout;
 		Layout.LayoutPanel SystemLayout;
+		Control MDIHOST=null;
 		#endregion
 		public MainForm ()
 		{
 
 			lg.Instance.Loudness = Loud.CTRIVIAL;
-
+			LayoutDetails.Instance.LoadLayoutRef = LoadLayout;
 
 
 			try {
@@ -43,19 +44,15 @@ namespace YOM2013
 			//SystemLayout.Visible = false;
 			SystemLayout.LoadLayout ("system");
 
-			Control MDIHOST = SystemLayout.GetSystemPanel ();
+			MDIHOST = SystemLayout.GetSystemPanel ();
 			if (MDIHOST == null) {
 				NewMessage.Show ("no system panel was found on system layout");
 				Application.Exit ();
 			}
 
 
-			CurrentLayout = new Layout.LayoutPanel (CoreUtilities.Constants.BLANK);
-			CurrentLayout.BorderStyle = BorderStyle.Fixed3D;
-			CurrentLayout.Parent = MDIHOST;
-			CurrentLayout.Visible = true;
-			CurrentLayout.Dock = System.Windows.Forms.DockStyle.Fill;
-			CurrentLayout.BringToFront ();
+
+			//LoadLayout ( "");
 
 
 			ToolStripMenuItem file = this.GetFileMenu ();
@@ -102,12 +99,38 @@ namespace YOM2013
 				}
 			}
 		}
+		/// <summary>
+		/// Loads the layout.
+		/// </summary>
+		/// <param name='MDIHOST'>
+		/// MDIHOS.
+		/// </param>
+		/// <param name='guidtoload'>
+		/// Guidtoload.
+		/// </param>
+		void LoadLayout (string guidtoload)
+		{
+			if (MDIHOST == null) {
+				throw new Exception("Major problem. No MDIHOST set.");
+			}
+			if (CurrentLayout != null) {
+				TestAndSaveIfNecessary ();
+				CurrentLayout.Dispose();
+			}
+			CurrentLayout = new Layout.LayoutPanel (CoreUtilities.Constants.BLANK);
+			CurrentLayout.BorderStyle = BorderStyle.Fixed3D;
+			CurrentLayout.Parent = MDIHOST;
+			CurrentLayout.Visible = true;
+			CurrentLayout.Dock = System.Windows.Forms.DockStyle.Fill;
+			CurrentLayout.BringToFront ();
+			CurrentLayout.LoadLayout(guidtoload);
+			LayoutDetails.Instance.CurrentLayout = CurrentLayout;
+		}
 
 		void HandleNewClick (object sender, EventArgs e)
 		{
-			if (true == CurrentLayout.GetSaveRequired) {
-				NewMessage.Show ("shoulda saved");
-			}
+
+			TestAndSaveIfNecessary ();
 			string guid = System.Guid.NewGuid().ToString();
 			//CurrentLayout = new LayoutPanel(Constants.BLANK);
 			CurrentLayout.NewLayout (guid);
@@ -118,11 +141,13 @@ namespace YOM2013
 			Console.WriteLine (CurrentLayout.Backup ());
 		}
 
-		void Save()
+		void Save ()
 		{
 
-			SystemLayout.SaveLayout();
-			CurrentLayout.SaveLayout ();
+			SystemLayout.SaveLayout ();
+			if (CurrentLayout != null) {
+				CurrentLayout.SaveLayout ();
+			}
 
 		}
 
@@ -130,13 +155,25 @@ namespace YOM2013
 		{
 			Save ();
 		}
+		/// <summary>
+		/// TODO: Finish properly
+		/// 
+		/// - test if Autosave is on and does a save (if needed)
+		/// </summary>
+		/// <returns>
+		/// <c>true</c>, if and save if necessary was tested, <c>false</c> otherwise.
+		/// </returns>
+		void TestAndSaveIfNecessary ()
+		{
+			if (true == CurrentLayout.GetSaveRequired) {
+				NewMessage.Show ("shoulda saved");
+			}
+		}
 
 		void HandleFormClosed (object sender, FormClosedEventArgs e)
 		{
 			if (false == LayoutDetails.Instance.ForceShutdown) {
-				if (true == CurrentLayout.GetSaveRequired) {
-					NewMessage.Show ("shoulda saved");
-				}
+				TestAndSaveIfNecessary ();
 			} else {
 				// we DO NOT allow subforms to save in the situation where there might be corruption
 				NewMessage.Show ("Shutting down without saving due to file corruption");
