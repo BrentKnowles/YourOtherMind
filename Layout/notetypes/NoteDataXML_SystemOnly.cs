@@ -14,6 +14,14 @@ namespace Layout
 		public NoteDataXML_SystemOnly ()
 		{
 		}
+		public override void CreateParent (LayoutPanelBase _Layout)
+		{
+			base.CreateParent (_Layout);
+
+			//CaptionLabel.Dock = System.Windows.Forms.DockStyle.Top;
+			CaptionLabel.Visible = false;
+			Parent.Dock = System.Windows.Forms.DockStyle.Left;
+		}
 		/// <summary>
 		/// Registers the type.
 		/// </summary>

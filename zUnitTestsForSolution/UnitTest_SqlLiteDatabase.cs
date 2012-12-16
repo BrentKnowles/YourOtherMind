@@ -1,5 +1,6 @@
 using NUnit.Framework;
 using System;
+using System.Collections.Generic;
 using database;
 using Layout.data;
 
@@ -39,14 +40,14 @@ namespace Testing
 				_w.output (String.Format ("Unable to drop table {0}", ex.ToString()));
 			}
 
-			db.CreateTableIfDoesNotExist (tmpDatabaseConstants.table_name, new string[4] 
+			db.CreateTableIfDoesNotExist (tmpDatabaseConstants.table_name, new string[5] 
 			                              {tmpDatabaseConstants.ID, tmpDatabaseConstants.GUID, tmpDatabaseConstants.XML,
-				tmpDatabaseConstants.STATUS}, 
-			new string[4] {
+				tmpDatabaseConstants.STATUS, tmpDatabaseConstants.NAME}, 
+			new string[5] {
 				"INTEGER",
 				"TEXT UNIQUE",
 				"LONGTEXT",
-				"TEXT"
+				"TEXT","TEXT"
 			}, primarykey
 			);
 			return db;
@@ -569,7 +570,7 @@ namespace Testing
 			string result = db.BackupDatabase();
 			_w.output(result.Length);
 			_w.output(result);
-			Assert.AreEqual(486, result.Length);
+			Assert.AreEqual(502, result.Length);
 			//Assert.False (true);
 		}
 		/// <summary>
@@ -738,6 +739,7 @@ namespace Testing
 			
 			db.UpdateSpecificColumnData(tmpDatabaseConstants.table_name, new string[1] {tmpDatabaseConstants.STATUS},
 			new object[1] {"snakes!"}, "", "GUID_A");
+			db.Dispose();
 		}
 		[Test()]
 		[ExpectedException()]
@@ -749,11 +751,44 @@ namespace Testing
 			
 			db.UpdateSpecificColumnData(tmpDatabaseConstants.table_name, new string[1] {tmpDatabaseConstants.STATUS},
 			new object[1] {"snakes!"}, tmpDatabaseConstants.GUID, "");
+			db.Dispose();
 		}
 
 		#endregion
 
 
+		#region sorting
+		[Test()]
+		public void TestSortingOnGetValues ()
+		{
+			Layout.LayoutDetails.Instance.YOM_DATABASE =test_database_name;
+			SqlLiteDatabase db = CreateTestDatabase (String.Format ("{0}", tmpDatabaseConstants.ID));
+			db.InsertData (tmpDatabaseConstants.table_name, new string[3] {	tmpDatabaseConstants.NAME,tmpDatabaseConstants.XML,tmpDatabaseConstants.GUID
+			}, new object[3] {"Zum", "boo xml", "GUID_DDA"});
+			db.InsertData (tmpDatabaseConstants.table_name, new string[3] {	tmpDatabaseConstants.NAME,tmpDatabaseConstants.XML,tmpDatabaseConstants.GUID
+			}, new object[3] {"Alexander", "boo xml", "GUID_B"});
+			db.InsertData (tmpDatabaseConstants.table_name, new string[3] {	tmpDatabaseConstants.NAME,tmpDatabaseConstants.XML,tmpDatabaseConstants.GUID
+			}, new object[3] {"aboo", "boo xml", "GUID_A"});
+			db.InsertData (tmpDatabaseConstants.table_name, new string[3] {	tmpDatabaseConstants.NAME,tmpDatabaseConstants.XML,tmpDatabaseConstants.GUID
+			}, new object[3] {"Calv", "boo xml", "GUID_C"});
+
+			Layout.MasterOfLayouts mastery = new Layout.MasterOfLayouts ();
+			List<Layout.MasterOfLayouts.NameAndGuid> list = mastery.GetListOfLayouts ("");
+			foreach (Layout.MasterOfLayouts.NameAndGuid guid in list) {
+				_w.output (guid.Caption);
+			}
+			Assert.AreEqual(4, list.Count);
+			Assert.AreEqual ("aboo", list[0].Caption);
+			Assert.AreEqual ("Alexander", list[1].Caption);
+			Assert.AreEqual ("Calv", list[2].Caption);
+			Assert.AreEqual ("Zum", list[3].Caption);
+
+
+
+			mastery.Dispose ();
+			db.Dispose();
+		}
+		#endregion
 
 
 

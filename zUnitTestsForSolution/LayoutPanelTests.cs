@@ -3,6 +3,7 @@ using NUnit.Framework;
 using Layout;
 using LayoutPanels;
 using database;
+using CoreUtilities;
 
 namespace Testing
 {
@@ -16,11 +17,21 @@ namespace Testing
 		private void _SetupForLayoutPanelTests ()
 		{
 			LayoutDetails.Instance.YOM_DATABASE = "yom_test_database.s3db";
+
+
+			FakeLayoutDatabase layout = new FakeLayoutDatabase("testguid");
+			FAKE_SqlLiteDatabase db = new FAKE_SqlLiteDatabase(layout.GetDatabaseName ());
+			db.DropTableIfExists(Layout.data.tmpDatabaseConstants.table_name);
+			_w.output ("dropping table " + Layout.data.tmpDatabaseConstants.table_name);
 		}
 
 		[Test]
 		public void SpeedTest ()
 		{
+
+			// TODO: need to delete OLD table. THis is why speedtest fails when ran as part of a group
+
+
 			// this will be a benchmarking test that will create a complicated Layout
 			// Then it will time and record the results of LOADING and SAVING that layout into a 
 			// table saved in my backup paths
@@ -29,7 +40,8 @@ namespace Testing
 			
 			FAKE_LayoutPanel panel = new FAKE_LayoutPanel (CoreUtilities.Constants.BLANK);
 			//NOTE: For now remember that htis ADDS 1 Extra notes
-			panel.NewLayout ("mynewpanel");
+			string panelname = System.Guid.NewGuid().ToString();
+			panel.NewLayout (panelname);
 			LayoutDetails.Instance.AddToList (typeof(FAKE_NoteDataXML_Panel), "testingpanel");
 
 			// ADD 1 of each type
@@ -48,6 +60,7 @@ namespace Testing
 				panelA.AddNote (note);
 				stringoftypes = stringoftypes + " " + t.ToString();
 			}
+			panel.SaveLayout();
 			string base_path = @"C:\Users\Brent\Documents\Keeper\Files\yomspeedtests2013\";
 			_w.output ("here");
 			NoteDataXML_RichText richy;
@@ -72,7 +85,7 @@ namespace Testing
 			TimeSpan time;
 			time = CoreUtilities.TimerCore.Time (() => {
 			panel = new FAKE_LayoutPanel (CoreUtilities.Constants.BLANK);
-				panel.LoadLayout("mynewpanel");
+				panel.LoadLayout(panelname);
 			});
 			Console.WriteLine("TIME " + time);
 
@@ -82,7 +95,8 @@ namespace Testing
 				time.TotalSeconds, stringoftypes,"load"});
 
 			time = CoreUtilities.TimerCore.Time (() => {
-				panel = new FAKE_LayoutPanel (CoreUtilities.Constants.BLANK);
+				// We keep the PANEL from above! Don't recreate it.
+				//panel = new FAKE_LayoutPanel (CoreUtilities.Constants.BLANK);
 				panel.SaveLayout();
 			});
 

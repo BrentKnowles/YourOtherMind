@@ -1,6 +1,8 @@
 using System;
 using System.Windows.Forms;
 using CoreUtilities;
+using System.Collections.Generic;
+
 namespace Layout
 {
 	public abstract class LayoutPanelBase : Panel, LayoutPanelInterface
@@ -67,7 +69,7 @@ namespace Layout
 		/// <c>true</c> if show tabs; otherwise, <c>false</c>.
 		/// </value>
 		abstract public bool ShowTabs { get; set; }
-			
+		abstract public bool GetIsSystem { get; set; }	
 
 
 
@@ -88,6 +90,7 @@ namespace Layout
 		public abstract void UpdateListOfNotes ();
 		public abstract void NewLayout (string _GUID);
 		public abstract void RefreshTabs ();
+
 	}
 }
 

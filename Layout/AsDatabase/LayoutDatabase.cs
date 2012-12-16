@@ -104,14 +104,11 @@ namespace Layout
 		/// </returns>
 		private BaseDatabase CreateDatabase()
 		{
+			return MasterOfLayouts.CreateDatabase();
 
 
-			SqlLiteDatabase db = new SqlLiteDatabase (LayoutDetails.Instance.YOM_DATABASE);
-			db.CreateTableIfDoesNotExist (tmpDatabaseConstants.table_name, 
-			    tmpDatabaseConstants.Columns, 
-			tmpDatabaseConstants.Types, String.Format ("{0}", tmpDatabaseConstants.ID)
-			);
-			return db;
+
+
 		}
 		/// <summary>
 		/// Adds the children. If a panel notetype
@@ -414,6 +411,9 @@ namespace Layout
 			}
 			return result;
 		}
+
+
+
 
 		private static bool FindGUID (NoteDataInterface note, string guid)
 		{

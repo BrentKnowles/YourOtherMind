@@ -105,11 +105,15 @@ namespace database
 			}
 
 		}
-
+		public override List<object[]> GetValues (string tableName, string[] columnToReturn, string columnToTest, string Test)
+		{
+			return GetValues (tableName, columnToReturn, columnToTest, Test, Constants.BLANK);
+		}
 		/// <summary>
 		/// Gets the values. Returns a list with an object array. The list is in the form:
 		/// 
-		///         List[0] = the first row with an array matching in size the array ColumnToReturn that was Passed in
+		///   *      List[0] = the first row with an array matching in size the array ColumnToReturn that was Passed in
+		///   *      To get all values then use columnToTest=any, test="*"
 		/// </summary>
 		/// <returns>
 		/// The values.
@@ -126,7 +130,7 @@ namespace database
 		/// <param name='Test'>
 		/// Test.
 		/// </param>
-		public override List<object[]> GetValues (string tableName, string[] columnToReturn, string columnToTest, string Test)
+		public override List<object[]> GetValues (string tableName, string[] columnToReturn, string columnToTest, string Test, string Sorting )
 		{
 
 			if (CoreUtilities.Constants.BLANK == tableName) {
@@ -157,11 +161,25 @@ namespace database
 
 
 			try {
-
+				if (columnToTest == "any")
+				{
+					// i.e., query will become where 1=1
+					columnToTest="1";
+					Test = "1";
+				}
+				else
+				{
+					Test = String.Format ("'{0}'", Test);
+				}
+				if (Sorting == Constants.BLANK)
+				{
+					//Sorting = ";";
+				}
 			
 				// Execute query on database
 				//string selectSQL = "SELECT name, username FROM AppUser";
-				string selectSQL = String.Format ("SELECT {0} FROM {1} where {2} = '{3}'", ColumnsToReturnForQuery, tableName, columnToTest, Test);
+				string selectSQL = String.Format ("SELECT {0} FROM {1} where {2} = {3} {4}", ColumnsToReturnForQuery, tableName, columnToTest, Test, Sorting);
+				lg.Instance.Line("SqlLiteDatabase.GetValues", ProblemType.WARNING, selectSQL, Loud.CTRIVIAL);
 				//string selectSQL = String.Format ("SELECT {0} FROM {1} LIMIT 1", columnToReturn, tableName, columnToTest, Test);
 				SQLiteCommand selectCommand = new SQLiteCommand (selectSQL, sqliteCon);
 				SQLiteDataReader dataReader = selectCommand.ExecuteReader ();

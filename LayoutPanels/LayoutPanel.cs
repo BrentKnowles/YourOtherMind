@@ -36,7 +36,21 @@ namespace Layout
 
 
 		ToolStrip tabsBar = null;
-
+		private bool issystem = false;
+		/// <summary>
+		/// Gets or sets a value indicating whether this instance is system.
+		/// 
+		/// If true this is the SYstem layout, which has special behaviors
+		/// </summary>
+		/// <value>
+		/// <c>true</c> if this instance is system; otherwise, <c>false</c>.
+		/// </value>
+		override public bool GetIsSystem { 
+			get { return issystem;}
+			set {
+				issystem = value;
+			}
+		}
 
 		#endregion
 		// set in NoteDataXML_Panel so that a child Layout will tell a higher level to save, if needed
@@ -65,6 +79,26 @@ namespace Layout
 
 			// RefreshTabs(); don't need to call it until after load
 		}
+
+		/// <summary>
+		/// Returns the system panel for a system page.
+		/// This is only relevant for the guid=system page (the main interface)
+		/// and is called from the mainform
+		/// </summary>
+		/// <value>
+		/// The get system panel.
+		/// </value>
+		public Control GetSystemPanel ()
+		{
+			foreach (NoteDataInterface note in Notes.GetNotes ()) {
+				if (note.GetType() == typeof(NoteDataXML_SystemOnly))
+				{
+					return (Control)note.Parent;
+				}
+			}
+			return null;
+		}
+
 		public void LayoutToolbar ()
 		{
 			ToolStrip bar = new ToolStrip ();
@@ -84,20 +118,30 @@ namespace Layout
 			ToolStripButton LoadLayout = new ToolStripButton("Load Layout");
 			LoadLayout.Click +=	LoadLayoutClick;
 			bar.Items.Add (LoadLayout);
+
+			//ToolStripLabel CurrentNote
+		}
+		public LayoutPanel(string parentGUID) : this (parentGUID, false)
+		{
+
+
 		}
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Layout.LayoutPanel"/> class.
 		/// 
-		/// The GUID needs to be blank unless this is a CHILD note of another Layout.
+		/// 
 		/// </summary>
 		/// <param name='GUID'>
-		/// GUI.
+		/// Unique identifier of PARENT. The GUID needs to be blank unless this is a CHILD note of another Layout.
 		/// </param>
-		public LayoutPanel (string GUID)
+		/// <param name='IsSystem'>
+		/// if true (default is false) means this ist he special one of a kind system layout
+		/// </param>
+		public LayoutPanel (string parentGUID, bool IsSystem)
 		{
-			ParentGUID = GUID;
-
+			ParentGUID = parentGUID;
+			GetIsSystem = IsSystem;
 
 
 			//Type[] typeList = LayoutDetails.Instance.TypeList;
@@ -118,29 +162,15 @@ namespace Layout
 
 
 			this.BackColor = Color.Pink;
-			if (!GetIsChild)
+			if (!GetIsChild && !GetIsSystem)
 				BuildFormatToolbar ();
-			TabsBar ();
-			LayoutToolbar ();
-
-
-
-
-
-
+			if (!GetIsSystem) TabsBar ();
+			if (!GetIsSystem) LayoutToolbar ();
 
 			text = new TextBox();
 			text.Parent = this;
 			text.Visible = true;
 			text.Dock = DockStyle.Bottom;
-
-
-
-
-
-
-
-
 
 			Label label = new Label();
 			label.Text = "Remember to save";
@@ -344,7 +374,7 @@ namespace Layout
 		public override void RefreshTabs ()
 		{
 			Console.WriteLine (">>> refresh tabs <<<");
-			if (Notes.ShowTabs == true) {
+			if (Notes.ShowTabs == true && tabsBar != null) {
 				tabsBar.Visible = true;
 				tabsBar.Items.Clear ();
 				// redraw the list of tabs
@@ -362,9 +392,13 @@ namespace Layout
 
 				}
 			} else {
-				tabsBar.Visible = false;
+				if (tabsBar != null) tabsBar.Visible = false;
 			}
 		}
+
+
+
+
 
 		/// <summary>
 		/// Must be called when creating a new layout

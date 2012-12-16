@@ -153,8 +153,8 @@ namespace database
 		public abstract void DropTableIfExists(string Table);
 		public abstract bool Exists(string Table, string Column, string ColumnValue);
 
-		public abstract  List<object[]> GetValues (string tableName, string[] columnToReturn, string columnToTest, string Test);
-
+		public abstract  List<object[]> GetValues (string tableName, string[] columnToReturn, string columnToTest, string Test, string Sorting);
+		public abstract List<object[]> GetValues (string tableName, string[] columnToReturn, string columnToTest, string Test);
 		/// <summary>
 		/// Inserts the data.
 		/// </summary>

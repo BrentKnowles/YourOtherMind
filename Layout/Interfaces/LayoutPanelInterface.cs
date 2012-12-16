@@ -20,6 +20,7 @@ namespace Layout
 		void SetSaveRequired(bool NeedSave);
 		string Backup();
 		void RefreshTabs ();
+
 		//void AddNote();
 
 	}

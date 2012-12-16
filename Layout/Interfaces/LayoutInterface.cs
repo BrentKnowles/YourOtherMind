@@ -51,6 +51,7 @@ namespace Layout
 		bool IsNoteExistsInLayout(string NoteGUID);
 		void RemoveNote (NoteDataInterface NoteToMove);
 		void UpdateListOfNotes();
+		//List<LayoutDetails.NameAndGuid> GetListOfLayouts (string filter);
 
 	}
 }

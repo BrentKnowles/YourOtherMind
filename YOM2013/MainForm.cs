@@ -9,11 +9,12 @@ namespace YOM2013
 	{
 		#region gui
 		Layout.LayoutPanel CurrentLayout;
+		Layout.LayoutPanel SystemLayout;
 		#endregion
 		public MainForm ()
 		{
 
-
+			lg.Instance.Loudness = Loud.CTRIVIAL;
 
 
 
@@ -26,18 +27,36 @@ namespace YOM2013
 				Console.WriteLine (ex.ToString ());
 			}
 
-			Console.WriteLine(LayoutDetails.Instance.Path);
+			Console.WriteLine (LayoutDetails.Instance.Path);
 
 
 
 			this.FormClosed += HandleFormClosed;
 			this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
+
+			//GetSystemPanel ();
+			SystemLayout = new Layout.LayoutPanel (CoreUtilities.Constants.BLANK, true);
+			SystemLayout.Parent = this;
+			SystemLayout.Visible = true;
+			SystemLayout.Dock = System.Windows.Forms.DockStyle.Fill;
+			SystemLayout.BringToFront ();
+			//SystemLayout.Visible = false;
+			SystemLayout.LoadLayout ("system");
+
+			Control MDIHOST = SystemLayout.GetSystemPanel ();
+			if (MDIHOST == null) {
+				NewMessage.Show ("no system panel was found on system layout");
+				Application.Exit ();
+			}
+
+
 			CurrentLayout = new Layout.LayoutPanel (CoreUtilities.Constants.BLANK);
-			CurrentLayout.Parent = this;
+			CurrentLayout.BorderStyle = BorderStyle.Fixed3D;
+			CurrentLayout.Parent = MDIHOST;
 			CurrentLayout.Visible = true;
 			CurrentLayout.Dock = System.Windows.Forms.DockStyle.Fill;
 			CurrentLayout.BringToFront ();
-			Console.WriteLine (Loc.Instance.Cat.GetString ("A new test!"));
+
 
 			ToolStripMenuItem file = this.GetFileMenu ();
 			if (file == null) {
@@ -62,7 +81,26 @@ namespace YOM2013
 
 
 			//Screens_AcrossTwo();
+			this.KeyPreview = true;
+			this.KeyDown += HandleMainFormKeyDown;
+		}
 
+		DockStyle lastDockStyle= DockStyle.None;
+
+		void HandleMainFormKeyDown (object sender, KeyEventArgs e)
+		{
+			if (e.KeyCode == Keys.F6) {
+				if (CurrentLayout.Parent.Dock != DockStyle.Fill)
+				{
+					lastDockStyle = CurrentLayout.Parent.Dock;
+				CurrentLayout.Parent.Dock = DockStyle.Fill;
+				CurrentLayout.Parent.BringToFront();
+				}
+				else
+				{
+					CurrentLayout.Parent.Dock = lastDockStyle;
+				}
+			}
 		}
 
 		void HandleNewClick (object sender, EventArgs e)
@@ -80,9 +118,17 @@ namespace YOM2013
 			Console.WriteLine (CurrentLayout.Backup ());
 		}
 
+		void Save()
+		{
+
+			SystemLayout.SaveLayout();
+			CurrentLayout.SaveLayout ();
+
+		}
+
 		void HandleSaveClick (object sender, EventArgs e)
 		{
-			CurrentLayout.SaveLayout ();
+			Save ();
 		}
 
 		void HandleFormClosed (object sender, FormClosedEventArgs e)
