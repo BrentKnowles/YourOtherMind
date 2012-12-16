@@ -2,6 +2,7 @@ using System;
 using System.Windows.Forms;
 using System.Drawing;
 using CoreUtilities;
+using System.Xml.Serialization;
 
 /* This is to contain the interface related elements (interaction with the GUID) to keep that distinct from the xml definition*/
 namespace Layout
@@ -20,11 +21,18 @@ namespace Layout
 
 		#endregion
 
+	
+
 
 		// http://stackoverflow.com/questions/7367152/c-dynamically-assign-method-method-as-variable
 		Func<System.Collections.Generic.List<NoteDataInterface>> GetAvailableFolders;
 		Action<string,string> MoveNote;
-		protected Action<bool> SetSaveRequired;
+		private Action<bool> setsaverequired;
+		[XmlIgnore]
+		public Action<bool> SetSaveRequired {
+			get { return setsaverequired;}
+			set { setsaverequired = value;}
+		}
 		protected delegate void delegate_UpdateListOfNotes();
 
 
@@ -77,6 +85,12 @@ namespace Layout
 			properties.DropDownItems.Add (captionEditor);
 
 			CaptionLabel.Items.Add (properties);
+
+
+
+
+
+
 			ToolStripSeparator sep =  new ToolStripSeparator();
 			sep.Width = 0;
 			sep.BackColor = CaptionLabel.BackColor;
@@ -84,28 +98,26 @@ namespace Layout
 			//HACK for some reason labels inside of panels don't draw LAST toolstripitem on LOAD (on only on load!) 
 			CaptionLabel.Items.Add (sep);
 
-			contextMenu = new ContextMenuStrip();
+			//contextMenu = new ContextMenuStrip();
 
 		
 
 
 			ToolStripDropDownButton menuFolder = new ToolStripDropDownButton();
 			menuFolder.Text = Loc.Instance.Cat.GetString("Folder");
-			contextMenu.Items.Add (menuFolder);
+			properties.DropDownItems.Add (menuFolder);
 			menuFolder.MouseEnter+= HandleMenuFolderMouseEnter;
 
 
 			ToolStripButton menuProperties = new ToolStripButton();
 			menuProperties.Text = Loc.Instance.Cat.GetString ("Properties");
-			contextMenu.Items.Add (menuProperties);
+			properties.DropDownItems.Add (menuProperties);
 			menuProperties.Click+= HandlePropertiesClick;
 
 
-			ToolStripButton label  = new ToolStripButton();
-			label.Text = Loc.Instance.Cat.GetString("Example2");
-			contextMenu.Items.Add (label);
 
-			CaptionLabel.ContextMenuStrip = contextMenu;
+
+			//CaptionLabel.ContextMenuStrip = contextMenu;
 
 			PropertyPanel = new Panel();
 			PropertyPanel.Visible = false;
@@ -175,9 +187,7 @@ namespace Layout
 			PropertyPanel.Visible = !PropertyPanel.Visible;
 			if (PropertyPanel.Visible == true) {
 				Parent.AutoScroll = true;
-				// TODO just a hack until sizing is in
-				Height = 200;
-				Width = 200;
+
 				PropertyPanel.AutoScroll = true;
 				//PropertyPanel.SendToBack();
 				//CaptionLabel.BringToFront();

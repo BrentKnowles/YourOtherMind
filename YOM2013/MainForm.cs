@@ -165,8 +165,10 @@ namespace YOM2013
 		/// </returns>
 		void TestAndSaveIfNecessary ()
 		{
-			if (true == CurrentLayout.GetSaveRequired) {
-				NewMessage.Show ("shoulda saved");
+			if (CurrentLayout != null) {
+				if (true == CurrentLayout.GetSaveRequired) {
+					NewMessage.Show ("shoulda saved");
+				}
 			}
 		}
 

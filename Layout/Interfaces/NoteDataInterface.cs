@@ -46,6 +46,7 @@ namespace Layout
 		void Update(LayoutPanelBase Layout);
 		void Destroy();
 
+		Action<bool> SetSaveRequired { get; set; }
 		void Save();
 
 
