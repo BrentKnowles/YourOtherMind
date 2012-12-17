@@ -8,11 +8,21 @@ namespace appframe
 	public class MainFormBase :  System.Windows.Forms.Form
 	{
 		#region variables
-
+		private string path = "";
+		protected string Path {
+			get { return path;}
+			set { path = value;}
+		}
 		private string FindMenu {
-			get { return Loc.Instance.Cat.GetString ("File");}
+			get { return Loc.Instance.GetString ("File");}
+		}
+		private string ToolMenu {
+			get { return Loc.Instance.GetString ("Tools");}
 		}
 		private ToolStripMenuItem FindMenuItem;
+		private ToolStripMenuItem ToolMenuItem;
+		AddIns addIns;
+
 
 		#endregion
 
@@ -28,11 +38,27 @@ namespace appframe
 			//Console.WriteLine(Mono.Unix.Catalog.GetString("Hello world!"));
 			MainMenu = new MenuStrip();
 			FindMenuItem = new ToolStripMenuItem(FindMenu);
+
+			ToolMenuItem = new ToolStripMenuItem(ToolMenu);
+			ToolStripButton optionsButton = new ToolStripButton();
+			optionsButton.Text = Loc.Instance.GetString("Options");
+			ToolMenuItem.DropDownItems.Add (optionsButton);
+			optionsButton.Click+= HandleOptionsButtonClick;
 			
 			MainMenu.Items.Add (FindMenuItem);
+			MainMenu.Items.Add (ToolMenuItem);
 			this.Controls.Add(MainMenu);
 			this.FormClosing+= HandleFormClosing;
 
+		}
+
+		void HandleOptionsButtonClick (object sender, EventArgs e)
+		{
+			//OptionForm options = new OptionForm();
+			//options.ShowDialog();
+
+			addIns = new AddIns(System.IO.Path.Combine(Path,"plugins") );
+			addIns.BuildListOfAddins();
 		}
 
 		void HandleFormClosing (object sender, FormClosingEventArgs e)
@@ -40,7 +66,7 @@ namespace appframe
 			if (CoreUtilities.File.CheckForFileError () == true) {
 				// if this is true it means the harddrive if failing to write
 				// which means we abort the app without proper shutdown
-				NewMessage.Show ("Your harddrive failed to write a TEST file. Because this might mean you are suffering harddrive failure we are aborting WITHOUT saving any existing files so that we do not CORRUPT them.");
+				NewMessage.Show (Loc.Instance.GetString("Your harddrive failed to write a TEST file. Because this might mean you are suffering harddrive failure we are aborting WITHOUT saving any existing files so that we do not CORRUPT them."));
 				// we also set a variable to inform others of this
 				LayoutDetails.Instance.ForceShutdown = true;
 			}

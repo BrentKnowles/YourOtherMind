@@ -2,6 +2,14 @@ using System;
 using System.Windows.Forms;
 using CoreUtilities;
 using Layout;
+using System.Collections.ObjectModel;
+
+
+
+
+using System.ComponentModel.Composition.Hosting;
+	using System.ComponentModel.Composition;
+
 
 namespace YOM2013
 {
@@ -12,8 +20,24 @@ namespace YOM2013
 		Layout.LayoutPanel SystemLayout;
 		Control MDIHOST=null;
 		#endregion
+		/// <summary>
+		/// A series of true/false and similiar settings that should be double checked before deployments as some of them
+		/// are for debugging
+		/// 
+		/// </summary>
+		private void Switches()
+		{
+
+		}
+	
+
 		public MainForm ()
 		{
+
+	
+			Path = LayoutDetails.Instance.Path;
+
+			Switches();
 
 			lg.Instance.Loudness = Loud.CTRIVIAL;
 			LayoutDetails.Instance.LoadLayoutRef = LoadLayout;
@@ -66,6 +90,11 @@ namespace YOM2013
 				//	((ToolStripMenuItem)MainMenu.Items [0]).DropDownItems.Add (Save);
 				New.Click += HandleNewClick;
 
+				ToolStripMenuItem Test = new ToolStripMenuItem (Loc.Instance.Cat.GetString ("TEST"));
+				file.DropDownItems.Add(Test);
+				//	((ToolStripMenuItem)MainMenu.Items [0]).DropDownItems.Add (Save);
+				Test.Click += HandleTestClick;
+
 					ToolStripMenuItem Save = new ToolStripMenuItem (Loc.Instance.Cat.GetString ("Save"));
 				file.DropDownItems.Add(Save);
 			//	((ToolStripMenuItem)MainMenu.Items [0]).DropDownItems.Add (Save);
@@ -80,6 +109,11 @@ namespace YOM2013
 			//Screens_AcrossTwo();
 			this.KeyPreview = true;
 			this.KeyDown += HandleMainFormKeyDown;
+		}
+
+		void HandleTestClick (object sender, EventArgs e)
+		{
+		
 		}
 
 		DockStyle lastDockStyle= DockStyle.None;

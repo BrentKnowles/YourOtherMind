@@ -1,43 +1,76 @@
+using System.ComponentModel.Composition;
 using System;
-using System.AddIn;
-using System.AddIn.Hosting;
-using System.AddIn.Contract;
-using System.Collections;
-using System.Collections.Generic;
-using Layout;
-using core;
-using System.Collections.ObjectModel;
-
+using System.ComponentModel.Composition.Hosting;
+using System.IO;
 namespace appframe
 {
 	public class AddIns
 	{
-		public AddIns ()
+		string dataPath = CoreUtilities.Constants.BLANK;
+		public AddIns (string path)
 		{
-		}
-		public void ScanForAddIns ()
-		{
-			// Set the add-ins discovery root directory to be the current directory
-			string addinRoot = Environment.CurrentDirectory;
-			// Rebuild the add-ins cache and pipeline components cache.
-			//The required folder "C:\Users\Brent\Documents\Projects\Utilities\yom2013B\yom2013B\bin\Debug\HostSideAdapters" does not exist.
-			AddInStore.Rebuild (addinRoot);
-			// Get registerd add-ins of type SimpleAddInHostView
-			Collection<AddInToken> addins = AddInStore.FindAddIns (typeof(core.SimpleAddInHostView), addinRoot);
-		
-		
-			foreach (AddInToken addinToken in addins) {
-				// Activate the add-in
-				SimpleAddInHostView addinInstance =
-				addinToken.Activate<SimpleAddInHostView> (AddInSecurityLevel.Internet);
-			
-				// Use the add-in
-				Console.WriteLine (String.Format ("Add-in {0} Version {1}",
-			                                addinToken.Name, addinToken.Version));
-				//Console.WriteLine(addinInstance.SayHello("Guy"));
-				Console.WriteLine (addinInstance.SayHello ("Guy"));
+			dataPath = path;
+			if (Directory.Exists (dataPath) == false) {
+				Directory.CreateDirectory (dataPath);
 			}
+
 		}
+		public void TEstMEFPlug ()
+		{
+			if (CoreUtilities.Constants.BLANK == dataPath) {
+				throw new Exception ("No path defined for AddIns");
+			}
+
+			var bootStrapper = new MefAddIns.Terminal.Bootstrapper ();
+			//An aggregate catalog that combines multiple catalogs
+			var catalog = new AggregateCatalog ();
+			//Adds all the parts found in same directory where the application is running!
+			//var currentPath = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetAssembly(typeof(MainForm)).Location);
+			catalog.Catalogs.Add (new DirectoryCatalog (dataPath));
+			
+			//Create the CompositionContainer with the parts in the catalog
+			var _container = new CompositionContainer (catalog);
+			
+			//Fill the imports of this object
+			try {
+				_container.ComposeParts (bootStrapper);
+			} catch (CompositionException compositionException) {
+				Console.WriteLine (compositionException.ToString ());
+			}
+			
+			//Prints all the languages that were found into the application directory
+			var i = 0;
+			foreach (var language in bootStrapper.Languages) {
+				Console.WriteLine ("[{0}] {1} by {2}.\n\t{3}\n", language.Version, language.Name, language.Author, language.Description);
+				language.Boom ();
+
+
+				string result = language.Tester ("this is the string I passed in");
+				Console.WriteLine ("RESULT = " + result);
+
+				i++;
+			}
+			Console.WriteLine("It has been found {0} supported languages",i);
+
+
+			foreach (var form in bootStrapper.FormBasic) {
+				Console.WriteLine ("[{0}] {1} by {2}.\n\t{3}\n", form.Version, form.Name, form.Author, form.Description);
+				System.Diagnostics.Process proc = System.Diagnostics.Process.GetCurrentProcess ();
+				long size = proc.PrivateMemorySize64;
+				Console.WriteLine ("Memory " + size);
+				form.ShowWindow();
+			}
+
+		}
+		public void BuildListOfAddins()
+		{
+			TEstMEFPlug();
+		}
+		public void RunAddIn()
+		{
+		}
+
+
 	}
 }
 
