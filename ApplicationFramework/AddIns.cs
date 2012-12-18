@@ -40,13 +40,13 @@ namespace appframe
 			
 			//Prints all the languages that were found into the application directory
 			var i = 0;
-			foreach (var language in bootStrapper.Languages) {
+			foreach (var language in bootStrapper.Base) {
 				Console.WriteLine ("[{0}] {1} by {2}.\n\t{3}\n", language.Version, language.Name, language.Author, language.Description);
-				language.Boom ();
+				//language.Boom ();
 
 
-				string result = language.Tester ("this is the string I passed in");
-				Console.WriteLine ("RESULT = " + result);
+				//string result = language.Tester ("this is the string I passed in");
+				//Console.WriteLine ("RESULT = " + result);
 
 				i++;
 			}
@@ -59,6 +59,17 @@ namespace appframe
 				long size = proc.PrivateMemorySize64;
 				Console.WriteLine ("Memory " + size);
 				form.ShowWindow();
+			}
+
+			foreach (var note in bootStrapper.Notes) {
+				Console.WriteLine ("[{0}] {1} by {2}.\n\t{3}\n", note.Version, note.Name, note.Author, note.Description);
+				//language.Boom ();
+				
+				
+				//string result = language.Tester ("this is the string I passed in");
+				//Console.WriteLine ("RESULT = " + result);
+				
+				note.RegisterType();
 			}
 
 		}

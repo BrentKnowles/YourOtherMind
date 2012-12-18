@@ -13,7 +13,7 @@ namespace MefAddIns.Extensibility
 		string Version { get; }
 		string Description { get; }
 		string Name { get; }
-		void Boom();
-		string Tester(string incoming);
+
+		//string Tester(string incoming);
 	}
 }

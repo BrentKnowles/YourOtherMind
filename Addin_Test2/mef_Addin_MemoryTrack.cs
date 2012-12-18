@@ -30,22 +30,34 @@ namespace MefAddIns
 			get { return @"Memory"; }
 		}
 
-		public void Boom()
-		{
-			Console.WriteLine("BRAINS!!");
-		}
-		public string Tester(string s)
-		{ 
-
-			Console.WriteLine (s);
-			return "Archie!";
-		}
+		long min = long.MaxValue;
+		long max = 0;
+		Addin_Test2.memoryForm form;
 		public void ShowWindow()
+		{
+			Timer timer = new Timer();
+			timer.Tick +=new EventHandler(timer_Tick);
+			timer.Interval = 2000;
+			timer.Start();
+			form = new Addin_Test2.memoryForm();
+
+			form.Show();
+		}
+		void timer_Tick(object sender, EventArgs e)
 		{
 			Process proc = Process.GetCurrentProcess();
 			long size = proc.PrivateMemorySize64;
-			MessageBox.Show (size.ToString());
+			if (size < min)
+			{
+				min = size;
+				form.labelMin.Text = String.Format ("Min: {0}",size.ToString());
+			}
+			if (size > max)
+			{
+				max = size;
+				form.labelMax.Text = String.Format ("Max: {0}",size.ToString());
+			}
+			form.labelMemoryUse.Text = String.Format ("Current: {0}",size.ToString());
 		}
-
 	}
 }

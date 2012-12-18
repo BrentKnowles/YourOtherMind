@@ -10,9 +10,11 @@ namespace MefAddIns.Terminal
 		/// Holds a list of all the valid languages for this application
 		/// </summary>
 		[ImportMany]
-		public IEnumerable<mef_IBase> Languages { get; set; }
+		public IEnumerable<mef_IBase> Base { get; set; }
 		[ImportMany]
 		public IEnumerable<mef_IShowFormBasic> FormBasic { get; set; }
+		[ImportMany]
+		public IEnumerable<mef_INotes> Notes { get; set; }
 		
 	}
 }
