@@ -61,6 +61,10 @@ namespace Layout
 
 
 		}
+		public void DoForceShutDown(bool ShutDown)
+		{
+			Layout.LayoutDetails.Instance.ForceShutdown = ShutDown;
+		}
 		/// <summary>
 		/// This is how we decide to load a new layout. This is a link set in the MainForm
 		/// that calls the main LoadLayout routine therein.

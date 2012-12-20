@@ -5,7 +5,7 @@ namespace MefAddIns
 	using System;
 	using System.Windows.Forms;
 	using System.Diagnostics;
-
+	using System.Collections.Generic;
 	/// <summary>
 	/// Provides an implementation of a supported language by implementing ISupportedLanguage. 
 	/// Moreover it uses Export attribute to make it available thru MEF framework.
@@ -33,6 +33,12 @@ namespace MefAddIns
 		long min = long.MaxValue;
 		long max = 0;
 		Addin_Test2.memoryForm form;
+
+		public void RespondToCallToAction ()
+		{
+			ShowWindow ();
+		}
+
 		public void ShowWindow()
 		{
 			Timer timer = new Timer();
@@ -59,5 +65,45 @@ namespace MefAddIns
 			}
 			form.labelMemoryUse.Text = String.Format ("Current: {0}",size.ToString());
 		}
+		bool iscopy = false;
+
+		public bool IsCopy {
+			get{ return iscopy;}
+			set{  iscopy = value;}
+		}
+
+		string GUID = "memorytrack";
+		public PlugInAction CalledFrom { 
+			get
+			{
+				PlugInAction action = new PlugInAction();
+				action.HotkeyNumber = -1;
+				action.MyMenuName = "Memory Usage";
+				action.ParentMenuName = "ToolsMenu";
+				//action.ParentMenuName = "";
+				action.IsOnAMenu = true;
+				action.IsOnAToolbar = false;
+				action.IsANote = false;
+				action.GUID = GUID;
+
+				return action;
+			} 
+		}
+		public void SetGuid(string s)
+		{
+			GUID = s;
+		}
+		List<IDisposable> hookups = null;
+		public List<IDisposable>  Hookups {
+			get {
+				if (null == hookups)
+					hookups = new List<IDisposable> ();
+				return hookups;
+			}
+			set { hookups = value;}
+
+		}
+
+
 	}
 }

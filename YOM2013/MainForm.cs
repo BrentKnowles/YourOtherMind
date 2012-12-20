@@ -31,11 +31,10 @@ namespace YOM2013
 		}
 	
 
-		public MainForm ()
+		public MainForm (string _path, Action<bool>ForceShutDownMethod, string storage) : base (_path,ForceShutDownMethod,storage)
 		{
 
-	
-			Path = LayoutDetails.Instance.Path;
+			//Path = LayoutDetails.Instance.Path;
 
 			Switches();
 
@@ -172,6 +171,11 @@ namespace YOM2013
 
 		void HandleBackupClick (object sender, EventArgs e)
 		{
+			if (CurrentLayout == null) {
+				NewMessage.Show ("Please load a layout first");
+				// TODO: Backup should be an operation at the MasterOfLayoutsLevel
+			}
+			else
 			Console.WriteLine (CurrentLayout.Backup ());
 		}
 

@@ -37,6 +37,7 @@ namespace Layout
 
 			ComboBox mode = new ComboBox();
 			mode.Parent = Parent;
+			mode.DropDownStyle = ComboBoxStyle.DropDownList;
 			mode.Dock = DockStyle.Top;
 			mode.BringToFront();
 

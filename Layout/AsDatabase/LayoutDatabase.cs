@@ -238,10 +238,30 @@ namespace Layout
 				System.IO.StringReader reader = new System.IO.StringReader (result [2].ToString ());
 				System.Xml.Serialization.XmlSerializer test = new System.Xml.Serialization.XmlSerializer(typeof(System.Collections.Generic.List<NoteDataXML>),
 					                                                                                         LayoutDetails.Instance.ListOfTypesToStoreInXML());
-
+					List<NoteDataXML> ListAsDataObjectsOfType  = null;
+					try
+					{
 				// have to load it in an as array of target type and then convert
-				List<NoteDataXML> ListAsDataObjectsOfType = (System.Collections.Generic.List<NoteDataXML>)test.Deserialize (reader);
+						ListAsDataObjectsOfType = (System.Collections.Generic.List<NoteDataXML>)test.Deserialize (reader);
+					} 
+					catch (System.InvalidOperationException e)
+					{
+						string exception = e.ToString();
+						int pos = exception.IndexOf ("name");
+						int pos2 = exception.IndexOf ("namespace");
+						if (pos2 < pos) pos2 = pos + 1;
 
+						string notetype = exception.Substring(pos, pos2 - pos  -2);
+						string message = 
+			Loc.Instance.Cat.GetStringFmt("The notetype {0} was present in this Layout but not loaded in memory! This means that the AddIn used to add this note to this Layout has been removed. Loading of this layout is now aborted. Please exit this note and close it to prevent data loss and reinstall the disabled AddIn", notetype);
+						NewMessage.Show (message);
+					}
+					catch (Exception ex)
+					{
+						throw new Exception(ex.ToString());
+					}
+					if (null != ListAsDataObjectsOfType)
+					{
 				dataForThisLayout = new List<NoteDataInterface>();
 				for (int i = 0; i < ListAsDataObjectsOfType.Count; i++)
 				{
@@ -253,6 +273,7 @@ namespace Layout
 				}
 				Success = true;
 					debug_ObjectCount = ListAsDataObjectsOfType.Count;
+				}
 				}
 			} 
 
