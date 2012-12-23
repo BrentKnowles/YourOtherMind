@@ -28,6 +28,8 @@ namespace Layout
 		Func<System.Collections.Generic.List<NoteDataInterface>> GetAvailableFolders;
 		Action<string,string> MoveNote;
 		private Action<bool> setsaverequired;
+		protected Action<NoteDataInterface> DeleteNote;
+
 		[XmlIgnore]
 		public Action<bool> SetSaveRequired {
 			get { return setsaverequired;}
@@ -48,65 +50,92 @@ namespace Layout
 			Parent.Dock = System.Windows.Forms.DockStyle.None;
 			Parent.Height = Height;
 			Parent.Width = Width;
+			Parent.Dock = this.Dock;
 			
 			try {
 				_Layout.NoteCanvas.Controls.Add (Parent);
 			} catch (Exception ex) {
-				lg.Instance.Line("CreateParent", ProblemType.EXCEPTION, "Unable to create note after changing properties" + ex.ToString ());
-				throw new Exception("Failed to add control");
+				lg.Instance.Line ("CreateParent", ProblemType.EXCEPTION, "Unable to create note after changing properties" + ex.ToString ());
+				throw new Exception ("Failed to add control");
 			}
 			
 			
-			CaptionLabel = new ToolStrip();
-			CaptionLabel.MouseDown+= HandleMouseDown;
-			CaptionLabel.MouseUp+= HandleMouseUp;
-			CaptionLabel.MouseLeave+= HandleMouseLeave;
-			CaptionLabel.MouseMove+= HandleMouseMove;
+			CaptionLabel = new ToolStrip ();
+			CaptionLabel.MouseDown += HandleMouseDown;
+			CaptionLabel.MouseUp += HandleMouseUp;
+			CaptionLabel.MouseLeave += HandleMouseLeave;
+			CaptionLabel.MouseMove += HandleMouseMove;
 			CaptionLabel.Parent = Parent;
 			CaptionLabel.BackColor = Color.Green;
 			CaptionLabel.Dock = DockStyle.Fill;
 			CaptionLabel.GripStyle = ToolStripGripStyle.Hidden;
 			//CaptionLabel.Text = this.Caption;
-			 captionLabel = new ToolStripLabel(this.Caption);
+			captionLabel = new ToolStripLabel (this.Caption);
 
-			captionLabel.MouseDown+= HandleMouseDown;
-			captionLabel.MouseUp+= HandleMouseUp;
-			captionLabel.MouseLeave+= HandleMouseLeave;
-			captionLabel.MouseMove+= HandleMouseMove;
+			captionLabel.MouseDown += HandleMouseDown;
+			captionLabel.MouseUp += HandleMouseUp;
+			captionLabel.MouseLeave += HandleMouseLeave;
+			captionLabel.MouseMove += HandleMouseMove;
 			CaptionLabel.Items.Add (captionLabel);
-			if (Caption == "") NewMessage.Show ("Caption is blank");
+			//if (Caption == "")				NewMessage.Show ("Caption is blank");
 
 
-			properties = new ToolStripDropDownButton(Loc.Instance.GetString("*"));
-			ToolStripTextBox captionEditor = new ToolStripTextBox();
-			captionEditor.Text = Caption;
-			captionEditor.TextChanged+= HandleCaptionTextChanged;
-			captionEditor.KeyDown += HandleCaptionEditorKeyDown;
-			properties.DropDownItems.Add (captionEditor);
-
+			properties = new ToolStripDropDownButton (Loc.Instance.GetString ("*"));
 			CaptionLabel.Items.Add (properties);
 
 
+			ToolStripButton MinimizeButton = new ToolStripButton();
+			MinimizeButton.Text = "--";
+			MinimizeButton.Click+= HandleMinimizeButtonClick;
+			CaptionLabel.Items.Add (MinimizeButton);
 
 
+			ToolStripButton MaximizeButton = new ToolStripButton();
+			MaximizeButton.Text = "[  ]";
+			MaximizeButton.Click+= HandleMaximizeButtonClick;
+			CaptionLabel.Items.Add (MaximizeButton);
+
+			if (true == IsSystemNote)
+			{
+			ToolStripButton deleteButton = new ToolStripButton();
+				deleteButton.Text = " X ";
+				deleteButton.Click+= HandleDeleteClick;;
+				CaptionLabel.Items.Add (deleteButton);
+			}
+
+			if (false == IsSystemNote) {
+				ToolStripTextBox captionEditor = new ToolStripTextBox ();
+				captionEditor.Text = Caption;
+				captionEditor.TextChanged += HandleCaptionTextChanged;
+				captionEditor.KeyDown += HandleCaptionEditorKeyDown;
+				properties.DropDownItems.Add (captionEditor);
 
 
-			ToolStripSeparator sep =  new ToolStripSeparator();
-			sep.Width = 0;
-			sep.BackColor = CaptionLabel.BackColor;
-			sep.ForeColor = CaptionLabel.ForeColor;
-			//HACK for some reason labels inside of panels don't draw LAST toolstripitem on LOAD (on only on load!) 
-			CaptionLabel.Items.Add (sep);
+			}
+
+
 
 			//contextMenu = new ContextMenuStrip();
 
 		
 
+			if (false == IsSystemNote) {
+				ToolStripDropDownButton menuFolder = new ToolStripDropDownButton ();
+				menuFolder.Text = Loc.Instance.Cat.GetString ("Folder");
+				properties.DropDownItems.Add (menuFolder);
+				menuFolder.MouseEnter += HandleMenuFolderMouseEnter;
+			}
 
-			ToolStripDropDownButton menuFolder = new ToolStripDropDownButton();
-			menuFolder.Text = Loc.Instance.Cat.GetString("Folder");
-			properties.DropDownItems.Add (menuFolder);
-			menuFolder.MouseEnter+= HandleMenuFolderMouseEnter;
+			if (false == IsSystemNote) {
+				ToolStripButton deleteNote = new ToolStripButton ();
+				deleteNote.Text = Loc.Instance.Cat.GetString ("Delete This Note");
+				properties.DropDownItems.Add (deleteNote);
+				deleteNote.Click += HandleDeleteNoteClick;
+			}
+			ToolStripButton BringToFront = new ToolStripButton();
+			BringToFront.Text = Loc.Instance.Cat.GetString("Bring to Front");
+			BringToFront.Click+= HandleBringToFrontClick;
+			properties.DropDownItems.Add (BringToFront);
 
 
 			ToolStripButton menuProperties = new ToolStripButton();
@@ -116,6 +145,13 @@ namespace Layout
 
 
 
+			// Should be at the end
+			ToolStripSeparator sep = new ToolStripSeparator ();
+			sep.Width = 0;
+			sep.BackColor = CaptionLabel.BackColor;
+			sep.ForeColor = CaptionLabel.ForeColor;
+			//HACK for some reason labels inside of panels don't draw LAST toolstripitem on LOAD (on only on load!) 
+			CaptionLabel.Items.Add (sep);
 
 			//CaptionLabel.ContextMenuStrip = contextMenu;
 
@@ -147,8 +183,57 @@ namespace Layout
 			GetAvailableFolders = _Layout.GetAvailableFolders;
 			MoveNote = _Layout.MoveNote;
 			SetSaveRequired = _Layout.SetSaveRequired;
-
+			DeleteNote = _Layout.DeleteNote;
 			Layout = _Layout;
+		}
+
+		/// <summary>
+		/// Handles the delete click. SHOULD DO NOTHING IN ALL CLASSES EXCEPT THE SYSTEM NOTE
+		/// </summary>
+		/// <param name='sender'>
+		/// Sender.
+		/// </param>
+		/// <param name='e'>
+		/// E.
+		/// </param>
+		protected virtual void HandleDeleteClick (object sender, EventArgs e)
+		{
+
+
+		}
+
+		void HandleMinimizeButtonClick (object sender, EventArgs e)
+		{
+			Maximize (false);
+		}
+
+		void HandleMaximizeButtonClick (object sender, EventArgs e)
+		{
+			Maximize(true);
+		}
+
+		/// <summary>
+		/// Handles the bring to front click.
+		/// 
+		/// Will use this sort of thing more sparingly than in previous version because it caused more confusion than it helped, I think
+		/// </summary>
+		/// <param name='sender'>
+		/// Sender.
+		/// </param>
+		/// <param name='e'>
+		/// E.
+		/// </param>
+		void HandleBringToFrontClick (object sender, EventArgs e)
+		{
+			Parent.BringToFront();
+		}
+
+		void HandleDeleteNoteClick (object sender, EventArgs e)
+		{
+			NewMessage.Show ("Need a yes/no here");
+			if (DeleteNote != null) {
+				DeleteNote(this);
+			}
 		}
 
 		void HandleCaptionEditorKeyDown (object sender, KeyEventArgs e)
@@ -171,7 +256,9 @@ namespace Layout
 		void HandleCommitChangesClick (object sender, EventArgs e)
 		{
 			Parent.AutoScroll = false;
-			((NoteDataXML)propertyGrid.SelectedObject).Update(Layout);
+		//	((NoteDataXML)propertyGrid.SelectedObject).Update(Layout);
+			((NoteDataXML)propertyGrid.SelectedObject).UpdateLocation();
+			SetSaveRequired(true);
 		}
 
 		void HandlePropertyValueChanged (object s, PropertyValueChangedEventArgs e)
@@ -192,7 +279,7 @@ namespace Layout
 				//PropertyPanel.SendToBack();
 				//CaptionLabel.BringToFront();
 				CaptionLabel.SendToBack ();
-				UpdateLocation ();
+
 			} else {
 				Parent.AutoScroll = false;
 			}
@@ -254,47 +341,96 @@ namespace Layout
 		
 		void HandleMouseMove (object sender, MouseEventArgs e)
 		{
-			if (e.Button == MouseButtons.Left) {
+			if (this.Dock == DockStyle.None) {
+				if (e.Button == MouseButtons.Left) {
 
 
-				int X = this.location.X + e.X - PanelMouseDownLocation.X;
-				int Y = this.location.Y += e.Y - PanelMouseDownLocation.Y;
-				// do not allow to drag off screen into non-scrollable terrain
-				if (X < 0 )
-				{
-					X = 0;
+					int X = this.location.X + e.X - PanelMouseDownLocation.X;
+					int Y = this.location.Y += e.Y - PanelMouseDownLocation.Y;
+					// do not allow to drag off screen into non-scrollable terrain
+					if (X < 0) {
+						X = 0;
 
-				}
-				if (Y < 0)
-				{
-					Y = 0;
+					}
+					if (Y < 0) {
+						Y = 0;
 
-				}
-				this.Location = new Point(X,Y);
-				//this.location.X += e.X - PanelMouseDownLocation.X;
+					}
+					this.Location = new Point (X, Y);
+					//this.location.X += e.X - PanelMouseDownLocation.X;
 				
-				//this.location.Y += e.Y - PanelMouseDownLocation.Y;
-				UpdateLocation ();
+					//this.location.Y += e.Y - PanelMouseDownLocation.Y;
+					UpdateLocation ();
+				}
 			}
 		}
 		
 		void HandleMouseLeave (object sender, EventArgs e)
 		{
-			CaptionLabel.BackColor = Color.Green;
+			if (this.Dock == DockStyle.None) {
+				//TODO: Needs to be the default apeparance color
+				CaptionLabel.BackColor = Color.Green;
+			}
 		}
 		
 		void HandleMouseUp (object sender, MouseEventArgs e)
 		{
-			CaptionLabel.BackColor = Color.Green;
+			if (this.Dock == DockStyle.None) {
+				//TODO: Needs to be the default apeparance color
+				CaptionLabel.BackColor = Color.Green;
+			}
 		}
 		Point PanelMouseDownLocation ;
 		void HandleMouseDown (object sender, MouseEventArgs e)
 		{
-			if (e.Button == MouseButtons.Left) {
-				// start moving
-				CaptionLabel.BackColor = Color.Red;
-				PanelMouseDownLocation = e.Location;
+			if (this.Dock == DockStyle.None) {
+				if (e.Button == MouseButtons.Left) {
+					// start moving
+					CaptionLabel.BackColor = Color.Red;
+					PanelMouseDownLocation = e.Location;
+				}
 			}
+			
+		}
+
+		Color currentColor ;
+		Timer myTimer;
+		public void Flash()
+		{
+			currentColor =CaptionLabel.BackColor ;
+			CaptionLabel.BackColor  = Color.Blue;
+			Parent.Invalidate();
+
+			myTimer = new Timer();
+			myTimer.Tick +=new EventHandler(myTimer_Tick);
+			myTimer.Interval = 200;
+			myTimer.Start();
+			lg.Instance.Line("myTimer_Tick done", ProblemType.TEMPORARY, "timer asked to START");
+		}
+
+	
+		/// <summary>
+		/// run by timer
+		/// 
+		/// sets color back after GUIFlash
+		/// and then it destroys the timer
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void myTimer_Tick(object sender, EventArgs e)
+		{lg.Instance.Line("myTimer_Tick done", ProblemType.TEMPORARY, "timer tick");
+			if (myTimer != null)
+			{
+				lg.Instance.Line("myTimer_Tick done", ProblemType.TEMPORARY, "timer asked to dispose");
+				myTimer.Stop();
+				myTimer.Dispose();
+				myTimer = null;
+
+				CaptionLabel.BackColor  = currentColor;
+
+
+			}
+			
 			
 		}
 

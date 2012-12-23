@@ -18,7 +18,7 @@ namespace Layout
 		void SaveLayout();
 		void LoadLayout(string GUID);
 		void SetSaveRequired(bool NeedSave);
-		string Backup();
+	//	string Backup();
 		void RefreshTabs ();
 
 		//void AddNote();

@@ -29,13 +29,41 @@ namespace Layout
 		//TODO was trying to avoid storing a reference to actual Layout but the need to update the list (and handle the Property grid) made it so)
 		protected LayoutPanelBase Layout;
 
-
-		public NoteDataXML () 
+		public virtual bool IsSystemNote{
+			get {return false;}
+		}
+		private void CommonConstructorBehavior ()
 		{
 			Caption = Loc.Instance.Cat.GetString("Blank Note");
 			GuidForNote = System.Guid.NewGuid().ToString();
+		}
+		public NoteDataXML () 
+		{
+			CommonConstructorBehavior ();
 		
 		}
+		public NoteDataXML(int _height, int _width)
+		{
+			CommonConstructorBehavior ();
+			height = _height;
+			width = _width;
+		}
+		private NotePanel parent;
+		[XmlIgnore]
+		public NotePanel Parent {
+			get{ return parent;}
+			set{ parent = value;}
+		}
+
+		#endregion
+
+		#region xml_save
+		private DockStyle dock = DockStyle.None;
+		public DockStyle Dock {
+			get { return dock;}
+			set { dock = value;}
+		}
+
 		private string _GuidForNote;
 		/// <summary>
 		/// Unique identifier specifying this particular note within a layout.
@@ -54,8 +82,8 @@ namespace Layout
 			set{ caption = value;}
 					}
 
-		int height = 100;
-		int width = 100;
+		protected int height = 200;
+		protected int width = 200;
 		public int Height { get { return height; } set { height = value; }}
 		public int Width { get { return width; } set { width = value; }}
 
@@ -81,12 +109,7 @@ namespace Layout
 			set { rtf = value;}
 		}
 
-		private NotePanel parent;
-		[XmlIgnore]
-		public NotePanel Parent {
-			get{ return parent;}
-			set{ parent = value;}
-		}
+	
 		#endregion
 		#region variables_new
 		/// <summary>
@@ -99,9 +122,15 @@ namespace Layout
 			get { return "boo";}
 		}
 		#endregion;
+
+		#region control_panel_settings
 		public virtual bool IsPanel {
 			get { return false;}
 		}
+#endregion;
+
+		#region methods
+
 		public virtual System.Collections.ObjectModel.ReadOnlyCollection<NoteDataInterface> GetChildNotes()
 		{
 			return null;
@@ -114,6 +143,8 @@ namespace Layout
 
 		/// <summary>
 		/// Recreates the interface, usually called when something like Caption is changed. Use UpdateLocation for position only changes
+		/// 
+		/// DO NOT CALL THIS FROM EDITING PROPERTIES!
 		/// </summary>
 		/// <param name='Layout'>
 		/// Layout.
@@ -124,6 +155,7 @@ namespace Layout
 			Parent.Dispose();
 			//Parent = null;
 			CreateParent(Layout);
+
 		}
 		/// <summary>
 		/// Destroy this instance.
@@ -149,6 +181,7 @@ namespace Layout
 			Parent.Location = Location;
 			Parent.Height = Height;
 			Parent.Width = Width;
+			Parent.Dock = this.Dock;
 			SetSaveRequired(true);
 
 
@@ -161,8 +194,34 @@ namespace Layout
 			return Loc.Instance.Cat.GetString("Label");
 		}
 
+/// <summary>
+/// Maximize the specified Maximize.
+/// </summary>
+/// <param name='Maximize'>
+/// If set to <c>true</c> maximize.
+/// </param>
+		public void Maximize (bool Maximize)
+		{
+			lg.Instance.Line("Maximize", ProblemType.WARNING, String.Format ("Calling Maximize for note with GUID = {0} and Parent LayoutPanel GUID Of {1}",this.GuidForNote, Layout.GUID ));
+			// is this actually dock=none/bringtofront, full width?
+			if (true == Maximize) {
+				Dock = System.Windows.Forms.DockStyle.None;
+				// temporary size change (change the form, not the XML)
+				Parent.Location = new Point (0, 0);
+				Parent.Height = Layout.Height - 25;
+				Parent.Width = Layout.Width - 25;
+				Parent.BringToFront ();
+			} else {
+				// restore defaults
+				UpdateLocation ();
+			}
 
-	
+			//UpdateLocation ();
+
+		}
+
+#endregion;
+
 
 	}
 }

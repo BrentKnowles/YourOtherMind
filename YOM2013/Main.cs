@@ -7,7 +7,7 @@ namespace YOM2013
 	public class MainClass
 	{
 
-
+		[STAThread()]
 		public static void Main (string[] args)
 		{
 			//Application.Init ();

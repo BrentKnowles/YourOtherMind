@@ -36,9 +36,12 @@ namespace Layout
 			this.Padding = new Padding(4,0,4,5);
 
 		}
-		protected override void OnPaint(PaintEventArgs e) {
-			ControlPaint.DrawSizeGrip(e.Graphics, this.BackColor,
-			                          new Rectangle(this.ClientSize.Width - cGripSize, this.ClientSize.Height - cGripSize, cGripSize, cGripSize));
+		protected override void OnPaint (PaintEventArgs e)
+		{
+			if (Child.Dock == DockStyle.None) {
+				ControlPaint.DrawSizeGrip (e.Graphics, this.BackColor,
+			                          new Rectangle (this.ClientSize.Width - cGripSize, this.ClientSize.Height - cGripSize, cGripSize, cGripSize));
+			}
 			base.OnPaint(e);
 		}
 		private bool IsOnGrip(Point pos) {
@@ -47,39 +50,49 @@ namespace Layout
 		}
 		protected override void OnMouseLeave (EventArgs e)
 		{
-			mDragging = false;
-			this.Cursor = Cursors.Default;
+			if (Child.Dock == DockStyle.None) {
+				mDragging = false;
+				this.Cursor = Cursors.Default;
+			}
 			base.OnMouseLeave (e);
 		}
 		
-		protected override void OnMouseDown(MouseEventArgs e) {
-			mDragging = IsOnGrip(e.Location);
-			mDragPos = e.Location;
+		protected override void OnMouseDown (MouseEventArgs e)
+		{
+			if (Child.Dock == DockStyle.None) {
+				mDragging = IsOnGrip (e.Location);
+				mDragPos = e.Location;
+			}
 			base.OnMouseDown(e);
 		}
 		
-		protected override void OnMouseUp(MouseEventArgs e) {
-			mDragging = false;
-			this.Cursor = Cursors.Default;
+		protected override void OnMouseUp (MouseEventArgs e)
+		{
+			if (Child.Dock == DockStyle.None) {
+				mDragging = false;
+				this.Cursor = Cursors.Default;
+			}
 			base.OnMouseUp(e);
 		}
 		
 		protected override void OnMouseMove (MouseEventArgs e)
 		{
-			if (mDragging) {
-				CoreUtilities.lg.Instance.Line ("NotePanel->MouseMove", CoreUtilities.ProblemType.TEMPORARY, "we are dragging.");
+			if (Child.Dock == DockStyle.None) {
+				if (mDragging) {
+					CoreUtilities.lg.Instance.Line ("NotePanel->MouseMove", CoreUtilities.ProblemType.TEMPORARY, "we are dragging.");
 
-				Child.Height =  this.Height + e.Y - mDragPos.Y;
-				Child.Width = this.Width + e.X - mDragPos.X;
-				Child.SetSaveRequired(true);
-				this.Size = new Size (this.Width + e.X - mDragPos.X,
+					Child.Height = this.Height + e.Y - mDragPos.Y;
+					Child.Width = this.Width + e.X - mDragPos.X;
+					Child.SetSaveRequired (true);
+					this.Size = new Size (this.Width + e.X - mDragPos.X,
 				                     this.Height + e.Y - mDragPos.Y);
-				mDragPos = e.Location;
-			} else if (IsOnGrip (e.Location))
-				this.Cursor = Cursors.SizeNWSE;
-			else {
-				this.Cursor = Cursors.Default;
-				mDragging = false;
+					mDragPos = e.Location;
+				} else if (IsOnGrip (e.Location))
+					this.Cursor = Cursors.SizeNWSE;
+				else {
+					this.Cursor = Cursors.Default;
+					mDragging = false;
+				}
 			}
 			base.OnMouseMove(e);
 		}

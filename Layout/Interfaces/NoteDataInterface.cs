@@ -1,5 +1,6 @@
 using System;
 using System.Drawing;
+using System.Windows.Forms;
 
 namespace Layout
 {
@@ -12,6 +13,9 @@ namespace Layout
 		Point Location {get; set;}
 		int Height {get;set;}
 		int Width{get;set;}
+		DockStyle Dock {get; set;}
+
+
 		/// <summary>
 		/// This field will be used to store RTF text in the TextBox, A Link to the picture file for Picture Notes, et cetera.
 		/// </summary>
@@ -27,6 +31,7 @@ namespace Layout
 
 		// I did not want to do this but because panels are implemented "further down the chain" I need these two functions here
 		bool IsPanel{get;} 
+		bool IsSystemNote{get;}
 		System.Collections.ObjectModel.ReadOnlyCollection<NoteDataInterface>  GetChildNotes();
 		#endregion
 		#endregion

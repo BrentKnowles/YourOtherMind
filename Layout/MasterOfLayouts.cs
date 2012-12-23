@@ -40,6 +40,12 @@ namespace Layout
 		public void Dispose()
 		{
 		}
+		public string Backup ()
+		{
+			SqlLiteDatabase db = new SqlLiteDatabase (LayoutDetails.Instance.YOM_DATABASE);
+			return db.BackupDatabase();
+		}
+
 		/// <summary>
 		/// Gets the list of layouts.
 		/// </summary>

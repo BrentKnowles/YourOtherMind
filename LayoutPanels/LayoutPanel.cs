@@ -57,7 +57,7 @@ namespace Layout
 		/// <value>
 		/// <c>true</c> if this instance is system; otherwise, <c>false</c>.
 		/// </value>
-		override public bool GetIsSystem { 
+		override public bool GetIsSystemLayout { 
 			get { return issystem;}
 			set {
 				issystem = value;
@@ -65,6 +65,12 @@ namespace Layout
 		}
 
 		#endregion
+
+
+		public override string Caption {
+			get { return Notes.Name;}
+		}
+
 		// set in NoteDataXML_Panel so that a child Layout will tell a higher level to save, if needed
 		public Action<bool> SetSubNoteSaveRequired = null;
 		/// <summary>
@@ -91,7 +97,10 @@ namespace Layout
 
 			// RefreshTabs(); don't need to call it until after load
 		}
-
+		public override  void DeleteNote(NoteDataInterface NoteToDelete)
+		{
+			Notes.RemoveNote (NoteToDelete);
+		}
 		/// <summary>
 		/// Returns the system panel for a system page.
 		/// This is only relevant for the guid=system page (the main interface)
@@ -100,15 +109,19 @@ namespace Layout
 		/// <value>
 		/// The get system panel.
 		/// </value>
-		public Control GetSystemPanel ()
+		public NoteDataXML_SystemOnly GetSystemPanel ()
 		{
+			// changing things so that we CREATE a new system panel as needed.
+			return Notes.GetAvailableSystemNote(this);
+
+			/*
 			foreach (NoteDataInterface note in Notes.GetNotes ()) {
 				if (note.GetType() == typeof(NoteDataXML_SystemOnly))
 				{
 					return (Control)note.Parent;
 				}
 			}
-			return null;
+			return null;*/
 		}
 
 		public void LayoutToolbar ()
@@ -151,7 +164,7 @@ namespace Layout
 		public LayoutPanel (string parentGUID, bool IsSystem)
 		{
 			ParentGUID = parentGUID;
-			GetIsSystem = IsSystem;
+			GetIsSystemLayout = IsSystem;
 
 
 			//Type[] typeList = LayoutDetails.Instance.TypeList;
@@ -172,10 +185,10 @@ namespace Layout
 
 
 			this.BackColor = Color.Pink;
-			if (!GetIsChild && !GetIsSystem)
+			if (!GetIsChild && !GetIsSystemLayout)
 				BuildFormatToolbar ();
-			if (!GetIsSystem) TabsBar ();
-			if (!GetIsSystem) LayoutToolbar ();
+			if (!GetIsSystemLayout) TabsBar ();
+			if (!GetIsSystemLayout) LayoutToolbar ();
 
 
 
@@ -187,18 +200,26 @@ namespace Layout
 			NoteCanvas.Parent = this;
 			NoteCanvas.BringToFront();
 			this.AutoScroll = true;
+			//this.Enter += HandleGotFocus;
+			//this.MouseEnter+=HandleGotFocus;
+
 
 
 		}
-		public override string Backup ()
+		/// <summary>
+		/// Handles the got focus. This is where we set the CurrentLayout
+		/// </summary>
+		/// <param name='sender'>
+		/// Sender.
+		/// </param>
+		/// <param name='e'>
+		/// E.
+		/// </param>
+		void HandleGotFocus (object sender, EventArgs e)
 		{
-			if (Notes == null) {
-				NewMessage.Show (Loc.Instance.Cat.GetString("Please load a layout first"));
-				return "";
-			} else {
-				return Notes.Backup();
-			}
+			//LayoutDetails.Instance.CurrentLayout = this;
 		}
+
 		/// <summary>
 		/// Create buttons with the list of types we can make
 		/// </summary>
@@ -329,7 +350,7 @@ namespace Layout
 		public override void LoadLayout (string _GUID)
 		{
 
-
+			//NewMessage.Show (_GUID);
 			// super important to track parent child relationships
 			GUID = _GUID;
 			// ToDO: Check for save first!
@@ -355,13 +376,15 @@ namespace Layout
 
 			NoteCanvas.AutoScroll = true;
 			RefreshTabs();
-			if (!GetIsChild) {
+			if (!GetIsChild && !GetIsSystemLayout) {
 				if (header != null) header.Dispose();
 				header = new HeaderBar(this, this.Notes);
 				
 			}
 			SetSaveRequired(false);
 		}
+
+
 		override public bool ShowTabs 
 		{ get { return Notes.ShowTabs; } set {
 				Notes.ShowTabs = value; 
@@ -372,8 +395,9 @@ namespace Layout
 		/// </summary>
 		public override void RefreshTabs ()
 		{
-			Console.WriteLine (">>> refresh tabs <<<");
+
 			if (Notes.ShowTabs == true && tabsBar != null) {
+				Console.WriteLine (String.Format (">>> refresh tabs for: {0}!<<<", this.Name));
 				tabsBar.Visible = true;
 				tabsBar.Items.Clear ();
 				// redraw the list of tabs
@@ -396,7 +420,41 @@ namespace Layout
 		}
 
 
+		/// <summary>
+		/// HACK TEMP: Only for converting ol files
+		/// </summary>
+		/// <param name='_GUID'>
+		/// _ GUI.
+		/// </param>
+		public  void NewLayoutFromOldFile (string _GUID, string File)
+		{
+			GUID= _GUID;
+			// check to see if exists already
+			if (Notes != null && Notes.IsLayoutExists (GUID)) {
+				NewMessage.Show("that layout exists already");
+			} else {
+				// if somehow we haven't not supplied a GUID then provide one now
+				if (Constants.BLANK == GUID) GUID = System.Guid.NewGuid ().ToString ();
+				
+				
+				noteCanvas.Controls.Clear ();
+				//
+				Notes = new LayoutDatabase (GUID);
 
+				((LayoutDatabase)Notes).LoadFromOld (File);
+				foreach (NoteDataInterface note in Notes.GetNotes())
+				{
+					note.CreateParent(this);
+				}
+				if (!GetIsChild) {
+					if (header != null) header.Dispose();
+					header = new HeaderBar(this, this.Notes);
+					
+					
+				}
+			}
+			NoteCanvas.AutoScroll = true;
+		}
 
 
 		/// <summary>
@@ -430,6 +488,7 @@ namespace Layout
 
 				}
 			}
+			NoteCanvas.AutoScroll = true;
 		}
 
 
@@ -546,6 +605,7 @@ namespace Layout
 			// need to reload the Layout We Added To First before saving this layotu
 			//SaveTo();
 		}
+
 
 		public override void SetSaveRequired (bool NeedSave)
 		{

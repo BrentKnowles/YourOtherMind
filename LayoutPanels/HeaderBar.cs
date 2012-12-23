@@ -86,7 +86,7 @@ namespace LayoutPanels
 		
 		public void UpdateHeader ()
 		{
-			if (false == Layout.GetIsChild && false == Layout.GetIsSystem ) {
+			if (false == Layout.GetIsChild && false == Layout.GetIsSystemLayout ) {
 				headerBar.Items.Clear ();
 				ToolStripLabel bold = new ToolStripLabel ();
 				bold.Text = Notes.Name;

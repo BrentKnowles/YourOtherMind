@@ -107,7 +107,7 @@ namespace appframe
 
 					if (myList.Contains (AddIn.CalledFrom.GUID) == true) {
 						// If Plug not already Loaded then Load it
-						NewMessage.Show ("Adding " + AddIn.Name);
+						//NewMessage.Show ("Adding " + AddIn.Name);
 						AddInsLoaded.Add (AddIn);
 						if (AddIn.CalledFrom.IsOnAMenu == true) {
 				
@@ -223,7 +223,11 @@ namespace appframe
 			return FindMenuItem;
 			//return (ToolStripMenuItem)MainMenu.Items.Find (FindMenu, true)[0];
 		}
-
+		public ToolStripMenuItem GetToolMenu ()
+		{
+			return ToolMenuItem;
+			//return (ToolStripMenuItem)MainMenu.Items.Find (FindMenu, true)[0];
+		}
 
 		/// <summary>
 		/// Pushes screens across both monitors

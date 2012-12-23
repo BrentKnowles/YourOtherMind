@@ -12,9 +12,23 @@ namespace Layout
 		protected static volatile LayoutDetails instance;
 		protected static object syncRoot = new Object();
 
-		public LayoutPanelBase CurrentLayout;
+
+		private LayoutPanelBase currentLayout;
+		public LayoutPanelBase CurrentLayout {
+			get { return currentLayout;}
+			set {
+				currentLayout = value;
+				if (UpdateTitle != null)
+				{
+					//currentLayout
+					UpdateTitle(currentLayout.Caption);
+				}
+				lg.Instance.Line ("LayoutDetails->CurrentLayout", ProblemType.MESSAGE, "Setting Layout to " + currentLayout.GUID);
+			}
+		}
 
 		public Action<string> LoadLayoutRef= null;
+		public Action<string> UpdateTitle = null;
 
 		// in rare case of harddrive failure this variable can be set and checked when the application closes to prevent saving empty files (December 2012)
 		// for YOM this is Set ONLY IN MainformBase
@@ -57,7 +71,7 @@ namespace Layout
 			AddToList(typeof(NoteDataXML),new NoteDataXML().RegisterType());
 			AddToList(typeof(NoteDataXML_RichText),new NoteDataXML_RichText().RegisterType ());
 			AddToList (typeof(NoteDataXML_NoteList),new NoteDataXML_NoteList().RegisterType());
-			AddToList (typeof(NoteDataXML_SystemOnly),new NoteDataXML_SystemOnly().RegisterType());
+		//	AddToList (typeof(NoteDataXML_SystemOnly),new NoteDataXML_SystemOnly().RegisterType());
 
 
 		}

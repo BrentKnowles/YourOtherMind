@@ -87,14 +87,7 @@ namespace Layout
 			return null;
 		}
 
-		/// <summary>
-		/// Backup the entire layout database, NOT just this layout (though I could tweak it to do so)
-		/// </summary>
-		public string Backup ()
-		{
-			SqlLiteDatabase db = new SqlLiteDatabase (LayoutDetails.Instance.YOM_DATABASE);
-			return db.BackupDatabase();
-		}
+	
 		/// <summary>
 		/// Wrapper function for creating the database
 		/// This is only place in this code where we reference the TYPE of database being used
@@ -181,7 +174,47 @@ namespace Layout
 			return LayoutGUID;
 		}
 
+		/// <summary>
+		/// TEMP HACK
+		/// 
+		/// For loading notes from the original YOM
+		/// 
+		/// Loads from the appropriate Data Location.
+		/// </summary>
+		/// <param name='GUID'>
+		/// The unique identifier representing this Layout
+		/// </param>
+		/// <returns>
+		/// <c>true</c>, if from was loaded, <c>false</c> otherwise.
+		/// </returns>
+		/// <param name='sFile'>
+		/// S file.
+		/// </param>
+		public bool LoadFromOld (string sFile)
+		{
+			Name = sFile;
+			Status = "Imported";
+			ShowTabs = false;
 
+			XmlSerializer serializer = new XmlSerializer (typeof(NoteDataXML[]));
+			
+			System.IO.StreamReader reader = new System.IO.StreamReader (sFile);
+			NoteDataXML[] cars = (NoteDataXML[])serializer.Deserialize (reader);
+
+			if (null != cars) {
+				dataForThisLayout = new List<NoteDataInterface> ();
+				for (int i = 0; i < cars.Length; i++) {
+					dataForThisLayout.Add (cars [i]);
+
+				}
+			
+			
+			}
+		
+
+			reader.Close ();
+			return true;
+		}
 
 		/// <summary>
 		/// Loads from the appropriate Data Location. If pass Layout as null this is a REMOTE NOTE load, meaning we are grabbing this information without
@@ -208,80 +241,88 @@ namespace Layout
 
 			// we only care about FIRST ROW. THere should never be two matches on a GUID
 
-			List<object[]> myList =  MyDatabase.GetValues (tmpDatabaseConstants.table_name, tmpDatabaseConstants.Columns
+			List<object[]> myList = MyDatabase.GetValues (tmpDatabaseConstants.table_name, tmpDatabaseConstants.Columns
 			                      , tmpDatabaseConstants.GUID, LayoutGUID);
-			if (myList != null && myList.Count > 0)
-			{
+			if (myList != null && myList.Count > 0) {
 
-			object[] result = myList[0];
-
-
-			// deserialize from database and load into memor
-			if (result != null && result.Length > 0) {
+				object[] result = myList [0];
 
 
-				// Fill in LAYOUT specific details
-				Status = result [3].ToString ();
-				Name = result [4].ToString ();
-					if (result[5].ToString() != Constants.BLANK)
-					{
-					ShowTabs = (bool)result[5];
-					}
-					else
-					{
+				// deserialize from database and load into memor
+				if (result != null && result.Length > 0) {
+
+
+					// Fill in LAYOUT specific details
+					Status = result [3].ToString ();
+					Name = result [4].ToString ();
+					if (result [5].ToString () != Constants.BLANK) {
+						ShowTabs = (bool)result [5];
+					} else {
 						//ToDo: This does not seem growable easily
 						ShowTabs = true;
 					}
-				// Fill in XML details
+					// Fill in XML details
 
-				//dataForThisLayout
-				System.IO.StringReader reader = new System.IO.StringReader (result [2].ToString ());
-				System.Xml.Serialization.XmlSerializer test = new System.Xml.Serialization.XmlSerializer(typeof(System.Collections.Generic.List<NoteDataXML>),
-					                                                                                         LayoutDetails.Instance.ListOfTypesToStoreInXML());
-					List<NoteDataXML> ListAsDataObjectsOfType  = null;
-					try
-					{
-				// have to load it in an as array of target type and then convert
+					//dataForThisLayout
+					System.IO.StringReader reader = new System.IO.StringReader (result [2].ToString ());
+					System.Xml.Serialization.XmlSerializer test = new System.Xml.Serialization.XmlSerializer (typeof(System.Collections.Generic.List<NoteDataXML>),
+					                                                                                         LayoutDetails.Instance.ListOfTypesToStoreInXML ());
+					List<NoteDataXML> ListAsDataObjectsOfType = null;
+					try {
+						// have to load it in an as array of target type and then convert
 						ListAsDataObjectsOfType = (System.Collections.Generic.List<NoteDataXML>)test.Deserialize (reader);
-					} 
-					catch (System.InvalidOperationException e)
-					{
-						string exception = e.ToString();
+					} catch (System.InvalidOperationException e) {
+						string exception = e.ToString ();
 						int pos = exception.IndexOf ("name");
 						int pos2 = exception.IndexOf ("namespace");
-						if (pos2 < pos) pos2 = pos + 1;
+						if (pos2 < pos)
+							pos2 = pos + 1;
 
-						string notetype = exception.Substring(pos, pos2 - pos  -2);
+						string notetype = exception.Substring (pos, pos2 - pos - 2);
 						string message = 
-			Loc.Instance.Cat.GetStringFmt("The notetype {0} was present in this Layout but not loaded in memory! This means that the AddIn used to add this note to this Layout has been removed. Loading of this layout is now aborted. Please exit this note and close it to prevent data loss and reinstall the disabled AddIn", notetype);
+			Loc.Instance.Cat.GetStringFmt ("The notetype {0} was present in this Layout but not loaded in memory! This means that the AddIn used to add this note to this Layout has been removed. Loading of this layout is now aborted. Please exit this note and close it to prevent data loss and reinstall the disabled AddIn", notetype);
 						NewMessage.Show (message);
+					} catch (Exception ex) {
+						throw new Exception (ex.ToString ());
 					}
-					catch (Exception ex)
-					{
-						throw new Exception(ex.ToString());
+					if (null != ListAsDataObjectsOfType) {
+						dataForThisLayout = new List<NoteDataInterface> ();
+						for (int i = 0; i < ListAsDataObjectsOfType.Count; i++) {
+							dataForThisLayout.Add (ListAsDataObjectsOfType [i]);
+							if (null != LayoutPanelToLoadNoteOnto) {
+								ListAsDataObjectsOfType [i].CreateParent (LayoutPanelToLoadNoteOnto);
+							}
+						}
+						Success = true;
+						debug_ObjectCount = ListAsDataObjectsOfType.Count;
 					}
-					if (null != ListAsDataObjectsOfType)
-					{
-				dataForThisLayout = new List<NoteDataInterface>();
-				for (int i = 0; i < ListAsDataObjectsOfType.Count; i++)
-				{
-				dataForThisLayout.Add (ListAsDataObjectsOfType[i]);
-				if (null != LayoutPanelToLoadNoteOnto)
-				{
-					ListAsDataObjectsOfType[i].CreateParent(LayoutPanelToLoadNoteOnto);
 				}
-				}
-				Success = true;
-					debug_ObjectCount = ListAsDataObjectsOfType.Count;
-				}
-				}
-			} 
+			}
 
 			long workingSet = System.Diagnostics.Process.GetCurrentProcess().WorkingSet64;
 			lg.Instance.Line("LoadFrom", ProblemType.TEMPORARY, workingSet.ToString());
 			return Success;
 
 		}
+		/// <summary>
+		/// Counts the system notes.
+		/// Needed to prevent system notes from being saved out
+		/// </summary>
+		/// <returns>
+		/// The system notes.
+		/// </returns>
+		private int CountSystemNotes ()
+		{
+			int count = 0;
+			foreach (NoteDataInterface note in dataForThisLayout) {
+				if (note.GetType () == typeof(NoteDataXML_SystemOnly)) {
+					count++;
+				}
+			}
+			return count;
+		}
+
+
 		/// <summary>
 		/// Saves to the XML file.
 		/// 
@@ -312,9 +353,21 @@ namespace Layout
 				//	CoreUtilities.General.Serialize(dataForThisLayout, CreateFileName());
 				try {
 				
-					NoteDataXML[] ListAsDataObjectsOfType = new NoteDataXML[dataForThisLayout.Count];
-					dataForThisLayout.CopyTo (ListAsDataObjectsOfType);
+					NoteDataXML[] ListAsDataObjectsOfType = new NoteDataXML[dataForThisLayout.Count-CountSystemNotes()];
+
+
+				//	dataForThisLayout.CopyTo (ListAsDataObjectsOfType);
 				
+
+					// Remove System Notes (these should never end up in save data
+					for (int i = dataForThisLayout.Count-1 ; i >= 0; i--)
+					{
+						if (dataForThisLayout[i].GetType () != typeof(NoteDataXML_SystemOnly))
+						{
+							ListAsDataObjectsOfType[i] = (NoteDataXML)dataForThisLayout[i];
+						}
+					}
+
 					// doing some data tracking to try to detect save failures later
 					if (ListAsDataObjectsOfType.Length < debug_ObjectCount) {
 						lg.Instance.Line ("LayoutDatabase.SaveTo", ProblemType.WARNING, String.Format ("Less objects being saved than loaded. Loaded {0}. Saved {0}.",
@@ -376,7 +429,7 @@ namespace Layout
 
 				} catch (Exception ex) {
 					AmSaving = false;
-					Console.WriteLine("save exception happened");
+					lg.Instance.Line ("LayoutDatabase.SaveTo", ProblemType.EXCEPTION,"save exception happened " + ex.ToString());
 					throw new Exception (String.Format ("Must call CreateParent before calling Save or Update!! Exception: {0}", ex.ToString ()));
 					//lg.Instance.Line("LayoutDatabase.SaveTo", ProblemType.EXCEPTION, ex.ToString());
 				}
@@ -387,6 +440,23 @@ namespace Layout
 				saveworked = false;
 			}
 			return saveworked;
+		}
+		public NoteDataXML_SystemOnly GetAvailableSystemNote (LayoutPanelBase LayoutPanel)
+		{
+			// called from MainForm to request a docking place for a new layout to be loaded
+			NoteDataXML_SystemOnly system = new NoteDataXML_SystemOnly(600, 600);
+			Add (system);
+			system.CreateParent(LayoutPanel);
+			return system;
+			//return (System.Windows.Forms.Control)system.Parent;
+			/*
+			foreach (NoteDataInterface note in Notes.GetNotes ()) {
+				if (note.GetType() == typeof(NoteDataXML_SystemOnly))
+				{
+					return (Control)note.Parent;
+				}
+			}
+			return null;*/
 		}
 		/// <summary>
 		/// Determines whether this instance is note exists in layout the specified NoteGUID.

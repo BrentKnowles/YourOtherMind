@@ -36,7 +36,8 @@ namespace Layout
 
 		bool SaveTo ();
 
-		string Backup();
+		//string Backup();
+
 		bool IsLayoutExists (string GUID);
 		/// <summary>
 		/// Gets the notes.
@@ -51,6 +52,8 @@ namespace Layout
 		bool IsNoteExistsInLayout(string NoteGUID);
 		void RemoveNote (NoteDataInterface NoteToMove);
 		void UpdateListOfNotes();
+	
+		NoteDataXML_SystemOnly GetAvailableSystemNote (LayoutPanelBase LayoutPanel);
 		//List<LayoutDetails.NameAndGuid> GetListOfLayouts (string filter);
 
 	}

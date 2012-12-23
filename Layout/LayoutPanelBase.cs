@@ -69,9 +69,9 @@ namespace Layout
 		/// <c>true</c> if show tabs; otherwise, <c>false</c>.
 		/// </value>
 		abstract public bool ShowTabs { get; set; }
-		abstract public bool GetIsSystem { get; set; }	
+		abstract public bool GetIsSystemLayout { get; set; }	
 		abstract public NotePanelInterface CurrentNote{ get; set; }
-
+		abstract public string Caption {get;}
 
 #endregion
 
@@ -85,12 +85,12 @@ namespace Layout
 
 		public abstract System.Collections.Generic.List<NoteDataInterface> GetAvailableFolders();
 		public abstract void MoveNote (string GUIDOfNoteToMove, string GUIDOfLayoutToMoveItTo);
-		public abstract string Backup();
+		//public abstract string Backup();
 		public abstract void SetSaveRequired(bool NeedSave);
 		public abstract void UpdateListOfNotes ();
 		public abstract void NewLayout (string _GUID);
 		public abstract void RefreshTabs ();
-
+		public abstract void DeleteNote(NoteDataInterface NoteToDelete);
 	}
 }
 
