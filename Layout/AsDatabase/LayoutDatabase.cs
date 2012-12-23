@@ -196,7 +196,8 @@ namespace Layout
 			Status = "Imported";
 			ShowTabs = false;
 
-			XmlSerializer serializer = new XmlSerializer (typeof(NoteDataXML[]));
+			XmlSerializer serializer = new XmlSerializer (typeof(NoteDataXML[]), 
+			                                              new Type[1] {typeof(NoteDataXML_RichText)});
 			
 			System.IO.StreamReader reader = new System.IO.StreamReader (sFile);
 			NoteDataXML[] cars = (NoteDataXML[])serializer.Deserialize (reader);
@@ -406,7 +407,7 @@ namespace Layout
 						MyDatabase.InsertData (tmpDatabaseConstants.table_name, 
 				                      tmpDatabaseConstants.Columns,
 				                      new object[tmpDatabaseConstants.ColumnCount]
-				                      {"NULL",LayoutGUID, XMLAsString, Status,Name,ShowTabs});
+				                      {DBNull.Value,LayoutGUID, XMLAsString, Status,Name,ShowTabs});
 
 					} else {
 						//TODO: Still need to save all the object properties out. And existing data.

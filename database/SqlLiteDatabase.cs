@@ -311,8 +311,8 @@ namespace database
 
 			bool ReturnValue = false;
 			// hacking for rtf http://stackoverflow.com/questions/751172/system-data-sqlite-parameter-issue
-			SQLiteParameter param = new SQLiteParameter("@myrtf");
-			param.Value = ValueToAdd;
+		//	SQLiteParameter param = new SQLiteParameter("@myrtf");
+		//	param.Value = ValueToAdd;
 			string sqlStatement = "";
 		
 			Console.WriteLine("WHERE: " + WhereValue);
@@ -330,7 +330,7 @@ namespace database
 				//ColumnToAddTo
 				// {1}=@myrtf
 					sqlStatement = String.Format ("UPDATE {0} set {1} where {2}=@WhereValue", tableName, ColumnAndValueString, WhereColumn);
-					
+					lg.Instance.Line("SqlLiteDatabase.UpdateSpecific", ProblemType.MESSAGE, sqlStatement);
 					SQLiteConnection sqliteCon = new SQLiteConnection (Connection_String);
 					sqliteCon.Open ();
 					
@@ -338,7 +338,7 @@ namespace database
 					using (SQLiteTransaction sqlTransaction = sqliteCon.BeginTransaction()) {
 						SQLiteCommand command = new SQLiteCommand (sqlStatement, sqliteCon);
 
-						command.Parameters.Add(param);
+						//command.Parameters.Add(param);
 					command.Parameters.Add(new SQLiteParameter("@WhereValue", WhereValue ));
 
 					// * build array of other ColumnsToAdd to
@@ -433,7 +433,18 @@ namespace database
 			}
 			return found;
 		}
-
+		/// <summary>
+		/// Inserts the data.
+		/// </summary>
+		/// <param name='tableName'>
+		/// Table name.
+		/// </param>
+		/// <param name='columns'>
+		/// Columns.
+		/// </param>
+		/// <param name='values'>
+		/// Values.
+		/// </param>
 		public override void InsertData (string tableName, string[] columns, object[] values)
 		{
 			if (columns.Length != values.Length) {
@@ -447,15 +458,43 @@ namespace database
 			// update or delete.
 			try {
 				string cols = ColumnArrayToStringForInserting (columns);
-				vals = ValueArrayToStringForInserting (values);
+				//vals = ValueArrayToStringForInserting (values);
 				if ("" != cols) {
+
+					for (int i = 0 ; i < columns.Length; i++)
+					{
+						if (vals != "")
+						{
+							vals = vals + ",";
+						}
+						// build string full of params
+						vals = vals + String.Format ("@{0}VALUE", columns[i]);
+					}
+
 					 sqlStatement = String.Format ("INSERT INTO {0}({1}) VALUES({2})", tableName, cols, vals);
-			
+					lg.Instance.Line("SqlLiteDatabase.InsertData", ProblemType.MESSAGE, sqlStatement);
+
 					SQLiteConnection sqliteCon = new SQLiteConnection (Connection_String);
 					sqliteCon.Open ();
+
+
+
+
 					
 					using (SQLiteTransaction sqlTransaction = sqliteCon.BeginTransaction()) {
 						SQLiteCommand command = new SQLiteCommand (sqlStatement, sqliteCon);
+						// fill in parameters
+						
+						for (int j = 0; j < columns.Length; j++)
+						{
+							string param = String.Format ("@{0}VALUE",columns[j]);
+							lg.Instance.Line("SqlLiteDatabase.InsertData", ProblemType.TEMPORARY, param);
+							lg.Instance.Line("SqlLiteDatabase.InsertData", ProblemType.TEMPORARY, values[j].ToString());
+							command.Parameters.AddWithValue(param, values[j]);
+							//command.Parameters.Add(new SQLiteParameter(param, values[j] ));
+						}
+
+
 						command .ExecuteNonQuery ();
 						sqlTransaction.Commit ();
 					}
