@@ -276,19 +276,18 @@ namespace YOM2013
 				//	CurrentLayout.Dispose();
 			}
 			
-			//TODO:  Need Current Layout to become a pointer into an List<LayoutPaneLInterace>
-			Maximize = MDIHOST.Maximize;
+			//Maximize = MDIHOST.Maximize;
 			
 			LayoutPanel newLayout =  new Layout.LayoutPanel (CoreUtilities.Constants.BLANK);
 			newLayout.BorderStyle = BorderStyle.Fixed3D;
 			newLayout.Parent = MDIHOST.Parent;
 			newLayout.Visible = true;
 			newLayout.Dock = System.Windows.Forms.DockStyle.Fill;
-			newLayout.BringToFront ();
+			//newLayout.BringToFront ();
 			
 			
 			LayoutsInMemory newLayoutStruct = new LayoutsInMemory();
-			newLayoutStruct.Maximized = true;
+			newLayoutStruct.Maximized = false;
 			newLayoutStruct.LayoutPanel = newLayout;
 			newLayoutStruct.Container = MDIHOST;
 			newLayoutStruct.GUID = guid;

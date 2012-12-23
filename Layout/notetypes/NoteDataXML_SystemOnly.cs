@@ -37,11 +37,14 @@ namespace Layout
 			CaptionLabel.Dock = System.Windows.Forms.DockStyle.Top;
 			//CaptionLabel.Visible = false;
 
-			Maximize(true);
+		//	Maximize(true);
 			//Parent.Enter+= HandleEnter;
 			Parent.MouseEnter+= HandleMouseEnter;
 			Parent.BringToFront();
 			//Parent.Dock = System.Windows.Forms.DockStyle.Left;
+			Dock = DockStyle.Fill;
+			UpdateLocation();
+		//	Parent.BringToFront();
 		}
 		/// <summary>
 		/// Gets the child layout.
