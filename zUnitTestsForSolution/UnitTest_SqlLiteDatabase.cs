@@ -565,12 +565,17 @@ namespace Testing
 			db.InsertData (tmpDatabaseConstants.table_name+"_c", new string[3] {	tmpDatabaseConstants.STATUS,tmpDatabaseConstants.XML,tmpDatabaseConstants.GUID
 			}, new object[3] {"boo status", "boo xml", "GUID_C"});
 
+			// get rid of full text database too
+			db.DropTableIfExists("fulltextsearch");
 
 			//not sure how to set this test up. Force File Write? Then test if file exists?
 			// or shoudl this return a Stream?
 			string result = db.BackupDatabase();
 			_w.output(result.Length);
 			_w.output(result);
+
+			db.DropTableIfExists(tmpDatabaseConstants.table_name+"_b");
+			db.DropTableIfExists(tmpDatabaseConstants.table_name+"_c");
 			Assert.AreEqual(502, result.Length);
 			//Assert.False (true);
 		}
@@ -790,6 +795,8 @@ namespace Testing
 			db.Dispose();
 		}
 		#endregion
+
+
 		[Test]
 		public void TestFullTextSearch()
 		{
