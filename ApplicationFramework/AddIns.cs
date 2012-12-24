@@ -48,6 +48,17 @@ namespace appframe
 			}
 
 		}
+
+		public int Count
+		{
+			get { if (AddInsList != null)
+				{
+					return AddInsList.Count;
+				}
+				return 0;
+				;}
+		}
+
 		/// <summary>
 		/// Releases all resource used by the <see cref="appframe.AddIns"/> object.
 		/// </summary>

@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using database;
 using Layout.data;
+using CoreUtilities;
 
 namespace Testing
 {
@@ -789,8 +790,23 @@ namespace Testing
 			db.Dispose();
 		}
 		#endregion
-
-
+		[Test]
+		public void TestFullTextSearch()
+		{
+			FAKE_SqlLiteDatabase db =CreateTestDatabase(String.Format ("{0}", tmpDatabaseConstants.GUID));
+			db.DropTableIfExists("fulltextsearch");
+			db.CreateFullSearchDatabase();
+			db.InsertData("fulltextsearch", new string[1] {"texttosearch"}, new object[1] {"blah blah hello there"});
+			db.InsertData("fulltextsearch", new string[1] {"texttosearch"}, new object[1] {"blah blah fish hello there"});
+			db.InsertData("fulltextsearch", new string[1] {"texttosearch"}, new object[1] {"blah blah hello there"});
+			db.InsertData("fulltextsearch", new string[1] {"texttosearch"}, new object[1] {"blah blah dog fish hello there"});
+			_w.output("now search");
+			db.SearchFullSearchDatabase ();
+			_w.output("now search over");
+			Console.WriteLine (db.BackupDatabase());
+			db.Dispose();
+			Assert.True (false);
+		}
 
 	}
 }

@@ -77,7 +77,7 @@ namespace database
 /*			TODO: remove		"[name] TEXT NULL," +
 						"[username] TEXT  NULL" +
 						") "*/
-				Console.WriteLine(createAppUserTableSQL);
+				lg.Instance.Line("SqLiteDatabase->CreateTableIfDoesNotExist", ProblemType.MESSAGE, createAppUserTableSQL);
 				
 				using (SQLiteTransaction sqlTransaction = sqliteCon.BeginTransaction())
 				{
@@ -618,6 +618,59 @@ ORDER BY name;
 			sqliteCon.Close ();
 		}
 
+		public void SearchFullSearchDatabase ()
+		{
+
+			//TODO: just testing
+			SQLiteConnection sqliteCon = new SQLiteConnection (Connection_String);
+			
+			sqliteCon.Open();
+			string selectSQL = String.Format ("SELECT * FROM {0} where {1} MATCH '{2}'", "fulltextsearch", "texttosearch", "fish");
+			
+			lg.Instance.Line("SqlLiteDatabase.GetValues", ProblemType.WARNING, selectSQL, Loud.CTRIVIAL);
+			//string selectSQL = String.Format ("SELECT {0} FROM {1} LIMIT 1", columnToReturn, tableName, columnToTest, Test);
+			SQLiteCommand selectCommand = new SQLiteCommand (selectSQL, sqliteCon);
+			SQLiteDataReader dataReader = selectCommand.ExecuteReader ();
+			int ColumnToReturn = 1;
+
+			// Iterate every record in the AppUser table
+			while (dataReader.Read()) {
+				object[] tempRow = new object[ColumnToReturn]; // only have one search column
+				for (int i = 0; i < ColumnToReturn; i++ )
+				{
+					Console.WriteLine (dataReader[i].ToString ());
+				}
+
+				//Console.WriteLine ("Name: " + dataReader.GetString (0)					                   + " Username: " + dataReader.GetString (1));
+			}
+			dataReader.Close ();
+			sqliteCon.Close();
+		}
+		public void CreateFullSearchDatabase()
+		{
+			//TODO: http://answers.oreilly.com/topic/1955-how-to-use-full-text-search-in-sqlite/
+			SQLiteConnection sqliteCon = new SQLiteConnection (Connection_String);
+			
+			sqliteCon.Open();
+			string createAppUserTableSQL = String.Format ("CREATE VIRTUAL TABLE {0} USING FTS3 (texttosearch)","fulltextsearch");
+			// status: just testing
+
+			using (SQLiteTransaction sqlTransaction = sqliteCon.BeginTransaction())
+			{
+				// Create the table
+				SQLiteCommand createCommand = new SQLiteCommand(createAppUserTableSQL
+				                                                , sqliteCon);
+				createCommand.ExecuteNonQuery();
+				createCommand.Dispose();
+				
+				// Commit the changes into the database
+				sqlTransaction.Commit();
+			} // end using
+
+			sqliteCon.Close();
+
+
+		}
 	}
 }
 

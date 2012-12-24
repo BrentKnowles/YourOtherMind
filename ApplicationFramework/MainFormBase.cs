@@ -89,98 +89,96 @@ namespace appframe
 		void StartAndStopPlugIns ()
 		{
 
-			List<MefAddIns.Extensibility.mef_IBase> FullListOfAddins = addIns.BuildListOfAddins ();
-			List<string> myList = addIns.GetListOfInstalledPlugs ();
+			if (null != addIns) {
+				List<MefAddIns.Extensibility.mef_IBase> FullListOfAddins = addIns.BuildListOfAddins ();
+				List<string> myList = addIns.GetListOfInstalledPlugs ();
 
-			// TO DO: Need to set up an IsActive system. For now assume active=true;
-			foreach (MefAddIns.Extensibility.mef_IBase AddIn in FullListOfAddins) {
+				// TO DO: Need to set up an IsActive system. For now assume active=true;
+				foreach (MefAddIns.Extensibility.mef_IBase AddIn in FullListOfAddins) {
 
-				MefAddIns.Extensibility.mef_IBase AddInAlreadyIn = null;
-				if (AddInsLoaded != null) {
-					AddInAlreadyIn = AddInsLoaded.Find (mef_IBase => mef_IBase.CalledFrom.GUID == AddIn.CalledFrom.GUID);
-				} else {
-					AddInsLoaded = new List<MefAddIns.Extensibility.mef_IBase> ();
-				}
-				if (AddInAlreadyIn == null) {
+					MefAddIns.Extensibility.mef_IBase AddInAlreadyIn = null;
+					if (AddInsLoaded != null) {
+						AddInAlreadyIn = AddInsLoaded.Find (mef_IBase => mef_IBase.CalledFrom.GUID == AddIn.CalledFrom.GUID);
+					} else {
+						AddInsLoaded = new List<MefAddIns.Extensibility.mef_IBase> ();
+					}
+					if (AddInAlreadyIn == null) {
 
 
 
-					if (myList.Contains (AddIn.CalledFrom.GUID) == true) {
-						// If Plug not already Loaded then Load it
-						//NewMessage.Show ("Adding " + AddIn.Name);
-						AddInsLoaded.Add (AddIn);
-						if (AddIn.CalledFrom.IsOnAMenu == true) {
+						if (myList.Contains (AddIn.CalledFrom.GUID) == true) {
+							// If Plug not already Loaded then Load it
+							//NewMessage.Show ("Adding " + AddIn.Name);
+							AddInsLoaded.Add (AddIn);
+							if (AddIn.CalledFrom.IsOnAMenu == true) {
 				
 			
 			
 
-							string myMenuName = AddIn.CalledFrom.MyMenuName;
-							if (Constants.BLANK != myMenuName) {
-								string parentName = AddIn.CalledFrom.ParentMenuName;
-								if (Constants.BLANK != parentName) {
-									// add this menu option
-									ToolStripItem[] items = MainMenu.Items.Find (parentName, true);
-									if (items.Length > 0) {
-										if (items [0].GetType () == typeof(ToolStripMenuItem)) {
-											ToolStripButton but = new ToolStripButton (AddIn.CalledFrom.MyMenuName);
-											((ToolStripMenuItem)items [0]).DropDownItems.Add (but);
-											but.Click += (object sender2, EventArgs e2) => AddIn.RespondToCallToAction ();
+								string myMenuName = AddIn.CalledFrom.MyMenuName;
+								if (Constants.BLANK != myMenuName) {
+									string parentName = AddIn.CalledFrom.ParentMenuName;
+									if (Constants.BLANK != parentName) {
+										// add this menu option
+										ToolStripItem[] items = MainMenu.Items.Find (parentName, true);
+										if (items.Length > 0) {
+											if (items [0].GetType () == typeof(ToolStripMenuItem)) {
+												ToolStripButton but = new ToolStripButton (AddIn.CalledFrom.MyMenuName);
+												((ToolStripMenuItem)items [0]).DropDownItems.Add (but);
+												but.Click += (object sender2, EventArgs e2) => AddIn.RespondToCallToAction ();
 
-											AddIn.Hookups.Add (but);
+												AddIn.Hookups.Add (but);
+											}
 										}
-									}
 
-								} else {
-									// create us as a parent
+									} else {
+										// create us as a parent
 							
-									ToolStripMenuItem parent = new ToolStripMenuItem (AddIn.CalledFrom.MyMenuName);
-									parent.Click += (object sender2, EventArgs e2) => AddIn.RespondToCallToAction ();
-									MainMenu.Items.Add (parent);
-									AddIn.Hookups.Add (parent);
+										ToolStripMenuItem parent = new ToolStripMenuItem (AddIn.CalledFrom.MyMenuName);
+										parent.Click += (object sender2, EventArgs e2) => AddIn.RespondToCallToAction ();
+										MainMenu.Items.Add (parent);
+										AddIn.Hookups.Add (parent);
 
 
+									}
 								}
-							}
-						} // OnAMenu
-					} // Is allowed to be loaded (i.e., set in Options)
-					//TODO: Register NoteTYpes
-					if (AddIn.GetType () == typeof(MefAddIns.Extensibility.mef_INotes)) {
-						((MefAddIns.Extensibility.mef_INotes)AddIn).RegisterType ();
-					}
-					else
-					{
+							} // OnAMenu
+						} // Is allowed to be loaded (i.e., set in Options)
+						//TODO: Register NoteTYpes
+						if (AddIn.GetType () == typeof(MefAddIns.Extensibility.mef_INotes)) {
+							((MefAddIns.Extensibility.mef_INotes)AddIn).RegisterType ();
+						} else {
 
-						// Means we WERE NOT added and WE DO NOT WANT TO ADD THEM
-						// Do not do anything here
+							// Means we WERE NOT added and WE DO NOT WANT TO ADD THEM
+							// Do not do anything here
 
 					
-					}
-				}//Not Added Yet
-
-			}
-
-			// Remove installed plugins
-
-			// We exist but we are not on the AddMe list.
-			// This means we need to be removed
-			for  (int i = AddInsLoaded.Count-1; i >= 0; i--)
-			{
-				MefAddIns.Extensibility.mef_IBase addin =  AddInsLoaded[i];
-				// look at each plug and decide if it should be removed (i.e., it is no longer in the list to add
-				if (myList.Contains (addin.CalledFrom.GUID) == false)
-				{
-					// we are NOT in the list but we exist in the active list
-					// this means we must be destroyed!!
-					NewMessage.Show ("Destroy : " + addin.CalledFrom.GUID);
-					foreach (IDisposable connection in addin.Hookups)
-					{
-						connection.Dispose();
-					}
-
-					// TODO: if notetype need to degresigtser
-
-					AddInsLoaded.Remove (addin);
+						}
+					}//Not Added Yet
 				}
+			
+
+				// Remove installed plugins
+				if (addIns.Count > 0) {
+					// We exist but we are not on the AddMe list.
+					// This means we need to be removed
+					for (int i = AddInsLoaded.Count-1; i >= 0; i--) {
+						MefAddIns.Extensibility.mef_IBase addin = AddInsLoaded [i];
+						// look at each plug and decide if it should be removed (i.e., it is no longer in the list to add
+						if (myList.Contains (addin.CalledFrom.GUID) == false) {
+							// we are NOT in the list but we exist in the active list
+							// this means we must be destroyed!!
+							NewMessage.Show ("Destroy : " + addin.CalledFrom.GUID);
+							foreach (IDisposable connection in addin.Hookups) {
+								connection.Dispose ();
+							}
+
+							// TODO: if notetype need to degresigtser
+
+							AddInsLoaded.Remove (addin);
+						}
+					}
+				} // count > 0
 			}
 		}
 

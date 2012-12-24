@@ -4,7 +4,7 @@ using CoreUtilities;
 using Layout;
 using System.Collections.ObjectModel;
 using System.Collections.Generic;
-
+using AppLimit.NetSparkle;
 
 
 using System.ComponentModel.Composition.Hosting;
@@ -32,8 +32,11 @@ namespace YOM2013
 		}
 
 		#endregion
+		#region variables
+		private Sparkle _sparkle; 
+		#endregion
 		#region delegates
-		Action <bool> Maximize;
+
 		#endregion
 		/// <summary>
 		/// A series of true/false and similiar settings that should be double checked before deployments as some of them
@@ -49,6 +52,9 @@ namespace YOM2013
 		{
 			this.Text = newTitle;
 		}
+
+		
+
 /// <summary>
 /// Initializes a new instance of the <see cref="YOM2013.MainForm"/> class.
 /// </summary>
@@ -65,9 +71,9 @@ namespace YOM2013
 		public MainForm (string _path, Action<bool>ForceShutDownMethod, string storage) : base (_path,ForceShutDownMethod,storage)
 		{
 
-			LayoutsOpen = new List<LayoutsInMemory>();
+			LayoutsOpen = new List<LayoutsInMemory> ();
 
-			Switches();
+			Switches ();
 
 			lg.Instance.Loudness = Loud.CTRIVIAL;
 			LayoutDetails.Instance.LoadLayoutRef = LoadLayout;
@@ -77,7 +83,7 @@ namespace YOM2013
 				Loc.Instance.ChangeLocale ("en-US");
 				Console.WriteLine ("Current culture {0}", System.Threading.Thread.CurrentThread.CurrentUICulture);
 				Console.WriteLine (Loc.Instance.Cat.GetString ("Hello World3!"));
-				Console.WriteLine (Loc.Instance.Cat.GetStringFmt ("This program is running proccess {0}", "Just kidding"));
+			
 			} catch (Exception ex) {
 				Console.WriteLine (ex.ToString ());
 			}
@@ -112,38 +118,39 @@ namespace YOM2013
 
 
 				ToolStripMenuItem New = new ToolStripMenuItem (Loc.Instance.Cat.GetString ("New Layout"));
-				file.DropDownItems.Add(New);
+				file.DropDownItems.Add (New);
 				//	((ToolStripMenuItem)MainMenu.Items [0]).DropDownItems.Add (Save);
 				New.Click += HandleNewClick;
 
 				ToolStripMenuItem Test = new ToolStripMenuItem (Loc.Instance.Cat.GetString ("TEST"));
-				file.DropDownItems.Add(Test);
+				file.DropDownItems.Add (Test);
 				//	((ToolStripMenuItem)MainMenu.Items [0]).DropDownItems.Add (Save);
 				Test.Click += HandleTestClick;
 
-					ToolStripMenuItem Save = new ToolStripMenuItem (Loc.Instance.Cat.GetString ("Save"));
-				file.DropDownItems.Add(Save);
-			//	((ToolStripMenuItem)MainMenu.Items [0]).DropDownItems.Add (Save);
+				ToolStripMenuItem Save = new ToolStripMenuItem (Loc.Instance.Cat.GetString ("Save"));
+				file.DropDownItems.Add (Save);
+				//	((ToolStripMenuItem)MainMenu.Items [0]).DropDownItems.Add (Save);
 				Save.Click += HandleSaveClick;
 
-				ToolStripMenuItem Backup = new ToolStripMenuItem(Loc.Instance.Cat.GetString("Backup"));
+				ToolStripMenuItem Backup = new ToolStripMenuItem (Loc.Instance.Cat.GetString ("Backup"));
 				Backup.Click += HandleBackupClick;
 				file.DropDownItems.Add (Backup);
 			}
 
-			ToolStripSeparator sep = new ToolStripSeparator();
-			GetToolMenu().DropDownItems.Add (sep);
+			ToolStripSeparator sep = new ToolStripSeparator ();
+			GetToolMenu ().DropDownItems.Add (sep);
 
 			ToolStripMenuItem Monitor_AllScreens = new ToolStripMenuItem (Loc.Instance.Cat.GetString ("Extend View"));
-			GetToolMenu().DropDownItems.Add(Monitor_AllScreens);
+			GetToolMenu ().DropDownItems.Add (Monitor_AllScreens);
 			//	((ToolStripMenuItem)MainMenu.Items [0]).DropDownItems.Add (Save);
-			Monitor_AllScreens.Click += HandleMonitorAllScreensClick;;
+			Monitor_AllScreens.Click += HandleMonitorAllScreensClick;
+			;
 			
 
 
 
-			Windows = new ToolStripMenuItem(Loc.Instance.GetString("Windows"));
-			Windows.DropDownOpening+= HandleWindowsMenuDropDownOpening;
+			Windows = new ToolStripMenuItem (Loc.Instance.GetString ("Windows"));
+			Windows.DropDownOpening += HandleWindowsMenuDropDownOpening;
 
 
 
@@ -155,7 +162,7 @@ namespace YOM2013
 
 
 			ToolStripButton import = new ToolStripButton ("Import");
-			import.Click+= HandleImportOldFilesClick;
+			import.Click += HandleImportOldFilesClick;
 			MainMenu.Items.Add (import);
 			// DELEGATES
 			LayoutDetails.Instance.UpdateTitle = UpdateTitle;
@@ -167,6 +174,17 @@ namespace YOM2013
 			this.KeyDown += HandleMainFormKeyDown;
 
 			//this.
+			string sparkupdatefile = "http://www.yourothermind.com/yomcast.xml";//update.applimit.com/netsparkle/versioninfo.xml
+			try {
+				_sparkle = new Sparkle (sparkupdatefile); 
+				//_sparkle.ShowDiagnosticWindow = true;
+				_sparkle.StartLoop (true); 
+
+
+				lg.Instance.Line("MainForm.MainForm", ProblemType.MESSAGE, "Loading appcast: " + sparkupdatefile);
+			} catch (Exception ex) {
+				lg.Instance.Line("MainForm.MainForm", ProblemType.ERROR, "Sparkle was unable to find the update file " + ex.ToString());
+			}
 		}
 
 		void HandleImportOldFilesClick (object sender, EventArgs e)

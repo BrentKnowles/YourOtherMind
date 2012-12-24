@@ -35,7 +35,16 @@ namespace Layout
 		public bool ForceShutdown = false; 
 		public string Path {
 			get {
-				string path = System.IO.Path.Combine (Environment.GetFolderPath (Environment.SpecialFolder.MyDocuments), "YOMDEBUG");
+
+
+				string path = "";
+#if(DEBUG)
+				path = System.IO.Path.Combine (Environment.GetFolderPath (Environment.SpecialFolder.MyDocuments), "YOMDEBUG");
+#else
+				path =System.IO.Path.Combine ( Environment.CurrentDirectory, "YOMRELEASE");
+#endif
+
+
 				if (!System.IO.Directory.Exists (path)) {
 					System.IO.Directory.CreateDirectory(path);
 				}
