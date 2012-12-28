@@ -38,7 +38,7 @@ namespace Testing
 			// will also output a DAAbackup file (text readable) format too
 			_SetupForLayoutPanelTests ();
 			
-			FAKE_LayoutPanel panel = new FAKE_LayoutPanel (CoreUtilities.Constants.BLANK);
+			FAKE_LayoutPanel panel = new FAKE_LayoutPanel (CoreUtilities.Constants.BLANK, false);
 			//NOTE: For now remember that htis ADDS 1 Extra notes
 			string panelname = System.Guid.NewGuid().ToString();
 			panel.NewLayout (panelname);
@@ -84,8 +84,8 @@ namespace Testing
 			// * Now start the Load Test
 			TimeSpan time;
 			time = CoreUtilities.TimerCore.Time (() => {
-			panel = new FAKE_LayoutPanel (CoreUtilities.Constants.BLANK);
-				panel.LoadLayout(panelname);
+			panel = new FAKE_LayoutPanel (CoreUtilities.Constants.BLANK, false);
+				panel.LoadLayout(panelname, false);
 			});
 			Console.WriteLine("TIME " + time);
 
@@ -124,7 +124,7 @@ namespace Testing
 		
 			_SetupForLayoutPanelTests ();
 
-			FAKE_LayoutPanel panel = new FAKE_LayoutPanel(CoreUtilities.Constants.BLANK);
+			FAKE_LayoutPanel panel = new FAKE_LayoutPanel(CoreUtilities.Constants.BLANK, false);
 
 			//NOTE: For now remember that htis ADDS 1 Extra notes
 			panel.NewLayout("mynewpanel");

@@ -34,6 +34,7 @@ namespace YOM2013
 		#endregion
 		#region variables
 		private Sparkle _sparkle; 
+		private Options Settings ;
 		#endregion
 		#region delegates
 
@@ -71,6 +72,8 @@ namespace YOM2013
 		public MainForm (string _path, Action<bool>ForceShutDownMethod, string storage) : base (_path,ForceShutDownMethod,storage)
 		{
 
+
+
 			LayoutsOpen = new List<LayoutsInMemory> ();
 
 			Switches ();
@@ -102,7 +105,7 @@ namespace YOM2013
 			SystemLayout.Dock = System.Windows.Forms.DockStyle.Fill;
 			SystemLayout.BringToFront ();
 			//SystemLayout.Visible = false;
-			SystemLayout.LoadLayout ("system");
+			SystemLayout.LoadLayout ("system", false);
 
 
 
@@ -140,12 +143,14 @@ namespace YOM2013
 			ToolStripSeparator sep = new ToolStripSeparator ();
 			GetToolMenu ().DropDownItems.Add (sep);
 
-			ToolStripMenuItem Monitor_AllScreens = new ToolStripMenuItem (Loc.Instance.Cat.GetString ("Extend View"));
+			ToolStripMenuItem Monitor_AllScreens = new ToolStripMenuItem (Loc.Instance.GetString ("Extend View"));
 			GetToolMenu ().DropDownItems.Add (Monitor_AllScreens);
 			//	((ToolStripMenuItem)MainMenu.Items [0]).DropDownItems.Add (Save);
 			Monitor_AllScreens.Click += HandleMonitorAllScreensClick;
-			;
-			
+
+			ToolStripMenuItem Monitor_OneScreen = new ToolStripMenuItem(Loc.Instance.GetString ("Single Screen"));
+			GetToolMenu().DropDownItems.Add (Monitor_OneScreen);
+			Monitor_OneScreen.Click += HandleMonitorOneScreenClick;
 
 
 
@@ -173,7 +178,14 @@ namespace YOM2013
 			this.KeyPreview = true;
 			this.KeyDown += HandleMainFormKeyDown;
 
-			//this.
+			// Add option panels to options menu
+			Settings = new Options(LayoutDetails.Instance.YOM_DATABASE);
+			
+	
+		    optionPanels.Add(Settings);
+
+
+			//Check for updates
 			string sparkupdatefile = "http://www.yourothermind.com/yomcast.xml";//update.applimit.com/netsparkle/versioninfo.xml
 			try {
 				_sparkle = new Sparkle (sparkupdatefile); 
@@ -185,6 +197,11 @@ namespace YOM2013
 			} catch (Exception ex) {
 				lg.Instance.Line("MainForm.MainForm", ProblemType.ERROR, "Sparkle was unable to find the update file " + ex.ToString());
 			}
+		}
+
+		void HandleMonitorOneScreenClick (object sender, EventArgs e)
+		{
+			Screens_JustOne();
 		}
 
 		void HandleImportOldFilesClick (object sender, EventArgs e)
@@ -208,7 +225,8 @@ namespace YOM2013
 
 		void HandleMonitorAllScreensClick (object sender, EventArgs e)
 		{
-			Screens_AcrossTwo();
+
+			Screens_AcrossTwo(Settings.MultipleScreenHigh);
 		}
 
 		void HandleTestClick (object sender, EventArgs e)
@@ -296,12 +314,13 @@ namespace YOM2013
 			
 			//Maximize = MDIHOST.Maximize;
 			
-			LayoutPanel newLayout =  new Layout.LayoutPanel (CoreUtilities.Constants.BLANK);
+			LayoutPanel newLayout =  new Layout.LayoutPanel (CoreUtilities.Constants.BLANK, false);
 			newLayout.BorderStyle = BorderStyle.Fixed3D;
 			newLayout.Parent = MDIHOST.Parent;
 			newLayout.Visible = true;
 			newLayout.Dock = System.Windows.Forms.DockStyle.Fill;
-			//newLayout.BringToFront ();
+			// this is necessary else we lose one of the toolbars
+			newLayout.BringToFront ();
 			
 			
 			LayoutsInMemory newLayoutStruct = new LayoutsInMemory();
@@ -352,7 +371,7 @@ namespace YOM2013
 			LayoutsInMemory existing = LayoutPresent  (guidtoload);
 			if (existing == null) {
 				LayoutPanel newLayout = CreateLayoutContainer (guidtoload);
-				newLayout.LoadLayout (guidtoload);
+				newLayout.LoadLayout (guidtoload, false);
 				LayoutDetails.Instance.CurrentLayout = newLayout;
 			} else {
 

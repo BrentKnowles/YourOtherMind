@@ -2,6 +2,7 @@ using System;
 using database;
 using System.Collections.Generic;
 using Layout.data;
+using CoreUtilities;
 
 namespace Layout
 {
@@ -66,7 +67,7 @@ namespace Layout
 			}
 			
 			List<object[]> myList = MyDatabase.GetValues (tmpDatabaseConstants.table_name, new string[2] {tmpDatabaseConstants.GUID, tmpDatabaseConstants.NAME},
-			"any" , "*",String.Format(" order by {0} COLLATE NOCASE", tmpDatabaseConstants.NAME));
+			tmpDatabaseConstants.SUBPANEL , 0,String.Format(" order by {0} COLLATE NOCASE", tmpDatabaseConstants.NAME));
 			
 			
 			if (myList != null && myList.Count > 0) {
@@ -76,7 +77,7 @@ namespace Layout
 					NameAndGuid record = new NameAndGuid();
 					record.Guid = o[0].ToString();
 					record.Caption = o [1].ToString();
-					Console.WriteLine("adding to ListOfLayouts " + record.Caption);
+					lg.Instance.Line("MasterOfLayouts->GetListOfLayouts", ProblemType.MESSAGE, "adding to ListOfLayouts " + record.Caption);
 					result.Add (record);
 				}
 			}

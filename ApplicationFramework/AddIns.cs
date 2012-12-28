@@ -29,6 +29,8 @@ namespace appframe
 		string dataPath = CoreUtilities.Constants.BLANK;
 		string DatabaseName;
 
+		Panel configPanel;
+
 		#endregion
 		#region interface
 		CheckedListBox checkers ;
@@ -84,10 +86,13 @@ namespace appframe
 		/// </returns>
 		public Panel GetConfigPanel ()
 		{
+			// if panel made then leave it alone
+			if (PanelWasMade == true) return configPanel;
+
 	
 				PanelWasMade = true;
 
-			Panel configPanel = new Panel ();
+			 configPanel = new Panel ();
 			configPanel.BackColor = Color.Blue;
 			checkers = new CheckedListBox ();
 			checkers.Parent = configPanel;
@@ -345,9 +350,7 @@ namespace appframe
 			// 
 
 		}
-		public void RunAddIn()
-		{
-		}
+
 
 		/*
 		public void OldTestMethod()

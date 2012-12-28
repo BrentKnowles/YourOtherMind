@@ -69,16 +69,17 @@ namespace LayoutPanels
 			Parent.BorderStyle = BorderStyle.Fixed3D;
 		CaptionLabel.Dock = DockStyle.Top;
 
-			panelLayout = new LayoutPanel(Layout.GUID);
+			panelLayout = new LayoutPanel(Layout.GUID, false);
 			panelLayout.SetSubNoteSaveRequired = Layout.SetSaveRequired;
 
 			// load the layout based on the note
-			panelLayout.LoadLayout(this.GuidForNote);
+			panelLayout.LoadLayout(this.GuidForNote, true);
 
 			panelLayout.Parent = Parent;
 			panelLayout.Visible = true;
 			panelLayout.Dock = DockStyle.Fill;
 			panelLayout.BringToFront();
+
 
 
 			ToolStripButton ShowTabs = new ToolStripButton(Loc.Instance.GetString("Show Tabs?"));

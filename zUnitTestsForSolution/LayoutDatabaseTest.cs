@@ -81,7 +81,7 @@ namespace Testing
 			_setupforlayoutests();
 			int count = 25;
 			FakeLayoutDatabase layout = new FakeLayoutDatabase ("testguid");
-			LayoutPanel layoutPanel = new LayoutPanel(CoreUtilities.Constants.BLANK);
+			LayoutPanel layoutPanel = new LayoutPanel(CoreUtilities.Constants.BLANK, false);
 			layout.LoadFrom(layoutPanel);
 			NoteDataXML note = new NoteDataXML ();
 			for (int i = 0; i < count; i++) {
@@ -107,7 +107,7 @@ namespace Testing
 			_setupforlayoutests();
 
 			FakeLayoutDatabase layout = new FakeLayoutDatabase ("testguid");
-			LayoutPanel layoutPanel = new LayoutPanel(CoreUtilities.Constants.BLANK);
+			LayoutPanel layoutPanel = new LayoutPanel(CoreUtilities.Constants.BLANK, false);
 			bool result = layout.LoadFrom(layoutPanel);
 			_w.output("made it");
 			Assert.AreEqual(false, result);
@@ -127,7 +127,7 @@ namespace Testing
 			_setupforlayoutests();
 			int count = 200;
 			FakeLayoutDatabase layout = new FakeLayoutDatabase ("testguid");
-			LayoutPanel layoutPanel = new LayoutPanel(CoreUtilities.Constants.BLANK);
+			LayoutPanel layoutPanel = new LayoutPanel(CoreUtilities.Constants.BLANK, false);
 
 			NoteDataXML note = new NoteDataXML ();
 			for (int i = 0; i < count; i++) {
@@ -201,7 +201,7 @@ namespace Testing
 			_setupforlayoutests ();
 			int count = 25;
 			FakeLayoutDatabase layout = new FakeLayoutDatabase ("testguid");
-			LayoutPanel layoutPanel = new LayoutPanel (CoreUtilities.Constants.BLANK);
+			LayoutPanel layoutPanel = new LayoutPanel (CoreUtilities.Constants.BLANK, false);
 			
 			NoteDataInterface note = null; 
 			for (int i = 0; i < count; i++) {
@@ -246,7 +246,7 @@ namespace Testing
 			_setupforlayoutests ();
 			int count = 25;
 			FakeLayoutDatabase layout = new FakeLayoutDatabase ("testguid");
-			LayoutPanel layoutPanel = new LayoutPanel (CoreUtilities.Constants.BLANK);
+			LayoutPanel layoutPanel = new LayoutPanel (CoreUtilities.Constants.BLANK, false);
 			
 			NoteDataInterface note = null; 
 			for (int i = 0; i < count; i++) {
@@ -291,7 +291,7 @@ namespace Testing
 			_setupforlayoutests ();
 			int count = 15;
 			FakeLayoutDatabase layout = new FakeLayoutDatabase ("testguid");
-			LayoutPanel layoutPanel = new LayoutPanel (CoreUtilities.Constants.BLANK);
+			LayoutPanel layoutPanel = new LayoutPanel (CoreUtilities.Constants.BLANK, false);
 			
 			NoteDataInterface note = null; 
 			for (int i = 0; i < count; i++) {
@@ -342,7 +342,7 @@ namespace Testing
 			_setupforlayoutests ();
 			int count = 25;
 			FakeLayoutDatabase layout = new FakeLayoutDatabase ("testguid");
-			LayoutPanel layoutPanel = new LayoutPanel (CoreUtilities.Constants.BLANK);
+			LayoutPanel layoutPanel = new LayoutPanel (CoreUtilities.Constants.BLANK, false);
 			
 			NoteDataXML note = new NoteDataXML ();
 			for (int i = 0; i < count; i++) {
@@ -393,7 +393,7 @@ namespace Testing
 			int count = 25;
 
 			FakeLayoutDatabase layout = new FakeLayoutDatabase ("testguid");
-			LayoutPanel layoutPanel = new LayoutPanel (CoreUtilities.Constants.BLANK);
+			LayoutPanel layoutPanel = new LayoutPanel (CoreUtilities.Constants.BLANK, false);
 			
 			NoteDataXML note = new NoteDataXML ();
 			for (int i = 0; i < count; i++) {
@@ -451,7 +451,7 @@ namespace Testing
 			_setupforlayoutests ();
 			int count = 25;
 			FakeLayoutDatabase layout = new FakeLayoutDatabase ("testguid");
-			LayoutPanel layoutPanel = new LayoutPanel (CoreUtilities.Constants.BLANK);
+			LayoutPanel layoutPanel = new LayoutPanel (CoreUtilities.Constants.BLANK, false);
 			
 			NoteDataXML note = new NoteDataXML ();
 			for (int i = 0; i < count; i++) {
@@ -471,7 +471,7 @@ namespace Testing
 			_setupforlayoutests ();
 			int count = 25;
 			FakeLayoutDatabase layout = new FakeLayoutDatabase ("testguid");
-			LayoutPanel layoutPanel = new LayoutPanel (CoreUtilities.Constants.BLANK);
+			LayoutPanel layoutPanel = new LayoutPanel (CoreUtilities.Constants.BLANK, false);
 			
 			NoteDataXML note = new NoteDataXML ();
 			for (int i = 0; i < count; i++) {
@@ -488,7 +488,7 @@ namespace Testing
 		{	_setupforlayoutests ();
 			int count = 25;
 			FakeLayoutDatabase layout = new FakeLayoutDatabase ("testguid");
-			LayoutPanel layoutPanel = new LayoutPanel (CoreUtilities.Constants.BLANK);
+			LayoutPanel layoutPanel = new LayoutPanel (CoreUtilities.Constants.BLANK, false);
 			
 			NoteDataXML_RichText note = new NoteDataXML_RichText ();
 			for (int i = 0; i < count; i++) {
@@ -510,7 +510,7 @@ namespace Testing
 		{	_setupforlayoutests ();
 			int count = 25;
 			FakeLayoutDatabase layout = new FakeLayoutDatabase ("testguid");
-			LayoutPanel layoutPanel = new LayoutPanel (CoreUtilities.Constants.BLANK);
+			LayoutPanel layoutPanel = new LayoutPanel (CoreUtilities.Constants.BLANK, false);
 			
 			NoteDataXML_RichText note = new NoteDataXML_RichText ();
 			for (int i = 0; i < count; i++) {
@@ -527,7 +527,7 @@ namespace Testing
 		public void TestDeleteNote()
 		{
 			// add a note with specific label
-			LayoutPanel layoutPanel = new LayoutPanel (CoreUtilities.Constants.BLANK);
+			LayoutPanel layoutPanel = new LayoutPanel (CoreUtilities.Constants.BLANK, false);
 			FakeLayoutDatabase layout = new FakeLayoutDatabase ("testguid");
 			NoteDataXML_RichText note = new NoteDataXML_RichText ();
 			string guid2find = "";

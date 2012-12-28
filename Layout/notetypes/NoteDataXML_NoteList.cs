@@ -16,12 +16,16 @@ namespace Layout
 	public class NoteDataXML_NoteList : NoteDataXML
 	{
 		#region constants
+		enum Modes  {NOTES, LAYOUTS};
 
+		#endregion
+		#region variables
+		Modes mode;
 		#endregion
 		#region formcontrols
 		ListBox list;
-		enum Modes  {NOTES, LAYOUTS};
-		Modes mode;
+		Label count;
+		
 		#endregion
 
 		public NoteDataXML_NoteList () : base()
@@ -60,6 +64,11 @@ namespace Layout
 			refresh.Dock = DockStyle.Bottom;
 			refresh.Parent = Parent;
 			refresh.Click += HandleRefreshClick;
+
+			 count = new Label();
+			count.Parent = Parent;
+			count.Dock = DockStyle.Top;
+
 
 
 		}
@@ -114,10 +123,12 @@ namespace Layout
 			this.list.DataSource = null;
 			this.list.Items.Clear ();
 			MasterOfLayouts master = new MasterOfLayouts ();
-			this.list.DataSource = master.GetListOfLayouts ("filter");
+			this.list.DataSource = master.GetListOfLayouts ("filternotdone");
 			this.list.DisplayMember = "Caption";
 			this.list.ValueMember = "Guid";
 			master.Dispose ();
+			count.Text = Loc.Instance.GetStringFmt("Count = {0}", this.list.Items.Count);
+
 		}
 
 		void HandleDropDownSelectedIndexChanged (object sender, EventArgs e)

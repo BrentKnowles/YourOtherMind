@@ -22,6 +22,7 @@ namespace LayoutPanels
 			Notes = notes;
 			HeaderToolbar();
 			UpdateHeader ();
+			headerBar.SendToBack();
 		}
 		private void HeaderToolbar ()
 		{
@@ -99,7 +100,8 @@ namespace LayoutPanels
 				
 				
 				headerBar.Items.Add (properties);
-				
+
+				lg.Instance.Line("HeaderBar.UpdateHeader", ProblemType.MESSAGE, "Header should be visible");
 				
 			}
 		}

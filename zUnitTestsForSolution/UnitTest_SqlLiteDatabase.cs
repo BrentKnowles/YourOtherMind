@@ -41,14 +41,14 @@ namespace Testing
 				_w.output (String.Format ("Unable to drop table {0}", ex.ToString()));
 			}
 
-			db.CreateTableIfDoesNotExist (tmpDatabaseConstants.table_name, new string[5] 
+			db.CreateTableIfDoesNotExist (tmpDatabaseConstants.table_name, new string[6] 
 			                              {tmpDatabaseConstants.ID, tmpDatabaseConstants.GUID, tmpDatabaseConstants.XML,
-				tmpDatabaseConstants.STATUS, tmpDatabaseConstants.NAME}, 
-			new string[5] {
+				tmpDatabaseConstants.STATUS, tmpDatabaseConstants.NAME, tmpDatabaseConstants.SUBPANEL}, 
+			new string[6] {
 				"INTEGER",
 				"TEXT UNIQUE",
 				"LONGTEXT",
-				"TEXT","TEXT"
+				"TEXT","TEXT","BOOLEAN"
 			}, primarykey
 			);
 			return db;
@@ -576,7 +576,8 @@ namespace Testing
 
 			db.DropTableIfExists(tmpDatabaseConstants.table_name+"_b");
 			db.DropTableIfExists(tmpDatabaseConstants.table_name+"_c");
-			Assert.AreEqual(502, result.Length);
+			db.Dispose();
+			Assert.AreEqual(526, result.Length);
 			//Assert.False (true);
 		}
 		/// <summary>
@@ -587,6 +588,7 @@ namespace Testing
 		public void CreateTableWithNoPrimaryKey()
 		{
 			SqlLiteDatabase db =CreateTestDatabase(String.Format ("{0}", ""));
+			db.Dispose();
 		}
 
 		/// <summary>
@@ -604,7 +606,7 @@ namespace Testing
 		public void Test_FailOnInvalidDatabaseName()
 		{
 			FAKE_SqlLiteDatabase db = new FAKE_SqlLiteDatabase ("");
-
+			db.Dispose();
 		}
 		[Test()]
 		public void DatabaseIsDisposed()
@@ -769,14 +771,16 @@ namespace Testing
 		{
 			Layout.LayoutDetails.Instance.YOM_DATABASE =test_database_name;
 			SqlLiteDatabase db = CreateTestDatabase (String.Format ("{0}", tmpDatabaseConstants.ID));
-			db.InsertData (tmpDatabaseConstants.table_name, new string[3] {	tmpDatabaseConstants.NAME,tmpDatabaseConstants.XML,tmpDatabaseConstants.GUID
-			}, new object[3] {"Zum", "boo xml", "GUID_DDA"});
-			db.InsertData (tmpDatabaseConstants.table_name, new string[3] {	tmpDatabaseConstants.NAME,tmpDatabaseConstants.XML,tmpDatabaseConstants.GUID
-			}, new object[3] {"Alexander", "boo xml", "GUID_B"});
-			db.InsertData (tmpDatabaseConstants.table_name, new string[3] {	tmpDatabaseConstants.NAME,tmpDatabaseConstants.XML,tmpDatabaseConstants.GUID
-			}, new object[3] {"aboo", "boo xml", "GUID_A"});
-			db.InsertData (tmpDatabaseConstants.table_name, new string[3] {	tmpDatabaseConstants.NAME,tmpDatabaseConstants.XML,tmpDatabaseConstants.GUID
-			}, new object[3] {"Calv", "boo xml", "GUID_C"});
+			db.InsertData (tmpDatabaseConstants.table_name, new string[4] {	
+				tmpDatabaseConstants.NAME,tmpDatabaseConstants.XML,tmpDatabaseConstants.GUID, tmpDatabaseConstants.SUBPANEL
+			}, new object[4] {"Zum", "boo xml", "GUID_DDA",0});
+			db.InsertData (tmpDatabaseConstants.table_name, new string[4] 
+			               {	tmpDatabaseConstants.NAME,tmpDatabaseConstants.XML,tmpDatabaseConstants.GUID, tmpDatabaseConstants.SUBPANEL
+			}, new object[4] {"Alexander", "boo xml", "GUID_B",0});
+			db.InsertData (tmpDatabaseConstants.table_name, new string[4] {	tmpDatabaseConstants.NAME,tmpDatabaseConstants.XML,tmpDatabaseConstants.GUID, tmpDatabaseConstants.SUBPANEL
+			}, new object[4] {"aboo", "boo xml", "GUID_A",0});
+			db.InsertData (tmpDatabaseConstants.table_name, new string[4] {	tmpDatabaseConstants.NAME,tmpDatabaseConstants.XML,tmpDatabaseConstants.GUID, tmpDatabaseConstants.SUBPANEL
+			}, new object[4] {"Calv", "boo xml", "GUID_C",0});
 
 			Layout.MasterOfLayouts mastery = new Layout.MasterOfLayouts ();
 			List<Layout.MasterOfLayouts.NameAndGuid> list = mastery.GetListOfLayouts ("");
@@ -794,12 +798,46 @@ namespace Testing
 			mastery.Dispose ();
 			db.Dispose();
 		}
+		[Test()]
+		public void TestSortingOnGetValues_ShouldFailBecauseAreSubPanels ()
+		{
+			Layout.LayoutDetails.Instance.YOM_DATABASE =test_database_name;
+			SqlLiteDatabase db = CreateTestDatabase (String.Format ("{0}", tmpDatabaseConstants.ID));
+			db.InsertData (tmpDatabaseConstants.table_name, new string[4] {	tmpDatabaseConstants.NAME,tmpDatabaseConstants.XML,tmpDatabaseConstants.GUID, tmpDatabaseConstants.SUBPANEL
+			}, new object[4] {"Zum", "boo xml", "GUID_DDA",1});
+			db.InsertData (tmpDatabaseConstants.table_name, new string[4] {	tmpDatabaseConstants.NAME,tmpDatabaseConstants.XML,tmpDatabaseConstants.GUID, tmpDatabaseConstants.SUBPANEL
+			}, new object[4] {"Alexander", "boo xml", "GUID_B",1});
+			db.InsertData (tmpDatabaseConstants.table_name, new string[4] {	tmpDatabaseConstants.NAME,tmpDatabaseConstants.XML,tmpDatabaseConstants.GUID, tmpDatabaseConstants.SUBPANEL
+			}, new object[4] {"aboo", "boo xml", "GUID_A",1});
+			db.InsertData (tmpDatabaseConstants.table_name, new string[4] {	tmpDatabaseConstants.NAME,tmpDatabaseConstants.XML,tmpDatabaseConstants.GUID, tmpDatabaseConstants.SUBPANEL
+			}, new object[4] {"Calv", "boo xml", "GUID_C",1});
+			
+			Layout.MasterOfLayouts mastery = new Layout.MasterOfLayouts ();
+			List<Layout.MasterOfLayouts.NameAndGuid> list = mastery.GetListOfLayouts ("");
+			foreach (Layout.MasterOfLayouts.NameAndGuid guid in list) {
+				_w.output (guid.Caption);
+			}
+			Assert.AreEqual(0, list.Count);
+			/*Assert.AreEqual ("aboo", list[0].Caption);
+			Assert.AreEqual ("Alexander", list[1].Caption);
+			Assert.AreEqual ("Calv", list[2].Caption);
+			Assert.AreEqual ("Zum", list[3].Caption);
+			*/
+			
+			
+			mastery.Dispose ();
+			db.Dispose();
+		}
 		#endregion
 
 
 		[Test]
 		public void TestFullTextSearch()
 		{
+			Assert.True (false);
+			// This test seems to cause mdhost.exe crashes!?!? Wasn't finished anyways so aborted it
+			return;
+
 			FAKE_SqlLiteDatabase db =CreateTestDatabase(String.Format ("{0}", tmpDatabaseConstants.GUID));
 			db.DropTableIfExists("fulltextsearch");
 			db.CreateFullSearchDatabase();

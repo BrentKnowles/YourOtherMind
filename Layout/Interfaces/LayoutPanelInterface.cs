@@ -16,7 +16,7 @@ namespace Layout
 		#endregion
 
 		void SaveLayout();
-		void LoadLayout(string GUID);
+		void LoadLayout (string _GUID, bool IsSubPanel);
 		void SetSaveRequired(bool NeedSave);
 	//	string Backup();
 		void RefreshTabs ();

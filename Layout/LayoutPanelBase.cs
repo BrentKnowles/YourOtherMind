@@ -79,8 +79,9 @@ namespace Layout
 		public virtual Panel NoteCanvas {get;set;}
 #endregion
 		public abstract void SaveLayout();
-		public abstract  void LoadLayout(string GUID);
-		
+		//public abstract  void LoadLayout(string GUID);
+		public abstract void LoadLayout (string _GUID, bool IsSubPanel);
+
 	//	public abstract  void AddNote();
 
 		public abstract System.Collections.Generic.List<NoteDataInterface> GetAvailableFolders();
@@ -91,6 +92,7 @@ namespace Layout
 		public abstract void NewLayout (string _GUID);
 		public abstract void RefreshTabs ();
 		public abstract void DeleteNote(NoteDataInterface NoteToDelete);
+
 	}
 }
 

@@ -105,7 +105,7 @@ namespace database
 			}
 
 		}
-		public override List<object[]> GetValues (string tableName, string[] columnToReturn, string columnToTest, string Test)
+		public override List<object[]> GetValues (string tableName, string[] columnToReturn, string columnToTest, object Test)
 		{
 			return GetValues (tableName, columnToReturn, columnToTest, Test, Constants.BLANK);
 		}
@@ -130,15 +130,23 @@ namespace database
 		/// <param name='Test'>
 		/// Test.
 		/// </param>
-		public override List<object[]> GetValues (string tableName, string[] columnToReturn, string columnToTest, string Test, string Sorting )
+		public override List<object[]> GetValues (string tableName, string[] columnToReturn, string columnToTest, object Test, string Sorting)
 		{
 
 			if (CoreUtilities.Constants.BLANK == tableName) {
 				throw new Exception ("You must provide a table to query");
 			}
 
-			if (CoreUtilities.Constants.BLANK == Test || CoreUtilities.Constants.BLANK == columnToTest) {
+			//if (CoreUtilities.Constants.BLANK == Test.ToString() || CoreUtilities.Constants.BLANK == columnToTest) {
+			if (null == Test) {
 				throw new Exception ("Must define a Test criteria for retrieving text");
+			}
+
+			if (Test.GetType () == typeof(string)) {
+				if (Test.ToString() == Constants.BLANK)
+				{
+					throw new Exception ("Must define a Test criteria for retrieving text");
+				}
 			}
 
 			if (columnToReturn == null || columnToReturn.Length <= 0) {
@@ -169,7 +177,8 @@ namespace database
 				}
 				else
 				{
-					Test = String.Format ("'{0}'", Test);
+					if (Test.GetType() == typeof(string))
+						Test = String.Format ("'{0}'", Test);
 				}
 				if (Sorting == Constants.BLANK)
 				{
@@ -178,7 +187,8 @@ namespace database
 			
 				// Execute query on database
 				//string selectSQL = "SELECT name, username FROM AppUser";
-				string selectSQL = String.Format ("SELECT {0} FROM {1} where {2} = {3} {4}", ColumnsToReturnForQuery, tableName, columnToTest, Test, Sorting);
+				string selectSQL = String.Format ("SELECT {0} FROM {1} where {2} = {3} {4}", 
+				                                  ColumnsToReturnForQuery, tableName, columnToTest, Test, Sorting);
 				lg.Instance.Line("SqlLiteDatabase.GetValues", ProblemType.WARNING, selectSQL, Loud.CTRIVIAL);
 				//string selectSQL = String.Format ("SELECT {0} FROM {1} LIMIT 1", columnToReturn, tableName, columnToTest, Test);
 				SQLiteCommand selectCommand = new SQLiteCommand (selectSQL, sqliteCon);
@@ -265,6 +275,135 @@ namespace database
 			return result;
 		}
 
+		private bool UpdateDataCore(SQLiteTransaction sqlTransaction, string tableName, string[] ColumnToAddTo, object[] ValueToAdd, string WhereColumn, string WhereValue)
+		{
+			if (ColumnToAddTo.Length != ValueToAdd.Length) {
+				throw new Exception ("Arrays of Columns and Values for those columns must be the same length");
+			}
+			
+			if (ColumnToAddTo == null || ValueToAdd == null) {
+				throw new Exception ("Must have a valid Column and Value array");
+			}
+			
+			if (WhereColumn == "") {
+				throw new Exception ("Must supply a WhereColumn");
+			}
+			if (WhereValue == "") {
+				throw new Exception ("must supply a Where Value");
+			}
+			
+			
+			
+			bool ReturnValue = false;
+			// hacking for rtf http://stackoverflow.com/questions/751172/system-data-sqlite-parameter-issue
+			//	SQLiteParameter param = new SQLiteParameter("@myrtf");
+			//	param.Value = ValueToAdd;
+			string sqlStatement = "";
+			
+			Console.WriteLine("WHERE: " + WhereValue);
+			try {
+				
+				string[] ColumnsWithValues = new string[ColumnToAddTo.Length];
+				for (int i = 0 ; i < ColumnToAddTo.Length ;i++)
+				{
+					ColumnsWithValues[i] = String.Format ("{0} = @{1}VALUE", ColumnToAddTo[i], ColumnToAddTo[i]);
+				}
+				string ColumnAndValueString = base.ColumnArrayToStringForInserting(ColumnsWithValues);
+				
+				if (CoreUtilities.Constants.BLANK != ColumnAndValueString)
+				{
+					//ColumnToAddTo
+					// {1}=@myrtf
+					sqlStatement = String.Format ("UPDATE {0} set {1} where {2}=@WhereValue", tableName, ColumnAndValueString, WhereColumn);
+					lg.Instance.Line("SqlLiteDatabase.UpdateSpecific", ProblemType.MESSAGE, sqlStatement);
+
+					
+					
+
+					SQLiteCommand command = new SQLiteCommand (sqlStatement, sqlTransaction.Connection);
+						
+						//command.Parameters.Add(param);
+						command.Parameters.Add(new SQLiteParameter("@WhereValue", WhereValue ));
+						
+						// * build array of other ColumnsToAdd to
+						for (int j = 0; j < ValueToAdd.Length; j++)
+						{
+							command.Parameters.Add(new SQLiteParameter(String.Format ("@{0}VALUE",ColumnToAddTo[j]), ValueToAdd[j] ));
+						}
+						
+						if (1 == command .ExecuteNonQuery ())
+						{
+							
+							ReturnValue = true;
+						}
+						else
+						{
+							ReturnValue = false;
+						}
+						
+						/// What I learned 
+						/// I thought the commit shouldn't happen when a RETURNVALUE=FALSE occurred because there was no point
+						/// But this actually hung the database. You need your commits
+						
+
+				}
+			} catch (Exception ex) {
+				//Console.WriteLine(ex.ToString() + sqlStatement);
+				throw new Exception(ex.ToString());
+			}
+			return ReturnValue;
+		}
+
+
+		/// <summary>
+		/// Trying to more easily wrap mulitple transactions as an experiment.
+		/// 
+		/// Decided upon building a Start/Stop mechanism because it works better with loops elsewhere.
+		/// I also needed toa void exposing the SQLiteTransacton, outside of the class, to keep
+		/// the actual data mechanism unexposed, which is why I'm playing with it as a variablehere.
+		/// My worry is using it for the wrong thing later and causing problems...
+		/// </summary>
+		SQLiteTransaction updateMultiple_sqlTransaction;
+		public override void UpdateMultiple_Start ()
+		{
+			SQLiteConnection sqliteCon = new SQLiteConnection ( Connection_String);
+			sqliteCon.Open ();
+			updateMultiple_sqlTransaction = sqliteCon.BeginTransaction ();
+		}
+
+		public override bool UpdateDataMultiple (string tableName, string[] ColumnToAddTo, object[] ValueToAdd, string WhereColumn, string WhereValue)
+		{
+			if (null == updateMultiple_sqlTransaction) {
+				throw new Exception("UpdateMultiple Cannot be called until UpdateMultiple_Start is called");
+			}
+
+			bool result = UpdateDataCore (updateMultiple_sqlTransaction, tableName, ColumnToAddTo, ValueToAdd, WhereColumn, WhereValue);
+
+			               
+			               
+		
+			return result;
+		}
+		public  override bool IsInMultipleUpdateMode ()
+		{
+			if (null != updateMultiple_sqlTransaction)
+			{
+				return true;
+			}
+			return false;
+		}
+
+		public override void UpdateMultiple_End ()
+		{
+
+			try {
+				SQLiteConnection sqliteCon =updateMultiple_sqlTransaction.Connection;
+				updateMultiple_sqlTransaction.Commit ();
+				sqliteCon.Close ();
+			} catch (Exception ex) {
+				NewMessage.Show (ex.ToString());
+			}
+		}
 
 
 		/// <summary>
@@ -291,8 +430,18 @@ namespace database
 		/// <returns>False if unable to update row because the GUID did not match any GUID</returns>
 		public override bool UpdateSpecificColumnData (string tableName, string[] ColumnToAddTo, object[] ValueToAdd, string WhereColumn, string WhereValue)
 		{
+			SQLiteConnection sqliteCon = new SQLiteConnection (Connection_String);
+			sqliteCon.Open ();
+			bool result = false;
+			using (SQLiteTransaction sqlTransaction = sqliteCon.BeginTransaction ()) {
+				 result = UpdateDataCore (sqlTransaction, tableName, ColumnToAddTo, ValueToAdd, WhereColumn, WhereValue);
+				sqlTransaction.Commit ();
+			}
+			
+			sqliteCon.Close ();
+			return result;
 
-			if (ColumnToAddTo.Length != ValueToAdd.Length) {
+			/*if (ColumnToAddTo.Length != ValueToAdd.Length) {
 				throw new Exception ("Arrays of Columns and Values for those columns must be the same length");
 			}
 
@@ -371,6 +520,8 @@ namespace database
 				throw new Exception(ex.ToString());
 			}
 			return ReturnValue;
+
+*/
 		}
 
 
@@ -433,6 +584,73 @@ namespace database
 			}
 			return found;
 		}
+
+		public  void InsertDataMultiple(string tableName, string[] columns, object[] values)
+		{
+			// ToDO: multiple insert trasnactions
+			SQLiteConnection sqliteCon = new SQLiteConnection (Connection_String);
+			sqliteCon.Open ();
+			SQLiteTransaction sqlTransaction = sqliteCon.BeginTransaction();
+			InsertDataCore(sqlTransaction, tableName, columns, values);
+
+			sqlTransaction.Commit ();
+			
+			sqliteCon.Close ();
+		}
+
+		private void InsertDataCore(SQLiteTransaction sqlTransaction, string tableName, string[] columns, object[] values)
+		{
+			// current
+			if (columns.Length != values.Length) {
+				throw new Exception("Must be same number of columns and column values");
+			}
+			
+			
+			string vals = "";
+			string sqlStatement = "";
+			// Performs an insert, change contents of sqlStatement to perform
+			// update or delete.
+			try {
+				string cols = ColumnArrayToStringForInserting (columns);
+				//vals = ValueArrayToStringForInserting (values);
+				if ("" != cols) {
+					
+					for (int i = 0 ; i < columns.Length; i++)
+					{
+						if (vals != "")
+						{
+							vals = vals + ",";
+						}
+						// build string full of params
+						vals = vals + String.Format ("@{0}VALUE", columns[i]);
+					}
+					
+					sqlStatement = String.Format ("INSERT INTO {0}({1}) VALUES({2})", tableName, cols, vals);
+					lg.Instance.Line("SqlLiteDatabase.InsertData", ProblemType.MESSAGE, sqlStatement);
+
+
+					SQLiteCommand command = new SQLiteCommand (sqlStatement, sqlTransaction.Connection);
+						// fill in parameters
+						
+						for (int j = 0; j < columns.Length; j++)
+						{
+							string param = String.Format ("@{0}VALUE",columns[j]);
+							lg.Instance.Line("SqlLiteDatabase.InsertData", ProblemType.TEMPORARY, param);
+							lg.Instance.Line("SqlLiteDatabase.InsertData", ProblemType.TEMPORARY, values[j].ToString());
+							command.Parameters.AddWithValue(param, values[j]);
+							//command.Parameters.Add(new SQLiteParameter(param, values[j] ));
+						}
+						
+						
+						command .ExecuteNonQuery ();
+				
+				}
+			} catch (System.Data.SQLite.SQLiteException) {
+				throw new Exception("Trying to add a value that is already present in the unqiue colum");
+			}
+		}
+
+
 		/// <summary>
 		/// Inserts the data.
 		/// </summary>
@@ -447,7 +665,17 @@ namespace database
 		/// </param>
 		public override void InsertData (string tableName, string[] columns, object[] values)
 		{
-			if (columns.Length != values.Length) {
+
+			SQLiteConnection sqliteCon = new SQLiteConnection (Connection_String);
+			sqliteCon.Open ();
+			using (SQLiteTransaction sqlTransaction = sqliteCon.BeginTransaction()) {
+				InsertDataCore (sqlTransaction, tableName, columns, values);
+			
+				sqlTransaction.Commit ();
+			}
+			sqliteCon.Close ();
+			return;
+			/*if (columns.Length != values.Length) {
 				throw new Exception("Must be same number of columns and column values");
 			}
 		
@@ -503,6 +731,8 @@ namespace database
 			} catch (System.Data.SQLite.SQLiteException) {
 				throw new Exception("Trying to add a value that is already present in the unqiue colum");
 			}
+
+*/
 		}
 		/// <summary>
 		/// Tables the exists.

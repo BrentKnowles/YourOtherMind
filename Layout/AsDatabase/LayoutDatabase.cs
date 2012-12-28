@@ -22,7 +22,7 @@ namespace Layout
 		//This is the list of notes
 		private List<NoteDataInterface> dataForThisLayout= null;
 		//These are the OTHER variables (like status) associated with this note
-		private const  int data_size = 3; // size of data array
+		private const  int data_size = 4; // size of data array
 		private object[] data= null;
 		public string Status {
 			get { return data [0].ToString();}
@@ -42,6 +42,19 @@ namespace Layout
 		public bool ShowTabs {
 			get { return (bool)data [2];}
 			set { data [2] = value;}
+		}
+		/// <summary>
+		/// Gets or sets a value indicating whether this instance is sub panel.
+		/// 
+		/// If true this means this is a subpanel that is owned by another note.
+		/// Should never be able to be opened directly
+		/// </summary>
+		/// <value>
+		/// <c>true</c> if this instance is sub panel; otherwise, <c>false</c>.
+		/// </value>
+		public bool IsSubPanel {
+			get { return (bool)data [3];}
+			set { data [3] = value;}
 		}
 		// This is the GUID for the page. It comes from
 		//  
@@ -64,6 +77,7 @@ namespace Layout
 			Status = " default status";
 			Name = "default name";
 			ShowTabs = true;
+			IsSubPanel = false;
 
 		}
 		/// <summary>
@@ -262,6 +276,12 @@ namespace Layout
 						//ToDo: This does not seem growable easily
 						ShowTabs = true;
 					}
+					if (result [6].ToString () != Constants.BLANK) {
+						IsSubPanel = (bool)result[6];
+					}else {
+						IsSubPanel = false;
+					}
+
 					// Fill in XML details
 
 					//dataForThisLayout
@@ -407,22 +427,24 @@ namespace Layout
 						MyDatabase.InsertData (tmpDatabaseConstants.table_name, 
 				                      tmpDatabaseConstants.Columns,
 				                      new object[tmpDatabaseConstants.ColumnCount]
-				                      {DBNull.Value,LayoutGUID, XMLAsString, Status,Name,ShowTabs});
+				                      {DBNull.Value,LayoutGUID, XMLAsString, Status,Name,ShowTabs, IsSubPanel});
 
 					} else {
 						//TODO: Still need to save all the object properties out. And existing data.
 
 						lg.Instance.Line ("LayoutDatabase.SaveTo", ProblemType.MESSAGE, "We are UPDATING existing Row." + LayoutGUID);
 						MyDatabase.UpdateSpecificColumnData (tmpDatabaseConstants.table_name, 
-					                                    new string[tmpDatabaseConstants.ColumnCount - 1]{tmpDatabaseConstants.GUID, tmpDatabaseConstants.XML, tmpDatabaseConstants.STATUS,
-						tmpDatabaseConstants.NAME, tmpDatabaseConstants.SHOWTABS},
+					                                    new string[tmpDatabaseConstants.ColumnCount - 1]
+						                                     {tmpDatabaseConstants.GUID, tmpDatabaseConstants.XML, tmpDatabaseConstants.STATUS,
+						tmpDatabaseConstants.NAME, tmpDatabaseConstants.SHOWTABS, tmpDatabaseConstants.SUBPANEL},
 				                                    new object[tmpDatabaseConstants.ColumnCount - 1]
 				                                    {
 						LayoutGUID as string, 
 						XMLAsString as string, 
 						Status as string
 					,Name,
-						ShowTabs},
+						ShowTabs,
+						IsSubPanel},
 				tmpDatabaseConstants.GUID, LayoutGUID);
 					}
 

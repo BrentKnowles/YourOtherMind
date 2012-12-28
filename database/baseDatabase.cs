@@ -153,8 +153,8 @@ namespace database
 		public abstract void DropTableIfExists(string Table);
 		public abstract bool Exists(string Table, string Column, string ColumnValue);
 
-		public abstract  List<object[]> GetValues (string tableName, string[] columnToReturn, string columnToTest, string Test, string Sorting);
-		public abstract List<object[]> GetValues (string tableName, string[] columnToReturn, string columnToTest, string Test);
+		public abstract  List<object[]> GetValues (string tableName, string[] columnToReturn, string columnToTest, object Test, string Sorting);
+		public abstract List<object[]> GetValues (string tableName, string[] columnToReturn, string columnToTest, object Test);
 		/// <summary>
 		/// Inserts the data.
 		/// </summary>
@@ -194,11 +194,12 @@ namespace database
 		/// A striung deliminted list like TEXT
 		/// </param>
 		public abstract void CreateTableIfDoesNotExist(string Table, string[] Columns, string[] Types, string PrimaryKeyField);
-		
-
-		
 
 
+		public abstract bool IsInMultipleUpdateMode ();
+		public abstract void UpdateMultiple_End ();
+		public  abstract bool UpdateDataMultiple (string tableName, string[] ColumnToAddTo, object[] ValueToAdd, string WhereColumn, string WhereValue);
+		public abstract void UpdateMultiple_Start ();
 		
 	}
 }

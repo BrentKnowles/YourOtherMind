@@ -15,6 +15,7 @@ namespace Layout
 		string Status {get;set;}
 		string Name { get; set; }
 		bool ShowTabs { get; set; }
+		bool IsSubPanel { get; set; }
 		#endregion
 
 

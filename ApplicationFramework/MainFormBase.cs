@@ -26,7 +26,8 @@ namespace appframe
 		AddIns addIns;
 		List<MefAddIns.Extensibility.mef_IBase> AddInsLoaded;
 
-		List<iConfig> optionPanels;
+		// Add to this list to register more optionPanels
+		protected List<iConfig> optionPanels;
 
 		#endregion
 
@@ -86,6 +87,9 @@ namespace appframe
 
 		}
 	
+		/// <summary>
+		/// Starts the and stop plug ins.
+		/// </summary>
 		void StartAndStopPlugIns ()
 		{
 
@@ -182,6 +186,15 @@ namespace appframe
 			}
 		}
 
+		/// <summary>
+		/// Handles the options button click.
+		/// </summary>
+		/// <param name='sender'>
+		/// Sender.
+		/// </param>
+		/// <param name='e'>
+		/// E.
+		/// </param>
 		void HandleOptionsButtonClick (object sender, EventArgs e)
 		{
 			OptionForm options = new OptionForm (optionPanels);
@@ -230,23 +243,30 @@ namespace appframe
 		/// <summary>
 		/// Pushes screens across both monitors
 		/// </summary>
-		public void Screens_AcrossTwo()
+		public void Screens_AcrossTwo (bool MaxHeight)
 		{
 			System.Windows.Forms.Screen[] currentScreen = System.Windows.Forms.Screen.AllScreens;
 			this.WindowState = FormWindowState.Normal;
 			int nTotalWith = 0;
 			int nSmallestHeight = 100000;
-			foreach (Screen screen in currentScreen)
-			{
+			int BiggestHeight = 0;
+			foreach (Screen screen in currentScreen) {
 				nTotalWith = nTotalWith + screen.WorkingArea.Width;
-				if (screen.WorkingArea.Height < nSmallestHeight)
-				{
+				if (screen.WorkingArea.Height > BiggestHeight) {
+					BiggestHeight = screen.WorkingArea.Height;
+				}
+				if (screen.WorkingArea.Height < nSmallestHeight) {
 					nSmallestHeight = screen.WorkingArea.Height;
 				}
 			}
-			this.Top = currentScreen[0].WorkingArea.Top;
+			this.Top = currentScreen [0].WorkingArea.Top;
+			this.Left = currentScreen[0].WorkingArea.Left;
 			this.Width = nTotalWith;
 			this.Height = nSmallestHeight;
+			if (true == MaxHeight) {
+				this.Height = BiggestHeight;
+			}
+
 			// adjust height to /smallest screen
 		}
 		/// <summary>
@@ -256,6 +276,7 @@ namespace appframe
 		{
 			System.Windows.Forms.Screen[] currentScreen = System.Windows.Forms.Screen.AllScreens;
 			this.Top = currentScreen[0].WorkingArea.Top;
+			this.Left = currentScreen[0].WorkingArea.Left;
 			this.Width = currentScreen[0].WorkingArea.Width;
 			this.Height = currentScreen[0].WorkingArea.Height;
 			this.WindowState = FormWindowState.Maximized;

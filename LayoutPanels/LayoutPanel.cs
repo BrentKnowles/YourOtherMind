@@ -144,12 +144,13 @@ namespace Layout
 
 			//ToolStripLabel CurrentNote
 		}
-		public LayoutPanel(string parentGUID) : this (parentGUID, false)
+
+		/*public LayoutPanel(string parentGUID) : this (parentGUID, false)
 		{
 
 
 		}
-
+*/
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Layout.LayoutPanel"/> class.
 		/// 
@@ -183,6 +184,10 @@ namespace Layout
 			LayoutDetails.Instance.TypeList = newTypeList;
 */
 
+			//ToolStripContainer toolstrips = new ToolStripContainer();
+
+			//toolstrips.Dock = DockStyle.Top;
+		//	this.Controls.Add (toolstrips);
 
 			this.BackColor = Color.Pink;
 			if (!GetIsChild && !GetIsSystemLayout)
@@ -346,8 +351,16 @@ namespace Layout
 		}
 
 
-	
-		public override void LoadLayout (string _GUID)
+	/// <summary>
+	/// Loads the layout.
+	/// </summary>
+	/// <param name='_GUID'>
+	/// _ GUI.
+	/// </param>
+	/// <param name='IsSubPanel'>
+	/// If set to <c>true</c> is sub panel.
+	/// </param>
+		public override void LoadLayout (string _GUID, bool IsSubPanel)
 		{
 
 			//NewMessage.Show (_GUID);
@@ -373,7 +386,7 @@ namespace Layout
 				UpdateListOfNotes ();
 			//	NewMessage.Show (String.Format ("Name={0}, Status={1}", Notes.Name, Notes.Status));
 			}
-
+			Notes.IsSubPanel = IsSubPanel;
 			NoteCanvas.AutoScroll = true;
 			RefreshTabs();
 			if (!GetIsChild && !GetIsSystemLayout) {

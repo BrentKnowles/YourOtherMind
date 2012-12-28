@@ -52,6 +52,11 @@ namespace CoreUtilities
 			return result;
 		}
 
+		public string GetStringFmt (string msg, params object[] args)
+		{
+			return Cat.GetStringFmt(msg, args);
+		}
+		
 
 		public static Loc Instance
 		{

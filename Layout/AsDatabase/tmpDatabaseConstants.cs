@@ -6,9 +6,9 @@ namespace Layout.data
 	{
 
 
-		public const  int ColumnCount = 6;
-		static public string[] Columns = new string[ColumnCount]{"id",     "guid",        "xml",      "status", "name","showtabs"};
-		static public string[] Types   = new string[ColumnCount]{"INTEGER","TEXT UNIQUE",	"LONGTEXT",	"TEXT",   "VARCHAR(50)", "boolean"};
+		public const  int ColumnCount = 7;
+		static public string[] Columns = new string[ColumnCount]{"id",     "guid",        "xml",      "status", "name", "showtabs", "subpanel"};
+		static public string[] Types   = new string[ColumnCount]{"INTEGER","TEXT UNIQUE",	"LONGTEXT",	"TEXT",   "VARCHAR(50)", "boolean", "boolean"};
 
 
 		// COLUMN constants
@@ -18,6 +18,7 @@ namespace Layout.data
 		static public string STATUS =Columns[3];
 		static public string NAME=Columns[4];
 		static public string SHOWTABS=Columns[5];
+		static public string SUBPANEL=Columns[6];
 		//having this lower case versus columns makes it easier to see
 		static public string table_name = "pages";
 
