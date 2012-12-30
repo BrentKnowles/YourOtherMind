@@ -14,6 +14,10 @@ namespace Layout
 		{
 			Caption = Loc.Instance.Cat.GetString("Text Note");
 		}
+		public NoteDataXML_RichText(int height, int width) : base(height, width)
+		{
+			Caption = Loc.Instance.Cat.GetString("Text Note");
+		}
 
 		public override void Save ()
 		{

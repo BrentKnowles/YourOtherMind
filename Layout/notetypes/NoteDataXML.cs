@@ -23,6 +23,13 @@ namespace Layout
 	{
 		#region constants
 		const string BLANK = "";
+		protected int defaultheight = 200;
+		protected int defaultwidth = 200;
+		[XmlIgnore]
+		public virtual int defaultHeight { get { return defaultheight; } }
+		[XmlIgnore]
+		public virtual int defaultWidth { get { return defaultwidth; } }
+
 		#endregion
 
 		#region variables_frominterface
@@ -42,11 +49,34 @@ namespace Layout
 			CommonConstructorBehavior ();
 		
 		}
-		public NoteDataXML(int _height, int _width)
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Layout.NoteDataXML"/> class.
+		/// 
+		/// If -1 passed in for a parameter it will use the default height or width.
+		/// This constructor is called only when creating a note (NOT when loading)
+		/// </summary>
+		/// <param name='_height'>
+		/// _height.
+		/// </param>
+		/// <param name='_width'>
+		/// _width.
+		/// </param>
+		public NoteDataXML (int _height, int _width)
 		{
 			CommonConstructorBehavior ();
-			height = _height;
-			width = _width;
+			if (-1 != _height) {
+				height = _height;
+			} else {
+				height = defaultHeight;
+			}
+
+
+			if (-1 != _width) {
+				width = _width;
+			}
+			else {
+				width =  defaultWidth;
+			}
 		}
 		private NotePanel parent;
 		[XmlIgnore]
@@ -86,6 +116,9 @@ namespace Layout
 		protected int width = 200;
 		public int Height { get { return height; } set { height = value; }}
 		public int Width { get { return width; } set { width = value; }}
+
+
+
 
 		private Point location = new Point(0,0);
 		/// <summary>

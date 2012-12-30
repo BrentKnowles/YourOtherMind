@@ -18,12 +18,15 @@ namespace Layout
 			get { return currentLayout;}
 			set {
 				currentLayout = value;
-				if (UpdateTitle != null)
+				if (null != value)
+				{
+				if (UpdateTitle != null )
 				{
 					//currentLayout
 					UpdateTitle(currentLayout.Caption);
 				}
 				lg.Instance.Line ("LayoutDetails->CurrentLayout", ProblemType.MESSAGE, "Setting Layout to " + currentLayout.GUID);
+				}
 			}
 		}
 
@@ -80,6 +83,7 @@ namespace Layout
 			AddToList(typeof(NoteDataXML),new NoteDataXML().RegisterType());
 			AddToList(typeof(NoteDataXML_RichText),new NoteDataXML_RichText().RegisterType ());
 			AddToList (typeof(NoteDataXML_NoteList),new NoteDataXML_NoteList().RegisterType());
+			AddToList (typeof(NoteDataXML_Table),new NoteDataXML_Table().RegisterType());
 		//	AddToList (typeof(NoteDataXML_SystemOnly),new NoteDataXML_SystemOnly().RegisterType());
 
 

@@ -58,7 +58,10 @@ namespace Layout
 		/// <c>true</c> if saved required; otherwise, <c>false</c>.
 		/// </value>
 		public bool GetSaveRequired {
-			get{ return _saverequired;}
+			get{ 
+				lg.Instance.Line("LayoutPanelBase->GetSaveRequired", ProblemType.MESSAGE, String.Format ("{0} GetSaveRequired for {1}",
+				                                                                                         _saverequired, this.GUID),Loud.CTRIVIAL);
+				return _saverequired;}
 		//	set { _saverequired = value;} Must set this through function
 		}
 
@@ -92,7 +95,7 @@ namespace Layout
 		public abstract void NewLayout (string _GUID);
 		public abstract void RefreshTabs ();
 		public abstract void DeleteNote(NoteDataInterface NoteToDelete);
-
+	//	public abstract void SystemNoteHasClosedDown (bool closed);
 	}
 }
 

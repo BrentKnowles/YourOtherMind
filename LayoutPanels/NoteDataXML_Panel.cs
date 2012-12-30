@@ -8,6 +8,10 @@ namespace LayoutPanels
 {
 	public class NoteDataXML_Panel :NoteDataXML
 	{
+		#region constants
+		public override int defaultHeight { get { return 400; } }
+		public override int defaultWidth { get { return 500; } }
+		#endregion
 		#region gui
 		protected LayoutPanel panelLayout;
 		#endregion
@@ -29,13 +33,17 @@ namespace LayoutPanels
 		// This is where it gets tricky. Need to modify the list of valid data types to store!
 		public NoteDataXML_Panel () : base()
 		{
-			Caption = Loc.Instance.Cat.GetString("PANEL");
+			Caption = Loc.Instance.Cat.GetString("Panel");
 
 
 
 
 		}
+		public NoteDataXML_Panel(int height, int width) : base(height, width)
+		{
+			Caption = Loc.Instance.Cat.GetString("Panel");
 
+		}
 		/// <summary>
 		/// Gets the child notes.
 		/// </summary>

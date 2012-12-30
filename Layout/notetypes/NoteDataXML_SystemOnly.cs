@@ -96,14 +96,25 @@ namespace Layout
 		{
 			return Loc.Instance.Cat.GetString("System");
 		}
-		protected override void HandleDeleteClick (object sender, EventArgs e)
+		protected override void HandleCloseClick (object sender, EventArgs e)
 		{
 
-			if (AlertWhenClosed != null)
-			{
-			
-				AlertWhenClosed(GetChildLayout());
+			if (AlertWhenClosed != null) {
+				// gets removed from the Windows list
+				AlertWhenClosed (GetChildLayout ());
 			}
+
+
+
+
+			if (GetChildLayout().GetSaveRequired == true) {
+				NewMessage.Show("HandleCloseClick Save is required ");
+			}
+
+//			if (CloseNoteDelegate != null) {
+//				CloseNoteDelegate(true);
+//			}
+
 			DeleteNote(this);
 		}
 	}

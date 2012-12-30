@@ -334,7 +334,7 @@ namespace YOM2013
 
 			LayoutsOpen.Add (newLayoutStruct);
 			
-
+			SystemLayout.SetSaveRequired(false);
 			return newLayout;
 		}
 		/// <summary>
@@ -350,8 +350,19 @@ namespace YOM2013
 		void AlertWhenClosed (LayoutPanelBase panel)
 		{
 			LayoutsInMemory existing = LayoutPresent (panel.GUID);
+
 			if (null != existing) {
 				LayoutsOpen.Remove (existing);
+				// Dec 29 2012 - adding this 
+				// Pick one of the other layouts to become current
+				if (LayoutsOpen.Count>0)
+				{
+//					LayoutDetails.Instance.CurrentLayout=LayoutsOpen[0].LayoutPanel;
+					GotoExistingLayout( LayoutsOpen[0].Container,LayoutsOpen[0].LayoutPanel);
+
+				}
+				else
+				LayoutDetails.Instance.CurrentLayout = null;
 			}
 		}
 
@@ -393,6 +404,7 @@ namespace YOM2013
 			CurrentLayout.LoadLayout(guidtoload);
 			*/
 			//RebuildWindowMenu(); NOPE: Call this when the window is opened
+
 		}
 
 		void RefreshWindowsMenu ()
@@ -487,7 +499,7 @@ namespace YOM2013
 		{
 			if (CurrentLayout != null) {
 				if (true == CurrentLayout.GetSaveRequired) {
-					NewMessage.Show ("shoulda saved");
+					NewMessage.Show ("Should have saved says Layout=" + CurrentLayout.Caption);
 				}
 			}
 		}

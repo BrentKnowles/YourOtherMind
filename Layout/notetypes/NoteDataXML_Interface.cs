@@ -11,7 +11,7 @@ namespace Layout
 	{
 		#region UI
 		protected ToolStrip CaptionLabel;
-		protected ContextMenuStrip contextMenu;
+		//protected ContextMenuStrip contextMenu;
 		// this holds the PropertyGrid
 		protected Panel PropertyPanel; 
 		protected PropertyGrid propertyGrid;
@@ -29,6 +29,7 @@ namespace Layout
 		Action<string,string> MoveNote;
 		private Action<bool> setsaverequired;
 		protected Action<NoteDataInterface> DeleteNote;
+	
 
 		[XmlIgnore]
 		public Action<bool> SetSaveRequired {
@@ -97,10 +98,11 @@ namespace Layout
 
 			if (true == IsSystemNote)
 			{
-			ToolStripButton deleteButton = new ToolStripButton();
-				deleteButton.Text = " X ";
-				deleteButton.Click+= HandleDeleteClick;;
-				CaptionLabel.Items.Add (deleteButton);
+				// not really a delete, more of a close
+			ToolStripButton closeButton = new ToolStripButton();
+				closeButton.Text = " X ";
+				closeButton.Click+= HandleCloseClick;;
+				CaptionLabel.Items.Add (closeButton);
 			}
 
 			if (false == IsSystemNote) {
@@ -185,6 +187,7 @@ namespace Layout
 			SetSaveRequired = _Layout.SetSaveRequired;
 			DeleteNote = _Layout.DeleteNote;
 			Layout = _Layout;
+
 		}
 
 		/// <summary>
@@ -196,10 +199,9 @@ namespace Layout
 		/// <param name='e'>
 		/// E.
 		/// </param>
-		protected virtual void HandleDeleteClick (object sender, EventArgs e)
+		protected virtual void HandleCloseClick (object sender, EventArgs e)
 		{
-
-
+			// actual code is in the SystemOnly noet
 		}
 
 		void HandleMinimizeButtonClick (object sender, EventArgs e)
@@ -228,6 +230,15 @@ namespace Layout
 			Parent.BringToFront();
 		}
 
+		/// <summary>
+		/// Handles the delete note click. This is the true deleting of the note
+		/// </summary>
+		/// <param name='sender'>
+		/// Sender.
+		/// </param>
+		/// <param name='e'>
+		/// E.
+		/// </param>
 		void HandleDeleteNoteClick (object sender, EventArgs e)
 		{
 			NewMessage.Show ("Need a yes/no here");

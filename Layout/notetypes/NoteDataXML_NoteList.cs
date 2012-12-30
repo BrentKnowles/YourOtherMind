@@ -16,12 +16,30 @@ namespace Layout
 	public class NoteDataXML_NoteList : NoteDataXML
 	{
 		#region constants
-		enum Modes  {NOTES, LAYOUTS};
+		public enum Modes  {NOTES, LAYOUTS};
+
+		public override int defaultHeight { get { return 600; } }
+		public override int defaultWidth { get { return 200; } }
 
 		#endregion
 		#region variables
-		Modes mode;
+
 		#endregion
+
+		#region variables_saved_in_xml
+		Modes mode;
+		/// <summary>
+		/// Gets or sets the mode. (Showing the list of notes or the list of layouts)
+		/// </summary>
+		/// <value>
+		/// The mode.
+		/// </value>
+		public Modes Mode {
+			get { return mode;}
+			set { mode = value;}
+		}
+		#endregion
+
 		#region formcontrols
 		ListBox list;
 		Label count;
@@ -33,20 +51,30 @@ namespace Layout
 			Caption = Loc.Instance.Cat.GetString("Note List");
 			mode = Modes.NOTES;
 		}
+		public NoteDataXML_NoteList(int height, int width) : base(height, width)
+		{
+			Caption = Loc.Instance.Cat.GetString("Note List");
+			mode = Modes.NOTES;
+		}
 
 		public override void CreateParent (LayoutPanelBase Layout)
 		{
 			base.CreateParent (Layout);
 			CaptionLabel.Dock = DockStyle.Top;
 
-			ComboBox mode = new ComboBox();
+			ComboBox mode = new ComboBox ();
 			mode.Parent = Parent;
 			mode.DropDownStyle = ComboBoxStyle.DropDownList;
 			mode.Dock = DockStyle.Top;
-			mode.BringToFront();
+			mode.BringToFront ();
 
 			mode.Items.Add (">ThisLayout");
 			mode.Items.Add (">AllLayouts");
+
+			switch (Mode) {
+			case Modes.NOTES: mode.SelectedIndex = 0; break;
+			case Modes.LAYOUTS: mode.SelectedIndex = 1; break;
+			}
 			mode.SelectedIndexChanged += HandleDropDownSelectedIndexChanged;
 
 

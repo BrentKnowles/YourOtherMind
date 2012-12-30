@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>10.0.0</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{DA1AA77A-D94D-4F79-AC96-7BC9AF0AFB34}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>Layout</RootNamespace>
+    <AssemblyName>Layout</AssemblyName>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>True</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>False</Optimize>
+    <OutputPath>bin\Debug</OutputPath>
+    <DefineConstants>DEBUG;</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>False</ConsolePause>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>none</DebugType>
+    <Optimize>True</Optimize>
+    <OutputPath>bin\Release</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>False</ConsolePause>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+    <Reference Include="GNU.Gettext">
+      <HintPath>..\..\..\librariesused\GettextNet\Bin\Debug\GNU.Gettext.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="NotePanel.cs" />
+    <Compile Include="Interfaces\NoteDataInterface.cs" />
+    <Compile Include="Interfaces\NotePanelInterface.cs" />
+    <Compile Include="Interfaces\LayoutInterface.cs" />
+    <Compile Include="Interfaces\LayoutPanelInterface.cs" />
+    <Compile Include="AsXML\LayoutXML.cs" />
+    <Compile Include="AsDatabase\LayoutDatabase.cs" />
+    <Compile Include="AsDatabase\tmpDatabaseConstants.cs" />
+    <Compile Include="notetypes\NoteDataXML.cs" />
+    <Compile Include="notetypes\NoteDataXML_RichText.cs" />
+    <Compile Include="LayoutPanelBase.cs" />
+    <Compile Include="LayoutDetails.cs" />
+    <Compile Include="notetypes\NoteDataXML_Interface.cs" />
+    <Compile Include="notetypes\NoteDataXML_NoteList.cs" />
+    <Compile Include="notetypes\NoteDataXML_SystemOnly.cs" />
+    <Compile Include="MasterOfLayouts.cs" />
+    <Compile Include="notetypes\NoteDataXML_Table.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <ItemGroup>
+    <Folder Include="Interfaces\" />
+    <Folder Include="AsXML\" />
+    <Folder Include="AsDatabase\" />
+    <Folder Include="notetypes\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\coreutilities\coreutilities2013.csproj">
+      <Project>{6EAA0B60-70E3-49FB-88E9-272D2719CECF}</Project>
+      <Name>coreutilities2013</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\database\database.csproj">
+      <Project>{C08FDDB5-5C59-4611-98E7-76674F290896}</Project>
+      <Name>database</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ApplicationFramework\ApplicationFramework.csproj">
+      <Project>{1C8CC9F9-FD0A-4DDF-B227-61E8135DFCE5}</Project>
+      <Name>ApplicationFramework</Name>
+    </ProjectReference>
+  </ItemGroup>
+</Project>

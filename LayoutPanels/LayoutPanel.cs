@@ -211,6 +211,16 @@ namespace Layout
 
 
 		}
+
+//		public override void SystemNoteHasClosedDown (bool closed)
+//		{
+//			lg.Instance.Line("SystemNoteHasClosedDown", ProblemType.MESSAGE, "GUID OF THIS LAYOUT IS " + this.GUID, Loud.CTRIVIAL);
+//			if (GetSaveRequired == true) {
+//				NewMessage.Show ("You need a save when a system layout panel was closed");
+//				SetSaveRequired(false);
+//			}
+//		}
+
 		/// <summary>
 		/// Handles the got focus. This is where we set the CurrentLayout
 		/// </summary>
@@ -276,7 +286,7 @@ namespace Layout
 		{
 
 			if (Notes == null) {
-				NewMessage.Show (Loc.Instance.Cat.GetString("Load or create a note first"));
+				NewMessage.Show (Loc.Instance.Cat.GetString ("Load or create a note first"));
 				return;
 			}
 
@@ -288,24 +298,28 @@ namespace Layout
 				//Console.WriteLine (t.AssemblyQualifiedName.ToString());
 				//string TypeToTest =  (sender as ToolStripButton).Tag.ToString ();
 				//NoteDataInterface note = (NoteDataInterface)Activator.CreateInstance ("LayoutPanels", TypeToTest);
-				Type TypeTest = Type.GetType ( ((Type)(sender as ToolStripButton).Tag).AssemblyQualifiedName);
+				Type TypeTest = Type.GetType (((Type)(sender as ToolStripButton).Tag).AssemblyQualifiedName);
 
 				//Type TypeTest = Type.GetType (t.AssemblyQualifiedName.ToString());
 
-				if (null != TypeTest)
-				{
-				NoteDataInterface note = (NoteDataInterface)Activator.CreateInstance ( TypeTest);
+				if (null != TypeTest) {
+
+
+
+				
+				
+
+
+					NoteDataInterface note = (NoteDataInterface)Activator.CreateInstance (TypeTest, -1, -1);
 			
-				Notes.Add (note);
+					Notes.Add (note);
 			
-				note.CreateParent (this);
+					note.CreateParent (this);
 			
-				UpdateListOfNotes ();
-				SetSaveRequired (true); // TODO: Also need to go through and hook delegates/callbacks for when a note itself changes.
-				}
-				else
-				{
-					lg.Instance.Line("LayoutPanel.HandleAddNoteClick", ProblemType.ERROR, String.Format ("{0} Type not found", TypeTest.ToString()));
+					UpdateListOfNotes ();
+					SetSaveRequired (true); // TODO: Also need to go through and hook delegates/callbacks for when a note itself changes.
+				} else {
+					lg.Instance.Line ("LayoutPanel.HandleAddNoteClick", ProblemType.ERROR, String.Format ("{0} Type not found", TypeTest.ToString ()));
 				}
 			}
 		}
@@ -622,8 +636,13 @@ namespace Layout
 
 		public override void SetSaveRequired (bool NeedSave)
 		{
+			lg.Instance.Line("SetSaveRequired", ProblemType.MESSAGE, this.GUID+"Value of _savequired BEFORE SET is " + _saverequired, Loud.CTRIVIAL);
 			_saverequired = NeedSave;
+			lg.Instance.Line("SetSaveRequired", ProblemType.MESSAGE, this.GUID+"set to " + NeedSave.ToString(), Loud.CTRIVIAL);
+			lg.Instance.Line("SetSaveRequired", ProblemType.MESSAGE, this.GUID+"Value of _savequired is " + _saverequired, Loud.CTRIVIAL);
+			lg.Instance.Line("SetSaveRequired", ProblemType.MESSAGE, this.GUID+"Value of GetSaveRequired is " + GetSaveRequired, Loud.CTRIVIAL);
 			if (SetSubNoteSaveRequired != null) {
+
 				SetSubNoteSaveRequired(NeedSave);
 			}
 		}

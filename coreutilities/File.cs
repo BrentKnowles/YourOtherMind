@@ -1,6 +1,7 @@
 using System;
 using System.IO;
-
+using System.Drawing;
+using System.Windows.Forms;
 
 namespace CoreUtilities
 {
@@ -63,6 +64,15 @@ namespace CoreUtilities
 			}
 		
 			return DoesThisFileHaveErrors(oldfile);
+		}
+
+		public static Bitmap GetImage_ForDLL (string identifier)
+		{
+			return new Bitmap (System.Reflection.Assembly.GetCallingAssembly ().GetManifestResourceStream (identifier));
+		}
+		public static Bitmap GetImage_ForEXE (string identifier)
+		{
+			return new Bitmap (System.Reflection.Assembly.GetExecutingAssembly ().GetManifestResourceStream (identifier));
 		}
 	}
 }

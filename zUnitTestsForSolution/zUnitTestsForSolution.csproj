@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>10.0.0</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{F7DBB8CB-7B0B-40EA-BF65-A9F2668BE450}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>Testing</RootNamespace>
+    <AssemblyName>zUnitTestsForSolution</AssemblyName>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>True</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>False</Optimize>
+    <OutputPath>bin\Debug</OutputPath>
+    <DefineConstants>DEBUG;</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>False</ConsolePause>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>none</DebugType>
+    <Optimize>True</Optimize>
+    <OutputPath>bin\Release</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>False</ConsolePause>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="nunit.framework, Version=2.6.0.12051, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77">
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.ComponentModel.Composition" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="UnitTest_SqlLiteDatabase.cs" />
+    <Compile Include="LayoutDatabaseTest.cs" />
+    <Compile Include="Log_Test.cs" />
+    <Compile Include="ClassesUsedInTesting\FakeLayoutDatabase.cs" />
+    <Compile Include="ClassesUsedInTesting\FAKE_SqlLiteDatabase.cs" />
+    <Compile Include="LocTest.cs" />
+    <Compile Include="_w.cs" />
+    <Compile Include="notused\LayoutXMLTest.cs" />
+    <Compile Include="CoreUtilities_File.cs" />
+    <Compile Include="LayoutPanelTests.cs" />
+    <Compile Include="ClassesUsedInTesting\FAKE_LayoutPanel.cs" />
+    <Compile Include="ClassesUsedInTesting\FAKE_NoteDataXML_Panel.cs" />
+    <Compile Include="addin testing\AddInTesting.cs" />
+    <Compile Include="addin testing\mef_ISupportedLanguage.cs" />
+    <Compile Include="addin testing\mef_Bootstrapper.cs" />
+    <Compile Include="NoteData.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <ItemGroup>
+    <ProjectReference Include="..\Layout\Layout.csproj">
+      <Project>{DA1AA77A-D94D-4F79-AC96-7BC9AF0AFB34}</Project>
+      <Name>Layout</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\database\database.csproj">
+      <Project>{C08FDDB5-5C59-4611-98E7-76674F290896}</Project>
+      <Name>database</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\coreutilities\coreutilities2013.csproj">
+      <Project>{6EAA0B60-70E3-49FB-88E9-272D2719CECF}</Project>
+      <Name>coreutilities2013</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\LayoutPanels\LayoutPanels.csproj">
+      <Project>{77AADEE3-CCBF-4802-9703-30EA7A4424AC}</Project>
+      <Name>LayoutPanels</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="ClassesUsedInTesting\" />
+    <Folder Include="notused\" />
+    <Folder Include="addin testing\" />
+  </ItemGroup>
+</Project>
