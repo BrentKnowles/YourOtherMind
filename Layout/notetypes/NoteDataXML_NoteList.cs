@@ -71,12 +71,9 @@ namespace Layout
 			mode.Items.Add (">ThisLayout");
 			mode.Items.Add (">AllLayouts");
 
-			switch (Mode) {
-			case Modes.NOTES: mode.SelectedIndex = 0; break;
-			case Modes.LAYOUTS: mode.SelectedIndex = 1; break;
-			}
-			mode.SelectedIndexChanged += HandleDropDownSelectedIndexChanged;
 
+			mode.SelectedIndexChanged += HandleDropDownSelectedIndexChanged;
+		
 
 			list = new ListBox();
 			//list.SelectedIndexChanged += HandleDropDownSelectedIndexChanged;
@@ -84,6 +81,7 @@ namespace Layout
 			list.Width = 125;
 			list.Dock = DockStyle.Fill;
 			list.BringToFront();
+			list.BindingContextChanged+= HandleBindingContextChanged;
 			list.DoubleClick += HandleListBoxDoubleClick;
 
 
@@ -99,7 +97,34 @@ namespace Layout
 
 
 
+
+			// All other elements need to be made before this code
+			switch (Mode) {
+			case Modes.NOTES: mode.SelectedIndex = 0; break;
+			case Modes.LAYOUTS: mode.SelectedIndex = 1; break;
+			}
+
 		}
+
+		void HandleBindingContextChanged (object sender, EventArgs e)
+		{
+			count.Text = Loc.Instance.GetStringFmt("Count = {0}", this.list.Items.Count);
+		}
+
+	
+
+
+		void Refresh()
+		{
+			if (Modes.NOTES == mode) {
+				NewMessage.Show ("Finish me please");
+			} else
+			if (Modes.LAYOUTS == mode) {
+				UpdateListOfLayouts();
+				
+			}
+		}
+
 		/// <summary>
 		/// Redraws the lists
 		/// </summary>
@@ -111,13 +136,7 @@ namespace Layout
 		/// </param>
 		void HandleRefreshClick (object sender, EventArgs e)
 		{
-			if (Modes.NOTES == mode) {
-				NewMessage.Show ("Finish me please");
-			} else
-			if (Modes.LAYOUTS == mode) {
-				UpdateListOfLayouts();
-				
-			}
+			Refresh ();
 		}
 		/// <summary>
 		/// Handles the list box double click.
@@ -150,12 +169,13 @@ namespace Layout
 		{
 			this.list.DataSource = null;
 			this.list.Items.Clear ();
+		
 			MasterOfLayouts master = new MasterOfLayouts ();
 			this.list.DataSource = master.GetListOfLayouts ("filternotdone");
 			this.list.DisplayMember = "Caption";
 			this.list.ValueMember = "Guid";
 			master.Dispose ();
-			count.Text = Loc.Instance.GetStringFmt("Count = {0}", this.list.Items.Count);
+
 
 		}
 

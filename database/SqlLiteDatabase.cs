@@ -401,7 +401,8 @@ namespace database
 				updateMultiple_sqlTransaction.Commit ();
 				sqliteCon.Close ();
 			} catch (Exception ex) {
-				NewMessage.Show (ex.ToString());
+				throw new Exception(ex.ToString ());
+				//NewMessage.Show (ex.ToString());
 			}
 		}
 

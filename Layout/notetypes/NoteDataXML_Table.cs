@@ -14,27 +14,7 @@ namespace Layout
 		public override int defaultWidth { get { return 700; } }
 
 
-		public class ColumnDetails
-		{
-			private string columnName;
-			private int columnWidth;
-			public string ColumnName {
-				get { return columnName; }
-				set { columnName = value;}
-			}
-			public int ColumnWidth {
-				get { return columnWidth;}
-				set { columnWidth = value;}
-			}
-			public ColumnDetails(string name, int width)
-			{
-				columnName = name;
-				columnWidth = width;
-			}
-			public ColumnDetails()
-			{
-			}
-		}
+
 
 		#endregion
 
@@ -78,29 +58,11 @@ namespace Layout
 				// I honestly do not understand how this worked in previous version of YOM
 				if (dataSource == null)
 				{
-					DataTable table = new DataTable();
-					table.TableName = "Table";
-					//  table.Columns.Add("Roll", typeof(string));
-					
-					
-					// add default column
-					
-					foreach (ColumnDetails column in value)
-					{
-						try
-						{
-							table.Columns.Add(column.ColumnName, typeof(string));
-						}
-						catch (Exception)
-						{
-							// added when adding blank column names for faiths
-							
-						}
-						
-						
-					}
+					dataSource = TablePanel.BuildTableFromColumns(value);
 
-					dataSource = table;//new DataTable();
+
+
+					//dataSource = table;//new DataTable();
 
 //					dataSource = new DataSet("Table");
 //					
@@ -139,8 +101,10 @@ namespace Layout
 			//dataSource = new DataSet("Table");
 			//dataSource = new DataTable(); // A new datasource is already being created when column default is made.
 			Columns = new ColumnDetails[4] { 
-				new ColumnDetails("Roll",100), new ColumnDetails("Result",100), new ColumnDetails("NextTable", 100),
-				new ColumnDetails("Modifier", 100)};
+				new ColumnDetails("Roll",TablePanel.defaultwidth), new ColumnDetails("Result",TablePanel.defaultwidth), new ColumnDetails("NextTable", TablePanel.defaultwidth),
+				new ColumnDetails("Modifier",TablePanel.defaultwidth)};
+
+			// the table is created when the columns are manifested
 
 		}
 
@@ -151,7 +115,8 @@ namespace Layout
 
 				// Does not appear we need to store anythign extra
 
-				//dataSource = (DataTable)Table.dataGrid1.DataSource;
+				dataSource = Table.GetTable();
+				Columns=Table.GetColumns();
 				// TODO: Save table stuff
 //				DataSet ds = new DataSet();
 //				ds.Tables.Add((DataTable)Table.dataGrid1.DataSource);
@@ -167,15 +132,13 @@ namespace Layout
 			base.CreateParent (Layout);
 			CaptionLabel.Dock = DockStyle.Top;
 
-			Table = new TablePanel ();
+			Table = new TablePanel (dataSource, HandleCellBeginEdit, Columns);
 			Table.Parent = Parent;
 			Table.Dock = DockStyle.Fill;
 			Table.BringToFront ();
 			// TODO: Load table data richBox.Rtf = this.Data1;
 			if (null != dataSource) {
-				Table.dataGrid1.DataSource = dataSource;
-				Table.dataGrid1.CellBeginEdit+= HandleCellBeginEdit;
-				//Table.dataGrid1.DataSource = dataSource;// This works but then we lose the hook.Tables [0];
+			//Table.dataGrid1.DataSource = dataSource;// This works but then we lose the hook.Tables [0];
 				//Table.dataGrid1.DataMember = "Table";
 
 			} else {
@@ -191,9 +154,10 @@ namespace Layout
 			
 		}
 
-		void HandleCellBeginEdit (object sender, DataGridViewCellCancelEventArgs e)
+		int HandleCellBeginEdit ()
 		{
 			SetSaveRequired(true);
+			return 1;
 		}
 		public override string RegisterType()
 		{

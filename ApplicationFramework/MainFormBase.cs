@@ -214,7 +214,7 @@ namespace appframe
 
 		void HandleFormClosing (object sender, FormClosingEventArgs e)
 		{
-			if (CoreUtilities.File.CheckForFileError () == true) {
+			if (CoreUtilities.FileUtils.CheckForFileError () == true) {
 				// if this is true it means the harddrive if failing to write
 				// which means we abort the app without proper shutdown
 				NewMessage.Show (Loc.Instance.GetString("Your harddrive failed to write a TEST file. Because this might mean you are suffering harddrive failure we are aborting WITHOUT saving any existing files so that we do not CORRUPT them."));

@@ -46,7 +46,12 @@
     <Compile Include="interfaces\iOption.cs" />
     <Compile Include="Loc.cs" />
     <Compile Include="NewMessage.cs" />
-    <Compile Include="File.cs" />
+    <Compile Include="DragDropTreeView.cs" />
+    <Compile Include="form_AddTextString.cs" />
+    <Compile Include="form_NewMessage.cs" />
+    <Compile Include="FileUtils.cs" />
+    <Compile Include="General.cs" />
+    <Compile Include="form_StringControl.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

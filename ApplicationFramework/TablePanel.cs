@@ -1,5 +1,6 @@
 using System;
 using System.Windows.Forms;
+//using System.ComponentModel;
 using System.Data;
 using CoreUtilities;
 using System.Drawing;
@@ -13,19 +14,102 @@ namespace appframe
 		public bool SafeEditMode;
 
 	}
-
+	/// <summary>
+	/// Column details.
+	/// This is stored in the NoteDataXML_Table class. We use it here to build tables when columsn reorganized
+	/// </summary>
+	public class ColumnDetails
+	{
+		private string columnName;
+		private int columnWidth;
+		public string ColumnName {
+			get { return columnName; }
+			set { columnName = value;}
+		}
+		public int ColumnWidth {
+			get { return columnWidth;}
+			set { columnWidth = value;}
+		}
+		public ColumnDetails(string name, int width)
+		{
+			columnName = name;
+			columnWidth = width;
+		}
+		// need this for serializing
+		public ColumnDetails()
+		{
+		}
+	}
 	public class classPageTable
 	{
 		public DataSet dataSource;
 	}
 
-
+	/// <summary>
+	/// Table panel.
+	/// </summary>
 	public class TablePanel : Panel
 	{
+
+		public TablePanel (DataTable _dataSource, Func<int> _tableChanged, ColumnDetails[] incomingColumns)
+		{
+			InitializeComponent ();
+			if (null != _dataSource) {
+
+				dataGrid1.DataSource = _dataSource;
+				dataGrid1.DataBindingComplete+= HandleDataBindingComplete;
+				dataGrid1.CellBeginEdit += HandleCellBeginEdit;
+			}
+			TableChanged = _tableChanged;
+			IncomingColumns = incomingColumns;
+
+
+
+		}
+		/// <summary>
+		/// With data complete load the stored widths
+		/// </summary>
+		/// <param name='sender'>
+		/// Sender.
+		/// </param>
+		/// <param name='e'>
+		/// E.
+		/// </param>
+		void HandleDataBindingComplete (object sender, DataGridViewBindingCompleteEventArgs e)
+		{
+			if (dataGrid1.DataSource != null) {
+				// set column widths
+				for (int i = 0 ; i < IncomingColumns.Length ; i++) {
+					dataGrid1.Columns[i].Width = IncomingColumns[i].ColumnWidth;
+				}
+				
+			}
+		}
+
+
+
+		void HandleCellBeginEdit (object sender, DataGridViewCellCancelEventArgs e)
+		{
+			if (null != TableChanged) {
+				TableChanged();
+			}
+		}
+
+
+
+		#region constant
+		public const string TablePageTableName= "Table";
+		public const int defaultwidth = 100;
+		#endregion
 		#region variables
 		// this is the object holding all the table details
 		public classPageTable panelTable;
 
+		// delegate: called whenever the table changes
+		Func<int> TableChanged = null;
+
+		//used to load default settings
+		ColumnDetails[] IncomingColumns= null;
 
 		#endregion
 
@@ -42,7 +126,7 @@ namespace appframe
 		private System.Windows.Forms.Panel panel1;
 		private System.Windows.Forms.ToolStripButton toolStripButton1;
 		private System.Windows.Forms.ToolStripButton toolStripButton2;
-		public DataGridNoKeyPressIrritation dataGrid1;
+		private DataGridNoKeyPressIrritation dataGrid1;
 		private System.Windows.Forms.ToolStripButton toolStripButtonEditMode;
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
@@ -109,16 +193,16 @@ namespace appframe
 			// buttonPreview
 			// 
 
-			this.buttonPreview.Image =   File.GetImage_ForDLL("zoom.png");
+			this.buttonPreview.Image =   FileUtils.GetImage_ForDLL("zoom.png");
 			this.buttonPreview.ImageTransparentColor = System.Drawing.Color.Magenta;
 			this.buttonPreview.Name = "buttonPreview";
 			this.buttonPreview.Size = new System.Drawing.Size(23, 22);
 			this.buttonPreview.ToolTipText = "Preview";
-			this.buttonPreview.Click += new System.EventHandler(this.toolStripButton1_Click_2);
+			this.buttonPreview.Click += new System.EventHandler(this.previewclick);
 			// 
 			// buttonEditColumns
 			// 
-			this.buttonEditColumns.Image =  File.GetImage_ForDLL("table_edit.png");
+			this.buttonEditColumns.Image =  FileUtils.GetImage_ForDLL("table_edit.png");
 			this.buttonEditColumns.ImageTransparentColor = System.Drawing.Color.Magenta;
 			this.buttonEditColumns.Name = "buttonEditColumns";
 			this.buttonEditColumns.Size = new System.Drawing.Size(23, 22);
@@ -315,11 +399,7 @@ namespace appframe
 		
 #endregion
 
-		public TablePanel ()
-		{
-			InitializeComponent();
-		}
-
+	
 
 
 		/// <summary>
@@ -436,8 +516,9 @@ namespace appframe
 //			}
 		}
 		
-		private void toolStripButton1_Click_2(object sender, EventArgs e)
+		private void previewclick(object sender, EventArgs e)
 		{
+			NewMessage.Show ("implement me");
 //			string sResult = "";
 //			
 //			if (panelTable != null)
@@ -487,52 +568,98 @@ namespace appframe
 //				appearance.NeedsSave();
 //			}
 		}
-		
+
 	//	public Appearance appearance = null;
 		/// <summary>
 		/// September 2011
 		/// A wrapper for column rquestss in case I am using this from the appearance system
 		/// </summary>
-		private string[] Cols
-		{
-			get
-			{
-				
-//				if (panelTable == null)
-//				{
+		private ColumnDetails[] Columns {
+			get {
+
+				ColumnDetails[] columns = new ColumnDetails[dataGrid1.Columns.Count];
+				for (int i = 0; i <  dataGrid1.Columns.Count; i++) {
+					columns [i] = new ColumnDetails (dataGrid1.Columns[i].Name, dataGrid1.Columns[i].Width);
+				}
+
 //					if (appearance != null)
 //					{
 //						return appearance.GenerateColums();
 //					}
-//				}
-//				else
-//				{
-//					return panelTable.Columns;
-//				}
-				return null;
+				return columns;
 			}
-			
-			set
-			{
-				
-//				if (panelTable == null)
-//				{
-//					if (appearance != null)
-//					{
-//						appearance.Columns = value;
-//					}
-//				}
-//				else
-//				{
-//					panelTable.Columns = value;
-//				}
-			}
-			
-			
-			
 			
 		}
-		
+			
+			
+			
+			
+
+		/// <summary>
+		/// Gets the table.
+		/// 
+		/// Called when the note calls Save()
+		/// </summary>
+		/// <returns>
+		/// The table.
+		/// </returns>
+		public DataTable GetTable()
+		{
+			return(DataTable) dataGrid1.DataSource;
+		}
+		/// <summary>
+		/// Gets the columns.
+		/// 
+		/// Called when the note calls Save()
+		/// </summary>
+		/// <returns>
+		/// The columns.
+		/// </returns>
+		public ColumnDetails[] GetColumns()
+		{
+			return Columns;
+		}
+		/// <summary>
+		/// Builds the table from columns.
+		/// </summary>
+		/// <returns>
+		/// The table from columns.
+		/// </returns>
+		public static DataTable BuildTableFromColumns (ColumnDetails[] value)
+		{
+			DataTable table = new DataTable();
+			table.TableName = "Table";
+			//  table.Columns.Add("Roll", typeof(string));
+			// add default column
+			
+			foreach (ColumnDetails column in value)
+			{
+				try
+				{
+					table.Columns.Add(column.ColumnName, typeof(string));
+				}
+				catch (Exception)
+				{
+					// added when adding blank column names for faiths
+					
+				}
+				
+				
+			}
+			return table;
+		}
+
+		private string[] GetJustColumnNames ()
+		{
+			// trims column detail array just to the name
+			string[] columns = new string[Columns.Length];
+							for(int i = 0 ; i <  Columns.Length; i++)
+							{
+								columns[i] = Columns[i].ColumnName;
+							}
+			return columns;
+		}
+
 //		private DataSet DATA_SOURCE()
 //		{
 //			if (panelTable == null)
@@ -552,49 +679,61 @@ namespace appframe
 		/// <param name="e"></param>
 		private void buttonEditColumns_Click(object sender, EventArgs e)
 		{
+
 			
+			// changing columns can destroy data
+			// pick columns
+			form_StringControl addColumn = new form_StringControl();
 			
-//			// changing columns can destroy data
-//			// pick columns
-//			fAddColumn addColumn = new fAddColumn();
-//			
-//			addColumn.tree_StringControl1.Strings = Cols;
-//			int beforelength = Cols.Length;
-//			int afterlength = 0;
-//			if (addColumn.ShowDialog() == DialogResult.OK)
-//			{
-//				// February 2012 - copying to clipboard to try to save data
-//				
-//				/*                
-//1. Don't bother copying, just build and store a string in memory
-//2. If *FEWER* Columns then we do not bother copying (too hard)
-//3. If *MORE* Columns then we need to add extra commas at end
-//4. We need to remove the Table1 and column name lines
-// */
-//				
-//				
-//				
-//				afterlength = addColumn.tree_StringControl1.Strings.Length;
-//				string sOldData = "";
-//				
-//				// we do not import table if we have removed columns
-//				if (afterlength >= beforelength)
+			addColumn.Strings = GetJustColumnNames ();
+			int beforelength = addColumn.Strings.Length;
+			int afterlength = 0;
+			if (addColumn.ShowDialog() == DialogResult.OK)
+			{
+				// February 2012 - copying to clipboard to try to save data
+				
+				/*                
+1. Don't bother copying, just build and store a string in memory
+2. If *FEWER* Columns then we do not bother copying (too hard)
+3. If *MORE* Columns then we need to add extra commas at end
+4. We need to remove the Table1 and column name lines
+ */
+				
+				
+				
+				afterlength = addColumn.Strings.Length;
+				string sOldData = "";
+				
+				// we do not import table if we have removed columns
+				if (afterlength >= beforelength)
+				{
+				
+					try
+					{
+						//DataTable dt = GetTable(dataGrid1, TablePageTableName);
+					//	sOldData = TableToString(dt, true, (afterlength - beforelength));
+					}
+					catch (Exception ex)
+					{
+						NewMessage.Show(ex.ToString());
+					}
+				}
+				else
+				{
+					lg.Instance.Line("TablePanel->EditColumns", ProblemType.MESSAGE, "we do not import table if we have removed columns");
+				}
+//				Columns = new ColumnDetails[addColumn.Strings.Length];
+//				for (int i = 0 ;  i < addColumn.Strings.Length; i++)
 //				{
-//					try
-//					{
-//						DataTable dt = GetTable(dataGrid1, Header.TablePageTableName);
-//						sOldData = TableToString(dt, true, (afterlength - beforelength));
-//					}
-//					catch (Exception ex)
-//					{
-//						NewMessage.Show(ex.ToString());
-//					}
+//					Columns[i] = new ColumnDetails(addColumn.Strings[i], defaultwidth);
 //				}
-//				Cols = addColumn.tree_StringControl1.Strings;
-//				dataGrid1.DataSource = null;
-//				dataGrid1.DataSource = DATA_SOURCE();
-//				dataGrid1.NavigateTo(0, Header.TablePageTableName);
-//				dataGrid1.Refresh();
+
+
+				//Cols = addColumn.Strings;
+				dataGrid1.DataSource = null;
+				dataGrid1.DataSource = BuildTableFromColumns(Columns);
+				//dataGrid1.NavigateTo(0, Header.TablePageTableName);
+				//dataGrid1.Refresh();
 //				if (panelTable != null)
 //				{
 //					panelTable.OnEditColumns(new CustomEventArgs(""));
@@ -612,8 +751,8 @@ namespace appframe
 //						NewMessage.Show(ex.ToString());
 //					}
 //				}
-//				
-//			}
+				
+			}
 		}
 		
 		private void buttonJumpLink_Click(object sender, EventArgs e)
@@ -678,7 +817,7 @@ namespace appframe
 		/// <param name="dg"></param>
 		/// <param name="tablename"></param>
 		/// <returns></returns>
-		public DataTable GetTable(DataGrid dg, string tableName)
+		public DataTable GetTable(DataGridView dg, string tableName)
 		{
 			if (dg.DataSource != null)
 			{
@@ -712,7 +851,7 @@ namespace appframe
 		/// </summary>
 		/// <param name="dg"></param>
 		/// <param name="tableName"></param>
-		public void CopyToClipboard(DataGrid dg, string tableName)
+		public void CopyToClipboard(DataGridView dg, string tableName)
 		{
 			DataTable dt = GetTable(dg, tableName);
 			if (dt != null)

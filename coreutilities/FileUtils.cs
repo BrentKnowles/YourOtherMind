@@ -5,7 +5,7 @@ using System.Windows.Forms;
 
 namespace CoreUtilities
 {
-	public static class File
+	public static class FileUtils
 	{
 
 		/// <summary>
