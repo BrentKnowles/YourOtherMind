@@ -83,5 +83,14 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="NetSparkle_DSA.pub" />
+    <EmbeddedResource Include="icons\application_double.png">
+      <LogicalName>mainicon</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\yom.ico">
+      <LogicalName>main.ico</LogicalName>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="icons\" />
   </ItemGroup>
 </Project>

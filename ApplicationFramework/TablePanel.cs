@@ -7,12 +7,18 @@ using System.Drawing;
 
 namespace appframe
 {
-
+	
 	public class DataGridNoKeyPressIrritation : DataGridView
 	{
 		// replace with real code
 		public bool SafeEditMode;
 
+	}
+
+	public struct myRange
+	{
+		public int nMin;
+		public int nMax;
 	}
 	/// <summary>
 	/// Column details.
@@ -59,12 +65,21 @@ namespace appframe
 				dataGrid1.DataSource = _dataSource;
 				dataGrid1.DataBindingComplete+= HandleDataBindingComplete;
 				dataGrid1.CellBeginEdit += HandleCellBeginEdit;
+				dataGrid1.DataSourceChanged+= HandleDataSourceChanged;
 			}
 			TableChanged = _tableChanged;
 			IncomingColumns = incomingColumns;
 
 
 
+		}
+
+		void HandleDataSourceChanged (object sender, EventArgs e)
+		{
+			// should set NeedsSave flag if updating columng
+			if (null != TableChanged) {
+				TableChanged();
+			}
 		}
 		/// <summary>
 		/// With data complete load the stored widths
@@ -77,11 +92,13 @@ namespace appframe
 		/// </param>
 		void HandleDataBindingComplete (object sender, DataGridViewBindingCompleteEventArgs e)
 		{
-			if (dataGrid1.DataSource != null) {
+
+			if (dataGrid1.DataSource != null && IncomingColumns != null) {
 				// set column widths
 				for (int i = 0 ; i < IncomingColumns.Length ; i++) {
 					dataGrid1.Columns[i].Width = IncomingColumns[i].ColumnWidth;
 				}
+				IncomingColumns = null;
 				
 			}
 		}
@@ -100,6 +117,7 @@ namespace appframe
 		#region constant
 		public const string TablePageTableName= "Table";
 		public const int defaultwidth = 100;
+		const string  Roll="Roll";
 		#endregion
 		#region variables
 		// this is the object holding all the table details
@@ -197,7 +215,7 @@ namespace appframe
 			this.buttonPreview.ImageTransparentColor = System.Drawing.Color.Magenta;
 			this.buttonPreview.Name = "buttonPreview";
 			this.buttonPreview.Size = new System.Drawing.Size(23, 22);
-			this.buttonPreview.ToolTipText = "Preview";
+			this.buttonPreview.ToolTipText = Loc.Instance.GetString ("Preview");
 			this.buttonPreview.Click += new System.EventHandler(this.previewclick);
 			// 
 			// buttonEditColumns
@@ -206,26 +224,26 @@ namespace appframe
 			this.buttonEditColumns.ImageTransparentColor = System.Drawing.Color.Magenta;
 			this.buttonEditColumns.Name = "buttonEditColumns";
 			this.buttonEditColumns.Size = new System.Drawing.Size(23, 22);
-			this.buttonEditColumns.ToolTipText = "Edit Columns";
+			this.buttonEditColumns.ToolTipText = Loc.Instance.GetString ("Edit Columns");
 			this.buttonEditColumns.Click += new System.EventHandler(this.buttonEditColumns_Click);
 			// 
 			// toolStripButton1
 			// 
-			//this.toolStripButton1.Image = global::Worgan2006.Header.script_edit;
+			this.toolStripButton1.Image =FileUtils.GetImage_ForDLL("script_edit.png");
 			this.toolStripButton1.ImageTransparentColor = System.Drawing.Color.Magenta;
 			this.toolStripButton1.Name = "toolStripButton1";
 			this.toolStripButton1.Size = new System.Drawing.Size(23, 22);
-			this.toolStripButton1.ToolTipText = "Import List";
-			this.toolStripButton1.Click += new System.EventHandler(this.toolStripButton1_Click_3);
+			this.toolStripButton1.ToolTipText = Loc.Instance.GetString ("Import List");
+			this.toolStripButton1.Click += new System.EventHandler(this.ImportListClick);
 			// 
 			// toolStripButton2
 			// 
-			//this.toolStripButton2.Image = global::Worgan2006.Header.page_copy;
+			this.toolStripButton2.Image =FileUtils.GetImage_ForDLL("page_copy.png");
 			this.toolStripButton2.ImageTransparentColor = System.Drawing.Color.Magenta;
 			this.toolStripButton2.Name = "toolStripButton2";
 			this.toolStripButton2.Size = new System.Drawing.Size(23, 22);
-			this.toolStripButton2.ToolTipText = "Copy To Clipboard";
-			this.toolStripButton2.Click += new System.EventHandler(this.toolStripButton2_Click);
+			this.toolStripButton2.ToolTipText =Loc.Instance.GetString ( "Copy To Clipboard");
+			this.toolStripButton2.Click += new System.EventHandler(this.CopyToClipboardClick);
 			// 
 			// toolStripSeparator1
 			// 
@@ -238,7 +256,7 @@ namespace appframe
 			this.buttonJumpLink.ImageTransparentColor = System.Drawing.Color.Magenta;
 			this.buttonJumpLink.Name = "buttonJumpLink";
 			this.buttonJumpLink.Size = new System.Drawing.Size(23, 22);
-			this.buttonJumpLink.ToolTipText = "Follow Link";
+			this.buttonJumpLink.ToolTipText = Loc.Instance.GetString ("Follow Link");
 			this.buttonJumpLink.Click += new System.EventHandler(this.buttonJumpLink_Click);
 			// 
 			// toolStripButtonEditMode
@@ -251,7 +269,7 @@ namespace appframe
 			this.toolStripButtonEditMode.ImageTransparentColor = System.Drawing.Color.Magenta;
 			this.toolStripButtonEditMode.Name = "toolStripButtonEditMode";
 			this.toolStripButtonEditMode.Size = new System.Drawing.Size(23, 22);
-			this.toolStripButtonEditMode.Text = "Toggle Safe Edit Mode";
+			this.toolStripButtonEditMode.Text = Loc.Instance.GetString ("Toggle Safe Edit Mode");
 			this.toolStripButtonEditMode.Click += new System.EventHandler(this.toolStripButtonEditMode_Click);
 			// 
 			// toolStripSeparator2
@@ -267,7 +285,7 @@ namespace appframe
 			this.toolStripButtonLoadTableFile.Name = "toolStripButtonLoadTableFile";
 			this.toolStripButtonLoadTableFile.Size = new System.Drawing.Size(23, 22);
 			this.toolStripButtonLoadTableFile.Text = "toolStripButton3";
-			this.toolStripButtonLoadTableFile.ToolTipText = "Load a xml based datatable";
+			this.toolStripButtonLoadTableFile.ToolTipText = Loc.Instance.GetString ("Load a xml based datatable");
 			this.toolStripButtonLoadTableFile.Click += new System.EventHandler(this.toolStripButtonLoadTableFile_Click);
 			// 
 			// toolStripButtonSaveTableToXML
@@ -278,7 +296,7 @@ namespace appframe
 			this.toolStripButtonSaveTableToXML.Name = "toolStripButtonSaveTableToXML";
 			this.toolStripButtonSaveTableToXML.Size = new System.Drawing.Size(23, 22);
 			this.toolStripButtonSaveTableToXML.Text = "toolStripButton3";
-			this.toolStripButtonSaveTableToXML.ToolTipText = "Save table to an XML file";
+			this.toolStripButtonSaveTableToXML.ToolTipText = Loc.Instance.GetString ("Save table to an XML file");
 			this.toolStripButtonSaveTableToXML.Click += new System.EventHandler(this.toolStripButtonSaveTableToXML_Click);
 			// 
 			// toolStripSeparator3
@@ -294,7 +312,7 @@ namespace appframe
 			this.toolStripButtonInsert.Name = "toolStripButtonInsert";
 			this.toolStripButtonInsert.Size = new System.Drawing.Size(23, 22);
 			this.toolStripButtonInsert.Text = "toolStripButton3";
-			this.toolStripButtonInsert.ToolTipText = "Insert row";
+			this.toolStripButtonInsert.ToolTipText = Loc.Instance.GetString ("Insert row");
 			this.toolStripButtonInsert.Click += new System.EventHandler(this.toolStripButtonInsert_Click);
 			// 
 			// toolStripButtonNumber
@@ -305,7 +323,7 @@ namespace appframe
 			this.toolStripButtonNumber.Name = "toolStripButtonNumber";
 			this.toolStripButtonNumber.Size = new System.Drawing.Size(23, 22);
 			this.toolStripButtonNumber.Text = "Auto number";
-			this.toolStripButtonNumber.ToolTipText = "Auto number rows?";
+			this.toolStripButtonNumber.ToolTipText = Loc.Instance.GetString ("Auto number rows");
 			this.toolStripButtonNumber.Click += new System.EventHandler(this.toolStripButton3_Click);
 			// 
 			// richTextBox1
@@ -683,7 +701,7 @@ namespace appframe
 			
 			// changing columns can destroy data
 			// pick columns
-			form_StringControl addColumn = new form_StringControl();
+			form_StringControl addColumn = new form_StringControl(MainFormBase.MainFormIcon);
 			
 			addColumn.Strings = GetJustColumnNames ();
 			int beforelength = addColumn.Strings.Length;
@@ -710,8 +728,9 @@ namespace appframe
 				
 					try
 					{
-						//DataTable dt = GetTable(dataGrid1, TablePageTableName);
-					//	sOldData = TableToString(dt, true, (afterlength - beforelength));
+
+						sOldData = TableToString((DataTable)dataGrid1.DataSource, true, (afterlength - beforelength));
+						lg.Instance.Line("TablePanel->ButtonEditCOlumns", ProblemType.MESSAGE, sOldData, Loud.CTRIVIAL);
 					}
 					catch (Exception ex)
 					{
@@ -722,35 +741,31 @@ namespace appframe
 				{
 					lg.Instance.Line("TablePanel->EditColumns", ProblemType.MESSAGE, "we do not import table if we have removed columns");
 				}
-//				Columns = new ColumnDetails[addColumn.Strings.Length];
-//				for (int i = 0 ;  i < addColumn.Strings.Length; i++)
-//				{
-//					Columns[i] = new ColumnDetails(addColumn.Strings[i], defaultwidth);
-//				}
+				ColumnDetails[] newColumns = new ColumnDetails[addColumn.Strings.Length];
+				for (int i = 0 ;  i < addColumn.Strings.Length; i++)
+				{
+					newColumns[i] = new ColumnDetails(addColumn.Strings[i], defaultwidth);
+				}
 
 
 				//Cols = addColumn.Strings;
 				dataGrid1.DataSource = null;
-				dataGrid1.DataSource = BuildTableFromColumns(Columns);
-				//dataGrid1.NavigateTo(0, Header.TablePageTableName);
-				//dataGrid1.Refresh();
-//				if (panelTable != null)
-//				{
-//					panelTable.OnEditColumns(new CustomEventArgs(""));
-//				}
-//				if ("" != sOldData)
-//				{
-//					string[] list = sOldData.Split(new string[1] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
-//					try
-//					{
-//						// panelTable.ImportList(list);
-//						TableWrapper.ImportList(list, appearance.dataSource.Tables[0], appearance.dataSource);
-//					}
-//					catch (Exception ex)
-//					{
-//						NewMessage.Show(ex.ToString());
-//					}
-//				}
+				dataGrid1.DataSource = BuildTableFromColumns(newColumns);
+
+				
+				if ("" != sOldData)
+				{
+					string[] list = sOldData.Split(new string[1] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
+					try
+					{
+						// panelTable.ImportList(list);
+						ImportList(list, (DataTable)dataGrid1.DataSource);
+					}
+					catch (Exception ex)
+					{
+						NewMessage.Show(ex.ToString());
+					}
+				}
 				
 			}
 		}
@@ -788,28 +803,23 @@ namespace appframe
 		/// </summary>
 		/// <param name="sender"></param>
 		/// <param name="e"></param>
-		private void toolStripButton1_Click_3(object sender, EventArgs e)
+		private void ImportListClick(object sender, EventArgs e)
 		{
-//			fImportList fList = new fImportList();
-//			if (fList.ShowDialog() == DialogResult.OK)
-//			{
-//				// go through each text entry and add a new row to the result column
-//				if (panelTable != null)
-//				{
-//					panelTable.ImportList(fList.textList.Lines);
-//				}
-//				else if (appearance != null)
-//				{
-//					TableWrapper.ImportList(fList.textList.Lines, appearance.dataSource.Tables[0], appearance.dataSource);
-//				}
-//			}
+			TablePanel_Form_ImportList fList = new TablePanel_Form_ImportList();
+			if (fList.ShowDialog() == DialogResult.OK)
+			{
+
+
+				ImportList(fList.textList.Lines, (DataTable)dataGrid1.DataSource);
+
+			}
 			
 		}
 		
-		private void toolStripButton2_Click(object sender, EventArgs e)
+		private void CopyToClipboardClick(object sender, EventArgs e)
 		{
-//			CopyToClipboard(dataGrid1, Header.TablePageTableName);
-//			NewMessage.Show("Data copied in CSV format to clipboard.");
+			CopyToClipboard(dataGrid1, TablePageTableName);
+			NewMessage.Show("Data copied in CSV format to clipboard.");
 		}
 		/// <summary>
 		/// returns the appropriate table
@@ -819,30 +829,34 @@ namespace appframe
 		/// <returns></returns>
 		public DataTable GetTable(DataGridView dg, string tableName)
 		{
-			if (dg.DataSource != null)
-			{
-				DataTable dt = null;
-				if (dg.DataSource.GetType() == typeof(DataSet))
-				{
-					DataSet ds = (DataSet)dg.DataSource;
-					// need to use tableName when DataSet contains more than
-					// one table
-					if (ds.Tables.Contains(tableName))
-						dt = ds.Tables[tableName];
-				}
-				else
-					if (dg.DataSource.GetType() == typeof(DataTable))
-				{
-					dt = (DataTable)dg.DataSource;
-					if (dt.TableName != tableName)
-					{
-						dt.Clear();
-						dt = null;
-					}
-				}
-				return dt;
-			}
-			return null;
+
+			return (DataTable)dg.DataSource;
+
+			// Dec 31 2012 -- do we need all this complexity?
+//			if (dg.DataSource != null)
+//			{
+//				DataTable dt = null;
+//				if (dg.DataSource.GetType() == typeof(DataSet))
+//				{
+//					DataSet ds = (DataSet)dg.DataSource;
+//					// need to use tableName when DataSet contains more than
+//					// one table
+//					if (ds.Tables.Contains(tableName))
+//						dt = ds.Tables[tableName];
+//				}
+//				else
+//					if (dg.DataSource.GetType() == typeof(DataTable))
+//				{
+//					dt = (DataTable)dg.DataSource;
+//					if (dt.TableName != tableName)
+//					{
+//						dt.Clear();
+//						dt = null;
+//					}
+//				}
+//				return dt;
+//			}
+//			return null;
 		}
 		
 		
@@ -1070,7 +1084,212 @@ namespace appframe
 		{
 			DoAutoNumber();
 		}
+		/// <summary>
+		/// returns an array of Min/Max values representing
+		/// the rows in the current table
+		/// </summary>
+		/// <returns></returns>
+		public static myRange[] BuildRangeArray(myRange[] ranges, DataTable currentTable)
+		{
+			int nCount = -1;
+			
+			
+			// if there's not a valid Roll columnt hen don't bother
+			// just return out of here
+			try
+			{
+				if (currentTable.Columns.IndexOf(Roll) > -1)
+				{
+					if (currentTable.Rows[0][Roll] == null)
+					{
+						return null;
+					}
+					else
+					{
+						try
+						{
+							// returner.nModifier = (int)Int32.Parse(currentTable.Rows[nFoundRowNumber][Header.Roll].ToString());
+						}
+						catch (Exception)
+						{
+							return null;
+						}
+					}
+				}
+				else
+				{
+					return null;
+				}
+				
+			}
+			catch (Exception)
+			{
+				lg.Instance.Line("classPageTable BuildRange Array", ProblemType.EXCEPTION, "jumped to non table page?");
+				return null;
+			}
+			foreach (DataRow dr in currentTable.Rows)
+			{
+				nCount++;
+				bool bError = false;
+				
+				
+				
+				string sValue = dr[Roll].ToString();
+				try
+				{
+					int nValue; // used for int test
+					if (sValue != null && sValue != Constants.BLANK && sValue.IndexOf("-") > 0)
+					{
+						string[] results = sValue.Split(new char[1] {'-'});
+						for (int i = 0; i < results.Length; i++)
+						{
+							results[i] = results[i].Trim();
+						}
+						ranges[nCount].nMin = Int32.Parse(results[0]);
+						ranges[nCount].nMax = Int32.Parse(results[1]);
+					}
+					else
+						// if this is just a number than it goes with the same number of min and max
+						if (sValue != null && sValue != Constants.BLANK && Int32.TryParse(sValue, out nValue) == true)
+							
+					{
+						ranges[nCount].nMin = nValue;
+						ranges[nCount].nMax = nValue;
+						
+					}
+					else
+					{
+						bError = true;
+					}
+				}
+				catch (Exception)
+				{
+					bError = true;
+				}
+				if (bError == true)
+				{
+					lg.Instance.Line("TablePanel->BuildRangeArray", 
+					                 ProblemType.ERROR, String.Format("{0} {1} {2}", Loc.Instance.GetString("Invalid Row"), nCount.ToString(), sValue));
 
+					
+				}
+				
+			}
+			return ranges;
+		}
+
+		/// <summary>
+		/// imports the list into the Result oclumn and autonumbers the roll column
+		/// will not do anything without botha  roll and result column (not true; and that's good because this makes it more flexible)
+		/// </summary>
+		/// <param name="list"></param>
+		public static void ImportList(string[] list, DataTable currentTable)
+		{
+			
+			//if (currentTable.Columns.IndexOf(Header.Result) > -1
+			//    && currentTable.Columns.IndexOf(Header.Roll) > -1)
+			if (currentTable.Columns.Count > 0)
+			{
+				
+				try
+				{
+					
+					
+					myRange[] ranges = new myRange[currentTable.Rows.Count];
+					int nMax = 0;
+					try
+					{
+						ranges = BuildRangeArray(ranges, currentTable);
+						
+						// find maximum value in last row
+						nMax = ranges[ranges.Length - 1].nMax;
+					}
+					catch (Exception)
+					{
+						nMax = 0;
+					}
+					foreach (string s in list)
+					{
+						string sResult = s;
+						nMax++;
+						string sRow = nMax.ToString(); // currentTable.Rows.Count.ToString();
+						
+						if (s != null && s != Constants.BLANK)
+						{
+							// this bit is complicated because I don't know what
+							// columns you have.
+							string[] sResultArray = new string[currentTable.Columns.Count];
+							for (int ij = 0; ij < currentTable.Columns.Count; ij++)
+							{
+								sResultArray[ij] = "";
+							}
+							//{ sRow, sResult, sNextTable, sModifier };
+							
+							// build array to size of columns
+							// If Roll Column is Present
+							//        add Roll Data
+							//        add text to next column after it, unless last then do first
+							
+							/* If you have a row column it will only parse the CSV first column
+                             * to keep things simple*/
+							/* September 2011 - NO NO NO
+                             * Changing this. If we do a split and the count does not match the COLUMNS
+                             * then we use the 'simple system'; else we use the complicated one
+                             */
+							
+							string[] sCSV = sResult.Split(',');
+							
+							//
+							//if (nRowColumn > -1)
+							if (sCSV.Length != currentTable.Columns.Count)
+							{
+								int nRowColumn = currentTable.Columns.IndexOf(Roll);
+								sResultArray[nRowColumn] = sRow;
+								if (nRowColumn < currentTable.Columns.Count - 1)
+								{
+									sResultArray[nRowColumn + 1] = sResult;
+								}
+								else
+								{
+									sResultArray[nRowColumn - 1] = sResult;
+								}
+							}
+							else
+							{
+								//* We don't have a roll column
+								// * now we check and try to parse CSV format text
+								
+								
+								for (int kk = 0; kk < sCSV.Length; kk++)
+								{
+									// if we have not exceeded length of Result array, fill it in
+									if (kk < sResultArray.Length)
+									{
+										sResultArray[kk] = sCSV[kk];
+									}
+								}
+								
+								//sResultArray[0] = sResult;
+							}
+							
+							// if Roll Column is NOT present
+							//        DO NOT add Roll Data
+							//        add text to first column
+							currentTable.Rows.Add(sResultArray)
+								;
+						}
+					}
+				}
+				catch (Exception)
+				{
+					NewMessage.Show(Loc.Instance.GetString("Error in importing table data"));
+				}
+			}
+			else
+			{
+				NewMessage.Show(Loc.Instance.GetString("Error in importing table data"));
+			}
+		}
 	}
 }
 

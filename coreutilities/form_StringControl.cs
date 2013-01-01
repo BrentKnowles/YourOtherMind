@@ -1,5 +1,6 @@
 using System;
 using System.Windows.Forms;
+using System.Drawing;
 
 namespace CoreUtilities
 {
@@ -11,15 +12,19 @@ namespace CoreUtilities
 		private System.Windows.Forms.ToolStripButton buttonRemove;
 		private ListBox ListOfStrings;
 		private System.Windows.Forms.Panel panel1;
-
+		// set during constructor
+		private Icon FormIcon;
 		
 		private System.Windows.Forms.Button button1;
 		private System.Windows.Forms.Button button2;
 		private System.Windows.Forms.TextBox textBox1;
 
 		#endregion
-		public form_StringControl ()
+		public form_StringControl (Icon formIcon)
 		{
+			FormIcon = formIcon;
+			this.Icon = FormIcon;
+
 			InitializeComponent();
 		}
 
@@ -221,7 +226,7 @@ namespace CoreUtilities
 		private void buttonAdd_Click(object sender, EventArgs e)
 		{
 			
-			form_AddTextString addText = new form_AddTextString();
+			form_AddTextString addText = new form_AddTextString(FormIcon);
 			if (addText.ShowDialog() == DialogResult.OK)
 			{
 				/* TreeNode[] found = treeView1.Nodes.Find(addText.textBox.Text,true);

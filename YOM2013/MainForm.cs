@@ -5,7 +5,7 @@ using Layout;
 using System.Collections.ObjectModel;
 using System.Collections.Generic;
 using AppLimit.NetSparkle;
-
+using System.Drawing;
 
 using System.ComponentModel.Composition.Hosting;
 	using System.ComponentModel.Composition;
@@ -54,7 +54,22 @@ namespace YOM2013
 			this.Text = newTitle;
 		}
 
-		
+		private void SetupMessageBox ()
+		{
+
+				NewMessage.SetupBoxFirstTime (null, /*paths.DataPath + "\\Exe\\Current\\Icon1.ico"*/"",
+			                             ImageLayout.Stretch,
+			                             Color.Green, // transprency key  
+			                             new Font ("Georgia", 12), new Font ("Times", 10),
+			                             Color.OrangeRed,  //button face color
+			                             Color.Black, // caption color
+			                             Color.Black, // message color
+			                             Color.White,  // back color for form
+			                             Color.OrangeRed, // back color for caption (turns it into a proper captino heading)
+			                             Color.Transparent); // back color for message);
+			
+
+		}
 
 /// <summary>
 /// Initializes a new instance of the <see cref="YOM2013.MainForm"/> class.
@@ -69,11 +84,11 @@ namespace YOM2013
 /// <param name='storage'>
 /// Storage.
 /// </param>
-		public MainForm (string _path, Action<bool>ForceShutDownMethod, string storage) : base (_path,ForceShutDownMethod,storage)
+		public MainForm (string _path, Action<bool>ForceShutDownMethod, string storage, Icon mainIcon) : base (_path,ForceShutDownMethod,storage, mainIcon)
 		{
+	
 
-
-
+			SetupMessageBox();
 			LayoutsOpen = new List<LayoutsInMemory> ();
 
 			Switches ();

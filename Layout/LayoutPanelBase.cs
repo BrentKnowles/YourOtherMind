@@ -95,6 +95,7 @@ namespace Layout
 		public abstract void NewLayout (string _GUID);
 		public abstract void RefreshTabs ();
 		public abstract void DeleteNote(NoteDataInterface NoteToDelete);
+		public abstract System.Collections.ArrayList GetNotes();
 	//	public abstract void SystemNoteHasClosedDown (bool closed);
 	}
 }

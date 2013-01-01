@@ -92,6 +92,20 @@ namespace Layout
 			Caption = Loc.Instance.Cat.GetString("Table");
 		}
 
+		/// <summary>
+		/// Builds the default columns.
+		/// 
+		/// Called from: NoteDataXML_Table(height, width) constructor -- ONLY when note created 
+		/// AND
+		/// from CreateParent *IF* the table is null which should only happend uring UNIT testing
+		/// </summary>
+		private void BuildDefaultColumns()
+		{
+			Columns = new ColumnDetails[4] { 
+				new ColumnDetails("Roll",TablePanel.defaultwidth), new ColumnDetails("Result",TablePanel.defaultwidth), new ColumnDetails("NextTable", TablePanel.defaultwidth),
+				new ColumnDetails("Modifier",TablePanel.defaultwidth)};
+		}
+
 		public NoteDataXML_Table(int height, int width) : base(height, width)
 		{
 			Caption = Loc.Instance.Cat.GetString("Table");
@@ -100,9 +114,7 @@ namespace Layout
 			// so we create a default datasource here and now.
 			//dataSource = new DataSet("Table");
 			//dataSource = new DataTable(); // A new datasource is already being created when column default is made.
-			Columns = new ColumnDetails[4] { 
-				new ColumnDetails("Roll",TablePanel.defaultwidth), new ColumnDetails("Result",TablePanel.defaultwidth), new ColumnDetails("NextTable", TablePanel.defaultwidth),
-				new ColumnDetails("Modifier",TablePanel.defaultwidth)};
+			BuildDefaultColumns();
 
 			// the table is created when the columns are manifested
 
@@ -142,7 +154,9 @@ namespace Layout
 				//Table.dataGrid1.DataMember = "Table";
 
 			} else {
-				NewMessage.Show (Loc.Instance.GetString("You have a null table which should not happen"));
+				//NewMessage.Show ();
+				lg.Instance.Line("NoteDataXML_Table->CreateParent", ProblemType.WARNING, Loc.Instance.GetString("You have a null table which should not happen. This usually occurs only during UNIT TESTING because proper create constructor is not used"));
+				BuildDefaultColumns();
 			}
 
 			//Table.dataGrid1.NavigateTo(0, "Table1"); // same as Table1 referenced by column styles

@@ -66,6 +66,11 @@ namespace CoreUtilities
 			return DoesThisFileHaveErrors(oldfile);
 		}
 
+		public static Icon GetIcon (string identifier)
+		{
+			return new Icon (System.Reflection.Assembly.GetCallingAssembly ().GetManifestResourceStream (identifier));
+		}
+
 		public static Bitmap GetImage_ForDLL (string identifier)
 		{
 			return new Bitmap (System.Reflection.Assembly.GetCallingAssembly ().GetManifestResourceStream (identifier));

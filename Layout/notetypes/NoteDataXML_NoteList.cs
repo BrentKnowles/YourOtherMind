@@ -117,7 +117,7 @@ namespace Layout
 		void Refresh()
 		{
 			if (Modes.NOTES == mode) {
-				NewMessage.Show ("Finish me please");
+				UpdateListOfNotesOnLayout ();
 			} else
 			if (Modes.LAYOUTS == mode) {
 				UpdateListOfLayouts();
@@ -184,6 +184,7 @@ namespace Layout
 			if ((sender as ComboBox).SelectedIndex == 0) {
 				// just the notes in this layout
 				mode = Modes.NOTES;
+				UpdateListOfNotesOnLayout ();
 			} else
 			if ((sender as ComboBox).SelectedIndex == 1) {
 				// all notes
@@ -198,13 +199,14 @@ namespace Layout
 
 		}
 
-		public void UpdateListOfNotesOnLayout (System.Collections.ObjectModel.ReadOnlyCollection<NoteDataInterface> notes)
+		public void UpdateListOfNotesOnLayout ()
 		{
 			// if find one then we call its update function
 			if (mode == Modes.NOTES) {
 				this.list.DataSource = null;
 				this.list.Items.Clear ();
-				this.list.DataSource = notes;
+				this.list.Sorted = true;
+				this.list.DataSource = Layout.GetNotes();
 				this.list.DisplayMember = "Caption";
 				this.list.ValueMember = "GuidForNote";
 			} else {

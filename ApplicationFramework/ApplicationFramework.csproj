@@ -38,6 +38,7 @@
     <Compile Include="mef_Bootstrapper.cs" />
     <Compile Include="iConfig.cs" />
     <Compile Include="TablePanel.cs" />
+    <Compile Include="TablePanel_Form_ImportList.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System.Windows.Forms" />
@@ -73,6 +74,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="icons\table_edit.png">
       <LogicalName>table_edit.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\script_edit.png">
+      <LogicalName>script_edit.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\page_copy.png">
+      <LogicalName>page_copy.png</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
 </Project>

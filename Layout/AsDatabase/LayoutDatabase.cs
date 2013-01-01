@@ -630,7 +630,7 @@ namespace Layout
 			foreach (NoteDataInterface note in GetNotes ()) {
 				if (note is NoteDataXML_NoteList)
 				{
-					(note as NoteDataXML_NoteList).UpdateListOfNotesOnLayout(GetNotes ());
+					(note as NoteDataXML_NoteList).UpdateListOfNotesOnLayout();
 				}
 			}
 

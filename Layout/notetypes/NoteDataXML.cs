@@ -19,7 +19,7 @@ namespace Layout
 	/// Because I intend to store the entire Note data inside an XML that is inside a table this would work with either XML or database representations.
 	/// </summary>
 	[Serializable]
-	public partial class NoteDataXML : NoteDataInterface
+	public partial class NoteDataXML : NoteDataInterface, IComparable
 	{
 		#region constants
 		const string BLANK = "";
@@ -78,6 +78,9 @@ namespace Layout
 				width =  defaultWidth;
 			}
 		}
+
+
+
 		private NotePanel parent;
 		[XmlIgnore]
 		public NotePanel Parent {
@@ -254,10 +257,30 @@ namespace Layout
 			//UpdateLocation ();
 
 		}
-
+		/// <summary>
+		/// Compares to.
+		/// Implements the interface
+		/// </summary>
+		/// <returns>
+		/// The to.
+		/// </returns>
+		/// <param name='obj'>
+		/// Object.
+		/// </param>
+		public int CompareTo (object obj)
+		{
+			if (obj == null)
+				return 1;
+			NoteDataXML otherNote = obj as NoteDataXML;
+			if (otherNote != null) {
+				return this.Caption.CompareTo (otherNote.Caption);
+			} else {
+				throw new Exception("Object is a NoteDataXML");
+			}
+		}
 #endregion;
 
-
+		
 	}
 }
 

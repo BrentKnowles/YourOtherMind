@@ -1,5 +1,7 @@
 using System;
 using System.Windows.Forms;
+using System.Drawing;
+
 using CoreUtilities;
 //using Layout;
 using System.Collections;
@@ -36,6 +38,7 @@ namespace appframe
 
 
 		Action<bool> ForceShutDownMethod;
+		public static Icon MainFormIcon;
 
 		#endregion
 		/// <summary>
@@ -50,8 +53,11 @@ namespace appframe
 		/// <param name='Storage'>
 		/// Name of a database or other file source where any CORE iConfig components should store there data (currently only AddIns)
 		/// </param>
-		public MainFormBase (string _path, Action<bool> _ForceShutDownMethod, string Storage)
+		public MainFormBase (string _path, Action<bool> _ForceShutDownMethod, string Storage, Icon mainFormIcon)
 		{
+			MainFormIcon = mainFormIcon;
+
+			this.Icon = mainFormIcon;
 			Path = _path;
 			ForceShutDownMethod = _ForceShutDownMethod;
 			//Mono.Unix.Catalog.Init ("yom", "strings");

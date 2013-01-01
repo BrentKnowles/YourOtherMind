@@ -7,8 +7,9 @@ namespace CoreUtilities
 	{
 
 
-		public form_AddTextString()
+		public form_AddTextString(System.Drawing.Icon formIcon)
 		{
+			this.Icon = formIcon;
 			InitializeComponent();
 		}
 

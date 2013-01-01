@@ -633,6 +633,10 @@ namespace Layout
 			//SaveTo();
 		}
 
+		public override System.Collections.ArrayList GetNotes()
+		{
+			return this.Notes.GetAllNotes();
+		}
 
 		public override void SetSaveRequired (bool NeedSave)
 		{

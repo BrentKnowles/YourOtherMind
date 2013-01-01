@@ -54,6 +54,7 @@
     <Compile Include="addin testing\mef_ISupportedLanguage.cs" />
     <Compile Include="addin testing\mef_Bootstrapper.cs" />
     <Compile Include="NoteData.cs" />
+    <Compile Include="appframetesting\tablepaneltests.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
@@ -78,5 +79,6 @@
     <Folder Include="ClassesUsedInTesting\" />
     <Folder Include="notused\" />
     <Folder Include="addin testing\" />
+    <Folder Include="appframetesting\" />
   </ItemGroup>
 </Project>

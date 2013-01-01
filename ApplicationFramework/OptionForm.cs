@@ -12,6 +12,7 @@ namespace appframe
 		#endregion
 		public OptionForm (List<iConfig> optionPanels)
 		{
+			this.Icon = MainFormBase.MainFormIcon;
 			this.Width = 400;
 			this.Height = 400;
 
