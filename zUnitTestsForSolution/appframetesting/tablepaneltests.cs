@@ -37,7 +37,17 @@ namespace Testing
 
 			Assert.True (false);
 		}
+		[Test]
+		public void InsertRowTest()
+		{
+			Assert.True (false);
+		}
 
+		[Test]
+		public void AutoNumberTest()
+		{
+			Assert.True (false);
+		}
 	}
 }
 

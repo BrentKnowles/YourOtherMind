@@ -26,6 +26,11 @@ namespace Layout
 
 		#endregion variables
 
+		public NoteDataInterface GetChild ()
+		{
+			return Child;
+		}
+
 		public NotePanel (NoteDataInterface child)
 		{
 			this.BackColor = Color.Beige;

@@ -331,7 +331,7 @@ namespace YOM2013
 			
 			LayoutPanel newLayout =  new Layout.LayoutPanel (CoreUtilities.Constants.BLANK, false);
 			newLayout.BorderStyle = BorderStyle.Fixed3D;
-			newLayout.Parent = MDIHOST.Parent;
+			newLayout.Parent = MDIHOST.ParentNotePanel;
 			newLayout.Visible = true;
 			newLayout.Dock = System.Windows.Forms.DockStyle.Fill;
 			// this is necessary else we lose one of the toolbars
@@ -462,8 +462,8 @@ namespace YOM2013
 		void GotoExistingLayout (NoteDataXML_SystemOnly panel, LayoutPanel layoutPanel)
 		{
 
-			panel.Parent.BringToFront();
-			panel.Parent.Focus();
+			panel.ParentNotePanel.BringToFront();
+			panel.ParentNotePanel.Focus();
 			LayoutDetails.Instance.CurrentLayout = layoutPanel;
 			panel.Flash();
 		}

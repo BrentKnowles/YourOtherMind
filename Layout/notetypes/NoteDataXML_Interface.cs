@@ -42,19 +42,19 @@ namespace Layout
 		//delegate_UpdateListOfNotes UpdateListOfNotes;
 		public virtual void CreateParent (LayoutPanelBase _Layout)
 		{
-			Parent = new NotePanel (this);
+			ParentNotePanel = new NotePanel (this);
 			
 
 			
-			Parent.Visible = true;
-			Parent.Location = Location;
-			Parent.Dock = System.Windows.Forms.DockStyle.None;
-			Parent.Height = Height;
-			Parent.Width = Width;
-			Parent.Dock = this.Dock;
+			ParentNotePanel.Visible = true;
+			ParentNotePanel.Location = Location;
+			ParentNotePanel.Dock = System.Windows.Forms.DockStyle.None;
+			ParentNotePanel.Height = Height;
+			ParentNotePanel.Width = Width;
+			ParentNotePanel.Dock = this.Dock;
 			
 			try {
-				_Layout.NoteCanvas.Controls.Add (Parent);
+				_Layout.NoteCanvas.Controls.Add (ParentNotePanel);
 			} catch (Exception ex) {
 				lg.Instance.Line ("CreateParent", ProblemType.EXCEPTION, "Unable to create note after changing properties" + ex.ToString ());
 				throw new Exception ("Failed to add control");
@@ -66,7 +66,7 @@ namespace Layout
 			CaptionLabel.MouseUp += HandleMouseUp;
 			CaptionLabel.MouseLeave += HandleMouseLeave;
 			CaptionLabel.MouseMove += HandleMouseMove;
-			CaptionLabel.Parent = Parent;
+			CaptionLabel.Parent = ParentNotePanel;
 			CaptionLabel.BackColor = Color.Green;
 			CaptionLabel.Dock = DockStyle.Fill;
 			CaptionLabel.GripStyle = ToolStripGripStyle.Hidden;
@@ -159,7 +159,7 @@ namespace Layout
 
 			PropertyPanel = new Panel();
 			PropertyPanel.Visible = false;
-			PropertyPanel.Parent = Parent;
+			PropertyPanel.Parent = ParentNotePanel;
 			PropertyPanel.Height = 300;
 			PropertyPanel.Dock = DockStyle.Top;
 			PropertyPanel.AutoScroll = true;
@@ -214,6 +214,15 @@ namespace Layout
 			Maximize(true);
 		}
 
+		public void BringToFront ()
+		{
+			if (ParentNotePanel == null) {
+				NewMessage.Show (Loc.Instance.GetStringFmt("The note {0} with guid={1} does not have a valid parent.", this.Caption, this.GuidForNote));
+			}
+			else
+			ParentNotePanel.BringToFront();
+		}
+
 		/// <summary>
 		/// Handles the bring to front click.
 		/// 
@@ -227,7 +236,7 @@ namespace Layout
 		/// </param>
 		void HandleBringToFrontClick (object sender, EventArgs e)
 		{
-			Parent.BringToFront();
+			BringToFront();
 		}
 
 		/// <summary>
@@ -266,7 +275,7 @@ namespace Layout
 
 		void HandleCommitChangesClick (object sender, EventArgs e)
 		{
-			Parent.AutoScroll = false;
+			ParentNotePanel.AutoScroll = false;
 		//	((NoteDataXML)propertyGrid.SelectedObject).Update(Layout);
 			((NoteDataXML)propertyGrid.SelectedObject).UpdateLocation();
 			SetSaveRequired(true);
@@ -284,7 +293,7 @@ namespace Layout
 
 			PropertyPanel.Visible = !PropertyPanel.Visible;
 			if (PropertyPanel.Visible == true) {
-				Parent.AutoScroll = true;
+				ParentNotePanel.AutoScroll = true;
 
 				PropertyPanel.AutoScroll = true;
 				//PropertyPanel.SendToBack();
@@ -292,7 +301,7 @@ namespace Layout
 				CaptionLabel.SendToBack ();
 
 			} else {
-				Parent.AutoScroll = false;
+				ParentNotePanel.AutoScroll = false;
 			}
 		}
 		/// <summary>
@@ -406,17 +415,19 @@ namespace Layout
 
 		Color currentColor ;
 		Timer myTimer;
-		public void Flash()
+		public void Flash ()
 		{
-			currentColor =CaptionLabel.BackColor ;
-			CaptionLabel.BackColor  = Color.Blue;
-			Parent.Invalidate();
+			if (ParentNotePanel != null) {
+				currentColor = CaptionLabel.BackColor;
+				CaptionLabel.BackColor = Color.Blue;
+				ParentNotePanel.Invalidate ();
 
-			myTimer = new Timer();
-			myTimer.Tick +=new EventHandler(myTimer_Tick);
-			myTimer.Interval = 200;
-			myTimer.Start();
-			lg.Instance.Line("myTimer_Tick done", ProblemType.TEMPORARY, "timer asked to START");
+				myTimer = new Timer ();
+				myTimer.Tick += new EventHandler (myTimer_Tick);
+				myTimer.Interval = 200;
+				myTimer.Start ();
+				lg.Instance.Line ("myTimer_Tick done", ProblemType.TEMPORARY, "timer asked to START");
+			}
 		}
 
 	

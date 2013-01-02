@@ -72,7 +72,7 @@ namespace Testing
 				richy.DoOverwriteWithRTFFile (System.IO.Path.Combine (base_path,"speedtest.rtf"));
 				Assert.False (richy.GetIsRichTextBlank ());
 			}
-
+			_w.output("First save");
 			panel.SaveLayout();
 			string table = "layoutpanelsaveload";
 			// Now try and write this data out.
@@ -110,8 +110,15 @@ namespace Testing
 
 			System.IO.TextWriter write = new System.IO.StreamWriter(System.IO.Path.Combine (base_path,"timeresults.txt"));
 			write.WriteLine (backup);
+
 			write.Close();
+
+			FakeLayoutDatabase layout = new FakeLayoutDatabase("testguid");
+			FAKE_SqlLiteDatabase db = new FAKE_SqlLiteDatabase(layout.GetDatabaseName ());
+			_w.output("Backup of stored database: " + db.BackupDatabase());
+
 			timetracking.Dispose();
+			db.Dispose();
 
 		}
 
@@ -230,7 +237,12 @@ namespace Testing
 
 				//	Assert.True (false);
 		}
-			
+			[Test]
+		public void AdvancedSearchingTests()
+		{
+			// find notes inside of notes with the GUI code and such
+			Assert.True (false);
+		}
 	}
 }
 

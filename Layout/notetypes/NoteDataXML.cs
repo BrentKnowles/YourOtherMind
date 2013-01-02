@@ -83,7 +83,7 @@ namespace Layout
 
 		private NotePanel parent;
 		[XmlIgnore]
-		public NotePanel Parent {
+		public NotePanel ParentNotePanel {
 			get{ return parent;}
 			set{ parent = value;}
 		}
@@ -167,7 +167,7 @@ namespace Layout
 
 		#region methods
 
-		public virtual System.Collections.ObjectModel.ReadOnlyCollection<NoteDataInterface> GetChildNotes()
+		public virtual System.Collections.ArrayList GetChildNotes()
 		{
 			return null;
 		}
@@ -188,7 +188,7 @@ namespace Layout
 		public void Update (LayoutPanelBase Layout)
 		{
 			Save ();
-			Parent.Dispose();
+			ParentNotePanel.Dispose();
 			//Parent = null;
 			CreateParent(Layout);
 
@@ -200,7 +200,7 @@ namespace Layout
 		/// </summary>
 		public void Destroy()
 		{
-			Parent.Dispose ();
+			ParentNotePanel.Dispose ();
 		}
 
 
@@ -211,13 +211,13 @@ namespace Layout
 		/// </summary>
 		public void UpdateLocation ()
 		{
-			if (Parent == null) {
+			if (ParentNotePanel == null) {
 				throw new Exception("Parent must not be null");
 			}
-			Parent.Location = Location;
-			Parent.Height = Height;
-			Parent.Width = Width;
-			Parent.Dock = this.Dock;
+			ParentNotePanel.Location = Location;
+			ParentNotePanel.Height = Height;
+			ParentNotePanel.Width = Width;
+			ParentNotePanel.Dock = this.Dock;
 			SetSaveRequired(true);
 
 
@@ -241,16 +241,16 @@ namespace Layout
 			lg.Instance.Line("Maximize", ProblemType.WARNING, String.Format ("Calling Maximize for note with GUID = {0} and Parent LayoutPanel GUID Of {1}",this.GuidForNote, Layout.GUID ));
 			// is this actually dock=none/bringtofront, full width?
 			if (true == Maximize) {
-				Parent.Dock = DockStyle.None;
+				ParentNotePanel.Dock = DockStyle.None;
 //				Dock = System.Windows.Forms.DockStyle.None;
 				// temporary size change (change the form, not the XML)
-				Parent.Location = new Point (0, 0);
-				Parent.Height = Layout.Height - 15;
-				Parent.Width = Layout.Width - 15;
-				Parent.BringToFront ();
+				ParentNotePanel.Location = new Point (0, 0);
+				ParentNotePanel.Height = Layout.Height - 15;
+				ParentNotePanel.Width = Layout.Width - 15;
+				ParentNotePanel.BringToFront ();
 			} else {
 				// restore defaults
-				Parent.Dock = DockStyle.Fill;
+				ParentNotePanel.Dock = DockStyle.Fill;
 				UpdateLocation ();
 			}
 

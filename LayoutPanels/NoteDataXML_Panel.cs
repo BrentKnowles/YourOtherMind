@@ -47,11 +47,11 @@ namespace LayoutPanels
 		/// <summary>
 		/// Gets the child notes.
 		/// </summary>
-		public  override System.Collections.ObjectModel.ReadOnlyCollection<NoteDataInterface>  GetChildNotes()
+		public  override System.Collections.ArrayList  GetChildNotes()
 		{
 			LayoutDatabase layout = new LayoutDatabase(this.GuidForNote);
 			layout.LoadFrom(null);
-			return layout.GetNotes();
+			return layout.GetAllNotes();
 
 		}
 		/// <summary>
@@ -74,7 +74,7 @@ namespace LayoutPanels
 		public override void CreateParent (LayoutPanelBase Layout)
 		{
 			base.CreateParent (Layout);
-			Parent.BorderStyle = BorderStyle.Fixed3D;
+			ParentNotePanel.BorderStyle = BorderStyle.Fixed3D;
 		CaptionLabel.Dock = DockStyle.Top;
 
 			panelLayout = new LayoutPanel(Layout.GUID, false);
@@ -83,7 +83,7 @@ namespace LayoutPanels
 			// load the layout based on the note
 			panelLayout.LoadLayout(this.GuidForNote, true);
 
-			panelLayout.Parent = Parent;
+			panelLayout.Parent = ParentNotePanel;
 			panelLayout.Visible = true;
 			panelLayout.Dock = DockStyle.Fill;
 			panelLayout.BringToFront();
@@ -112,7 +112,11 @@ namespace LayoutPanels
 			panelLayout.RefreshTabs();
 			SetSaveRequired(true);
 		}
-
+		public NoteDataInterface FindSubpanelNote(NoteDataInterface note)
+		{
+			lg.Instance.Line("NoteDataXML_Panel->FindSubpanelNote", ProblemType.MESSAGE, String.Format ("Searching {0} for subnotes", this.Caption),Loud.CTRIVIAL); 
+			return panelLayout.FindSubpanelNote(note);
+		}
 	}
 }
 

@@ -144,8 +144,8 @@ namespace Layout
 			base.CreateParent (Layout);
 			CaptionLabel.Dock = DockStyle.Top;
 
-			Table = new TablePanel (dataSource, HandleCellBeginEdit, Columns);
-			Table.Parent = Parent;
+			Table = new TablePanel (dataSource, HandleCellBeginEdit, Columns, GoToNote);
+			Table.Parent = ParentNotePanel;
 			Table.Dock = DockStyle.Fill;
 			Table.BringToFront ();
 			// TODO: Load table data richBox.Rtf = this.Data1;
@@ -187,7 +187,21 @@ namespace Layout
 			 *3. Called from the TablePanel itself, the 'preview function'
 			 */
 		}
-		
+		/// <summary>
+		/// Gos to note.
+		/// Called from TablePanel
+		/// </summary>
+		/// <param name='NoteName'>
+		/// Note name.
+		/// </param>
+		public void GoToNote (string NoteName)
+		{
+			NoteDataInterface note = Layout.FindNoteByName (NoteName);
+			if (note != null) {
+				Layout.GoToNote(note);
+			}
+		}
+
 	}
 }
 

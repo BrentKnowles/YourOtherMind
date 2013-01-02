@@ -81,5 +81,23 @@
     <EmbeddedResource Include="icons\page_copy.png">
       <LogicalName>page_copy.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\tag_blue.png">
+      <LogicalName>tag_blue.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\table_add.png">
+      <LogicalName>table_add.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\table_save.png">
+      <LogicalName>table_save.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\basket_add.png">
+      <LogicalName>basket_add.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\tag.png">
+      <LogicalName>tag.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\link_go.png">
+      <LogicalName>link_go.png</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
 </Project>

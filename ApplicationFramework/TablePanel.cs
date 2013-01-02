@@ -57,7 +57,25 @@ namespace appframe
 	public class TablePanel : Panel
 	{
 
-		public TablePanel (DataTable _dataSource, Func<int> _tableChanged, ColumnDetails[] incomingColumns)
+
+		#region constant
+		public const string TablePageTableName= "Table";
+		public const int defaultwidth = 100;
+		const string  Roll="Roll";
+#endregion
+		#region variables
+		// this is the object holding all the table details
+		public classPageTable panelTable;
+		
+		// delegate: called whenever the table changes
+		Func<int> TableChanged = null;
+		Action<string>GoToNote=null;
+		
+		//used to load default settings
+		ColumnDetails[] IncomingColumns= null;
+		
+#endregion
+		public TablePanel (DataTable _dataSource, Func<int> _tableChanged, ColumnDetails[] incomingColumns, Action<string>_GoToNote)
 		{
 			InitializeComponent ();
 			if (null != _dataSource) {
@@ -69,17 +87,32 @@ namespace appframe
 			}
 			TableChanged = _tableChanged;
 			IncomingColumns = incomingColumns;
+			GoToNote = _GoToNote;
 
 
 
+		}
+		/// <summary>
+		/// Sets the save needed.
+		/// 
+		/// Called when need to alert parents we made a change warranting a save
+		/// </summary>
+		/// <param name='needsave'>
+		/// If set to <c>true</c> needsave.
+		/// </param>
+		private void SetSaveNeeded (bool needsave)
+		{
+			if (true == needsave) {
+				if (null != TableChanged) {
+					TableChanged ();
+				}
+			}
 		}
 
 		void HandleDataSourceChanged (object sender, EventArgs e)
 		{
 			// should set NeedsSave flag if updating columng
-			if (null != TableChanged) {
-				TableChanged();
-			}
+			SetSaveNeeded(true);
 		}
 		/// <summary>
 		/// With data complete load the stored widths
@@ -114,22 +147,7 @@ namespace appframe
 
 
 
-		#region constant
-		public const string TablePageTableName= "Table";
-		public const int defaultwidth = 100;
-		const string  Roll="Roll";
-		#endregion
-		#region variables
-		// this is the object holding all the table details
-		public classPageTable panelTable;
 
-		// delegate: called whenever the table changes
-		Func<int> TableChanged = null;
-
-		//used to load default settings
-		ColumnDetails[] IncomingColumns= null;
-
-		#endregion
 
 		#region Component Designer generated code
 
@@ -252,7 +270,7 @@ namespace appframe
 			// 
 			// buttonJumpLink
 			// 
-			//this.buttonJumpLink.Image = global::Worgan2006.Header.link_go;
+			this.buttonJumpLink.Image = FileUtils.GetImage_ForDLL("link_go.png");
 			this.buttonJumpLink.ImageTransparentColor = System.Drawing.Color.Magenta;
 			this.buttonJumpLink.Name = "buttonJumpLink";
 			this.buttonJumpLink.Size = new System.Drawing.Size(23, 22);
@@ -265,12 +283,13 @@ namespace appframe
 			this.toolStripButtonEditMode.CheckOnClick = true;
 			this.toolStripButtonEditMode.CheckState = System.Windows.Forms.CheckState.Checked;
 			this.toolStripButtonEditMode.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-			//this.toolStripButtonEditMode.Image = global::Worgan2006.Properties.Resources.tag_blue;
+
+			this.toolStripButtonEditMode.Image = FileUtils.GetImage_ForDLL("tag_blue.png");
 			this.toolStripButtonEditMode.ImageTransparentColor = System.Drawing.Color.Magenta;
 			this.toolStripButtonEditMode.Name = "toolStripButtonEditMode";
 			this.toolStripButtonEditMode.Size = new System.Drawing.Size(23, 22);
-			this.toolStripButtonEditMode.Text = Loc.Instance.GetString ("Toggle Safe Edit Mode");
-			this.toolStripButtonEditMode.Click += new System.EventHandler(this.toolStripButtonEditMode_Click);
+			this.toolStripButtonEditMode.Text = Loc.Instance.GetString ("Toggle Safe Edit Mode ** REMOVE? **");
+			this.toolStripButtonEditMode.Click += new System.EventHandler(this.toggleSafeEditModeClick);
 			// 
 			// toolStripSeparator2
 			// 
@@ -280,7 +299,8 @@ namespace appframe
 			// toolStripButtonLoadTableFile
 			// 
 			this.toolStripButtonLoadTableFile.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-			//this.toolStripButtonLoadTableFile.Image = global::Worgan2006.Properties.Resources.table_add;
+
+			this.toolStripButtonLoadTableFile.Image = FileUtils.GetImage_ForDLL("table_add.png"); 
 			this.toolStripButtonLoadTableFile.ImageTransparentColor = System.Drawing.Color.Magenta;
 			this.toolStripButtonLoadTableFile.Name = "toolStripButtonLoadTableFile";
 			this.toolStripButtonLoadTableFile.Size = new System.Drawing.Size(23, 22);
@@ -291,7 +311,7 @@ namespace appframe
 			// toolStripButtonSaveTableToXML
 			// 
 			this.toolStripButtonSaveTableToXML.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-			//this.toolStripButtonSaveTableToXML.Image = global::Worgan2006.Properties.Resources.table_save;
+			this.toolStripButtonSaveTableToXML.Image = FileUtils.GetImage_ForDLL("table_save.png"); 
 			this.toolStripButtonSaveTableToXML.ImageTransparentColor = System.Drawing.Color.Magenta;
 			this.toolStripButtonSaveTableToXML.Name = "toolStripButtonSaveTableToXML";
 			this.toolStripButtonSaveTableToXML.Size = new System.Drawing.Size(23, 22);
@@ -307,7 +327,7 @@ namespace appframe
 			// toolStripButtonInsert
 			// 
 			this.toolStripButtonInsert.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-			//this.toolStripButtonInsert.Image = global::Worgan2006.Properties.Resources.basket_add;
+			this.toolStripButtonInsert.Image = FileUtils.GetImage_ForDLL("basket_add.png"); 
 			this.toolStripButtonInsert.ImageTransparentColor = System.Drawing.Color.Magenta;
 			this.toolStripButtonInsert.Name = "toolStripButtonInsert";
 			this.toolStripButtonInsert.Size = new System.Drawing.Size(23, 22);
@@ -318,13 +338,13 @@ namespace appframe
 			// toolStripButtonNumber
 			// 
 			this.toolStripButtonNumber.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-			//this.toolStripButtonNumber.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButtonNumber.Image")));
+			this.toolStripButtonNumber.Image = FileUtils.GetImage_ForDLL("tag.png");
 			this.toolStripButtonNumber.ImageTransparentColor = System.Drawing.Color.Magenta;
 			this.toolStripButtonNumber.Name = "toolStripButtonNumber";
 			this.toolStripButtonNumber.Size = new System.Drawing.Size(23, 22);
 			this.toolStripButtonNumber.Text = "Auto number";
 			this.toolStripButtonNumber.ToolTipText = Loc.Instance.GetString ("Auto number rows");
-			this.toolStripButtonNumber.Click += new System.EventHandler(this.toolStripButton3_Click);
+			this.toolStripButtonNumber.Click += new System.EventHandler(this.AutoNumberClick);
 			// 
 			// richTextBox1
 			// 
@@ -572,19 +592,16 @@ namespace appframe
 		/// </summary>
 		/// <param name="sender"></param>
 		/// <param name="e"></param>
-		private void dataGrid1_CurrentCellChanged(object sender, EventArgs e)
+		private void dataGrid1_CurrentCellChanged (object sender, EventArgs e)
 		{
-//			last_row = dataGrid1.CurrentCell.RowNumber; // october 2012 -- find I need to keep track of the index myself?
-//			
-//			
-//			if (panelTable != null)
-//			{
-//				panelTable.PageSaved = false;
-//			}
-//			else if (appearance != null)
-//			{
-//				appearance.NeedsSave();
-//			}
+			// october 2012 -- find I need to keep track of the index myself?
+			if (dataGrid1.CurrentCell != null ) {
+				last_row = dataGrid1.CurrentCell.RowIndex; 
+			
+				SetSaveNeeded (true);
+			} else {
+				last_row = 0;
+			}
 		}
 
 	//	public Appearance appearance = null;
@@ -770,8 +787,12 @@ namespace appframe
 			}
 		}
 		
-		private void buttonJumpLink_Click(object sender, EventArgs e)
+		private void buttonJumpLink_Click (object sender, EventArgs e)
 		{
+			string notename = dataGrid1 [dataGrid1.CurrentCell.ColumnIndex, dataGrid1.CurrentCell.RowIndex].Value.ToString ();
+			if (GoToNote != null) {
+				GoToNote(notename);
+			}
 //			if (panelTable != null)
 //			{
 //				FollowLinkEvent eNew = new FollowLinkEvent(
@@ -970,117 +991,96 @@ namespace appframe
 			return strData;
 		}
 		
-		private void toolStripButtonEditMode_Click(object sender, EventArgs e)
+		private void toggleSafeEditModeClick(object sender, EventArgs e)
 		{
 			dataGrid1.SafeEditMode = !dataGrid1.SafeEditMode;
 		}
 		
 		private void toolStripButtonLoadTableFile_Click(object sender, EventArgs e)
 		{
-//			if (appearance != null)
-//			{
-//				if (openFileDialog1.ShowDialog() == DialogResult.OK)
-//				{
-//					if (NewMessage.Show("Caution!", "If you continue you will lose any existing data.",
-//					                    MessageBoxButtons.YesNo, null) == DialogResult.Yes)
-//					{
-//						DataSet temp = new DataSet();
-//						temp.ReadXml(openFileDialog1.FileName);
-//						//((DataSet)dataGrid1.DataSource).Tables[0].TableName = temp.Tables[0].TableName;
-//						// ((DataSet)dataGrid1.DataSource).Tables[0].Columns = temp.Tables[0].Columns;
-//						// ((DataSet)dataGrid1.DataSource).Tables[0].Rows = temp.Tables[0].Rows; ((DataSet)dataGrid1.DataSource).Tables.
-//						
-//						//                    ((DataSet)dataGrid1.DataSource).Tables.Clear();
-//						//((DataSet)dataGrid1.DataSource).Tables.Remove(((DataSet)dataGrid1.DataSource).Tables[0]);
-//						//((DataSet)dataGrid1.DataSource).Tables[0].TableName = "Table1";
-//						
-//						try
-//						{
-//							
-//							// trying somethign more complicated because I can't get deletions to work
-//							//                            note.appearance.dataSource = new DataSet("Table");
-//							//                          note.appearance.Columns = new string[4] { Header.Roll, Header.Result, Header.NextTable, Header.Modifier }; // setting columns creates the table
-//							appearance.dataSource = new DataSet("Table");
-//							appearance.dataSource.Tables.Add(temp.Tables[0].Copy());
-//							// not tried yet
-//							// ** Feb 11 2012 - none of the deletions worked
-//							//lookfortablebyname andrename
-//							/* while ((((DataSet)dataGrid1.DataSource).Tables).Count > 0)
-//                            {
-//                                DataTable table = ((DataSet)dataGrid1.DataSource).Tables[0];
-//                                if (((DataSet)dataGrid1.DataSource).Tables.CanRemove(table))
-//                                {
-//                                    ((DataSet)dataGrid1.DataSource).Tables.Remove(table);
-//                                }
-//                            }
-//                            */
-//							// *1 appearance.dataSource.Tables[0].Clear();
-//							// *1 appearance.dataSource.Tables[0].TableName = "tableold" + appearance.dataSource.Tables.Count.ToString();
-//							//appearance.dataSource.Clear();
-//							//appearance.dataSource.Tables.Remove(appearance.dataSource.Tables[0]); // this wokred but required a reload
-//							// appearance.dataSource.Tables.Remove("Table1");
-//							//appearance.dataSource.Tables.Clear();
-//							
-//						}
-//						catch (Exception ex)
-//						{
-//							MessageBox.Show(ex.ToString());
-//						}
-//						//  appearance.dataSource.Tables.Add(temp.Tables[0].Copy());
-//						// this kind of worked but not really
-//						//dataGrid1.DataSource = new DataSet();
-//						//((DataSet)dataGrid1.DataSource).Tables.Add(temp.Tables[0].Copy());
-//						
-//					}
-//				}
-//			}
+				if (openFileDialog1.ShowDialog() == DialogResult.OK)
+				{
+					if (NewMessage.Show(Loc.Instance.GetString("Caution!"), Loc.Instance.GetString("If you continue you will lose any existing data."),
+					                    MessageBoxButtons.YesNo, null) == DialogResult.Yes)
+					{
+						DataSet temp = new DataSet();
+						temp.ReadXml(openFileDialog1.FileName);
+						
+						
+						try
+						{
+							
+							// trying somethign more complicated because I can't get deletions to work
+							//                            note.appearance.dataSource = new DataSet("Table");
+							//                          note.appearance.Columns = new string[4] { Header.Roll, Header.Result, Header.NextTable, Header.Modifier }; // setting columns creates the table
+						dataGrid1.DataSource = null;
+						dataGrid1.DataSource = temp.Tables[0];
+
+							
+							
+						}
+						catch (Exception ex)
+						{
+							NewMessage.Show(ex.ToString());
+						}
+				
+						
+					}
+				}
+
 		}
 		
 		private void toolStripButtonSaveTableToXML_Click(object sender, EventArgs e)
 		{
-//			if (appearance.dataSource != null)
-//			{
-//				if (saveFileDialog1.ShowDialog() == DialogResult.OK)
-//				{
-//					((DataSet)appearance.dataSource).WriteXml(saveFileDialog1.FileName, XmlWriteMode.WriteSchema);
-//				}
-//			}
+			if (dataGrid1.DataSource != null)
+			{
+				if (saveFileDialog1.ShowDialog() == DialogResult.OK)
+				{
+					DataSet temp = new DataSet();
+					temp.Tables.Add((DataTable)dataGrid1.DataSource);
+					temp.WriteXml(saveFileDialog1.FileName, XmlWriteMode.WriteSchema);
+				}
+			}
 		}
 		/// <summary>
 		/// insert a row
 		/// </summary>
 		/// <param name="sender"></param>
 		/// <param name="e"></param>
-		private void toolStripButtonInsert_Click(object sender, EventArgs e)
+		private void toolStripButtonInsert_Click (object sender, EventArgs e)
 		{
-			int row = last_row;
+			//	int row = last_row;
 			//((DataSet)dataGrid1.DataSource).Tables[0].DefaultView(
-			((DataSet)dataGrid1.DataSource).Tables[0].Rows.InsertAt(((DataSet)dataGrid1.DataSource).Tables[0].NewRow(), last_row);
+			if (dataGrid1.DataSource != null) {
+				DataRow row = ((DataTable)dataGrid1.DataSource).NewRow ();
+				lg.Instance.Line ("TablePanel.InsertRow", ProblemType.MESSAGE, String.Format ("Inserting at row = {0}", last_row));
+				((DataTable)dataGrid1.DataSource).Rows.InsertAt (row, last_row);
+				SetSaveNeeded (true);
+			}
 		}
 		
 		/// <summary>
 		/// will autonumber the current row, replacing contents
 		/// </summary>
-		private void DoAutoNumber()
+		private void DoAutoNumber ()
 		{
+			if (dataGrid1.DataSource != null) {
+				// get current column
+				int column = dataGrid1.CurrentCell.ColumnIndex;
+				string sColumn = ((DataTable)dataGrid1.DataSource).Columns [column].ToString ();
 			
-			// get current column
-//			int column = dataGrid1.CurrentCell.ColumnNumber;
-//			string sColumn = ((DataSet)dataGrid1.DataSource).Tables[0].Columns[column].ToString();
-//			
-//			// prompt
-//			if (NewMessage.Show("Caution!", String.Format("Do you want to overwrite the values in column: {0}.", sColumn),
-//			                    MessageBoxButtons.YesNo, null) == DialogResult.Yes)
-//			{
-//				for (int i = 0; i < ((DataSet)dataGrid1.DataSource).Tables[0].Rows.Count; i++)
-//				{
-//					((DataSet)dataGrid1.DataSource).Tables[0].Rows[i][column] = i + 1;
-//				}
-//			}
-			
+				// prompt
+				if (NewMessage.Show ("Caution!", String.Format ("Do you want to overwrite the values in column: {0}.", sColumn),
+			                    MessageBoxButtons.YesNo, null) == DialogResult.Yes) {
+					for (int i = 0; i < ((DataTable)dataGrid1.DataSource).Rows.Count; i++) {
+						((DataTable)dataGrid1.DataSource).Rows [i] [column] = i + 1;
+					}
+				}
+			}
+			SetSaveNeeded(true);
 		}
 		
-		private void toolStripButton3_Click(object sender, EventArgs e)
+		private void AutoNumberClick(object sender, EventArgs e)
 		{
 			DoAutoNumber();
 		}

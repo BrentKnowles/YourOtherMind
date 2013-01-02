@@ -63,7 +63,7 @@ namespace Layout
 			CaptionLabel.Dock = DockStyle.Top;
 
 			ComboBox mode = new ComboBox ();
-			mode.Parent = Parent;
+			mode.Parent = ParentNotePanel;
 			mode.DropDownStyle = ComboBoxStyle.DropDownList;
 			mode.Dock = DockStyle.Top;
 			mode.BringToFront ();
@@ -77,7 +77,7 @@ namespace Layout
 
 			list = new ListBox();
 			//list.SelectedIndexChanged += HandleDropDownSelectedIndexChanged;
-			list.Parent = Parent;
+			list.Parent = ParentNotePanel;
 			list.Width = 125;
 			list.Dock = DockStyle.Fill;
 			list.BringToFront();
@@ -88,11 +88,11 @@ namespace Layout
 			Button refresh = new Button();
 			refresh.Text = Loc.Instance.GetString("Refresh");
 			refresh.Dock = DockStyle.Bottom;
-			refresh.Parent = Parent;
+			refresh.Parent = ParentNotePanel;
 			refresh.Click += HandleRefreshClick;
 
 			 count = new Label();
-			count.Parent = Parent;
+			count.Parent = ParentNotePanel;
 			count.Dock = DockStyle.Top;
 
 
@@ -152,13 +152,27 @@ namespace Layout
 		/// </param>
 		void HandleListBoxDoubleClick (object sender, EventArgs e)
 		{
+
 			if (Modes.NOTES == mode) {
-				NewMessage.Show ("Finish me please");
+
+
+					NoteDataInterface note =  (NoteDataInterface)this.list.SelectedItem;
+
+				if (note != null)
+				{
+
+					Layout.GoToNote(note);
+				}
+				else
+				{
+					lg.Instance.Line ("LayoutPanel->HandleTabButtonClick", ProblemType.WARNING, String.Format ("Note with guid = {0} not found",note.GuidForNote));
+				}
+
 			} else
 				if (Modes.LAYOUTS == mode) {
 				if (this.list.SelectedItem != null)
 				{
-				MasterOfLayouts.NameAndGuid record = (MasterOfLayouts.NameAndGuid)this.list.SelectedItem;
+					MasterOfLayouts.NameAndGuid record = (MasterOfLayouts.NameAndGuid)this.list.SelectedItem;
 				LayoutDetails.Instance.LoadLayout(record.Guid);
 				}
 
@@ -206,7 +220,7 @@ namespace Layout
 				this.list.DataSource = null;
 				this.list.Items.Clear ();
 				this.list.Sorted = true;
-				this.list.DataSource = Layout.GetNotes();
+				this.list.DataSource = Layout.GetAllNotes();
 				this.list.DisplayMember = "Caption";
 				this.list.ValueMember = "GuidForNote";
 			} else {

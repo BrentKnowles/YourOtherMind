@@ -27,12 +27,12 @@ namespace Layout
 		#endregion
 		#region System
 		string GuidForNote {get;set;}
-		NotePanel Parent {get;set;}
+		NotePanel ParentNotePanel {get;set;}
 
 		// I did not want to do this but because panels are implemented "further down the chain" I need these two functions here
 		bool IsPanel{get;} 
 		bool IsSystemNote{get;}
-		System.Collections.ObjectModel.ReadOnlyCollection<NoteDataInterface>  GetChildNotes();
+		System.Collections.ArrayList   GetChildNotes();
 		#endregion
 		#endregion
 
@@ -53,7 +53,8 @@ namespace Layout
 
 		Action<bool> SetSaveRequired { get; set; }
 		void Save();
-
+		 void BringToFront();
+		 void Flash();
 
 		string RegisterType();
 

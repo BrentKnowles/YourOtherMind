@@ -66,7 +66,7 @@ namespace Layout
 			base.CreateParent (Layout);
 			CaptionLabel.Dock = DockStyle.Top;
 			richBox = new RichTextBox();
-			richBox.Parent = Parent;
+			richBox.Parent = ParentNotePanel;
 			richBox.Dock = DockStyle.Fill;
 			richBox.BringToFront();
 			richBox.Rtf = this.Data1;

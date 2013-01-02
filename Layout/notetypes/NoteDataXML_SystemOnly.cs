@@ -39,8 +39,8 @@ namespace Layout
 
 		//	Maximize(true);
 			//Parent.Enter+= HandleEnter;
-			Parent.MouseEnter+= HandleMouseEnter;
-			Parent.BringToFront();
+			ParentNotePanel.MouseEnter+= HandleMouseEnter;
+			ParentNotePanel.BringToFront();
 			//Parent.Dock = System.Windows.Forms.DockStyle.Left;
 			Dock = DockStyle.Fill;
 			UpdateLocation();
@@ -56,7 +56,7 @@ namespace Layout
 		/// </returns>
 		public LayoutPanelBase GetChildLayout()
 		{
-			foreach (Control control in Parent.Controls) {
+			foreach (Control control in ParentNotePanel.Controls) {
 				if (control.GetType ().BaseType == typeof(LayoutPanelBase))
 				{
 					//NewMessage.Show ("FOUND : " + ((LayoutPanelBase)control).GUID);

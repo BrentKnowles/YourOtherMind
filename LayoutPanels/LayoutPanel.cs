@@ -2,6 +2,7 @@ using System;
 using System.Windows.Forms;
 using System.Drawing;
 using System.Collections.Generic;
+using System.Collections;
 using LayoutPanels;
 using CoreUtilities;
 /*This is Just an Experiment.
@@ -437,12 +438,29 @@ namespace Layout
 					ToolStripButton but = new ToolStripButton ();
 					but.Text = note.Caption;
 					but.Tag = note.GuidForNote;
-
+					but.Click+= HandleTabButtonClick;
 					tabsBar.Items.Add (but);
 
 				}
 			} else {
 				if (tabsBar != null) tabsBar.Visible = false;
+			}
+		}
+
+		void HandleTabButtonClick (object sender, EventArgs e)
+		{
+			if (sender is ToolStripButton && (sender as ToolStripButton).Tag != null) {
+				string guid = (sender as ToolStripButton).Tag.ToString ();
+				NoteDataInterface note = FindNoteByGuid(guid);
+				if (note != null)
+				{
+					GoToNote(note);
+				}
+				else
+				{
+					lg.Instance.Line ("LayoutPanel->HandleTabButtonClick", ProblemType.WARNING, String.Format ("Note with guid = {0} not found",guid));
+				}
+
 			}
 		}
 
@@ -633,7 +651,7 @@ namespace Layout
 			//SaveTo();
 		}
 
-		public override System.Collections.ArrayList GetNotes()
+		public override System.Collections.ArrayList GetAllNotes()
 		{
 			return this.Notes.GetAllNotes();
 		}
@@ -650,6 +668,116 @@ namespace Layout
 				SetSubNoteSaveRequired(NeedSave);
 			}
 		}
+
+		/// <summary>
+		/// Gos to note.
+		// goes to a note on this page
+		// ASSUMES: Actually open in the interface
+		// NOTE: Get Notes will NOT GET INTERFACE elements for notes found in subpanels (only the note) because Layout is set to null when we search for them.
+		//       We have to do adanced detective work after getting the note
+		/// </summary>
+		/// <param name='guid'>
+		/// GUID.
+		/// </param>
+		public override NoteDataInterface FindNoteByGuid (string guid)
+		{
+			// go through list of notes until we find a match
+			foreach (NoteDataInterface note in Notes.GetAllNotes()) {
+				if (note.GuidForNote == guid)
+				{
+					return note;
+				}
+			
+			}
+			return null;
+		}
+		/// <summary>
+		/// Finds the name of the note by.
+		/// Because names are not unique, will return FIRST name match
+		/// </summary>
+		/// <returns>
+		/// The note by name.
+		/// </returns>
+		/// <param name='name'>
+		/// Name.
+		/// </param>
+		public override NoteDataInterface FindNoteByName(string name)
+		{
+			// go through list of notes until we find a match
+			foreach (NoteDataInterface note in Notes.GetAllNotes()) {
+				if (note.Caption == name)
+				{
+					return note;
+				}
+				
+			}
+			return null;
+		}
+
+		/// <summary>
+		/// Finds the subpanel note.
+		/// This is called after a FindByGuid or FindByName when we want the actual
+		/// note with its interface (which those do not return).
+		/// 
+		/// This will call down the panel chain, looking for the note
+		/// </summary>
+		/// <param name='note'>
+		/// Note.
+		/// </param>
+		public override NoteDataInterface FindSubpanelNote (NoteDataInterface note)
+		{
+			// dig deeper BUT ONLY if we are loaded
+			// now sure how to know this (TO DO)
+			foreach (Control control in this.noteCanvas.Controls) {
+				if (control is NotePanel) {
+
+					NoteDataInterface foundNote = ((control as NotePanel).GetChild () as NoteDataInterface);
+
+					if (foundNote.GuidForNote == note.GuidForNote) {
+						note = foundNote;
+						return note;
+					}
+					else
+					if (foundNote is NoteDataXML_Panel) {
+						// do this search inside this
+						note = (foundNote as NoteDataXML_Panel).FindSubpanelNote (note);
+						return note;
+
+					}
+				}
+			}
+
+			return note;
+		}
+
+		/// <summary>
+		/// Will BRINGTOFRONT the indicated note and make it flash
+		/// </summary>
+		/// <param name='note'>
+		/// Note.
+		/// </param>
+		public override void GoToNote (NoteDataInterface note)
+		{
+
+
+			// at this point if the note does not have a parent (because it is a subnote and this is not instantiated when 
+			// searching
+			// then we need to search for it, to find it
+			if (note.ParentNotePanel == null && this.Controls != null && this.Controls.Count > 0) {
+				note = FindSubpanelNote(note);
+
+			
+			}
+
+
+			if (note.ParentNotePanel != null) {
+				note.BringToFront ();
+				note.Flash ();
+			} else {
+				lg.Instance.Line("LayoutPanel->GoToNote", ProblemType.MESSAGE, "Even with advanced search we did not find note");
+			}
+		}
+
 	}
 }
 
