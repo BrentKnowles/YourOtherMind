@@ -47,7 +47,6 @@
     <Compile Include="Interfaces\LayoutPanelInterface.cs" />
     <Compile Include="AsXML\LayoutXML.cs" />
     <Compile Include="AsDatabase\LayoutDatabase.cs" />
-    <Compile Include="AsDatabase\tmpDatabaseConstants.cs" />
     <Compile Include="notetypes\NoteDataXML.cs" />
     <Compile Include="notetypes\NoteDataXML_RichText.cs" />
     <Compile Include="LayoutPanelBase.cs" />
@@ -57,6 +56,7 @@
     <Compile Include="notetypes\NoteDataXML_SystemOnly.cs" />
     <Compile Include="MasterOfLayouts.cs" />
     <Compile Include="notetypes\NoteDataXML_Table.cs" />
+    <Compile Include="AsDatabase\dbConstants.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

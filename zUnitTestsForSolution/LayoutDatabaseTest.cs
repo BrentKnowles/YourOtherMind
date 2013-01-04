@@ -21,7 +21,7 @@ namespace Testing
 			LayoutDetails.Instance.YOM_DATABASE = "yom_test_database.s3db";
 			FakeLayoutDatabase layout = new FakeLayoutDatabase("testguid");
 			FAKE_SqlLiteDatabase db = new FAKE_SqlLiteDatabase(layout.GetDatabaseName ());
-			db.DropTableIfExists(tmpDatabaseConstants.table_name);
+			db.DropTableIfExists(dbConstants.table_name);
 			// drop the table
 		}
 		#endregion
@@ -33,7 +33,7 @@ namespace Testing
 			// being used that I make sure my column count matches the actual number of oclumns
 
 			// The reas on they could not be the same is that I needed a constant for array initialization
-			Assert.AreEqual(tmpDatabaseConstants.ColumnCount, tmpDatabaseConstants.Columns.Length);
+			Assert.AreEqual(dbConstants.ColumnCount, dbConstants.Columns.Length);
 
 		}
 
@@ -550,7 +550,19 @@ namespace Testing
 			Assert.False (layout.IsNoteExistsInLayout (guid2find));
 		}
 
+		[Test]
+		public void NoCrashIfSaveEmptyPanel()
+		{	_setupforlayoutests ();
 
+			FakeLayoutDatabase layout = new FakeLayoutDatabase ("testguid");
+			LayoutPanel layoutPanel = new LayoutPanel (CoreUtilities.Constants.BLANK, false);
+			
+			NoteDataXML_Panel note = new NoteDataXML_Panel ();
+			layout.SaveTo();
+
+			_w.output("This often fails if we have added a new Layout Variable and it has not been set to a default value in constructor");
+			
+		}
 	}
 }
 

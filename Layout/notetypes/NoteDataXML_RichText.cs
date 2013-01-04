@@ -1,7 +1,7 @@
 using System;
 using System.Windows.Forms;
 using CoreUtilities;
-
+using System.Xml.Serialization;
 namespace Layout
 {
 	public class NoteDataXML_RichText : NoteDataXML
@@ -66,12 +66,27 @@ namespace Layout
 			base.CreateParent (Layout);
 			CaptionLabel.Dock = DockStyle.Top;
 			richBox = new RichTextBox();
+			richBox.Enter += HandleRichBoxEnter;
 			richBox.Parent = ParentNotePanel;
 			richBox.Dock = DockStyle.Fill;
 			richBox.BringToFront();
 			richBox.Rtf = this.Data1;
 			richBox.TextChanged+= HandleTextChanged;
 		
+		}
+		/// <summary>
+		/// Handles the rich box enter. Sets the active richtext box
+		/// </summary>
+		/// <param name='sender'>
+		/// Sender.
+		/// </param>
+		/// <param name='e'>
+		/// E.
+		/// </param>
+		void HandleRichBoxEnter (object sender, EventArgs e)
+		{
+			lg.Instance.Line("NoteDataXML_RichText", ProblemType.MESSAGE, String.Format ("{0} has been set as CurrentTextNote for Layout {1}", this.Caption, Layout.GUID));
+			Layout.CurrentTextNote = (NoteDataXML_RichText)this;
 		}
 
 		void HandleTextChanged (object sender, EventArgs e)
@@ -85,6 +100,30 @@ namespace Layout
 		{
 			return Loc.Instance.Cat.GetString("Text");
 		}
+
+
+		/// <summary>
+		/// RichText Accessors
+		/// </summary>
+		/// <value>
+		/// The selected text.
+		/// </value>
+		[XmlIgnore]
+		public string SelectedText {
+			get { return richBox.SelectedText;}
+			set { richBox.SelectedText = value;}
+		}
+		[XmlIgnore]
+		public int SelectionStart {
+			get { return richBox.SelectionStart;}
+			set { richBox.SelectionStart = value;}
+		}
+		[XmlIgnore]
+		public int SelectionLength {
+			get { return richBox.SelectionLength;}
+			set { richBox.SelectionLength = value;}
+		}
+
 	}
 }
 

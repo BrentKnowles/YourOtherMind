@@ -21,8 +21,8 @@ namespace Testing
 
 			FakeLayoutDatabase layout = new FakeLayoutDatabase("testguid");
 			FAKE_SqlLiteDatabase db = new FAKE_SqlLiteDatabase(layout.GetDatabaseName ());
-			db.DropTableIfExists(Layout.data.tmpDatabaseConstants.table_name);
-			_w.output ("dropping table " + Layout.data.tmpDatabaseConstants.table_name);
+			db.DropTableIfExists(Layout.data.dbConstants.table_name);
+			_w.output ("dropping table " + Layout.data.dbConstants.table_name);
 		}
 
 		[Test]
@@ -155,13 +155,12 @@ namespace Testing
 			FAKE_NoteDataXML_Panel panelC = new FAKE_NoteDataXML_Panel();
 			panelC.Caption = "PanelC";
 
-			FAKE_NoteDataXML_Panel panelD = new FAKE_NoteDataXML_Panel();
-			panelD.Caption = "PanelD";
+		
 			_w.output("panels made");
 
 
-			panel.AddNote(panelA);
-			panel.AddNote(panelB);
+			panel.AddNote(panelA);  // 1
+			panel.AddNote(panelB);  // 2
 			//panelA.CreateParent(panel); should not need to call this when doing LayoutPanel.AddNote because it calls CreateParent insid eof it
 
 			basicNote = new NoteDataXML();
@@ -169,29 +168,60 @@ namespace Testing
 
 
 
-			panelA.AddNote(basicNote);
+			panelA.AddNote(basicNote);  // Panel A has 1 note
 			basicNote.CreateParent(panelA.myLayoutPanel());  // DO need to call it when adding notes like this (to a subpanel, I think)
 			panel.SaveLayout();
-			Assert.AreEqual(1, panelA.CountNotes());
-	  	Assert.AreEqual (5, panel.CountNotes());
+			Assert.AreEqual(1, panelA.CountNotes(), "Panel A holds one note");
+	  	Assert.AreEqual (5, panel.CountNotes(), "Total notes now is 5");
 			//COUNT SHOULD BE: panelA has 1 note
 			//COUNT Total should be: Default Note + Note + PanelA + Panel B  + (Note Inside Panel A) = 5
 
-			 panelA.AddNote (panelC);
+			 panelA.AddNote (panelC);  // panelC is now part of Panel 2
 			 panelC.CreateParent(panelA.myLayoutPanel());
 			panel.SaveLayout(); // NEED TO SAVE before conts will be accurated
+
+
+
 			//COUNT SHOULD BE: panelA has 2 notes (Panel C + the Note I add)
-			Assert.AreEqual(2, panelA.CountNotes());
-			Assert.AreEqual (6, panel.CountNotes());
+			Assert.AreEqual(2, panelA.CountNotes(), "two notes in panelA");
+			Assert.AreEqual (6, panel.CountNotes(), "total of six notes");
 			Assert.AreEqual (0, panelB.CountNotes(),"0 count worked?");
 			//COUNT Total should be: Default Note + Note + PanelA + Panel B + (NoteInside Panel A) + (Panel C Inside Panel A) = 6
 
-
-			panelC.AddNote(panelD);
+			FAKE_NoteDataXML_Panel panelD = new FAKE_NoteDataXML_Panel();
+			panelD.Caption = "PanelD";
+			panelC.AddNote(panelD); // panelC which is inside PANELA now adds panelD (which is empty?)
 			panelD.CreateParent(panelC.myLayoutPanel());
 			panel.SaveLayout();
+
+			Assert.AreEqual (0, panelD.CountNotes (), "No notes in panelD");
+			/*
+			NoteDataXML_RichText extra = new NoteDataXML_RichText();
+			panelD.AddNote (extra); //this was here only to test that there is an error with counting EMPTY panels
+			extra.CreateParent(panelD.myLayoutPanel());
+			panel.SaveLayout();*/
+			// update on ERROR: Every note in D is being counted DOUBLE
+
+
+			// weird error: If a panel is empty it will register as +1 (i.e, counted twice)
+
+			// PanelC and PanelA are adding this note
+//			AddChildrenToList, TYPE: TEMPORARY, scanning children...47d43f01-a031-42d1-8539-bb7ae284a9e1 from PanelC
+		
+//			AddChildrenToList, TYPE: TEMPORARY, scanning children...47d43f01-a031-42d1-8539-bb7ae284a9e1 from PanelA
+
+			//OK: Every note is claiming ownership of the TEXT NOTE, which is the problem, I think.
+
+			Assert.AreEqual (1,panelC.CountNotes(), "1 notes in panelC");
+			Assert.AreEqual (0,panelD.CountNotes(), "1 note in panelD");
+			_w.output("_------------------------------");
+			_w.output (panel.CountNotes());
+			_w.output("_------------------------------");
+			Assert.AreEqual (7, panel.CountNotes(), "We have only added one panel so we should be up to 7");
+
 			Assert.AreEqual(3, panelA.CountNotes());
-			Assert.AreEqual (7, panel.CountNotes());
+
+			Assert.AreEqual (7, panel.CountNotes(),"number of notes in main panel");
 			Assert.AreEqual (0, panelB.CountNotes(),"testt");
 			Assert.AreEqual (1, panelC.CountNotes(),"testt");
 

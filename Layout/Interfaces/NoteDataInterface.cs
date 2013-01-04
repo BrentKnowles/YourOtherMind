@@ -55,7 +55,7 @@ namespace Layout
 		void Save();
 		 void BringToFront();
 		 void Flash();
-
+		void Maximize (bool Maximize);
 		string RegisterType();
 
 		/// <summary>

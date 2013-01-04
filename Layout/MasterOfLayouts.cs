@@ -29,9 +29,9 @@ namespace Layout
 		public static BaseDatabase CreateDatabase ()
 		{
 			SqlLiteDatabase db = new SqlLiteDatabase (LayoutDetails.Instance.YOM_DATABASE);
-			db.CreateTableIfDoesNotExist (tmpDatabaseConstants.table_name, 
-		                              tmpDatabaseConstants.Columns, 
-		                              tmpDatabaseConstants.Types, String.Format ("{0}", tmpDatabaseConstants.ID)
+			db.CreateTableIfDoesNotExist (dbConstants.table_name, 
+		                              dbConstants.Columns, 
+		                              dbConstants.Types, String.Format ("{0}", dbConstants.ID)
 			);
 			return db;
 		}
@@ -41,10 +41,59 @@ namespace Layout
 		public void Dispose()
 		{
 		}
+		/// <summary>
+		/// Exists the specified LayoutName.
+		/// </summary>
+		/// <param name='LayoutName'>
+		/// Layout name.
+		/// </param>
+		public static bool ExistsByName(string LayoutName)
+		{
+
+			BaseDatabase MyDatabase = CreateDatabase ();
+			bool result =  MyDatabase.Exists (dbConstants.table_name, dbConstants.NAME, LayoutName);
+			MyDatabase.Dispose();
+			return result;
+		}
+
+		/// <summary>
+		/// Gets the name of the GUID from.
+		/// </summary>
+		/// <returns>
+		/// The GUID from name.
+		/// </returns>
+		/// <param name='name'>
+		/// Name.
+		/// </param>
+		public static string GetGuidFromName (string name)
+		{
+			BaseDatabase MyDatabase = CreateDatabase ();
+			string guid=Constants.BLANK;
+			List<object[]> result = MyDatabase.GetValues(dbConstants.table_name, new string[1] {dbConstants.GUID}, dbConstants.NAME, name);
+			if (result != null && result.Count > 0)
+			{
+				if (result[0][0] != null)
+				{
+					guid = (result[0][0]).ToString();
+				}
+			}
+			MyDatabase.Dispose();
+			return guid;
+		}
+		public static bool ExistsByGUID(string GUID)
+		{
+			
+			BaseDatabase MyDatabase = CreateDatabase ();
+			bool result =  MyDatabase.Exists (dbConstants.table_name, dbConstants.GUID, GUID);
+			MyDatabase.Dispose();
+			return result;
+		}
 		public string Backup ()
 		{
 			SqlLiteDatabase db = new SqlLiteDatabase (LayoutDetails.Instance.YOM_DATABASE);
-			return db.BackupDatabase();
+			string result = db.BackupDatabase();
+			db.Dispose();
+			return result;
 		}
 
 		/// <summary>
@@ -66,8 +115,8 @@ namespace Layout
 				throw new Exception ("Unable to create database in LoadFrom");
 			}
 			
-			List<object[]> myList = MyDatabase.GetValues (tmpDatabaseConstants.table_name, new string[2] {tmpDatabaseConstants.GUID, tmpDatabaseConstants.NAME},
-			tmpDatabaseConstants.SUBPANEL , 0,String.Format(" order by {0} COLLATE NOCASE", tmpDatabaseConstants.NAME));
+			List<object[]> myList = MyDatabase.GetValues (dbConstants.table_name, new string[2] {dbConstants.GUID, dbConstants.NAME},
+			dbConstants.SUBPANEL , 0,String.Format(" order by {0} COLLATE NOCASE", dbConstants.NAME));
 			
 			
 			if (myList != null && myList.Count > 0) {

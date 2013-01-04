@@ -55,6 +55,7 @@
     <Compile Include="addin testing\mef_Bootstrapper.cs" />
     <Compile Include="NoteData.cs" />
     <Compile Include="appframetesting\tablepaneltests.cs" />
+    <Compile Include="MasterOfLayoutsTest.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

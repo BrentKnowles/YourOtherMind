@@ -33,18 +33,19 @@ namespace Layout
 			get { return noteCanvas;}
 			set { noteCanvas = value;}
 		}
+		NoteDataXML_RichText currentTextNote=null;
 		/// <summary>
 		/// A reference to the active note
 		/// </summary>
 		/// <value>
 		/// The current note.
 		/// </value>
-		public override NotePanelInterface CurrentNote {
+		public override NoteDataXML_RichText CurrentTextNote {
 			get {
-				throw new System.NotImplementedException ();
+				return currentTextNote;
 			}
 			set {
-				throw new System.NotImplementedException ();
+				currentTextNote = value;
 			}
 		}
 
@@ -136,16 +137,225 @@ namespace Layout
 			
 			
 			
-			ToolStripDropDownButton AddNote = new ToolStripDropDownButton("Add Note");
+			ToolStripDropDownButton AddNote = new ToolStripDropDownButton(Loc.Instance.GetString ("Add Note"));
 			AddNote.DropDownOpening += HandleAddNoteDropDownOpening;
-			bar.Items.Add (AddNote);
-			
-			
 
+			
+			
+			ToolStripDropDownButton RandomTables = new ToolStripDropDownButton(Loc.Instance.GetString("Random"));
+			RandomTables.ToolTipText = Loc.Instance.GetString("Generate a random result from a table. The list of tables can be changed by modifying the RandomTables table on the System layout");
+			RandomTables.DropDownOpening += HandleDropDownRandomTablesOpening;
 
 			//ToolStripLabel CurrentNote
+			bar.Items.Add (AddNote);
+			bar.Items.Add (RandomTables);
 		}
 
+		/// <summary>
+		/// Handles the drop down random tables opening.
+		/// 
+		/// Will grab a list of Pages defined on the SYSTEMPAGE for RandomTables (tablename/notename = RandomTables)
+		/// </summary>
+		/// <param name='sender'>
+		/// Sender.
+		/// </param>
+		/// <param name='e'>
+		/// E.
+		/// </param>
+		void HandleDropDownRandomTablesOpening (object sender, EventArgs e)
+		{
+			// get the sytem page (stored in layoutdetails?
+
+
+
+			// get the note with name = "RandomTables"
+			(sender as ToolStripDropDownItem).DropDownItems.Clear ();
+			string[] tablenames = new string[2]{"charactermaker", "charactermaker|villains"};
+
+			foreach (string table in tablenames) {
+				ToolStripButton button = new ToolStripButton(table);
+				button.Click+= HandleRandomTableClick;
+				(sender as ToolStripDropDownItem).DropDownItems.Add (button);
+
+			}
+			// load the specified page (the first part of a a|b combination, though can also be on its own
+
+
+
+			// we know this is a table. Call its random function
+		}
+
+
+
+
+		/// <summary>
+		/// breaking down the functionality of a search
+		/// Because I needt oa ccess table notes
+		/// </summary>
+		/// <param name="searchterm"></param>
+		/// <returns></returns>
+//		private string DoInteriorSearch(string searchterm, Appearance[] objects, string path, string ExtraFilesFolder)
+//		{
+//			
+//			foreach (Appearance appearance in objects)
+//			{
+//				
+//				
+//				
+//				if (appearance != null && appearance.Caption != null && appearance.Caption != "" && appearance.Caption.ToLower() == searchterm)
+//				{
+//
+//
+//				
+//
+//					return appearance.RandomCharacter(this);
+//				}
+//				
+//				
+//				/// This did nothing because the NotePanel does not actually exist (October 2012)
+//				if (appearance!= null && appearance.ShapeType == Appearance.shapetype.Panel)
+//				{
+//					
+//					// - get filename to load
+//					// NOPE: Do not have access to this   appearance.virtualDesktop.GetFileNameForNotePanel();
+//					
+//					string filename = NotePanelPanel.GetBaseFileName(path, ExtraFilesFolder, appearance);
+//					// NewMessage.Show(filename);
+//					//filename appears correct
+//					
+//					
+//					// This is ICKY. BUt I have to actually create a virtual desktop and try to search
+//					
+//					
+//					
+//					Appearance[] items = VirtualDesktop.LoadScrapbookJustFiles(filename);
+//					if (items != null)
+//					{
+//						string result =  DoInteriorSearch(searchterm, items, path, ExtraFilesFolder);
+//						if (result != null && result != "")
+//						{
+//							return result;
+//						}
+//					}
+//					
+//					// now load manually.
+//				}
+//			}
+//			return "";
+//		}
+		/// <summary>
+		/// Gets the random table details. (When button clicked on Layoutbar)
+		/// </summary>
+		/// <returns>
+		/// The random table details.
+		/// </returns>
+		string GetRandomTableDetails(string identifier)
+		{
+			try
+			{
+				string[] pars = identifier.Split(new char[1] {'|'});
+				
+				string LayoutName = pars[0];
+				string tableString = Constants.BLANK;
+				if (pars.Length > 1)
+				{
+					tableString = pars[1];
+				}
+				
+			
+				if (MasterOfLayouts.ExistsByName(LayoutName) == true)
+				{
+					string LayoutGUID = MasterOfLayouts.GetGuidFromName(LayoutName);
+					//LayoutDatabase randompageLayout = new LayoutDatabase(LayoutGUID);
+					LayoutPanel temporaryLayoutPanel = new LayoutPanel("", false);
+					temporaryLayoutPanel.LoadLayout(LayoutGUID, false);
+					//randompageLayout.LoadFrom(temporaryLayoutPanel);
+
+					// now search for the note (the table)
+				if (Constants.BLANK == tableString)
+				{
+					// no table was defined so we look for a table named start
+					tableString = "start";
+				}
+					
+				tableString = tableString.ToLower();
+					NoteDataInterface table = temporaryLayoutPanel.FindNoteByName(tableString);
+				
+
+					if (table != null && table is NoteDataXML_Table)
+					{
+						return 	((NoteDataXML_Table)table).GetRandomTableResults ();
+					}
+					else
+					{
+						NewMessage.Show (Loc.Instance.GetStringFmt("This was not a valid table. Is there a table named {0} on the layout {1}?", tableString,LayoutName));
+					}
+					temporaryLayoutPanel.Dispose ();
+				}
+				else
+				{
+					NewMessage.Show (Loc.Instance.GetStringFmt("The layout named {0} does not exist", LayoutName));
+				}
+			
+	
+			}
+			catch (Exception ex)
+			{
+				NewMessage.Show(ex.ToString());
+			}
+			return Constants.BLANK;
+		}
+
+		/// <summary>
+		/// Handles the random table click.
+		/// // This is the actual loading of the table, pasting the result into the Current Text Box
+		/// </summary>
+		/// <param name='sender'>
+		/// Sender.
+		/// </param>
+		/// <param name='e'>
+		/// E.
+		/// </param>
+		void HandleRandomTableClick (object sender, EventArgs e)
+		{
+
+			// get the table name
+			string value = ((ToolStripItem)sender).Text;
+
+	
+			
+			string table = "";
+			// override table name with current text on note 
+			if (CurrentTextNote != null) {
+				if (CurrentTextNote.SelectedText != "") {
+					table = CurrentTextNote.SelectedText.ToLower ().Trim ();
+				}
+				
+				if (table != "") {
+					value = value + "|" + table;
+				}
+				
+				string sResult = GetRandomTableDetails (value);
+				
+				
+				// Sep 2012
+				// can define things like 
+				// if there's the word PROMPT in the text then we prompt
+				// case sensitive
+				if (value.IndexOf ("PROMPT") > -1) {
+					NewMessage.Show (sResult);
+				} else {
+					// we want text to appear beside selection and not replace it.
+					CurrentTextNote.SelectionStart = CurrentTextNote.SelectionStart + table.Length;
+					CurrentTextNote.SelectionLength = 0;
+					CurrentTextNote.SelectedText = String.Format ("{0}{1}", Environment.NewLine, sResult);
+				}
+			} else {
+				lg.Instance.Line("LayoutPanel->HandleRandomTableClick", ProblemType.MESSAGE, String.Format ("LayoutPanel {0} has no CurrentTextNote assigned", this.GUID));
+				NewMessage.Show (Loc.Instance.GetString ("You must select a note first"));
+			}
+		}
+	
 		/*public LayoutPanel(string parentGUID) : this (parentGUID, false)
 		{
 
@@ -165,6 +375,10 @@ namespace Layout
 		/// </param>
 		public LayoutPanel (string parentGUID, bool IsSystem)
 		{
+
+
+
+
 			ParentGUID = parentGUID;
 			GetIsSystemLayout = IsSystem;
 
@@ -272,7 +486,16 @@ namespace Layout
 		/// </returns>
 		public int CountNotes()
 		{
-			return Notes.GetAllNotes().Count;
+
+			int count = 0;
+			System.Collections.ArrayList list = GetAllNotes();
+			foreach (Layout.NoteDataInterface note in list) {
+				count++;
+				Console.WriteLine(String.Format ("**{0}** GUID = {1} Name={2}", count, note.GuidForNote, note.Caption));
+			}
+			return count;
+
+			//return Notes.GetAllNotes().Count;
 		}
 		/// <summary>
 		/// Generic Handle for adding notes by type
@@ -455,6 +678,17 @@ namespace Layout
 				if (note != null)
 				{
 					GoToNote(note);
+					if (Notes.MaximizeTabs)
+					{
+						note.Dock = DockStyle.Fill;
+						note.UpdateLocation();
+					}
+					else
+					{
+						note.Dock = DockStyle.None;
+						note.UpdateLocation();
+					}
+
 				}
 				else
 				{

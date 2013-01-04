@@ -11,9 +11,16 @@ namespace Testing
 		{
 			return this.panelLayout;
 		}
-		public int CountNotes()
+		public int CountNotes ()
 		{
-			return this.panelLayout.CountNotes();
+			int count = 0;
+			System.Collections.ArrayList list = this.panelLayout.GetAllNotes();
+			foreach (Layout.NoteDataInterface note in list) {
+				count++;
+				_w.output(String.Format ("**{0}** GUID = {1}", count, note.GuidForNote));
+			}
+			return count;
+			//return this.panelLayout.CountNotes();
 		}
 	}
 }

@@ -22,7 +22,7 @@ namespace Layout
 		//This is the list of notes
 		private List<NoteDataInterface> dataForThisLayout= null;
 		//These are the OTHER variables (like status) associated with this note
-		private const  int data_size = 4; // size of data array
+		private const  int data_size = 5; // size of data array
 		private object[] data= null;
 		public string Status {
 			get { return data [0].ToString();}
@@ -43,6 +43,7 @@ namespace Layout
 			get { return (bool)data [2];}
 			set { data [2] = value;}
 		}
+
 		/// <summary>
 		/// Gets or sets a value indicating whether this instance is sub panel.
 		/// 
@@ -55,6 +56,10 @@ namespace Layout
 		public bool IsSubPanel {
 			get { return (bool)data [3];}
 			set { data [3] = value;}
+		}
+		public bool MaximizeTabs {
+			get { return (bool)data [4];}
+			set { data [4] = value;}
 		}
 		// This is the GUID for the page. It comes from
 		//  
@@ -78,10 +83,12 @@ namespace Layout
 			Name = "default name";
 			ShowTabs = true;
 			IsSubPanel = false;
+			MaximizeTabs = true;
 
 		}
 		/// <summary>
 		/// Gets the note by GUI.
+		/// 
 		/// </summary>
 		/// <returns>
 		/// The note by GUI. 
@@ -100,7 +107,16 @@ namespace Layout
 			}
 			return null;
 		}
-
+		public NoteDataInterface GetNoteByName (string name)
+		{
+			foreach (NoteDataInterface note in GetNotes ()) {
+				if (note.Caption == name)
+				{
+					return note;
+				}
+			}
+			return null;
+		}
 	
 		/// <summary>
 		/// Wrapper function for creating the database
@@ -137,9 +153,12 @@ namespace Layout
 				lg.Instance.Line("AddChildrenToList", ProblemType.TEMPORARY, "is a Panel...");
 				foreach (NoteDataInterface data2 in data.GetChildNotes())
 				{
-					lg.Instance.Line("AddChildrenToList", ProblemType.TEMPORARY, "scanning children...");
+					lg.Instance.Line("AddChildrenToList", ProblemType.TEMPORARY,
+					                 String.Format ("scanning children...{0} from {1}",data2.GuidForNote, data.Caption ));
 					result.Add (data2);
-					AddChildrenToGetList(data2,  result);
+					// jan 2 2013
+					// THis is not needed here becaues GetChildNotes() covers the situation for us!
+					//AddChildrenToGetList(data2,  result);
 				}
 			}
 
@@ -154,6 +173,7 @@ namespace Layout
 		{
 			System.Collections.ArrayList result = new System.Collections.ArrayList ();
 			foreach (NoteDataInterface data in dataForThisLayout) {
+				lg.Instance.Line("LayoutDatabase->GetAllNotes", ProblemType.TEMPORARY, String.Format ("GetAllNotes.AddingNoteGUID {0}",data.GuidForNote));
 				result.Add (data);
 				 AddChildrenToGetList(data,  result);
 
@@ -256,15 +276,21 @@ namespace Layout
 
 			// we only care about FIRST ROW. THere should never be two matches on a GUID
 
-			List<object[]> myList = MyDatabase.GetValues (tmpDatabaseConstants.table_name, tmpDatabaseConstants.Columns
-			                      , tmpDatabaseConstants.GUID, LayoutGUID);
+			List<object[]> myList = MyDatabase.GetValues (dbConstants.table_name, dbConstants.Columns
+			                      , dbConstants.GUID, LayoutGUID);
 			if (myList != null && myList.Count > 0) {
 
 				object[] result = myList [0];
 
+				// result [0] =  id?
+				// result [1] =  guid?
+				// result [2] =  xm
+
 
 				// deserialize from database and load into memor
 				if (result != null && result.Length > 0) {
+
+
 
 
 					// Fill in LAYOUT specific details
@@ -281,6 +307,10 @@ namespace Layout
 					}else {
 						IsSubPanel = false;
 					}
+					if (result[dbConstants.MAXIMIZETABS.Index].ToString () != Constants.BLANK)
+					{
+					MaximizeTabs = (bool)result[dbConstants.MAXIMIZETABS.Index];
+					}else MaximizeTabs = true;
 
 					// Fill in XML details
 
@@ -291,18 +321,31 @@ namespace Layout
 					List<NoteDataXML> ListAsDataObjectsOfType = null;
 					try {
 						// have to load it in an as array of target type and then convert
+						if (result [2].ToString() != Constants.BLANK)
+						{
 						ListAsDataObjectsOfType = (System.Collections.Generic.List<NoteDataXML>)test.Deserialize (reader);
+						}
+						else
+						{
+							lg.Instance.Line("LayoutDatabase->LoadFrom", ProblemType.ERROR, String.Format ("For note '{0}' the XML was blank! This happens when there is a panel with no note in it. Not serious", Name));
+						}
 					} catch (System.InvalidOperationException e) {
 						string exception = e.ToString ();
 						int pos = exception.IndexOf ("name");
 						int pos2 = exception.IndexOf ("namespace");
 						if (pos2 < pos)
 							pos2 = pos + 1;
-
+						try
+						{
 						string notetype = exception.Substring (pos, pos2 - pos - 2);
 						string message = 
 			Loc.Instance.Cat.GetStringFmt ("The notetype {0} was present in this Layout but not loaded in memory! This means that the AddIn used to add this note to this Layout has been removed. Loading of this layout is now aborted. Please exit this note and close it to prevent data loss and reinstall the disabled AddIn", notetype);
 						NewMessage.Show (message);
+						}
+						catch (Exception)
+						{
+							NewMessage.Show("unknown error in LoadFrom");
+						}
 					} catch (Exception ex) {
 						throw new Exception (ex.ToString ());
 					}
@@ -374,6 +417,8 @@ namespace Layout
 				//	CoreUtilities.General.Serialize(dataForThisLayout, CreateFileName());
 				try {
 				
+					if (dataForThisLayout != null  && dataForThisLayout.Count > 0)
+					{
 					NoteDataXML[] ListAsDataObjectsOfType = new NoteDataXML[dataForThisLayout.Count-CountSystemNotes()];
 
 
@@ -417,35 +462,35 @@ namespace Layout
 					//x3.Serialize (sw, ListAsDataObjectsOfType,ns, "utf-8");
 					XMLAsString = sw.ToString ();
 					sw.Close ();
-
+					}
 
 					// here is where we need to test whether the Data exists
 
-					if (MyDatabase.Exists (tmpDatabaseConstants.table_name, tmpDatabaseConstants.GUID, LayoutGUID) == false) {
+					if (MyDatabase.Exists (dbConstants.table_name, dbConstants.GUID, LayoutGUID) == false) {
 						lg.Instance.Line ("LayoutDatabase.SaveTo", ProblemType.MESSAGE, "We have new data. Adding it.");
 						// IF NOT, Insert
-						MyDatabase.InsertData (tmpDatabaseConstants.table_name, 
-				                      tmpDatabaseConstants.Columns,
-				                      new object[tmpDatabaseConstants.ColumnCount]
-				                      {DBNull.Value,LayoutGUID, XMLAsString, Status,Name,ShowTabs, IsSubPanel});
+						MyDatabase.InsertData (dbConstants.table_name, 
+				                      dbConstants.Columns,
+				                      new object[dbConstants.ColumnCount]
+				                      {DBNull.Value,LayoutGUID, XMLAsString, Status,Name,ShowTabs, IsSubPanel, MaximizeTabs});
 
 					} else {
 						//TODO: Still need to save all the object properties out. And existing data.
 
 						lg.Instance.Line ("LayoutDatabase.SaveTo", ProblemType.MESSAGE, "We are UPDATING existing Row." + LayoutGUID);
-						MyDatabase.UpdateSpecificColumnData (tmpDatabaseConstants.table_name, 
-					                                    new string[tmpDatabaseConstants.ColumnCount - 1]
-						                                     {tmpDatabaseConstants.GUID, tmpDatabaseConstants.XML, tmpDatabaseConstants.STATUS,
-						tmpDatabaseConstants.NAME, tmpDatabaseConstants.SHOWTABS, tmpDatabaseConstants.SUBPANEL},
-				                                    new object[tmpDatabaseConstants.ColumnCount - 1]
+						MyDatabase.UpdateSpecificColumnData (dbConstants.table_name, 
+					                                    new string[dbConstants.ColumnCount - 1]
+						                                     {dbConstants.GUID, dbConstants.XML, dbConstants.STATUS,
+						dbConstants.NAME, dbConstants.SHOWTABS, dbConstants.SUBPANEL, dbConstants.MAXIMIZETABS},
+				                                    new object[dbConstants.ColumnCount - 1]
 				                                    {
 						LayoutGUID as string, 
 						XMLAsString as string, 
 						Status as string
 					,Name,
 						ShowTabs,
-						IsSubPanel},
-				tmpDatabaseConstants.GUID, LayoutGUID);
+						IsSubPanel, MaximizeTabs},
+				dbConstants.GUID, LayoutGUID);
 					}
 
 
@@ -507,8 +552,8 @@ namespace Layout
 		/// </param>
 		public bool IsLayoutExists (string GUID)
 		{
-			BaseDatabase MyDatabase = CreateDatabase ();
-			return MyDatabase.Exists (tmpDatabaseConstants.table_name, tmpDatabaseConstants.GUID, GUID);
+
+			return MasterOfLayouts.ExistsByGUID(GUID);
 		}
 		/// <summary>
 		/// Gets the available folders. (notes in this collection that are of the folder type

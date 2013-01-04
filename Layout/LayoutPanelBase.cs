@@ -73,7 +73,7 @@ namespace Layout
 		/// </value>
 		abstract public bool ShowTabs { get; set; }
 		abstract public bool GetIsSystemLayout { get; set; }	
-		abstract public NotePanelInterface CurrentNote{ get; set; }
+		abstract public NoteDataXML_RichText CurrentTextNote{ get; set; }
 		abstract public string Caption {get;}
 
 #endregion

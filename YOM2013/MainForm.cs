@@ -88,6 +88,7 @@ namespace YOM2013
 		{
 	
 
+
 			SetupMessageBox();
 			LayoutsOpen = new List<LayoutsInMemory> ();
 

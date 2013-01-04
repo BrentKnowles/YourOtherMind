@@ -13,6 +13,9 @@ namespace Layout
 		protected static object syncRoot = new Object();
 
 
+
+		public LayoutPanelBase SystemLayout = null;
+
 		private LayoutPanelBase currentLayout;
 		public LayoutPanelBase CurrentLayout {
 			get { return currentLayout;}
