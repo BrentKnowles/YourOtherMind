@@ -56,6 +56,7 @@
     <Compile Include="NoteData.cs" />
     <Compile Include="appframetesting\tablepaneltests.cs" />
     <Compile Include="MasterOfLayoutsTest.cs" />
+    <Compile Include="NoteDataTableTests.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

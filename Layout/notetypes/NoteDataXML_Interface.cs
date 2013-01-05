@@ -250,6 +250,11 @@ namespace Layout
 		/// </param>
 		void HandleDeleteNoteClick (object sender, EventArgs e)
 		{
+			if (Caption == CoreUtilities.Links.LinkTable.STICKY_TABLE) {
+				NewMessage.Show (Loc.Instance.GetStringFmt ("{0} is a protected note. It cannot be renamed or deleted.", Caption));
+				return;
+			}
+
 			NewMessage.Show ("Need a yes/no here");
 			if (DeleteNote != null) {
 				DeleteNote(this);
@@ -259,12 +264,18 @@ namespace Layout
 		void HandleCaptionEditorKeyDown (object sender, KeyEventArgs e)
 		{
 			if (e.KeyCode == Keys.Enter) {
+				if (Caption == CoreUtilities.Links.LinkTable.STICKY_TABLE)
+				{
+					NewMessage.Show (Loc.Instance.GetStringFmt("{0} is a protected note. It cannot be renamed or deleted.", Caption));
+				}
+				else
+				{
 				// commit the change to the caption
 				Caption = (sender as ToolStripTextBox).Text;
 				SetSaveRequired (true);
 				// so we don't need to call update for such a simple change
 				captionLabel.Text = Caption; 
-
+				}
 				// supress key beep from pressing enter
 				e.SuppressKeyPress = true;
 			}

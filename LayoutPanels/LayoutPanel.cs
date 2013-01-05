@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Collections;
 using LayoutPanels;
 using CoreUtilities;
+using CoreUtilities.Links;
 /*This is Just an Experiment.
  * 
  * Trying to see if I can organize the notes in a better way
@@ -112,7 +113,7 @@ namespace Layout
 
 
 
-		public void TabsBar()
+		public void BuildTabsBar()
 		{
 			tabsBar = new ToolStrip();
 			tabsBar.Parent = this;
@@ -120,6 +121,7 @@ namespace Layout
 
 			// RefreshTabs(); don't need to call it until after load
 		}
+
 		public override  void DeleteNote(NoteDataInterface NoteToDelete)
 		{
 			Notes.RemoveNote (NoteToDelete);
@@ -147,7 +149,7 @@ namespace Layout
 			return null;*/
 		}
 
-		public void LayoutToolbar ()
+		public void BuildLayoutToolbar ()
 		{
 			ToolStrip bar = new ToolStrip ();
 			bar.Parent = this;
@@ -167,11 +169,78 @@ namespace Layout
 			RandomTables.ToolTipText = Loc.Instance.GetString("Generate a random result from a table. The list of tables can be changed by modifying the RandomTables table on the System layout");
 			RandomTables.DropDownOpening += HandleDropDownRandomTablesOpening;
 
+
+
+			ToolStripMenuItem tabMenu = new ToolStripMenuItem(Loc.Instance.GetString ("Tabs"));
+			
+			
+			ToolStripButton ShowTabs = new ToolStripButton(Loc.Instance.GetString("Show Tabs?"));
+			ShowTabs.CheckOnClick = true;
+			ShowTabs.Checked = Notes.ShowTabs;
+			ShowTabs.CheckedChanged+= HandleCheckedChanged;
+			
+			ToolStripButton MaximizeTabs = new ToolStripButton(Loc.Instance.GetString ("Maximize Strings"));
+			MaximizeTabs.CheckOnClick = true;
+			MaximizeTabs.Checked = Notes.MaximizeTabs;
+			MaximizeTabs.CheckedChanged+= HandleMaximizedTabsCheckedChanged;
+			
+			
+			tabMenu.DropDownItems.Add (ShowTabs);
+			tabMenu.DropDownItems.Add (MaximizeTabs);
+			// at end of any submenu. Annoying!
+			tabMenu.DropDownItems.Add ("empty");
+
+
 			//ToolStripLabel CurrentNote
 			bar.Items.Add (AddNote);
 			bar.Items.Add (RandomTables);
+			bar.Items.Add (tabMenu);
+
+			// tempt
+			ToolStripButton test = new ToolStripButton("test");
+			test.Click+= (object sender, EventArgs e) => {NewMessage.Show ("Records in linktable = " + GetLinkTable().GetRecords().Length);};
+			bar.Items.Add (test);
+		}
+		void HandleCheckedChanged (object sender, EventArgs e)
+		{
+			Notes.ShowTabs = (sender as ToolStripButton).Checked;
+			RefreshTabs();
+			SetSaveRequired(true);
+		}
+		void HandleMaximizedTabsCheckedChanged (object sender, EventArgs e)
+		{
+			Notes.MaximizeTabs = (sender as ToolStripButton).Checked;
+			SetSaveRequired(true);
 		}
 
+		/// <summary>
+		/// Gets the list of strings from system table.
+		/// 
+		/// This is a wrapper to other public behavior but in order to consolidate error messaging
+		/// </summary>
+		/// <returns>
+		/// The list of strings from system table.
+		/// </returns>
+		/// <param name='table'>
+		/// Table.
+		/// </param>
+		public override List<string> GetListOfStringsFromSystemTable (string tableName)
+		{
+			NoteDataInterface table = FindNoteByName (tableName);
+			List<string> result = new List<string>();
+			if (table != null && (table is NoteDataXML_Table)) {
+				if (((NoteDataXML_Table)table).Columns.Length > 1) {
+					result = ((NoteDataXML_Table)table).GetValuesForColumn(1);
+				}
+				else
+				{
+					NewMessage.Show (Loc.Instance.GetStringFmt ("The table named {0} does not have at least 2 columns, as is required. If you need to reset the System Layout, do so through Options|Interface.",tableName));
+				}
+			} else {
+				NewMessage.Show (Loc.Instance.GetStringFmt ("The table named {0} did not exist on the System Note page. If you need to reset the System Layout, do so through Options|Interface.",tableName));
+			}
+			return result;
+		}
 		/// <summary>
 		/// Handles the drop down random tables opening.
 		/// 
@@ -191,7 +260,12 @@ namespace Layout
 
 			// get the note with name = "RandomTables"
 			(sender as ToolStripDropDownItem).DropDownItems.Clear ();
-			string[] tablenames = new string[2]{"charactermaker", "charactermaker|villains"};
+
+			// get the tables from the System Note
+			List<string> tablenames = LayoutDetails.Instance.SystemLayout.GetListOfStringsFromSystemTable("list_randomtables");
+
+
+			//string[] tablenames = new string[2]{"charactermaker", "charactermaker|villains"};
 
 			foreach (string table in tablenames) {
 				ToolStripButton button = new ToolStripButton(table);
@@ -428,8 +502,7 @@ namespace Layout
 			this.BackColor = Color.Pink;
 			if (!GetIsChild && !GetIsSystemLayout)
 				BuildFormatToolbar ();
-			if (!GetIsSystemLayout) TabsBar ();
-			if (!GetIsSystemLayout) LayoutToolbar ();
+			if (!GetIsSystemLayout) BuildTabsBar ();
 
 
 
@@ -654,8 +727,16 @@ namespace Layout
 				
 			}
 			SetSaveRequired(false);
+
+
+			UpdateLayoutToolbar();
 		}
 
+		private void UpdateLayoutToolbar()
+		{
+			if (!GetIsSystemLayout) BuildLayoutToolbar ();
+
+		}
 
 		override public bool ShowTabs 
 		{ get { return Notes.ShowTabs; } set {
@@ -789,6 +870,7 @@ namespace Layout
 				
 
 				}
+				UpdateLayoutToolbar();
 			}
 			NoteCanvas.AutoScroll = true;
 		}
@@ -1033,6 +1115,68 @@ namespace Layout
 			} else {
 				lg.Instance.Line("LayoutPanel->GoToNote", ProblemType.MESSAGE, "Even with advanced search we did not find note");
 			}
+		}
+
+		/// <summary>
+		/// Gets the link table.
+		/// 
+		/// Will build it, if necessary, at this point (the point when something needs to access it)
+		/// </summary>
+		/// <returns>
+		/// The link table.
+		/// </returns>
+		public CoreUtilities.Links.LinkTable GetLinkTable ()
+		{
+			if (GetIsChild == false) {
+				LinkTable linkTable = new LinkTable ();
+				// we create a new table
+				//(AddShape(Appearance.shapetype.Table, STICKY_TABLE)).appearance.Caption = STICKY_TABLE;
+			
+				NoteDataXML_Table table = (NoteDataXML_Table)FindNoteByName (LinkTable.STICKY_TABLE);
+				//bool newTableNeeded = false;
+				// could not find a table with this name
+				if (null == table) {
+
+					table = new NoteDataXML_Table ();
+					table.Caption = LinkTable.STICKY_TABLE;
+					table.GuidForNote = LinkTable.STICKY_TABLE;
+					table.dataSource = linkTable.BuildNewTable ().Copy ();
+					((System.Data.DataTable)table.dataSource).TableName = CoreUtilities.Tables.TableWrapper.TablePageTableName;
+
+					// if we have to create a table we Assume that we can do a Convert too
+					//newTableNeeded = true;
+					Notes.Add (table);
+					table.CreateParent(this);
+					RefreshTabs ();
+					SaveLayout ();
+				
+				}
+
+				linkTable.SetTable (table.dataSource);
+				return linkTable;
+			}
+
+			// if I am a child, get my parents LinkTable, please
+			if (this.Parent != null) {
+			//	NewMessage.Show (this.Parent.Name);
+				LayoutPanel layoutParent = null;
+				Control looker = this.Parent;
+				while (layoutParent == null)
+				{
+					if (looker is LayoutPanel)
+					{
+						layoutParent= (looker as LayoutPanel);
+					}
+					else
+					{
+						looker = looker.Parent;
+					}
+				}
+				return layoutParent.GetLinkTable ();
+			} else {
+				NewMessage.Show (Loc.Instance.GetStringFmt("No parent for this layout {0} with ParentGUID = {1}", this.Notes.Name, this.ParentGUID));
+			}
+			return null;
 		}
 
 	}

@@ -4,7 +4,7 @@ using System.Windows.Forms;
 using System.Data;
 using CoreUtilities;
 using System.Drawing;
-
+using CoreUtilities.Tables;
 namespace appframe
 {
 	
@@ -52,7 +52,7 @@ namespace appframe
 
 
 		#region constant
-		public const string TablePageTableName= "Table";
+
 		public const int defaultwidth = 100;
 
 #endregion
@@ -641,7 +641,7 @@ namespace appframe
 		public static DataTable BuildTableFromColumns (ColumnDetails[] value)
 		{
 			DataTable table = new DataTable();
-			table.TableName = "Table";
+			table.TableName = TableWrapper.TablePageTableName;
 			//  table.Columns.Add("Roll", typeof(string));
 			// add default column
 			
@@ -817,7 +817,7 @@ namespace appframe
 		
 		private void CopyToClipboardClick(object sender, EventArgs e)
 		{
-			CopyToClipboard(dataGrid1, TablePageTableName);
+			CopyToClipboard(dataGrid1, TableWrapper.TablePageTableName);
 			NewMessage.Show("Data copied in CSV format to clipboard.");
 		}
 		/// <summary>

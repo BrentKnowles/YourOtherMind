@@ -45,6 +45,10 @@
       <Project>{6EAA0B60-70E3-49FB-88E9-272D2719CECF}</Project>
       <Name>coreutilities2013</Name>
     </ProjectReference>
+    <ProjectReference Include="..\ApplicationFramework\ApplicationFramework.csproj">
+      <Project>{1C8CC9F9-FD0A-4DDF-B227-61E8135DFCE5}</Project>
+      <Name>ApplicationFramework</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System.Windows.Forms" />
@@ -53,5 +57,7 @@
     <Reference Include="GNU.Gettext">
       <HintPath>..\..\..\librariesused\GettextNet\Bin\Debug\GNU.Gettext.dll</HintPath>
     </Reference>
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
   </ItemGroup>
 </Project>

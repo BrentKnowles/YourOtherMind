@@ -5,7 +5,7 @@ using System.Data;
 using CoreUtilities;
 
 
-namespace appframe
+namespace CoreUtilities.Tables
 {
 	
 	/// <summary>
@@ -34,7 +34,7 @@ namespace appframe
 	/// </summary>
 	public static class TableWrapper
 	{
-		
+		public const string TablePageTableName= "Table";
 		public const string Result="Result";
 		public const string  Roll="Roll";
 		public const string InvalidRow = "InvalidRow";

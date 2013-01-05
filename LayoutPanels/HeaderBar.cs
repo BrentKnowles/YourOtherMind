@@ -56,42 +56,15 @@ namespace LayoutPanels
 			changeName.TextChanged+= HandleChangeNameClick;
 
 
-			ToolStripMenuItem tabMenu = new ToolStripMenuItem(Loc.Instance.GetString ("Tabs"));
 
-
-			ToolStripButton ShowTabs = new ToolStripButton(Loc.Instance.GetString("Show Tabs?"));
-			ShowTabs.CheckOnClick = true;
-			ShowTabs.Checked = Notes.ShowTabs;
-			ShowTabs.CheckedChanged+= HandleCheckedChanged;
-
-			ToolStripButton MaximizeTabs = new ToolStripButton(Loc.Instance.GetString ("Maximize Strings"));
-			MaximizeTabs.CheckOnClick = true;
-			MaximizeTabs.Checked = Notes.MaximizeTabs;
-			MaximizeTabs.CheckedChanged+= HandleMaximizedTabsCheckedChanged;
-
-
-			tabMenu.DropDownItems.Add (ShowTabs);
-			tabMenu.DropDownItems.Add (MaximizeTabs);
-			// at end of any submenu. Annoying!
-			tabMenu.DropDownItems.Add ("empty");
 			//tabMenu.DropDownItems.Remove (tabMenu.DropDownItems.Add ("empty"));
 
 			(sender as ToolStripDropDownButton).DropDownItems.Add (changeName);
-			(sender as ToolStripDropDownButton).DropDownItems.Add (tabMenu);
+			//(sender as ToolStripDropDownButton).DropDownItems.Add (tabMenu);
 		}
 
-		void HandleMaximizedTabsCheckedChanged (object sender, EventArgs e)
-		{
-			Notes.MaximizeTabs = (sender as ToolStripButton).Checked;
-			Layout.SetSaveRequired(true);
-		}
 
-		void HandleCheckedChanged (object sender, EventArgs e)
-		{
-			Notes.ShowTabs = (sender as ToolStripButton).Checked;
-			Layout.RefreshTabs();
-			Layout.SetSaveRequired(true);
-		}
+	
 		void HandleChangeNameClick (object sender, EventArgs e)
 		{
 			Notes.Name = (sender as ToolStripTextBox).Text;

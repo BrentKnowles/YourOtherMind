@@ -1,10 +1,13 @@
 using System;
 using CoreUtilities;
+using CoreUtilities.Tables;
 using System.Windows.Forms;
 using appframe;
 using System.Xml.Serialization;
 using System.Data;
 using System.ComponentModel;
+using System.Collections.Generic;
+
 namespace Layout
 {
 	public class NoteDataXML_Table : NoteDataXML
@@ -695,6 +698,33 @@ namespace Layout
 			}
 			
 			return sResults;
+		}
+		/// <summary>
+		/// Gets the values for column.
+		/// returns a list of strings for that column. Used for system tables on the system layout
+		/// </summary>
+		/// <returns>
+		/// The values for column.
+		/// </returns>
+		/// <param name='columnIndex'>
+		/// Column index.
+		/// </param>
+		public List<string> GetValuesForColumn (int columnIndex)
+		{
+			List<string> result = new List<string>();
+			if (dataSource != null) {
+				if (dataSource is DataTable)
+				{
+					if (dataSource.Columns.Count > columnIndex)
+					{
+					foreach (DataRow row in dataSource.Rows)
+					{
+						result.Add ( row[columnIndex].ToString ());
+					}
+					}
+				}
+			}
+			return result;
 		}
 	}
 }
