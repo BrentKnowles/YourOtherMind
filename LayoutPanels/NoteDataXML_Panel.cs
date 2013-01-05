@@ -87,7 +87,7 @@ namespace LayoutPanels
 			panelLayout.Visible = true;
 			panelLayout.Dock = DockStyle.Fill;
 			panelLayout.BringToFront();
-
+			panelLayout.SetParentLayoutCurrentNote = Layout.SetCurrentTextNote;
 
 
 			ToolStripButton ShowTabs = new ToolStripButton(Loc.Instance.GetString("Show Tabs?"));

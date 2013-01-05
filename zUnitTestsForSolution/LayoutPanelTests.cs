@@ -268,9 +268,14 @@ namespace Testing
 				//	Assert.True (false);
 		}
 			[Test]
-		public void AdvancedSearchingTests()
+		public void AdvancedSearchingForNotesTests()
 		{
 			// find notes inside of notes with the GUI code and such
+			Assert.True (false);
+		}
+		[Test]
+		public void SetCurrentTextNoteAndDetectThisInParentLayouts()
+		{
 			Assert.True (false);
 		}
 	}

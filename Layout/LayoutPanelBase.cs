@@ -100,6 +100,7 @@ namespace Layout
 		public abstract NoteDataInterface FindNoteByGuid (string guid);
 		public abstract void GoToNote(NoteDataInterface note);
 		public abstract NoteDataInterface FindSubpanelNote (NoteDataInterface note);
+		public abstract void SetCurrentTextNote (NoteDataXML_RichText note);
 	//	public abstract void SystemNoteHasClosedDown (bool closed);
 	}
 }

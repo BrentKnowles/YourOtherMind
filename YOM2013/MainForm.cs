@@ -122,7 +122,7 @@ namespace YOM2013
 			SystemLayout.BringToFront ();
 			//SystemLayout.Visible = false;
 			SystemLayout.LoadLayout ("system", false);
-
+			LayoutDetails.Instance.SystemLayout = SystemLayout;
 
 
 
@@ -196,9 +196,10 @@ namespace YOM2013
 
 			// Add option panels to options menu
 			Settings = new Options(LayoutDetails.Instance.YOM_DATABASE);
-			
+			Options_InterfaceElements SettingsInterfaceOptions = new Options_InterfaceElements(LayoutDetails.Instance.YOM_DATABASE);
 	
 		    optionPanels.Add(Settings);
+			optionPanels.Add (SettingsInterfaceOptions);
 
 
 			//Check for updates

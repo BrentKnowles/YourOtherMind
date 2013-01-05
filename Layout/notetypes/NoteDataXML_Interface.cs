@@ -264,6 +264,9 @@ namespace Layout
 				SetSaveRequired (true);
 				// so we don't need to call update for such a simple change
 				captionLabel.Text = Caption; 
+
+				// supress key beep from pressing enter
+				e.SuppressKeyPress = true;
 			}
 		}
 

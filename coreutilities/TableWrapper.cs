@@ -38,7 +38,7 @@ namespace appframe
 		public const string Result="Result";
 		public const string  Roll="Roll";
 		public const string InvalidRow = "InvalidRow";
-		public const string NextTable = "NextTable";	
+		public const string NextTable = "Next Table";	
 		public const string Modifier = "Modifier";
 		public static string ImportError ()
 		{

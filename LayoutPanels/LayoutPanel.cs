@@ -33,23 +33,25 @@ namespace Layout
 			get { return noteCanvas;}
 			set { noteCanvas = value;}
 		}
-		NoteDataXML_RichText currentTextNote=null;
-		/// <summary>
-		/// A reference to the active note
-		/// </summary>
-		/// <value>
-		/// The current note.
-		/// </value>
-		public override NoteDataXML_RichText CurrentTextNote {
-			get {
-				return currentTextNote;
-			}
-			set {
-				currentTextNote = value;
-			}
-		}
+	
 
 		ToolStrip tabsBar = null;
+
+
+		#endregion
+
+
+
+		#region delegates
+		// This delgate set in NoteDataXML_Panel, hooking the parent Layout up with the Child Layout, for the purposes of SettingCurrentTextNote accurately
+		public Action<NoteDataXML_RichText> SetParentLayoutCurrentNote;
+		// set in NoteDataXML_Panel so that a child Layout will tell a higher level to save, if needed
+		public Action<bool> SetSubNoteSaveRequired = null;
+		#endregion
+
+		public override string Caption {
+			get { return Notes.Name;}
+		}
 		private bool issystem = false;
 		/// <summary>
 		/// Gets or sets a value indicating whether this instance is system.
@@ -65,16 +67,35 @@ namespace Layout
 				issystem = value;
 			}
 		}
-
-		#endregion
-
-
-		public override string Caption {
-			get { return Notes.Name;}
+		NoteDataXML_RichText currentTextNote=null;
+		/// <summary>
+		/// A reference to the active note
+		/// </summary>
+		/// <value>
+		/// The current note.
+		/// </value>
+		public override NoteDataXML_RichText CurrentTextNote {
+			get {
+				return currentTextNote;
+			}
+			set {
+				//currentTextNote = value;
+				SetCurrentTextNote(value);
+				
+				
+			}
+		}
+		
+		public override void SetCurrentTextNote (NoteDataXML_RichText note)
+		{
+			currentTextNote = note;
+			if (SetParentLayoutCurrentNote != null)
+			{
+				SetParentLayoutCurrentNote(note);
+			}
 		}
 
-		// set in NoteDataXML_Panel so that a child Layout will tell a higher level to save, if needed
-		public Action<bool> SetSubNoteSaveRequired = null;
+
 		/// <summary>
 		/// Builds the format toolbar.
 		/// </summary>
@@ -539,7 +560,7 @@ namespace Layout
 					Notes.Add (note);
 			
 					note.CreateParent (this);
-			
+					note.BringToFront();
 					UpdateListOfNotes ();
 					SetSaveRequired (true); // TODO: Also need to go through and hook delegates/callbacks for when a note itself changes.
 				} else {
@@ -707,6 +728,7 @@ namespace Layout
 		/// </param>
 		public  void NewLayoutFromOldFile (string _GUID, string File)
 		{
+			// NOTE: We will override this GUID in the LoadFromOld routine
 			GUID= _GUID;
 			// check to see if exists already
 			if (Notes != null && Notes.IsLayoutExists (GUID)) {
@@ -721,6 +743,7 @@ namespace Layout
 				Notes = new LayoutDatabase (GUID);
 
 				((LayoutDatabase)Notes).LoadFromOld (File);
+
 				foreach (NoteDataInterface note in Notes.GetNotes())
 				{
 					note.CreateParent(this);

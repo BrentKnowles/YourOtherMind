@@ -84,6 +84,7 @@ namespace appframe
 			TableName=_TableName;
 			GenerateResults = _GenerateResults;
 
+			panel1.Visible = false;
 
 		}
 		/// <summary>

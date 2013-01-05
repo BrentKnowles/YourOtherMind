@@ -128,8 +128,9 @@ namespace Layout
 		private void BuildDefaultColumns()
 		{
 			Columns = new ColumnDetails[4] { 
-				new ColumnDetails("Roll",TablePanel.defaultwidth), new ColumnDetails("Result",TablePanel.defaultwidth), new ColumnDetails("NextTable", TablePanel.defaultwidth),
-				new ColumnDetails("Modifier",TablePanel.defaultwidth)};
+				new ColumnDetails(TableWrapper.Roll,TablePanel.defaultwidth), new ColumnDetails(TableWrapper.Result,TablePanel.defaultwidth), 
+				new ColumnDetails(TableWrapper.NextTable, TablePanel.defaultwidth),
+				new ColumnDetails(TableWrapper.Modifier,TablePanel.defaultwidth)};
 		}
 
 		public NoteDataXML_Table(int height, int width) : base(height, width)
@@ -504,8 +505,9 @@ namespace Layout
 					nextTable = "";
 				}
 			}
-			catch (Exception)
+			catch (Exception ex)
 			{
+				NewMessage.Show (ex.ToString());
 			}
 			
 			if (currentTable.Columns.IndexOf(TableWrapper.Modifier) > -1)

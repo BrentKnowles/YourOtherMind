@@ -226,12 +226,16 @@ namespace Layout
 		/// </param>
 		public bool LoadFromOld (string sFile)
 		{
+			System.IO.FileInfo fi = new System.IO.FileInfo(sFile);
+
 			Name = sFile;
 			Status = "Imported";
 			ShowTabs = false;
 
-			XmlSerializer serializer = new XmlSerializer (typeof(NoteDataXML[]), 
-			                                              new Type[1] {typeof(NoteDataXML_RichText)});
+			// changed this, might not work. 
+
+			XmlSerializer serializer = new XmlSerializer (typeof(NoteDataXML[]),
+			                                              LayoutDetails.Instance.ListOfTypesToStoreInXML ());
 			
 			System.IO.StreamReader reader = new System.IO.StreamReader (sFile);
 			NoteDataXML[] cars = (NoteDataXML[])serializer.Deserialize (reader);
@@ -239,6 +243,33 @@ namespace Layout
 			if (null != cars) {
 				dataForThisLayout = new List<NoteDataInterface> ();
 				for (int i = 0; i < cars.Length; i++) {
+
+
+					// some notes will be passed in and they are merely links to PANELS (other files). Load these too.
+					if (cars[i].IsPanel == true)
+					{
+						// now load this file into the database
+						//using the autogenerate name
+						string subpanel = System.IO.Path.Combine (fi.Directory.FullName, "panel"+cars[i].GuidForNote+".xml");
+						if (System.IO.File.Exists (subpanel) == true)
+						{
+						LayoutDatabase tempLayoutDatabaseForSubPanel = new LayoutDatabase(cars[i].GuidForNote);
+
+						if (tempLayoutDatabaseForSubPanel.LoadFromOld (subpanel))
+						{
+							tempLayoutDatabaseForSubPanel.SaveTo ();
+						}
+						else
+						{
+							NewMessage.Show (String.Format ("{0} subpanel failed to load", subpanel));
+							}
+						}
+						else
+						{
+							NewMessage.Show (Loc.Instance.GetStringFmt("The file {0} did not exist", subpanel));
+						}
+					}
+
 					dataForThisLayout.Add (cars [i]);
 
 				}
@@ -248,6 +279,33 @@ namespace Layout
 		
 
 			reader.Close ();
+
+			// remove the 'feeder' note
+			NoteDataXML feeder = (NoteDataXML)dataForThisLayout [0];
+			string[] LayoutElements = feeder.Caption.Split (new char[1] {'#'});
+			for (int i = 0; i < 12; i++) {
+				lg.Instance.Line ("LayoutDatabase->LoadFromOld", ProblemType.MESSAGE, String.Format("Length {0}, i={1}, value={2}, feederGuid={3}",LayoutElements.Length,
+				                                                                                     i,LayoutElements[i], feeder.GuidForNote));
+				switch (i)
+				{
+				case 0: this.Name = LayoutElements[i]; break;
+				case 1: break; //date
+				case 2: break; //directory
+				case 3: this.LayoutGUID = LayoutElements[i]; break;
+				case 4: break; //page.HighPriority); break;
+				case 5: break;// page.Hits); break;
+				case 6: break;// Keywords); break;
+				case 7: break; // page.LastEdited); break;
+				case 8: break;// page.Section); break;
+				case 9: break;// page.Stars); break;
+				case 10: break;// page.StatusType); break;
+				case 11: break;// page.SubType); 
+				}
+			}
+
+
+			dataForThisLayout.Remove (feeder);
+
 			return true;
 		}
 
