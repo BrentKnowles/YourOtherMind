@@ -45,7 +45,7 @@ namespace CoreUtilities.Tables
 			return Loc.Instance.GetString("Error in importing table data");
 		}
 		public static string ColumnDoesNotExist {
-			get { return Loc.Instance.GetString ("That column does not exist");}
+			get { return Loc.Instance.GetString ("Column {0} does not exist");}
 		}
 		/// <summary>
 		/// returns an array of Min/Max values representing

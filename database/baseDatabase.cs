@@ -200,7 +200,7 @@ namespace database
 		public abstract void UpdateMultiple_End ();
 		public  abstract bool UpdateDataMultiple (string tableName, string[] ColumnToAddTo, object[] ValueToAdd, string WhereColumn, string WhereValue);
 		public abstract void UpdateMultiple_Start ();
-		
+		public abstract bool Delete (string tableName, string WhereColumn, string WhereValue);
 	}
 }
 

@@ -10,6 +10,7 @@ namespace CoreUtilities
 		public form_NewMessage()
 		{
 			InitializeComponent();
+			label2.Dock = DockStyle.Top;
 		}
 
 
@@ -233,7 +234,7 @@ namespace CoreUtilities
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(327, 118);
+			this.ClientSize = new System.Drawing.Size(500, 300);
 			this.ControlBox = false;
 			this.Controls.Add(this.panelHelpHelp);
 			this.Controls.Add(this.panelWebHelp);
@@ -256,7 +257,9 @@ namespace CoreUtilities
 			this.panelHelpHelp.PerformLayout();
 			this.ResumeLayout(false);
 			this.PerformLayout();
-			
+		
+
+			this.AutoScroll = true;
 		}
 		
 #endregion

@@ -417,7 +417,7 @@ namespace Layout
 			if (currentTable.Columns.IndexOf(TableWrapper.Result) == -1 ||
 			    currentTable.Columns.IndexOf(TableWrapper.Roll) == -1)
 			{
-				NewMessage.Show(TableWrapper.ColumnDoesNotExist);
+				NewMessage.Show(String.Format (TableWrapper.ColumnDoesNotExist,"result or roll"));
 				return returner;
 			}
 			
@@ -629,7 +629,7 @@ namespace Layout
 				return "table not found";
 			}
 			
-			sResults = sResults + Environment.NewLine;
+			sResults = String.Format ("{0}{1}",sResults, Environment.NewLine);
 			string[] randomizeresult = new string[0]; // Sep 2011 for returning a random result from a list of all results (used generally with Linear Tables)
 			string[] randomizeresult_nexttable = new string[0]; // Bit of a hack but when we store the result we also store a lookup table... which can then be looked down if parsed
 			
@@ -725,6 +725,26 @@ namespace Layout
 				}
 			}
 			return result;
+		}
+
+		/// <summary>
+		/// Adds the row. (value goes into 2nd column)
+		/// </summary>
+		/// <param name='value'>
+		/// Value.
+		/// </param>/
+		public void AddRow (object[] value)
+		{
+			if (dataSource != null &&  ((DataTable)dataSource).Columns.Count > 1) {
+				DataRow row = ((DataTable)dataSource).NewRow();
+				for (int i = 0 ; i < value.Length; i++)
+				{
+					row[i] = value[i].ToString ();
+				}
+
+				((DataTable)dataSource).Rows.Add(row);
+
+			}
 		}
 	}
 }

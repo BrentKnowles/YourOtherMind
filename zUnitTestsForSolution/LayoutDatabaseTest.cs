@@ -563,6 +563,12 @@ namespace Testing
 			_w.output("This often fails if we have added a new Layout Variable and it has not been set to a default value in constructor");
 			
 		}
+		[Test]
+		public void DeleteTest()
+		{
+
+			Assert.True (false);
+		}
 	}
 }
 

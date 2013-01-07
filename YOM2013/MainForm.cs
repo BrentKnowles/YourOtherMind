@@ -23,7 +23,7 @@ namespace YOM2013
 
 		
 		//Layout.LayoutPanel CurrentLayout;
-		Layout.LayoutPanel SystemLayout;
+	
 		NoteDataXML_SystemOnly MDIHOST=null;
 		List<LayoutsInMemory> LayoutsOpen;
 		
@@ -86,10 +86,10 @@ namespace YOM2013
 /// </param>
 		public MainForm (string _path, Action<bool>ForceShutDownMethod, string storage, Icon mainIcon) : base (_path,ForceShutDownMethod,storage, mainIcon)
 		{
-	
+	this.Load+= HandleFormLoad;
 
 
-			SetupMessageBox();
+			SetupMessageBox ();
 			LayoutsOpen = new List<LayoutsInMemory> ();
 
 			Switches ();
@@ -115,16 +115,32 @@ namespace YOM2013
 			this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
 
 			//GetSystemPanel ();
+
+			if (MasterOfLayouts.ExistsByGUID ("example") == false) {
+				DefaultLayouts.CreateExampleLayout(this);
+			}
+
+			//SystemLayout.Visible = false;
+			Layout.LayoutPanel SystemLayout;
+			if (MasterOfLayouts.ExistsByGUID ("system") == false) {
+				DefaultLayouts.CreateASystemLayout();
+
+//				LayoutDetails.Instance.SystemLayout = SystemLayout;
+//				SystemLayout.SaveLayout();
+//				SystemLayout.Dock = System.Windows.Forms.DockStyle.Fill;
+//				SystemLayout.BringToFront ();
+			} else {
+
+				// we always do a load
+
+			}
 			SystemLayout = new Layout.LayoutPanel (CoreUtilities.Constants.BLANK, true);
 			SystemLayout.Parent = this;
 			SystemLayout.Visible = true;
 			SystemLayout.Dock = System.Windows.Forms.DockStyle.Fill;
 			SystemLayout.BringToFront ();
-			//SystemLayout.Visible = false;
 			SystemLayout.LoadLayout ("system", false);
 			LayoutDetails.Instance.SystemLayout = SystemLayout;
-
-
 
 
 			//LoadLayout ( "");
@@ -214,6 +230,23 @@ namespace YOM2013
 			} catch (Exception ex) {
 				lg.Instance.Line("MainForm.MainForm", ProblemType.ERROR, "Sparkle was unable to find the update file " + ex.ToString());
 			}
+
+
+
+		}
+		/// <summary>
+		/// Handles the form load.
+		/// Does a save when it is first loaded, in case we REBUILT data (fresh install)
+		/// </summary>
+		/// <param name='sender'>
+		/// Sender.
+		/// </param>
+		/// <param name='e'>
+		/// E.
+		/// </param>
+		void HandleFormLoad (object sender, EventArgs e)
+		{
+			this.Save ();
 		}
 
 		void HandleMonitorOneScreenClick (object sender, EventArgs e)
@@ -314,7 +347,7 @@ namespace YOM2013
 		/// </summary>
 		LayoutPanel CreateLayoutContainer(string guid)
 		{
-			MDIHOST = SystemLayout.GetSystemPanel ();
+			MDIHOST = LayoutDetails.Instance.SystemLayout.GetSystemPanel ();
 			if (MDIHOST == null) {
 				NewMessage.Show ("no system panel was found on system layout");
 				Application.Exit ();
@@ -351,7 +384,7 @@ namespace YOM2013
 
 			LayoutsOpen.Add (newLayoutStruct);
 			
-			SystemLayout.SetSaveRequired(false);
+			LayoutDetails.Instance.SystemLayout.SetSaveRequired(false);
 			return newLayout;
 		}
 		/// <summary>
@@ -493,7 +526,7 @@ namespace YOM2013
 		void Save ()
 		{
 
-			SystemLayout.SaveLayout ();
+			LayoutDetails.Instance.SystemLayout.SaveLayout ();
 			if (CurrentLayout != null) {
 				CurrentLayout.SaveLayout ();
 			}

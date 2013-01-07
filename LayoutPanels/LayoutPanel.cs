@@ -21,6 +21,9 @@ namespace Layout
 {
 	public class LayoutPanel : LayoutPanelBase, LayoutPanelInterface
 	{
+		#region constants
+		public const string SYSTEM_RANDOM_TABLES = "list_randomtables";
+		#endregion
 		#region TEMPVARIABLES
 
 	
@@ -134,7 +137,7 @@ namespace Layout
 		/// <value>
 		/// The get system panel.
 		/// </value>
-		public NoteDataXML_SystemOnly GetSystemPanel ()
+		public override NoteDataXML_SystemOnly GetSystemPanel ()
 		{
 			// changing things so that we CREATE a new system panel as needed.
 			return Notes.GetAvailableSystemNote(this);
@@ -171,7 +174,7 @@ namespace Layout
 
 
 
-			ToolStripMenuItem tabMenu = new ToolStripMenuItem(Loc.Instance.GetString ("Tabs"));
+			ToolStripDropDownButton tabMenu = new ToolStripDropDownButton(Loc.Instance.GetString ("Tabs"));
 			
 			
 			ToolStripButton ShowTabs = new ToolStripButton(Loc.Instance.GetString("Show Tabs?"));
@@ -200,6 +203,9 @@ namespace Layout
 			ToolStripButton test = new ToolStripButton("test");
 			test.Click+= (object sender, EventArgs e) => {NewMessage.Show ("Records in linktable = " + GetLinkTable().GetRecords().Length);};
 			bar.Items.Add (test);
+			if (this.header != null)
+			this.header.SendToBack();
+
 		}
 		void HandleCheckedChanged (object sender, EventArgs e)
 		{
@@ -262,7 +268,7 @@ namespace Layout
 			(sender as ToolStripDropDownItem).DropDownItems.Clear ();
 
 			// get the tables from the System Note
-			List<string> tablenames = LayoutDetails.Instance.SystemLayout.GetListOfStringsFromSystemTable("list_randomtables");
+			List<string> tablenames = LayoutDetails.Instance.SystemLayout.GetListOfStringsFromSystemTable(SYSTEM_RANDOM_TABLES);
 
 
 			//string[] tablenames = new string[2]{"charactermaker", "charactermaker|villains"};
@@ -839,14 +845,17 @@ namespace Layout
 			NoteCanvas.AutoScroll = true;
 		}
 
-
+		public override void NewLayout (string _GUID)
+		{
+			NewLayout (_GUID, true);
+		}
 		/// <summary>
 		/// Must be called when creating a new layout
 		/// </summary>
 		/// <param name='GUID'>
 		/// GUI.
 		/// </param>
-		public override void NewLayout (string _GUID)
+		public override void NewLayout (string _GUID, bool AddDefaultNote)
 		{
 			GUID= _GUID;
 			// check to see if exists already
@@ -861,9 +870,11 @@ namespace Layout
 					//
 				Notes = new LayoutDatabase (GUID);
 				//	Notes = new LayoutDatabase("system");
-				NoteDataXML newNote = new NoteDataXML();
+				if (true == AddDefaultNote)
+				{
+				NoteDataXML_RichText newNote = new NoteDataXML_RichText();
 				AddNote (newNote);
-			
+				}
 				if (!GetIsChild) {
 					if (header != null) header.Dispose();
 					header = new HeaderBar(this, this.Notes);
@@ -874,7 +885,10 @@ namespace Layout
 			}
 			NoteCanvas.AutoScroll = true;
 		}
-
+		public void SetName(string newName)
+		{
+			Notes.Name = newName;
+		}
 
 		public override List<NoteDataInterface> GetAvailableFolders ()
 		{

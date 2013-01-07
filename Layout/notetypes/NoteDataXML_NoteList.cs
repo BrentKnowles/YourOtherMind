@@ -114,7 +114,7 @@ namespace Layout
 	
 
 
-		void Refresh()
+		public void Refresh()
 		{
 			if (Modes.NOTES == mode) {
 				UpdateListOfNotesOnLayout ();

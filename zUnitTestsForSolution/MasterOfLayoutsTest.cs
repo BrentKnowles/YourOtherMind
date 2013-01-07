@@ -20,6 +20,11 @@ namespace Testing
 		{
 			Assert.True (false);
 		}
+		[Test]
+		public void DeleteTests()
+		{
+			Assert.True (false);
+		}
 	}
 }
 

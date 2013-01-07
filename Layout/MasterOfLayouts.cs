@@ -133,6 +133,31 @@ namespace Layout
 			MyDatabase.Dispose();
 			return result;
 		}
+		/// <summary>
+		/// Deletes the layout.
+		/// </summary>
+		/// <param name='guid'>
+		/// GUID.
+		/// </param>
+		public static void DeleteLayout (string guid)
+		{
+
+			BaseDatabase MyDatabase = CreateDatabase ();
+			if (MyDatabase.Exists (dbConstants.table_name, dbConstants.GUID, guid) == true) {
+				if (MyDatabase.Delete(dbConstants.table_name, dbConstants.GUID, guid) == true)
+				{
+				}
+				else
+				{
+					NewMessage.Show (Loc.Instance.GetStringFmt("Unable to delete layout {0}", guid));
+				}
+			}
+
+
+			//if (MyDatabase.Exists (dbConstants.table_name, dbConstants.GUID, guid) == true) NewMessage.Show ("Did not delete"); else NewMessage.Show ("Was deleted!");
+
+			MyDatabase.Dispose();
+		}
 	}
 }
 

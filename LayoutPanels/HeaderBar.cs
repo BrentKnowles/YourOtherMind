@@ -2,9 +2,14 @@ using System;
 using System.Windows.Forms;
 using Layout;
 using CoreUtilities;
+using System.Drawing;
 
 namespace LayoutPanels
 {
+	/// <summary>
+	/// This is the uppermost Toolbar on a Layout and is only visible at the 'root' level of a Layout.
+	/// 
+	/// </summary>
 	public class HeaderBar : IDisposable
 	{
 		#region variables
@@ -22,7 +27,8 @@ namespace LayoutPanels
 			Notes = notes;
 			HeaderToolbar();
 			UpdateHeader ();
-			headerBar.SendToBack();
+
+		
 		}
 		private void HeaderToolbar ()
 		{
@@ -91,13 +97,30 @@ namespace LayoutPanels
 				properties.Text = Loc.Instance.GetString("Properties");
 				properties.DropDownOpening+= HandlePropertiesDropDownOpening;
 				
-				
+				ToolStripButton Info = new ToolStripButton();
+				// TODO probalby temp, just debugging info for now
+				Info.Text = Loc.Instance.GetString ("Info"); 
+				Info.Click += HandleInfoClick;
 				
 				headerBar.Items.Add (properties);
+				headerBar.Items.Add (Info);
 
+				headerBar.TabIndex = 0;
+				//headerBar.BringToFront();
+				headerBar.Font = new Font(headerBar.Font.FontFamily, 12);
 				lg.Instance.Line("HeaderBar.UpdateHeader", ProblemType.MESSAGE, "Header should be visible");
 				
 			}
+		}
+		public void SendToBack()
+		{
+			headerBar.SendToBack();
+		}
+		void HandleInfoClick (object sender, EventArgs e)
+		{
+			string messagestring = String.Format ("DateCreated={0}, Hits={1}", Notes.DateCreated,Notes.Hits);
+			NewMessage.Show (messagestring);
+
 		}
 		
 

@@ -78,6 +78,7 @@
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="Options.cs" />
     <Compile Include="Options_InterfaceElements.cs" />
+    <Compile Include="DefaultLayouts.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="yomcast.xml" />

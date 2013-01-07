@@ -12,11 +12,21 @@ namespace Layout
 
 
 		#region variables
-		string Status {get;set;}
+		// the name of the Layout
 		string Name { get; set; }
+		// A status (user defined strings) which represents the state of work on the project (retried, first draft, et cetera)
+		string Status {get;set;}
+		// Whether to show the tabs bar which is fast acces between notes
 		bool ShowTabs { get; set; }
+		// if true when the Tabs are clicked on the Layout Toolbar, the note will be displayed maximized
 		bool MaximizeTabs { get; set; }
+		// true if a subpanel layout (i..e, contained in another panel/layout)
 		bool IsSubPanel { get; set; }
+		// a rating from 1 to 5
+		int Stars {get;set;}
+		// how many times this layout has been loaded
+		int Hits {get;set;}
+		DateTime DateCreated {get;set;}
 		#endregion
 
 
@@ -54,7 +64,7 @@ namespace Layout
 		bool IsNoteExistsInLayout(string NoteGUID);
 		void RemoveNote (NoteDataInterface NoteToMove);
 		void UpdateListOfNotes();
-	
+
 		NoteDataXML_SystemOnly GetAvailableSystemNote (LayoutPanelBase LayoutPanel);
 		//List<LayoutDetails.NameAndGuid> GetListOfLayouts (string filter);
 

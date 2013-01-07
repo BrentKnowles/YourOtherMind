@@ -102,6 +102,8 @@ namespace Layout
 		public abstract NoteDataInterface FindSubpanelNote (NoteDataInterface note);
 		public abstract void SetCurrentTextNote (NoteDataXML_RichText note);
 		public abstract List<string> GetListOfStringsFromSystemTable (string tableName);
+		public abstract NoteDataXML_SystemOnly GetSystemPanel ();
+		public abstract void NewLayout (string _GUID, bool AddDefaultNote);
 	//	public abstract void SystemNoteHasClosedDown (bool closed);
 	}
 }

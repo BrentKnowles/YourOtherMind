@@ -22,7 +22,11 @@ namespace Layout
 		//This is the list of notes
 		private List<NoteDataInterface> dataForThisLayout= null;
 		//These are the OTHER variables (like status) associated with this note
-		private const  int data_size = 5; // size of data array
+		private const  int data_size = dbConstants.LayoutCount; // size of data array
+
+
+
+
 		private object[] data= null;
 		public string Status {
 			get { return data [0].ToString();}
@@ -58,9 +62,22 @@ namespace Layout
 			set { data [3] = value;}
 		}
 		public bool MaximizeTabs {
-			get { return (bool)data [4];}
-			set { data [4] = value;}
+			get { return (bool)data [dbConstants.MAXIMIZETABS.LayoutIndex];}
+			set { data [dbConstants.MAXIMIZETABS.LayoutIndex] = value;}
 		}
+		public int Hits{
+			get { return (int)data [dbConstants.HITS.LayoutIndex];}
+			set { data [dbConstants.HITS.LayoutIndex] = value;}
+		}
+		public int Stars{
+			get { return (int)data [dbConstants.STARS.LayoutIndex];}
+			set { data [dbConstants.STARS.LayoutIndex] = value;}
+		}
+		public DateTime DateCreated{
+			get { return (DateTime)data[dbConstants.DATECREATED.LayoutIndex];}
+			set { data [dbConstants.DATECREATED.LayoutIndex] = value;}
+		}
+
 		// This is the GUID for the page. It comes from
 		//  
 		//  (a) When a New Layout is Created or  a Layout Loaded (in both cases constructor is called
@@ -84,6 +101,9 @@ namespace Layout
 			ShowTabs = true;
 			IsSubPanel = false;
 			MaximizeTabs = true;
+			Stars = 0;
+			Hits = 0;
+			DateCreated = DateTime.Now;
 
 		}
 		/// <summary>
@@ -226,7 +246,7 @@ namespace Layout
 		/// </param>
 		public bool LoadFromOld (string sFile)
 		{
-			System.IO.FileInfo fi = new System.IO.FileInfo(sFile);
+			System.IO.FileInfo fi = new System.IO.FileInfo (sFile);
 
 			Name = sFile;
 			Status = "Imported";
@@ -246,27 +266,20 @@ namespace Layout
 
 
 					// some notes will be passed in and they are merely links to PANELS (other files). Load these too.
-					if (cars[i].IsPanel == true)
-					{
+					if (cars [i].IsPanel == true) {
 						// now load this file into the database
 						//using the autogenerate name
-						string subpanel = System.IO.Path.Combine (fi.Directory.FullName, "panel"+cars[i].GuidForNote+".xml");
-						if (System.IO.File.Exists (subpanel) == true)
-						{
-						LayoutDatabase tempLayoutDatabaseForSubPanel = new LayoutDatabase(cars[i].GuidForNote);
+						string subpanel = System.IO.Path.Combine (fi.Directory.FullName, "panel" + cars [i].GuidForNote + ".xml");
+						if (System.IO.File.Exists (subpanel) == true) {
+							LayoutDatabase tempLayoutDatabaseForSubPanel = new LayoutDatabase (cars [i].GuidForNote);
 
-						if (tempLayoutDatabaseForSubPanel.LoadFromOld (subpanel))
-						{
-							tempLayoutDatabaseForSubPanel.SaveTo ();
-						}
-						else
-						{
-							NewMessage.Show (String.Format ("{0} subpanel failed to load", subpanel));
+							if (tempLayoutDatabaseForSubPanel.LoadFromOld (subpanel)) {
+								tempLayoutDatabaseForSubPanel.SaveTo ();
+							} else {
+								NewMessage.Show (String.Format ("{0} subpanel failed to load", subpanel));
 							}
-						}
-						else
-						{
-							NewMessage.Show (Loc.Instance.GetStringFmt("The file {0} did not exist", subpanel));
+						} else {
+							NewMessage.Show (Loc.Instance.GetStringFmt ("The file {0} did not exist", subpanel));
 						}
 					}
 
@@ -284,22 +297,46 @@ namespace Layout
 			NoteDataXML feeder = (NoteDataXML)dataForThisLayout [0];
 			string[] LayoutElements = feeder.Caption.Split (new char[1] {'#'});
 			for (int i = 0; i < 12; i++) {
-				lg.Instance.Line ("LayoutDatabase->LoadFromOld", ProblemType.MESSAGE, String.Format("Length {0}, i={1}, value={2}, feederGuid={3}",LayoutElements.Length,
-				                                                                                     i,LayoutElements[i], feeder.GuidForNote));
-				switch (i)
-				{
-				case 0: this.Name = LayoutElements[i]; break;
-				case 1: break; //date
-				case 2: break; //directory
-				case 3: this.LayoutGUID = LayoutElements[i]; break;
-				case 4: break; //page.HighPriority); break;
-				case 5: break;// page.Hits); break;
-				case 6: break;// Keywords); break;
-				case 7: break; // page.LastEdited); break;
-				case 8: break;// page.Section); break;
-				case 9: break;// page.Stars); break;
-				case 10: break;// page.StatusType); break;
-				case 11: break;// page.SubType); 
+				lg.Instance.Line ("LayoutDatabase->LoadFromOld", ProblemType.MESSAGE, String.Format ("Length {0}, i={1}, value={2}, feederGuid={3}", LayoutElements.Length,
+				                                                                                     i, LayoutElements [i], feeder.GuidForNote));
+
+				try {
+					switch (i) {
+					case 0:
+						this.Name = LayoutElements [i];
+						break;
+					case 1:
+						lg.Instance.Line("LayoutDatabase->LoadFromOld", ProblemType.MESSAGE, "converting " + LayoutElements[i], Loud.CTRIVIAL);
+						//double date = Double.Parse (LayoutElements [i]);
+						//this.DateCreated = DateTime.FromOADate (date);
+						this.DateCreated = DateTime.Parse (LayoutElements[i]);
+						break;//date
+					case 2:
+						break; //directory
+					case 3:
+						this.LayoutGUID = LayoutElements [i];
+						break;
+					case 4:
+						break; //page.HighPriority); break;
+					case 5:
+						this.Hits = Int32.Parse (LayoutElements [i]);
+						break;// page.Hits); break;
+					case 6:
+						break;// Keywords); break;
+					case 7:
+						break; // page.LastEdited); break;
+					case 8:
+						break;// page.Section); break;
+					case 9:
+						this.Stars = Int32.Parse (LayoutElements [i]);
+						break;// page.Stars); break;
+					case 10:
+						break;// page.StatusType); break;
+					case 11:
+						break;// page.SubType); 
+					}
+				} catch (Exception ex) {
+					NewMessage.Show (ex.ToString ());
 				}
 			}
 
@@ -369,6 +406,12 @@ namespace Layout
 					{
 					MaximizeTabs = (bool)result[dbConstants.MAXIMIZETABS.Index];
 					}else MaximizeTabs = true;
+					int stars = 0;
+					if (Int32.TryParse (result[dbConstants.STARS.Index].ToString (), out stars) == false) Stars = 0; else Stars = stars;
+					int hits = 0;
+					if (Int32.TryParse (result[dbConstants.HITS.Index].ToString (), out hits) == false) Hits = 0; else Hits = hits;
+					DateTime date = DateTime.Now;
+					if (DateTime.TryParse(result[dbConstants.DATECREATED.Index].ToString (), out date) == false) DateCreated = DateTime.Now; DateCreated = date;
 
 					// Fill in XML details
 
@@ -423,6 +466,8 @@ namespace Layout
 
 			long workingSet = System.Diagnostics.Process.GetCurrentProcess().WorkingSet64;
 			lg.Instance.Line("LoadFrom", ProblemType.TEMPORARY, workingSet.ToString());
+			// we loaded this, so we increase the hits
+			Hits++; 
 			return Success;
 
 		}
@@ -525,12 +570,12 @@ namespace Layout
 					// here is where we need to test whether the Data exists
 
 					if (MyDatabase.Exists (dbConstants.table_name, dbConstants.GUID, LayoutGUID) == false) {
-						lg.Instance.Line ("LayoutDatabase.SaveTo", ProblemType.MESSAGE, "We have new data. Adding it.");
+						lg.Instance.Line ("LayoutDatabase.SaveTo", ProblemType.MESSAGE, "We have new data. Adding it.GUID=" + LayoutGUID);
 						// IF NOT, Insert
 						MyDatabase.InsertData (dbConstants.table_name, 
 				                      dbConstants.Columns,
 				                      new object[dbConstants.ColumnCount]
-				                      {DBNull.Value,LayoutGUID, XMLAsString, Status,Name,ShowTabs, IsSubPanel, MaximizeTabs});
+				                      {DBNull.Value,LayoutGUID, XMLAsString, Status,Name,ShowTabs, IsSubPanel, MaximizeTabs, Stars, Hits, DateCreated});
 
 					} else {
 						//TODO: Still need to save all the object properties out. And existing data.
@@ -539,7 +584,7 @@ namespace Layout
 						MyDatabase.UpdateSpecificColumnData (dbConstants.table_name, 
 					                                    new string[dbConstants.ColumnCount - 1]
 						                                     {dbConstants.GUID, dbConstants.XML, dbConstants.STATUS,
-						dbConstants.NAME, dbConstants.SHOWTABS, dbConstants.SUBPANEL, dbConstants.MAXIMIZETABS},
+						dbConstants.NAME, dbConstants.SHOWTABS, dbConstants.SUBPANEL, dbConstants.MAXIMIZETABS, dbConstants.STARS,dbConstants.HITS,dbConstants.DATECREATED},
 				                                    new object[dbConstants.ColumnCount - 1]
 				                                    {
 						LayoutGUID as string, 
@@ -547,7 +592,11 @@ namespace Layout
 						Status as string
 					,Name,
 						ShowTabs,
-						IsSubPanel, MaximizeTabs},
+						IsSubPanel, 
+							MaximizeTabs,
+						Stars,
+						Hits,
+						DateCreated},
 				dbConstants.GUID, LayoutGUID);
 					}
 
@@ -556,7 +605,8 @@ namespace Layout
 				} catch (Exception ex) {
 					AmSaving = false;
 					lg.Instance.Line ("LayoutDatabase.SaveTo", ProblemType.EXCEPTION,"save exception happened " + ex.ToString());
-					throw new Exception (String.Format ("Must call CreateParent before calling Save or Update!! Exception: {0}", ex.ToString ()));
+					//throw new Exception (String.Format ("Must call CreateParent before calling Save or Update!! Exception: {0}", ex.ToString ()));
+					NewMessage.Show ((String.Format ("Must call CreateParent before calling Save or Update!! Exception: {0}", ex.ToString ())));
 					//lg.Instance.Line("LayoutDatabase.SaveTo", ProblemType.EXCEPTION, ex.ToString());
 				}
 				AmSaving = false;

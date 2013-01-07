@@ -524,7 +524,44 @@ namespace database
 
 */
 		}
+		/// <summary>
+		/// Delete the specified tableName, WhereColumn and WhereValue.
+		/// </summary>
+		/// <param name='tableName'>
+		/// Table name.
+		/// </param>
+		/// <param name='WhereColumn'>
+		/// Where column.
+		/// </param>
+		/// <param name='WhereValue'>
+		/// Where value.
+		/// </param>
+		public override bool Delete (string tableName, string WhereColumn, string WhereValue)
+		{
+			SQLiteConnection sqliteCon = new SQLiteConnection (Connection_String);
 
+			// FOr some reason the Commands DID NOT WORK, but the straight string format did
+			//string sqlStatement=String.Format ("Delete from {0} where @wherecolumn=@wherevalue", tableName);
+			string sqlStatement=String.Format ("Delete from {0} where {1}='{2}'", tableName, WhereColumn, WhereValue);
+			lg.Instance.Line("SqlLiteDatabase->Delete", ProblemType.MESSAGE, sqlStatement);
+			sqliteCon.Open ();
+			bool result = false;
+			SQLiteCommand command = new SQLiteCommand (sqlStatement, sqliteCon);
+			// fill in parameters
+			//command.Parameters.AddWithValue ("@wherecolumn", WhereColumn);
+		   // command.Parameters.AddWithValue ("@wherevalue", WhereValue);
+			lg.Instance.Line("SqlLiteDatabase->Delete", ProblemType.MESSAGE,command.ToString());
+
+			int val = command.ExecuteNonQuery();
+			lg.Instance.Line("SqlLiteDatabse->Delete", ProblemType.MESSAGE, String.Format ("ExecuteNonQuery value {0}", val));
+			if (val > 0 || val == -1) result = true;
+
+		
+
+			sqliteCon.Close();
+			return result;
+
+		}
 
 		/// <summary>
 		/// Searchs the database. TO DO: Will use the full-text functionality, though I'll need 

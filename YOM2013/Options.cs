@@ -157,14 +157,14 @@ struct checkBoxOptions
 		}
 		public void SaveRequested ()
 		{
-
+			if (false == PanelWasMade)
+				return;
 
 			if (configPanel == null) {
 				throw new Exception ("no config panel defined");
 			}
 
-			if (false == PanelWasMade)
-				return;
+		
 
 			BaseDatabase db = CreateDatabase ();
 
