@@ -10,9 +10,11 @@ namespace CoreUtilities
 		public form_NewMessage()
 		{
 			InitializeComponent();
-			label2.Dock = DockStyle.Top;
+			labelMessage.Dock = DockStyle.Top;
+			labelMessage.BringToFront();
 		}
-
+		int dwidth = 400;
+		int dheight = 200;
 
 		/// <summary>
 		/// Required designer variable.
@@ -72,6 +74,7 @@ namespace CoreUtilities
 			this.bOk.Text = "OK";
 			this.bOk.UseVisualStyleBackColor = true;
 			this.bOk.Visible = false;
+			this.bOk.Dock = DockStyle.Left;
 			// 
 			// labelMessage
 			// 
@@ -114,6 +117,7 @@ namespace CoreUtilities
 			this.bNo.Text = "No";
 			this.bNo.UseVisualStyleBackColor = true;
 			this.bNo.Visible = false;
+			this.bNo.Dock = DockStyle.Right;
 			// 
 			// bCancel
 			// 
@@ -125,6 +129,7 @@ namespace CoreUtilities
 			this.bCancel.Text = "Cancel";
 			this.bCancel.UseVisualStyleBackColor = true;
 			this.bCancel.Visible = false;
+		
 			// 
 			// header
 			// 
@@ -234,7 +239,7 @@ namespace CoreUtilities
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(500, 300);
+			this.ClientSize = new System.Drawing.Size(dwidth, dheight);
 			this.ControlBox = false;
 			this.Controls.Add(this.panelHelpHelp);
 			this.Controls.Add(this.panelWebHelp);
@@ -425,7 +430,8 @@ namespace CoreUtilities
 			
 			
 			// manually ensure that bOK is spaced far enough away from bCancel
-			bOk.Left = bNo.Left - 5;// -(bOk.Width);
+			bOk.Dock=DockStyle.Left;
+			//bOk.Left = bNo.Left - 5;// -(bOk.Width);
 			bOk.Height = bNo.Height;
 			bOk.Top = bNo.Top;
 			

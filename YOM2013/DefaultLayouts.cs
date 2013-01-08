@@ -51,6 +51,61 @@ namespace YOM2013
 			randomTables.AddRow(new object[2]{"1", "example|colors"});
 			randomTables.AddRow(new object[2]{"2", "example|colorPROMPTS"});
 
+
+			randomTables = new NoteDataXML_Table();
+			randomTables.Caption = LayoutPanel.SYSTEM_NOTEBOOKS;
+			randomTables.Columns = new appframe.ColumnDetails[3]{new appframe.ColumnDetails("id",100), 
+				new appframe.ColumnDetails("notebooks",100),
+				new appframe.ColumnDetails("sections",200)};
+
+		
+			sidedockpanel.AddNote(randomTables);
+
+			randomTables.AddRow(new object[3]{"1", Loc.Instance.GetString("Writing"), Loc.Instance.GetString("All|Advice|Characters|Markets|Projects|Scenes")});
+			randomTables.AddRow(new object[3]{"2", Loc.Instance.GetString("Research"), Loc.Instance.GetString("All|Historical|Science")});
+			randomTables.AddRow(new object[3]{"3", Loc.Instance.GetString("All"), Loc.Instance.GetString("All")});
+
+			///
+			/// -- STATUS
+			/// 
+			randomTables = new NoteDataXML_Table();
+			randomTables.Caption = LayoutPanel.SYSTEM_STATUS;
+			randomTables.Columns = new appframe.ColumnDetails[2]{new appframe.ColumnDetails("id",100), 
+				new appframe.ColumnDetails("status",100)};
+
+			sidedockpanel.AddNote(randomTables);
+			randomTables.AddRow(new object[2]{"1", Loc.Instance.GetString("0 Not Started")});
+			randomTables.AddRow(new object[2]{"2", Loc.Instance.GetString("1 Planning")});
+			randomTables.AddRow(new object[2]{"3", Loc.Instance.GetString("2 Writing")});
+			randomTables.AddRow(new object[2]{"4", Loc.Instance.GetString("3 Rewriting")});
+			randomTables.AddRow(new object[2]{"5", Loc.Instance.GetString("4 Complete")});
+			randomTables.AddRow(new object[2]{"6", Loc.Instance.GetString("5 Accepted")});
+			randomTables.AddRow(new object[2]{"7", Loc.Instance.GetString("6 Published")});
+			randomTables.AddRow(new object[2]{"8", Loc.Instance.GetString("7 Republished on personal site")});
+			randomTables.AddRow(new object[2]{"9", Loc.Instance.GetString("8 Selfpublished")});
+
+
+
+
+			///
+			/// -- SUBTYPES
+			/// 
+			/// 
+			/// 
+			randomTables = new NoteDataXML_Table();
+			randomTables.Caption = LayoutPanel.SYSTEM_SUBTYPE;
+			randomTables.Columns = new appframe.ColumnDetails[2]{new appframe.ColumnDetails("id",100), 
+				new appframe.ColumnDetails("subtype",100)};
+			sidedockpanel.AddNote(randomTables);
+			randomTables.AddRow(new object[2]{"1", Loc.Instance.GetString("Article")});
+			randomTables.AddRow(new object[2]{"2", Loc.Instance.GetString("Idea")});
+			randomTables.AddRow(new object[2]{"3", Loc.Instance.GetString("Novel")});
+			randomTables.AddRow(new object[2]{"4", Loc.Instance.GetString("Play")});
+			randomTables.AddRow(new object[2]{"5", Loc.Instance.GetString("Story")});
+
+
+
+
 			SystemLayout.SetName (Loc.Instance.GetString("system"));
 			SystemLayout.SaveLayout ();
 			list.Refresh();

@@ -706,11 +706,44 @@ namespace Layout
 		/// <returns>
 		/// The values for column.
 		/// </returns>
+		/// <param name='filter'>if * means any, otherwise we do a search</para>
 		/// <param name='columnIndex'>
 		/// Column index.
 		/// </param>
-		public List<string> GetValuesForColumn (int columnIndex)
+		public List<string> GetValuesForColumn (int columnIndex, string filter)
 		{
+
+			int column=0;
+			string value ="";
+			if (filter != "*")
+			{
+				// i.e., 	"1|writing";
+				string[] split = filter.Split (new char[1] {'|'});
+				if (split.Length == 2)
+				{
+					value = split[1];
+					try
+					{
+					column = Int32.Parse (split[0]);
+					}
+					catch (Exception)
+					{
+						filter = "*";
+
+					}
+
+
+				}
+				else
+				{
+					// abort filter if structured wrong
+					filter ="*";
+				}
+
+			}
+
+
+
 			List<string> result = new List<string>();
 			if (dataSource != null) {
 				if (dataSource is DataTable)
@@ -719,7 +752,18 @@ namespace Layout
 					{
 					foreach (DataRow row in dataSource.Rows)
 					{
+							bool add = true;
+							if (filter != "*")
+							{
+								if (row[column].ToString()!=value)
+								{
+									add = false;
+								}
+							}
+							if (true == add)
+							{
 						result.Add ( row[columnIndex].ToString ());
+							}
 					}
 					}
 				}

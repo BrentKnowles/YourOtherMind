@@ -86,6 +86,7 @@ namespace YOM2013
 /// </param>
 		public MainForm (string _path, Action<bool>ForceShutDownMethod, string storage, Icon mainIcon) : base (_path,ForceShutDownMethod,storage, mainIcon)
 		{
+
 	this.Load+= HandleFormLoad;
 
 
@@ -95,6 +96,7 @@ namespace YOM2013
 			Switches ();
 
 			lg.Instance.Loudness = Loud.CTRIVIAL;
+			//lg.Instance.Loudness = Loud.DOFF;
 			LayoutDetails.Instance.LoadLayoutRef = LoadLayout;
 
 

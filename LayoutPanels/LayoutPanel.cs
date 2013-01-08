@@ -23,6 +23,10 @@ namespace Layout
 	{
 		#region constants
 		public const string SYSTEM_RANDOM_TABLES = "list_randomtables";
+		public const string SYSTEM_NOTEBOOKS = "list_notebooks";
+		public const string SYSTEM_STATUS = "list_status";
+		public const string SYSTEM_SUBTYPE = "list_subtypes";
+
 		#endregion
 		#region TEMPVARIABLES
 
@@ -173,8 +177,9 @@ namespace Layout
 			RandomTables.DropDownOpening += HandleDropDownRandomTablesOpening;
 
 
-
-			ToolStripDropDownButton tabMenu = new ToolStripDropDownButton(Loc.Instance.GetString ("Tabs"));
+			ContextMenuStrip tabContext = new System.Windows.Forms.ContextMenuStrip();
+			
+			
 			
 			
 			ToolStripButton ShowTabs = new ToolStripButton(Loc.Instance.GetString("Show Tabs?"));
@@ -187,11 +192,18 @@ namespace Layout
 			MaximizeTabs.Checked = Notes.MaximizeTabs;
 			MaximizeTabs.CheckedChanged+= HandleMaximizedTabsCheckedChanged;
 			
-			
-			tabMenu.DropDownItems.Add (ShowTabs);
-			tabMenu.DropDownItems.Add (MaximizeTabs);
-			// at end of any submenu. Annoying!
-			tabMenu.DropDownItems.Add ("empty");
+			tabContext.Items.Add (ShowTabs);
+			tabContext.Items.Add (MaximizeTabs);
+
+			ToolStripDropDownButton tabMenu = new ToolStripDropDownButton(Loc.Instance.GetString ("Tabs"));
+			tabMenu.DropDown = tabContext;
+
+
+			//tabMenu.DropDownItems.Add (ShowTabs);
+			//tabMenu.DropDownItems.Add (MaximizeTabs);
+
+
+
 
 
 			//ToolStripLabel CurrentNote
@@ -218,6 +230,10 @@ namespace Layout
 			Notes.MaximizeTabs = (sender as ToolStripButton).Checked;
 			SetSaveRequired(true);
 		}
+		public override List<string> GetListOfStringsFromSystemTable (string tableName, int Column)
+		{
+			return GetListOfStringsFromSystemTable(tableName, Column, "*");
+		}
 
 		/// <summary>
 		/// Gets the list of strings from system table.
@@ -230,13 +246,14 @@ namespace Layout
 		/// <param name='table'>
 		/// Table.
 		/// </param>
-		public override List<string> GetListOfStringsFromSystemTable (string tableName)
+		public override List<string> GetListOfStringsFromSystemTable (string tableName, int Column, string filter)
 		{
 			NoteDataInterface table = FindNoteByName (tableName);
 			List<string> result = new List<string>();
 			if (table != null && (table is NoteDataXML_Table)) {
-				if (((NoteDataXML_Table)table).Columns.Length > 1) {
-					result = ((NoteDataXML_Table)table).GetValuesForColumn(1);
+				if (((NoteDataXML_Table)table).Columns.Length > Column) {
+					result = ((NoteDataXML_Table)table).GetValuesForColumn(Column, filter);
+					result.Sort ();
 				}
 				else
 				{
@@ -261,14 +278,14 @@ namespace Layout
 		void HandleDropDownRandomTablesOpening (object sender, EventArgs e)
 		{
 			// get the sytem page (stored in layoutdetails?
-
-
-
+			(sender as ToolStripDropDownButton).DropDown = null;
+			ContextMenuStrip randoms = new System.Windows.Forms.ContextMenuStrip();
+		
 			// get the note with name = "RandomTables"
-			(sender as ToolStripDropDownItem).DropDownItems.Clear ();
+			//(sender as ToolStripDropDownItem).DropDownItems.Clear ();
 
 			// get the tables from the System Note
-			List<string> tablenames = LayoutDetails.Instance.SystemLayout.GetListOfStringsFromSystemTable(SYSTEM_RANDOM_TABLES);
+			List<string> tablenames = LayoutDetails.Instance.SystemLayout.GetListOfStringsFromSystemTable(SYSTEM_RANDOM_TABLES,1);
 
 
 			//string[] tablenames = new string[2]{"charactermaker", "charactermaker|villains"};
@@ -276,12 +293,13 @@ namespace Layout
 			foreach (string table in tablenames) {
 				ToolStripButton button = new ToolStripButton(table);
 				button.Click+= HandleRandomTableClick;
-				(sender as ToolStripDropDownItem).DropDownItems.Add (button);
+				//(sender as ToolStripDropDownItem).DropDownItems.Add (button);
+				randoms.Items.Add (button);
 
 			}
 			// load the specified page (the first part of a a|b combination, though can also be on its own
 
-
+			(sender as ToolStripDropDownButton).DropDown = randoms;
 
 			// we know this is a table. Call its random function
 		}

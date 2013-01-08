@@ -58,8 +58,8 @@ namespace Layout
 		/// <c>true</c> if this instance is sub panel; otherwise, <c>false</c>.
 		/// </value>
 		public bool IsSubPanel {
-			get { return (bool)data [3];}
-			set { data [3] = value;}
+			get { return (bool)data [dbConstants.SUBPANEL.LayoutIndex];}
+			set { data [dbConstants.SUBPANEL.LayoutIndex] = value;}
 		}
 		public bool MaximizeTabs {
 			get { return (bool)data [dbConstants.MAXIMIZETABS.LayoutIndex];}
@@ -77,7 +77,31 @@ namespace Layout
 			get { return (DateTime)data[dbConstants.DATECREATED.LayoutIndex];}
 			set { data [dbConstants.DATECREATED.LayoutIndex] = value;}
 		}
-
+		public DateTime DateEdited{
+			get { return (DateTime)data[dbConstants.DATEEDITED.LayoutIndex];}
+			set { data [dbConstants.DATEEDITED.LayoutIndex] = value;}
+		}
+		public string Notebook {
+			get { return data [dbConstants.NOTEBOOK.LayoutIndex].ToString ();}
+			set { data [dbConstants.NOTEBOOK.LayoutIndex] = value;}
+		}
+		public string Section {
+			get { return data [dbConstants.SECTION.LayoutIndex].ToString ();}
+			set { data [dbConstants.SECTION.LayoutIndex] = value;}
+		}
+		public string Subtype {
+			get { return data [dbConstants.TYPE.LayoutIndex].ToString ();}
+			set { data [dbConstants.TYPE.LayoutIndex] = value;}
+		}
+		public string Source {
+			get { return data [dbConstants.SOURCE.LayoutIndex].ToString ();}
+			set { data [dbConstants.SOURCE.LayoutIndex] = value;}
+		}
+		public int Words {
+			get { return Int32.Parse (data [dbConstants.WORDS.LayoutIndex].ToString ());}
+			set { 
+				data [dbConstants.WORDS.LayoutIndex] = value.ToString ();}
+		}
 		// This is the GUID for the page. It comes from
 		//  
 		//  (a) When a New Layout is Created or  a Layout Loaded (in both cases constructor is called
@@ -96,7 +120,7 @@ namespace Layout
 			data = new object[data_size];
 
 			// defaults
-			Status = " default status";
+			Status = "0 Not Started";
 			Name = "default name";
 			ShowTabs = true;
 			IsSubPanel = false;
@@ -104,6 +128,13 @@ namespace Layout
 			Stars = 0;
 			Hits = 0;
 			DateCreated = DateTime.Now;
+			DateEdited = DateTime.Now;
+			Notebook = Loc.Instance.GetString("All");
+			Section= Loc.Instance.GetString("All");
+			Subtype=Constants.BLANK;
+			Source=Constants.BLANK;
+			Words=0;
+
 
 		}
 		/// <summary>
@@ -273,6 +304,8 @@ namespace Layout
 						if (System.IO.File.Exists (subpanel) == true) {
 							LayoutDatabase tempLayoutDatabaseForSubPanel = new LayoutDatabase (cars [i].GuidForNote);
 
+							tempLayoutDatabaseForSubPanel.IsSubPanel = true;
+
 							if (tempLayoutDatabaseForSubPanel.LoadFromOld (subpanel)) {
 								tempLayoutDatabaseForSubPanel.SaveTo ();
 							} else {
@@ -312,6 +345,7 @@ namespace Layout
 						this.DateCreated = DateTime.Parse (LayoutElements[i]);
 						break;//date
 					case 2:
+						this.Notebook = LayoutElements[i];
 						break; //directory
 					case 3:
 						this.LayoutGUID = LayoutElements [i];
@@ -324,6 +358,7 @@ namespace Layout
 					case 6:
 						break;// Keywords); break;
 					case 7:
+						this.DateEdited = DateTime.Parse (LayoutElements[i]);
 						break; // page.LastEdited); break;
 					case 8:
 						break;// page.Section); break;
@@ -331,8 +366,10 @@ namespace Layout
 						this.Stars = Int32.Parse (LayoutElements [i]);
 						break;// page.Stars); break;
 					case 10:
+						this.Status = LayoutElements[i];
 						break;// page.StatusType); break;
 					case 11:
+						this.Subtype = LayoutElements[i];
 						break;// page.SubType); 
 					}
 				} catch (Exception ex) {
@@ -397,8 +434,8 @@ namespace Layout
 						//ToDo: This does not seem growable easily
 						ShowTabs = true;
 					}
-					if (result [6].ToString () != Constants.BLANK) {
-						IsSubPanel = (bool)result[6];
+					if (result [dbConstants.SUBPANEL.Index].ToString () != Constants.BLANK) {
+						IsSubPanel = (bool)result[dbConstants.SUBPANEL.Index];
 					}else {
 						IsSubPanel = false;
 					}
@@ -411,8 +448,15 @@ namespace Layout
 					int hits = 0;
 					if (Int32.TryParse (result[dbConstants.HITS.Index].ToString (), out hits) == false) Hits = 0; else Hits = hits;
 					DateTime date = DateTime.Now;
-					if (DateTime.TryParse(result[dbConstants.DATECREATED.Index].ToString (), out date) == false) DateCreated = DateTime.Now; DateCreated = date;
-
+					if (DateTime.TryParse(result[dbConstants.DATECREATED.Index].ToString (), out date) == false) DateCreated = DateTime.Now; else DateCreated = date;
+					date = DateTime.Now;
+					if (DateTime.TryParse(result[dbConstants.DATEEDITED.Index].ToString (), out date) == false) DateEdited = DateTime.Now; else DateEdited = date;
+					Notebook = result[dbConstants.NOTEBOOK.Index].ToString ();
+					Section = result[dbConstants.SECTION.Index].ToString();
+					Subtype = result [dbConstants.TYPE.Index].ToString();
+					Source = result[dbConstants.SOURCE.Index].ToString();
+					int words = 0;
+					if (Int32.TryParse(result[dbConstants.WORDS.Index].ToString(), out words)) Words = words; else Words = 0;
 					// Fill in XML details
 
 					//dataForThisLayout
@@ -500,6 +544,9 @@ namespace Layout
 		/// </returns>
 		public bool SaveTo ()
 		{
+
+			DateEdited = DateTime.Now;
+
 			bool saveworked= false;
 			if (false == AmSaving) {
 				AmSaving = true;
@@ -575,7 +622,8 @@ namespace Layout
 						MyDatabase.InsertData (dbConstants.table_name, 
 				                      dbConstants.Columns,
 				                      new object[dbConstants.ColumnCount]
-				                      {DBNull.Value,LayoutGUID, XMLAsString, Status,Name,ShowTabs, IsSubPanel, MaximizeTabs, Stars, Hits, DateCreated});
+				                      {DBNull.Value,LayoutGUID, XMLAsString, Status,Name,ShowTabs, 
+							IsSubPanel, MaximizeTabs, Stars, Hits, DateCreated,DateEdited, Notebook, Section, Subtype, Source, Words});
 
 					} else {
 						//TODO: Still need to save all the object properties out. And existing data.
@@ -584,7 +632,10 @@ namespace Layout
 						MyDatabase.UpdateSpecificColumnData (dbConstants.table_name, 
 					                                    new string[dbConstants.ColumnCount - 1]
 						                                     {dbConstants.GUID, dbConstants.XML, dbConstants.STATUS,
-						dbConstants.NAME, dbConstants.SHOWTABS, dbConstants.SUBPANEL, dbConstants.MAXIMIZETABS, dbConstants.STARS,dbConstants.HITS,dbConstants.DATECREATED},
+						dbConstants.NAME, dbConstants.SHOWTABS, dbConstants.SUBPANEL, dbConstants.MAXIMIZETABS, 
+							dbConstants.STARS,dbConstants.HITS,dbConstants.DATECREATED,
+						dbConstants.DATEEDITED, dbConstants.NOTEBOOK, dbConstants.SECTION,
+						dbConstants.TYPE, dbConstants.SOURCE, dbConstants.WORDS},
 				                                    new object[dbConstants.ColumnCount - 1]
 				                                    {
 						LayoutGUID as string, 
@@ -596,7 +647,13 @@ namespace Layout
 							MaximizeTabs,
 						Stars,
 						Hits,
-						DateCreated},
+						DateCreated,
+						DateEdited,
+						Notebook,
+						Section,
+						Subtype,
+						Source,
+						Words},
 				dbConstants.GUID, LayoutGUID);
 					}
 

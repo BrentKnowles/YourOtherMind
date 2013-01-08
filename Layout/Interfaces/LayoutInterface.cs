@@ -27,6 +27,12 @@ namespace Layout
 		// how many times this layout has been loaded
 		int Hits {get;set;}
 		DateTime DateCreated {get;set;}
+		DateTime DateEdited{ get; set; }
+		string Notebook { get; set; }
+		string Section { get; set; }
+		string Subtype { get; set; }
+		string Source {get;set;}
+		int Words {get; set;}
 		#endregion
 
 
