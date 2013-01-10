@@ -14,10 +14,10 @@ namespace YOM2013
 	/// </summary>
 	public static class DefaultLayouts
 	{
-		public static LayoutPanelBase CreateASystemLayout()
+		public static void CreateASystemLayout(ContextMenuStrip textEditorContextStrip)
 		{
 			LayoutPanel SystemLayout = new Layout.LayoutPanel (CoreUtilities.Constants.BLANK, true);
-			SystemLayout.NewLayout ("system" ,false);
+			SystemLayout.NewLayout ("system" ,false, textEditorContextStrip);
 
 			//SystemLayout.Parent = parent;
 			SystemLayout.Visible = true;
@@ -39,6 +39,20 @@ namespace YOM2013
 			sidedockpanel.BringToFront();
 			sidedockpanel.Dock = DockStyle.Left;
 
+			//
+			//------Subpanel
+			//
+			NoteDataXML_Panel subpanel = new NoteDataXML_Panel(100,100);
+
+			//subpanel.Save();
+			//sidedockpanel.Save();
+			//* important
+			subpanel.GuidForNote = "tables";
+			subpanel.Caption = Loc.Instance.GetString("Tables");
+
+
+			sidedockpanel.AddNote(subpanel);
+			subpanel.CreateParent(sidedockpanel.GetPanelsLayout());
 
 
 			NoteDataXML_Table randomTables = new NoteDataXML_Table();
@@ -47,7 +61,7 @@ namespace YOM2013
 		
 			SystemLayout.SaveLayout ();
 
-			sidedockpanel.AddNote(randomTables);
+			subpanel.AddNote(randomTables);
 			randomTables.AddRow(new object[2]{"1", "example|colors"});
 			randomTables.AddRow(new object[2]{"2", "example|colorPROMPTS"});
 
@@ -59,7 +73,7 @@ namespace YOM2013
 				new appframe.ColumnDetails("sections",200)};
 
 		
-			sidedockpanel.AddNote(randomTables);
+			subpanel.AddNote(randomTables);
 
 			randomTables.AddRow(new object[3]{"1", Loc.Instance.GetString("Writing"), Loc.Instance.GetString("All|Advice|Characters|Markets|Projects|Scenes")});
 			randomTables.AddRow(new object[3]{"2", Loc.Instance.GetString("Research"), Loc.Instance.GetString("All|Historical|Science")});
@@ -73,7 +87,7 @@ namespace YOM2013
 			randomTables.Columns = new appframe.ColumnDetails[2]{new appframe.ColumnDetails("id",100), 
 				new appframe.ColumnDetails("status",100)};
 
-			sidedockpanel.AddNote(randomTables);
+			subpanel.AddNote(randomTables);
 			randomTables.AddRow(new object[2]{"1", Loc.Instance.GetString("0 Not Started")});
 			randomTables.AddRow(new object[2]{"2", Loc.Instance.GetString("1 Planning")});
 			randomTables.AddRow(new object[2]{"3", Loc.Instance.GetString("2 Writing")});
@@ -96,20 +110,34 @@ namespace YOM2013
 			randomTables.Caption = LayoutPanel.SYSTEM_SUBTYPE;
 			randomTables.Columns = new appframe.ColumnDetails[2]{new appframe.ColumnDetails("id",100), 
 				new appframe.ColumnDetails("subtype",100)};
-			sidedockpanel.AddNote(randomTables);
+			subpanel.AddNote(randomTables);
 			randomTables.AddRow(new object[2]{"1", Loc.Instance.GetString("Article")});
 			randomTables.AddRow(new object[2]{"2", Loc.Instance.GetString("Idea")});
 			randomTables.AddRow(new object[2]{"3", Loc.Instance.GetString("Novel")});
 			randomTables.AddRow(new object[2]{"4", Loc.Instance.GetString("Play")});
 			randomTables.AddRow(new object[2]{"5", Loc.Instance.GetString("Story")});
 
-
+			///
+			/// -- KEYWORDS
+			/// 
+			/// 
+			/// 
+			randomTables = new NoteDataXML_Table();
+			randomTables.Caption = LayoutPanel.SYSTEM_KEYWORDS;
+			randomTables.Columns = new appframe.ColumnDetails[2]{new appframe.ColumnDetails("id",100), 
+				new appframe.ColumnDetails("keyword",100)};
+			subpanel.AddNote(randomTables);
+			randomTables.AddRow(new object[2]{"1", Loc.Instance.GetString("Brainstorm")});
+			randomTables.AddRow(new object[2]{"2", Loc.Instance.GetString("Horror")});
+			randomTables.AddRow(new object[2]{"3", Loc.Instance.GetString("Fantasy")});
+			randomTables.AddRow(new object[2]{"4", Loc.Instance.GetString("SciFi")});
+			randomTables.AddRow(new object[2]{"5", Loc.Instance.GetString("WhatIf?")});
 
 
 			SystemLayout.SetName (Loc.Instance.GetString("system"));
 			SystemLayout.SaveLayout ();
 			list.Refresh();
-			return SystemLayout;
+			SystemLayout.Dispose ();
 		}
 		/// <summary>
 		/// Creates the example layout. For new users.
@@ -120,11 +148,11 @@ namespace YOM2013
 		/// <param name='parent'>
 		/// Parent.
 		/// </param>
-		public static LayoutPanelBase CreateExampleLayout (Control parent)
+		public static void CreateExampleLayout (Control parent, ContextMenuStrip TextEditMenuStrip)
 		{
 			
 			LayoutPanel exampleLayout = new Layout.LayoutPanel (CoreUtilities.Constants.BLANK, true);
-			exampleLayout.NewLayout ("example" ,false);
+			exampleLayout.NewLayout ("example" ,false, TextEditMenuStrip);
 
 			exampleLayout.Parent = parent;
 			exampleLayout.Visible = true;
@@ -159,7 +187,7 @@ namespace YOM2013
 			exampleLayout.SetName (Loc.Instance.GetString("example"));
 			exampleLayout.SaveLayout ();
 
-			return exampleLayout;
+			exampleLayout.Dispose();
 		}
 	}
 }

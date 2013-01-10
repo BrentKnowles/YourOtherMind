@@ -44,7 +44,6 @@
     <Compile Include="Interfaces\NoteDataInterface.cs" />
     <Compile Include="Interfaces\NotePanelInterface.cs" />
     <Compile Include="Interfaces\LayoutInterface.cs" />
-    <Compile Include="Interfaces\LayoutPanelInterface.cs" />
     <Compile Include="AsXML\LayoutXML.cs" />
     <Compile Include="AsDatabase\LayoutDatabase.cs" />
     <Compile Include="notetypes\NoteDataXML.cs" />

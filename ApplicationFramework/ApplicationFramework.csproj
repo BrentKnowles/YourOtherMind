@@ -39,6 +39,8 @@
     <Compile Include="iConfig.cs" />
     <Compile Include="TablePanel.cs" />
     <Compile Include="TablePanel_Form_ImportList.cs" />
+    <Compile Include="Stars.cs" />
+    <Compile Include="ColumnDetails.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System.Windows.Forms" />
@@ -98,6 +100,15 @@
     </EmbeddedResource>
     <EmbeddedResource Include="icons\link_go.png">
       <LogicalName>link_go.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\bullet_black.png">
+      <LogicalName>bullet_black</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\star.png">
+      <LogicalName>star</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\stargrey.png">
+      <LogicalName>stargrey</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
 </Project>

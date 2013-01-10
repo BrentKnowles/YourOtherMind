@@ -19,14 +19,14 @@ using CoreUtilities.Links;
  */
 namespace Layout
 {
-	public class LayoutPanel : LayoutPanelBase, LayoutPanelInterface
+	public class LayoutPanel : LayoutPanelBase
 	{
 		#region constants
 		public const string SYSTEM_RANDOM_TABLES = "list_randomtables";
 		public const string SYSTEM_NOTEBOOKS = "list_notebooks";
 		public const string SYSTEM_STATUS = "list_status";
 		public const string SYSTEM_SUBTYPE = "list_subtypes";
-
+		public const string SYSTEM_KEYWORDS = "list_keywords";
 		#endregion
 		#region TEMPVARIABLES
 
@@ -155,6 +155,7 @@ namespace Layout
 			}
 			return null;*/
 		}
+
 
 		public void BuildLayoutToolbar ()
 		{
@@ -285,7 +286,7 @@ namespace Layout
 			//(sender as ToolStripDropDownItem).DropDownItems.Clear ();
 
 			// get the tables from the System Note
-			List<string> tablenames = LayoutDetails.Instance.SystemLayout.GetListOfStringsFromSystemTable(SYSTEM_RANDOM_TABLES,1);
+			List<string> tablenames = LayoutDetails.Instance.TableLayout.GetListOfStringsFromSystemTable(SYSTEM_RANDOM_TABLES,1);
 
 
 			//string[] tablenames = new string[2]{"charactermaker", "charactermaker|villains"};
@@ -387,7 +388,7 @@ namespace Layout
 					string LayoutGUID = MasterOfLayouts.GetGuidFromName(LayoutName);
 					//LayoutDatabase randompageLayout = new LayoutDatabase(LayoutGUID);
 					LayoutPanel temporaryLayoutPanel = new LayoutPanel("", false);
-					temporaryLayoutPanel.LoadLayout(LayoutGUID, false);
+					temporaryLayoutPanel.LoadLayout(LayoutGUID, false, TextEditContextStrip);
 					//randompageLayout.LoadFrom(temporaryLayoutPanel);
 
 					// now search for the note (the table)
@@ -474,7 +475,7 @@ namespace Layout
 				NewMessage.Show (Loc.Instance.GetString ("You must select a note first"));
 			}
 		}
-	
+
 		/*public LayoutPanel(string parentGUID) : this (parentGUID, false)
 		{
 
@@ -496,8 +497,7 @@ namespace Layout
 		{
 
 
-
-
+		
 			ParentGUID = parentGUID;
 			GetIsSystemLayout = IsSystem;
 
@@ -689,7 +689,12 @@ namespace Layout
 				{
 					NewMessage.Show (Loc.Instance.Cat.GetString("This note is already being saved. Try again."));
 				}
-
+				if (GUID == "system")
+				{
+					 
+					LayoutDetails.Instance.TableLayout=new Layout.LayoutPanel(Constants.BLANK, false);
+					LayoutDetails.Instance.TableLayout.LoadLayout ("tables", false, TextEditContextStrip);
+				}
 			}
 			else
 			{
@@ -716,9 +721,9 @@ namespace Layout
 	/// <param name='IsSubPanel'>
 	/// If set to <c>true</c> is sub panel.
 	/// </param>
-		public override void LoadLayout (string _GUID, bool IsSubPanel)
+		public override void LoadLayout (string _GUID, bool IsSubPanel, ContextMenuStrip textEditorContextStrip)
 		{
-
+			TextEditContextStrip = textEditorContextStrip;
 			//NewMessage.Show (_GUID);
 			// super important to track parent child relationships
 			GUID = _GUID;
@@ -863,18 +868,16 @@ namespace Layout
 			NoteCanvas.AutoScroll = true;
 		}
 
-		public override void NewLayout (string _GUID)
-		{
-			NewLayout (_GUID, true);
-		}
+	
 		/// <summary>
 		/// Must be called when creating a new layout
 		/// </summary>
 		/// <param name='GUID'>
 		/// GUI.
 		/// </param>
-		public override void NewLayout (string _GUID, bool AddDefaultNote)
+		public override void NewLayout (string _GUID, bool AddDefaultNote, ContextMenuStrip textEditorContextStrip)
 		{
+			TextEditContextStrip = textEditorContextStrip;
 			GUID= _GUID;
 			// check to see if exists already
 			if (Notes != null && Notes.IsLayoutExists (GUID)) {

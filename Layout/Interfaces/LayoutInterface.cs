@@ -33,6 +33,7 @@ namespace Layout
 		string Subtype { get; set; }
 		string Source {get;set;}
 		int Words {get; set;}
+		string Keywords {get;set;}
 		#endregion
 
 

@@ -39,6 +39,14 @@ namespace LayoutPanels
 
 
 		}
+
+		/// <summary>
+		/// Gets the panels layout. This is used when autobuilding a panel inside a panel inside DefaultLayouts.cs
+		/// </summary>
+		public LayoutPanelBase GetPanelsLayout ()
+		{
+			return panelLayout;
+		}
 		public NoteDataXML_Panel(int height, int width) : base(height, width)
 		{
 			Caption = Loc.Instance.Cat.GetString("Panel");
@@ -81,7 +89,7 @@ namespace LayoutPanels
 			panelLayout.SetSubNoteSaveRequired = Layout.SetSaveRequired;
 
 			// load the layout based on the note
-			panelLayout.LoadLayout(this.GuidForNote, true);
+			panelLayout.LoadLayout(this.GuidForNote, true, Layout.GetLayoutTextEditContextStrip());
 
 			panelLayout.Parent = ParentNotePanel;
 			panelLayout.Visible = true;

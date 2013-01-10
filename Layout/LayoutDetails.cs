@@ -15,6 +15,7 @@ namespace Layout
 
 
 		public LayoutPanelBase SystemLayout = null;
+		public LayoutPanelBase TableLayout = null;
 
 		private LayoutPanelBase currentLayout;
 		public LayoutPanelBase CurrentLayout {

@@ -9,7 +9,7 @@ namespace Layout
 	/// <summary>
 	/// Effectively the FILE in memory for a particular Layout
 	/// </summary>
-	public class LayoutDatabase : LayoutInterface
+	public class LayoutDatabase : Layout.LayoutInterface
 	{
 		#region variables
 
@@ -102,6 +102,10 @@ namespace Layout
 			set { 
 				data [dbConstants.WORDS.LayoutIndex] = value.ToString ();}
 		}
+		public string Keywords {
+			get { return data [dbConstants.KEYWORDS.LayoutIndex].ToString ();}
+			set { data [dbConstants.KEYWORDS.LayoutIndex] = value;}
+		}
 		// This is the GUID for the page. It comes from
 		//  
 		//  (a) When a New Layout is Created or  a Layout Loaded (in both cases constructor is called
@@ -134,6 +138,7 @@ namespace Layout
 			Subtype=Constants.BLANK;
 			Source=Constants.BLANK;
 			Words=0;
+			Keywords = Constants.BLANK;
 
 
 		}
@@ -356,6 +361,7 @@ namespace Layout
 						this.Hits = Int32.Parse (LayoutElements [i]);
 						break;// page.Hits); break;
 					case 6:
+						this.Keywords = LayoutElements[i];
 						break;// Keywords); break;
 					case 7:
 						this.DateEdited = DateTime.Parse (LayoutElements[i]);
@@ -455,8 +461,11 @@ namespace Layout
 					Section = result[dbConstants.SECTION.Index].ToString();
 					Subtype = result [dbConstants.TYPE.Index].ToString();
 					Source = result[dbConstants.SOURCE.Index].ToString();
+
 					int words = 0;
 					if (Int32.TryParse(result[dbConstants.WORDS.Index].ToString(), out words)) Words = words; else Words = 0;
+
+					Keywords = result[dbConstants.KEYWORDS.Index].ToString();
 					// Fill in XML details
 
 					//dataForThisLayout
@@ -623,7 +632,7 @@ namespace Layout
 				                      dbConstants.Columns,
 				                      new object[dbConstants.ColumnCount]
 				                      {DBNull.Value,LayoutGUID, XMLAsString, Status,Name,ShowTabs, 
-							IsSubPanel, MaximizeTabs, Stars, Hits, DateCreated,DateEdited, Notebook, Section, Subtype, Source, Words});
+							IsSubPanel, MaximizeTabs, Stars, Hits, DateCreated,DateEdited, Notebook, Section, Subtype, Source, Words, Keywords});
 
 					} else {
 						//TODO: Still need to save all the object properties out. And existing data.
@@ -635,7 +644,7 @@ namespace Layout
 						dbConstants.NAME, dbConstants.SHOWTABS, dbConstants.SUBPANEL, dbConstants.MAXIMIZETABS, 
 							dbConstants.STARS,dbConstants.HITS,dbConstants.DATECREATED,
 						dbConstants.DATEEDITED, dbConstants.NOTEBOOK, dbConstants.SECTION,
-						dbConstants.TYPE, dbConstants.SOURCE, dbConstants.WORDS},
+						dbConstants.TYPE, dbConstants.SOURCE, dbConstants.WORDS, dbConstants.KEYWORDS},
 				                                    new object[dbConstants.ColumnCount - 1]
 				                                    {
 						LayoutGUID as string, 
@@ -653,7 +662,8 @@ namespace Layout
 						Section,
 						Subtype,
 						Source,
-						Words},
+						Words,
+						Keywords},
 				dbConstants.GUID, LayoutGUID);
 					}
 

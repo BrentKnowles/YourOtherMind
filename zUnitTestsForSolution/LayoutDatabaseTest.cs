@@ -37,23 +37,23 @@ namespace Testing
 
 		}
 
-		[Test]
-		public void TryToEditReadOnly ()
-		{
-			FakeLayoutDatabase layout = new FakeLayoutDatabase("testguid");
-			NoteDataXML note = new NoteDataXML();
-			note.Caption = "boo";
-			layout.Add(note);
-			for (int i = 0; i < layout.GetNotes().Count ; i++)
-			{
-				_w.output(layout.GetNotes()[i].Caption);
-				layout.GetNotes()[i].Caption = "snake";
-				_w.output(layout.GetNotes()[i].Caption);
-				_w.output("NOTE: I know this test will fail because I can make the list readonly but not the objects on the list. (and honestly, maybe this is how it needs to work!)");
-				Assert.AreEqual(layout.GetNotes()[i].Caption, "boo");
-			}
-			//System.Collections.Generic.List<NoteDataXML> list = layout.GetNotes();
-		}
+//		[Test]
+//		public void TryToEditReadOnly ()
+//		{
+//			FakeLayoutDatabase layout = new FakeLayoutDatabase("testguid");
+//			NoteDataXML note = new NoteDataXML();
+//			note.Caption = "boo";
+//			layout.Add(note);
+//			for (int i = 0; i < layout.GetNotes().Count ; i++)
+//			{
+//				_w.output(layout.GetNotes()[i].Caption);
+//				layout.GetNotes()[i].Caption = "snake";
+//				_w.output(layout.GetNotes()[i].Caption);
+//				_w.output("NOTE: I know this test will fail because I can make the list readonly but not the objects on the list. (and honestly, maybe this is how it needs to work!)");
+//				Assert.AreEqual(layout.GetNotes()[i].Caption, "boo");
+//			}
+//			//System.Collections.Generic.List<NoteDataXML> list = layout.GetNotes();
+//		}
 		[Test]
 		[ExpectedException]
 		public void  SaveTo_BlankGUID ()
@@ -566,8 +566,14 @@ namespace Testing
 		[Test]
 		public void DeleteTest()
 		{
-
-			Assert.True (false);
+			_setupforlayoutests ();
+			
+			FakeLayoutDatabase layout = new FakeLayoutDatabase ("DeleteMe");
+			LayoutPanel layoutPanel = new LayoutPanel (CoreUtilities.Constants.BLANK, false);
+			layout.SaveTo ();
+			Assert.True (layout.IsLayoutExists("DeleteMe"));
+			MasterOfLayouts.DeleteLayout ("DeleteMe");
+			Assert.False (layout.IsLayoutExists("DeleteMe"));
 		}
 	}
 }

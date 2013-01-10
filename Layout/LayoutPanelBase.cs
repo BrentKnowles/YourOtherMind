@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace Layout
 {
-	public abstract class LayoutPanelBase : Panel, LayoutPanelInterface
+	public abstract class LayoutPanelBase : Panel
 	{
 		public LayoutPanelBase ()
 		{
@@ -80,10 +80,16 @@ namespace Layout
 
 		#region gui
 		public virtual Panel NoteCanvas {get;set;}
+		// passed in front MainForm and then used by any text box
+		protected ContextMenuStrip TextEditContextStrip; 
+		public ContextMenuStrip GetLayoutTextEditContextStrip()
+		{
+			return TextEditContextStrip;
+		}
 #endregion
 		public abstract void SaveLayout();
 		//public abstract  void LoadLayout(string GUID);
-		public abstract void LoadLayout (string _GUID, bool IsSubPanel);
+		public abstract void LoadLayout (string _GUID, bool IsSubPanel, ContextMenuStrip textEditorContextStrip);
 
 	//	public abstract  void AddNote();
 
@@ -92,7 +98,7 @@ namespace Layout
 		//public abstract string Backup();
 		public abstract void SetSaveRequired(bool NeedSave);
 		public abstract void UpdateListOfNotes ();
-		public abstract void NewLayout (string _GUID);
+
 		public abstract void RefreshTabs ();
 		public abstract void DeleteNote(NoteDataInterface NoteToDelete);
 		public abstract System.Collections.ArrayList GetAllNotes();
@@ -104,7 +110,7 @@ namespace Layout
 		public abstract List<string> GetListOfStringsFromSystemTable (string tableName, int Column, string filter);
 		public abstract List<string> GetListOfStringsFromSystemTable (string tableName, int Column);
 		public abstract NoteDataXML_SystemOnly GetSystemPanel ();
-		public abstract void NewLayout (string _GUID, bool AddDefaultNote);
+		public abstract void NewLayout (string _GUID, bool AddDefaultNote, ContextMenuStrip textEditorContextStrip);
 	//	public abstract void SystemNoteHasClosedDown (bool closed);
 	}
 }

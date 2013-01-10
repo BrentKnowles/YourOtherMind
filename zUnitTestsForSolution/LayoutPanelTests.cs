@@ -14,10 +14,11 @@ namespace Testing
 		{
 		}
 
-		private void _SetupForLayoutPanelTests ()
+		protected void _SetupForLayoutPanelTests ()
 		{
 			LayoutDetails.Instance.YOM_DATABASE = "yom_test_database.s3db";
-
+			LayoutDetails.Instance.AddToList(typeof(FAKE_NoteDataXML_Panel),"testingpanel");
+			LayoutDetails.Instance.AddToList(typeof(FAKE_NoteDataXML_Text),"testingtext");
 
 			FakeLayoutDatabase layout = new FakeLayoutDatabase("testguid");
 			FAKE_SqlLiteDatabase db = new FAKE_SqlLiteDatabase(layout.GetDatabaseName ());
@@ -41,7 +42,7 @@ namespace Testing
 			FAKE_LayoutPanel panel = new FAKE_LayoutPanel (CoreUtilities.Constants.BLANK, false);
 			//NOTE: For now remember that htis ADDS 1 Extra notes
 			string panelname = System.Guid.NewGuid().ToString();
-			panel.NewLayout (panelname);
+			panel.NewLayout (panelname,true, null);
 			LayoutDetails.Instance.AddToList (typeof(FAKE_NoteDataXML_Panel), "testingpanel");
 
 			// ADD 1 of each type
@@ -85,7 +86,7 @@ namespace Testing
 			TimeSpan time;
 			time = CoreUtilities.TimerCore.Time (() => {
 			panel = new FAKE_LayoutPanel (CoreUtilities.Constants.BLANK, false);
-				panel.LoadLayout(panelname, false);
+				panel.LoadLayout(panelname, false,null);
 			});
 			Console.WriteLine("TIME " + time);
 
@@ -134,7 +135,7 @@ namespace Testing
 			FAKE_LayoutPanel panel = new FAKE_LayoutPanel(CoreUtilities.Constants.BLANK, false);
 
 			//NOTE: For now remember that htis ADDS 1 Extra notes
-			panel.NewLayout("mynewpanel");
+			panel.NewLayout("mynewpanel", true, null);
 			NoteDataXML basicNote = new NoteDataXML();
 			basicNote.Caption = "note1";
 
@@ -142,7 +143,7 @@ namespace Testing
 			//basicNote.CreateParent(panel);
 
 
-			LayoutDetails.Instance.AddToList(typeof(FAKE_NoteDataXML_Panel),"testingpanel");
+
 
 			//panel.MoveNote(
 			// create four panels A and B at root level. C inside A. D inside C
@@ -270,13 +271,119 @@ namespace Testing
 			[Test]
 		public void AdvancedSearchingForNotesTests()
 		{
+			
+			_SetupForLayoutPanelTests ();
+			
+			FAKE_LayoutPanel panel = new FAKE_LayoutPanel(CoreUtilities.Constants.BLANK, false);
+			
+			//NOTE: For now remember that htis ADDS 1 Extra notes
+			panel.NewLayout("mynewpanel", true, null);
+			NoteDataXML basicNote = new NoteDataXML();
+			basicNote.GuidForNote = "thisguid1";
+			basicNote.Caption = "note1";
+			
+			panel.AddNote(basicNote);
+			basicNote.CreateParent(panel);
+			panel.SaveLayout();
+
+
+			FAKE_NoteDataXML_Panel panelA = new FAKE_NoteDataXML_Panel();
+			panelA.Caption = "PanelA";
+			panel.AddNote(panelA);
+			panelA.CreateParent(panel);
+
+			basicNote = new NoteDataXML();
+			basicNote.GuidForNote = "thisguid2";
+			basicNote.Caption = "note2";
+
+			panelA.AddNote(basicNote);  // Panel A has 1 note
+
+			basicNote.CreateParent(panelA.myLayoutPanel());  // DO need to call it when adding notes like this (to a subpanel, I think)
+			panel.SaveLayout();
+
+			NoteDataInterface finder = null;
+			finder = panel.FindNoteByGuid("thisguid1");
+			Assert.NotNull(finder);
+			_w.output("C: " +finder.Caption);
+			Assert.AreEqual(finder.Caption, "note1");
+
+			finder = null;
+			finder = panel.FindNoteByGuid("thisguid2");
+
+			Assert.NotNull(finder);
+			Assert.AreEqual (finder.Caption,"note2");
+
+			panel.GoToNote(finder);
+
 			// find notes inside of notes with the GUI code and such
-			Assert.True (false);
+		
 		}
 		[Test]
 		public void SetCurrentTextNoteAndDetectThisInParentLayouts()
 		{
-			Assert.True (false);
+
+			// nest several panels
+			_SetupForLayoutPanelTests ();
+			
+			FAKE_LayoutPanel panel = new FAKE_LayoutPanel(CoreUtilities.Constants.BLANK, false);
+			
+			//NOTE: For now remember that htis ADDS 1 Extra notes
+			panel.NewLayout("mynewpanel", true, null);
+			NoteDataXML basicNote = new NoteDataXML();
+			basicNote.GuidForNote = "thisguid1";
+			basicNote.Caption = "note1";
+			
+			panel.AddNote(basicNote);
+			basicNote.CreateParent(panel);
+			panel.SaveLayout();
+			
+			
+			FAKE_NoteDataXML_Panel panelA = new FAKE_NoteDataXML_Panel();
+			panelA.Caption = "PanelA";
+			panel.AddNote(panelA);
+			panelA.CreateParent(panel);
+			
+			basicNote = new NoteDataXML();
+			basicNote.GuidForNote = "thisguid2";
+			basicNote.Caption = "note2";
+			
+			panelA.AddNote(basicNote);  // Panel A has 1 note
+			
+			basicNote.CreateParent(panelA.myLayoutPanel());  // DO need to call it when adding notes like this (to a subpanel, I think)
+			panel.SaveLayout();
+
+
+
+			FAKE_NoteDataXML_Panel panelB = new FAKE_NoteDataXML_Panel();
+			panelB.Caption = "PanelB";
+			panelA.AddNote(panelB);
+			panelB.CreateParent(panelA.myLayoutPanel());
+
+			FAKE_NoteDataXML_Panel panelC = new FAKE_NoteDataXML_Panel();
+			panelC.Caption = "PanelC";
+			panelB.AddNote(panelC);
+			panelC.CreateParent(panelB.myLayoutPanel());
+
+			FAKE_NoteDataXML_Panel panelD = new FAKE_NoteDataXML_Panel();
+			panelD.Caption = "PanelD";
+			panelC.AddNote(panelC);
+			panelD.CreateParent(panelC.myLayoutPanel());
+
+			//Add a text note
+			FAKE_NoteDataXML_Text texter = new FAKE_NoteDataXML_Text();
+			panelD.AddNote(texter);
+			texter.CreateParent(panelD.myLayoutPanel());
+
+			// Set this text note as active
+			texter.SetActive();
+
+			// Go back to each of the owner panels and make sure their CurrentTextNote is equal to this one
+			Assert.AreEqual (panelD.myLayoutPanel().CurrentTextNote, texter);
+			Assert.AreEqual (panelC.myLayoutPanel().CurrentTextNote, texter);
+			Assert.AreEqual (panelB.myLayoutPanel().CurrentTextNote, texter);
+			Assert.AreEqual (panelA.myLayoutPanel().CurrentTextNote, texter);
+			Assert.AreEqual (panel.CurrentTextNote, texter);
+
 		}
 	}
 }

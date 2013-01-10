@@ -55,6 +55,7 @@
     <Compile Include="TableWrapper.cs" />
     <Compile Include="LinkTable.cs" />
     <Compile Include="LinkRecord.cs" />
+    <Compile Include="CheckBoxForm.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

@@ -66,6 +66,7 @@ namespace Layout
 			base.CreateParent (Layout);
 			CaptionLabel.Dock = DockStyle.Top;
 			richBox = new RichTextBox();
+			richBox.ContextMenuStrip = Layout.GetLayoutTextEditContextStrip();
 			richBox.Enter += HandleRichBoxEnter;
 			richBox.Parent = ParentNotePanel;
 			richBox.Dock = DockStyle.Fill;
@@ -73,6 +74,11 @@ namespace Layout
 			richBox.Rtf = this.Data1;
 			richBox.TextChanged+= HandleTextChanged;
 		
+		}
+
+		protected void SetThisTextNoteAsActive()
+		{
+			Layout.CurrentTextNote = (NoteDataXML_RichText)this;
 		}
 		/// <summary>
 		/// Handles the rich box enter. Sets the active richtext box
@@ -86,7 +92,7 @@ namespace Layout
 		void HandleRichBoxEnter (object sender, EventArgs e)
 		{
 			lg.Instance.Line("NoteDataXML_RichText", ProblemType.MESSAGE, String.Format ("{0} has been set as CurrentTextNote for Layout {1}", this.Caption, Layout.GUID));
-			Layout.CurrentTextNote = (NoteDataXML_RichText)this;
+			SetThisTextNoteAsActive();
 		}
 
 		void HandleTextChanged (object sender, EventArgs e)

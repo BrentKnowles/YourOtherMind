@@ -17,6 +17,7 @@ namespace YOM2013
 	{
 		#region gui
 		ToolStripMenuItem Windows;
+		ContextMenuStrip TextEditContextStrip;
 
 		#endregion
 		#region Layouts
@@ -57,7 +58,7 @@ namespace YOM2013
 		private void SetupMessageBox ()
 		{
 
-				NewMessage.SetupBoxFirstTime (null, /*paths.DataPath + "\\Exe\\Current\\Icon1.ico"*/"",
+				NewMessage.SetupBoxFirstTime (null,MainFormIcon /*paths.DataPath + "\\Exe\\Current\\Icon1.ico"*/,
 			                             ImageLayout.Stretch,
 			                             Color.Green, // transprency key  
 			                             new Font ("Georgia", 12), new Font ("Times", 10),
@@ -87,7 +88,11 @@ namespace YOM2013
 		public MainForm (string _path, Action<bool>ForceShutDownMethod, string storage, Icon mainIcon) : base (_path,ForceShutDownMethod,storage, mainIcon)
 		{
 
-	this.Load+= HandleFormLoad;
+
+
+			
+
+			this.Load += HandleFormLoad;
 
 
 			SetupMessageBox ();
@@ -102,8 +107,8 @@ namespace YOM2013
 
 			try {
 				Loc.Instance.ChangeLocale ("en-US");
-				Console.WriteLine ("Current culture {0}", System.Threading.Thread.CurrentThread.CurrentUICulture);
-				Console.WriteLine (Loc.Instance.Cat.GetString ("Hello World3!"));
+				lg.Instance.Line ("MainForm", ProblemType.MESSAGE, String.Format ("Current culture {0}", System.Threading.Thread.CurrentThread.CurrentUICulture));
+				lg.Instance.Line ("MainForm", ProblemType.MESSAGE,Loc.Instance.Cat.GetString ("Loading"));
 			
 			} catch (Exception ex) {
 				Console.WriteLine (ex.ToString ());
@@ -119,13 +124,14 @@ namespace YOM2013
 			//GetSystemPanel ();
 
 			if (MasterOfLayouts.ExistsByGUID ("example") == false) {
-				DefaultLayouts.CreateExampleLayout(this);
+				DefaultLayouts.CreateExampleLayout (this,TextEditContextStrip);
 			}
 
 			//SystemLayout.Visible = false;
 			Layout.LayoutPanel SystemLayout;
-			if (MasterOfLayouts.ExistsByGUID ("system") == false) {
-				DefaultLayouts.CreateASystemLayout();
+			if (MasterOfLayouts.ExistsByGUID ("system") == false || MasterOfLayouts.ExistsByGUID("tables") == false) {
+				NewMessage.Show ("recreating system note");
+				DefaultLayouts.CreateASystemLayout (TextEditContextStrip);//did not work.SaveLayout();
 
 //				LayoutDetails.Instance.SystemLayout = SystemLayout;
 //				SystemLayout.SaveLayout();
@@ -136,17 +142,31 @@ namespace YOM2013
 				// we always do a load
 
 			}
+
+			// Can't do this because the notes are all part of an interior Layout
+//			SplitContainer container = new SplitContainer();
+//			this.Controls.Add (container);
+//			container.Dock = DockStyle.Fill;
+
 			SystemLayout = new Layout.LayoutPanel (CoreUtilities.Constants.BLANK, true);
+			//container.Panel1.Controls.Add (SystemLayout);
 			SystemLayout.Parent = this;
 			SystemLayout.Visible = true;
 			SystemLayout.Dock = System.Windows.Forms.DockStyle.Fill;
 			SystemLayout.BringToFront ();
-			SystemLayout.LoadLayout ("system", false);
+			SystemLayout.LoadLayout ("system", false, TextEditContextStrip);
 			LayoutDetails.Instance.SystemLayout = SystemLayout;
 
 
+			// now load the table layout which is a subnote of System (For FASTER lookups)
+			// we REBUILD this if necessary, above
+			LayoutDetails.Instance.TableLayout=new Layout.LayoutPanel(Constants.BLANK, false);
+			LayoutDetails.Instance.TableLayout.LoadLayout ("tables", false, TextEditContextStrip);
+
 			//LoadLayout ( "");
 
+
+			BuildTextEditorContextMenuStrip();
 
 			ToolStripMenuItem file = this.GetFileMenu ();
 			if (file == null) {
@@ -236,6 +256,19 @@ namespace YOM2013
 
 
 		}
+
+		/// <summary>
+		/// Builds the text editor context menu strip.
+		/// 
+		/// This will set up the context menu strip that the text boxes will later acquire
+		/// </summary>
+		void BuildTextEditorContextMenuStrip ()
+		{
+			TextEditContextStrip = new System.Windows.Forms.ContextMenuStrip();
+			ToolStripMenuItem test = new ToolStripMenuItem("test");
+			TextEditContextStrip.Items.Add (test);
+		}
+
 		/// <summary>
 		/// Handles the form load.
 		/// Does a save when it is first loaded, in case we REBUILT data (fresh install)
@@ -434,7 +467,7 @@ namespace YOM2013
 			LayoutsInMemory existing = LayoutPresent  (guidtoload);
 			if (existing == null) {
 				LayoutPanel newLayout = CreateLayoutContainer (guidtoload);
-				newLayout.LoadLayout (guidtoload, false);
+				newLayout.LoadLayout (guidtoload, false, TextEditContextStrip);
 				LayoutDetails.Instance.CurrentLayout = newLayout;
 			} else {
 
@@ -514,7 +547,7 @@ namespace YOM2013
 			//CurrentLayout = new LayoutPanel(Constants.BLANK);
 
 			LayoutPanel newLayout = CreateLayoutContainer(guid);
-			newLayout.NewLayout (guid);
+			newLayout.NewLayout (guid, true, TextEditContextStrip);
 			LayoutDetails.Instance.CurrentLayout = newLayout;
 		}
 

@@ -83,7 +83,8 @@ namespace YOM2013
 				// 1. Delete existing system note
 				MasterOfLayouts.DeleteLayout("system");
 				// 2. Restore note
-				DefaultLayouts.CreateASystemLayout();
+				// because we reboot it does not matter that I do not pass a valid contextmenu into here
+				DefaultLayouts.CreateASystemLayout(null);
 				// 3. Restart
 				Application.Exit ();
 			}

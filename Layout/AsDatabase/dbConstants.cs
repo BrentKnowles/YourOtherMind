@@ -1,30 +1,8 @@
 using System;
-
+using database;
 namespace Layout.data
 {
-	public class ColumnConstant
-	{
-		public string Name;
-		// the type in the database
-		public string Type; 
-		public int Index;
-		public int LayoutIndex;
-		public ColumnConstant(string name, int index, string type, int layoutIndex)
-		{
-			Name = name;
-			Index = index;
-			Type = type;
-			LayoutIndex = layoutIndex;
 
-		}
-		public static implicit operator string(ColumnConstant x) {
-			return x.ToString();}
-		public override string ToString ()
-		{
-			return Name;
-		}
-
-	}
 	public static class dbConstants
 	{
 		static public ColumnConstant SUBPANEL = new ColumnConstant("subpanel", 6, "boolean", 3);
@@ -41,15 +19,15 @@ namespace Layout.data
 		// these will be stored in PROPERIES
 		static public ColumnConstant SOURCE = new ColumnConstant("source", 15, "TEXT",12);
 		static public ColumnConstant WORDS = new ColumnConstant("words", 16, "INTEGER",13);
-
-		public const  int ColumnCount = 17;
+		static public ColumnConstant KEYWORDS = new ColumnConstant("keywords", 17, "TEXT", 14);
+		public const  int ColumnCount = 18;
 		// The number of columns in the array being stoed
-		public  const int LayoutCount = 14 ; // 11 - 3
+		public  const int LayoutCount = 15 ; // 11 - 3
 
 		static public string[] Columns = new string[ColumnCount]{"id",     "guid",        "xml",      "status", "name", "showtabs", SUBPANEL.Name,
-			MAXIMIZETABS.Name, STARS.Name, HITS.Name, DATECREATED.Name, DATEEDITED.Name, NOTEBOOK.Name, SECTION.Name, TYPE.Name, SOURCE.Name, WORDS.Name};
+			MAXIMIZETABS.Name, STARS.Name, HITS.Name, DATECREATED.Name, DATEEDITED.Name, NOTEBOOK.Name, SECTION.Name, TYPE.Name, SOURCE.Name, WORDS.Name, KEYWORDS.Name};
 		static public string[] Types   = new string[ColumnCount]{"INTEGER","TEXT UNIQUE",	"LONGTEXT",	"TEXT",   "VARCHAR(50)", "boolean", SUBPANEL.Type,
-			MAXIMIZETABS.Type, STARS.Type, HITS.Type, DATECREATED.Type, DATEEDITED.Type, NOTEBOOK.Type, SECTION.Type, TYPE.Type, SOURCE.Type, WORDS.Type};
+			MAXIMIZETABS.Type, STARS.Type, HITS.Type, DATECREATED.Type, DATEEDITED.Type, NOTEBOOK.Type, SECTION.Type, TYPE.Type, SOURCE.Type, WORDS.Type, KEYWORDS.Type};
 
 
 

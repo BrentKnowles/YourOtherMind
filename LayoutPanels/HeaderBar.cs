@@ -3,7 +3,7 @@ using System.Windows.Forms;
 using Layout;
 using CoreUtilities;
 using System.Drawing;
-
+using System.Collections.Generic;
 namespace LayoutPanels
 {
 	/// <summary>
@@ -24,7 +24,9 @@ namespace LayoutPanels
 		ToolStripMenuItem SectionsItem;
 		ToolStripMenuItem SubtypeItem;
 		ToolStripMenuItem StatusItem;
-
+		ToolStripTextBox changeName;
+		Stars starControl;
+		ToolStripLabel NameOfLayout ;
 
 		ContextMenuStrip Source;
 		ToolStripMenuItem SourceItem;
@@ -71,7 +73,7 @@ namespace LayoutPanels
 		void HandlePropertiesDropDownOpening (object sender, EventArgs e)
 		{
 			(sender as ToolStripDropDownButton).DropDownItems.Clear ();
-			ToolStripTextBox changeName = new ToolStripTextBox();
+			changeName = new ToolStripTextBox();
 			changeName.Font = new Font(changeName.Font.FontFamily, 12);
 			changeName.Text = Notes.Name;
 			changeName.KeyDown += HandleChangeNameKeyDown;
@@ -94,7 +96,7 @@ namespace LayoutPanels
 			// - words
 			WordItem = new ToolStripMenuItem();
 
-			WordItem.Text = Notes.Words.ToString();
+			WordItem.Text = Loc.Instance.GetStringFmt("Words: {0}",Notes.Words.ToString());
 			WordItem.ToolTipText = Loc.Instance.GetString("Indicate the length of this piece, in words.");
 			
 			
@@ -125,7 +127,7 @@ namespace LayoutPanels
 				if (Int32.TryParse((sender as ToolStripTextBox).Text, out words) == true)
 				{
 					Notes.Words = words;
-					WordItem.Text =words.ToString();
+					WordItem.Text = Loc.Instance.GetStringFmt("Words: {0}",Notes.Words.ToString());
 					Layout.SetSaveRequired(true);
 				}
 				else
@@ -165,7 +167,8 @@ namespace LayoutPanels
 		{
 			if (e.KeyData == Keys.Enter) {
 				// the header is not updated unti enter pressed but the NAME is being updated
-				UpdateHeader ();
+				//UpdateHeader ();
+				 NameOfLayout.Text= changeName.Text;
 				// silenece beep
 				e.SuppressKeyPress = true;
 			}
@@ -175,12 +178,41 @@ namespace LayoutPanels
 		{
 			if (false == Layout.GetIsChild && false == Layout.GetIsSystemLayout ) {
 				headerBar.Items.Clear ();
-				ToolStripLabel NameOfLayout = new ToolStripLabel ();
+				 NameOfLayout = new ToolStripLabel ();
 				NameOfLayout.Text = Notes.Name;
 
-				ToolStripTextBox stars = new ToolStripTextBox();
-				stars.Text = Notes.Stars.ToString ();
-				stars.TextChanged+= HandleStarsTextChanged;
+			
+
+				 starControl = new Stars();
+				starControl.SetStars("1", Notes.Stars);
+				starControl.RatingChanged+= HandleRatingChanged;
+				//starControl.UpdateStars();
+
+
+				headerBar.Items.Add (NameOfLayout);
+				headerBar.Items.Add (starControl);
+
+				foreach (string keyword in GetKeywords ())
+				{
+
+					// build floating labels
+					ToolStripLabel keylabel = new ToolStripLabel();
+					keylabel.LinkBehavior = LinkBehavior.AlwaysUnderline;
+					keylabel.IsLink = true;
+					keylabel.Text = keyword;
+					keylabel.Click+= HandleKeyLabelClick;
+					headerBar.Items.Add(keylabel);
+				}
+
+
+				ToolStripLabel keywords = new ToolStripLabel();
+				keywords.Font = new Font(keywords.Font.FontFamily, 8);
+				keywords.LinkBehavior = LinkBehavior.AlwaysUnderline;
+				keywords.IsLink = true;
+				keywords.Text = Loc.Instance.GetString("(Edit)");
+				keywords.ToolTipText = Loc.Instance.GetString ("Click here to adjust the keywords associated with this layout.");
+				keywords.Click+= HandleKeywordsClick;
+
 				
 				ToolStripDropDownButton properties = new ToolStripDropDownButton();
 				properties.Text = Loc.Instance.GetString("Properties");
@@ -253,6 +285,10 @@ namespace LayoutPanels
 				//Location.DropDown = Notebook;
 				//Location.DropIItems.Add (LocationNotebook);
 
+
+
+
+
 				//
 				// - General settings
 				//
@@ -262,12 +298,65 @@ namespace LayoutPanels
 				lg.Instance.Line("HeaderBar.UpdateHeader", ProblemType.MESSAGE, "Header should be visible");
 
 				// Adding
-				headerBar.Items.Add (NameOfLayout);
-				headerBar.Items.Add (stars);
+
+				headerBar.Items.Add (keywords);
 				headerBar.Items.Add (Location);
 				headerBar.Items.Add (properties);
 				headerBar.Items.Add (Info);
 			}
+		}
+
+		void HandleKeyLabelClick (object sender, EventArgs e)
+		{
+			NewMessage.Show ("Filter me");
+		}
+
+		/// <summary>
+		/// Gets the keywords and does basic error checking
+		/// </summary>
+		/// <returns>
+		/// The keywords.
+		/// </returns>
+		string[] GetKeywords ()
+		{
+			string[] result =Notes.Keywords.Split (new char[1] {'|'});
+			return result;
+		}
+
+		void HandleKeywordsClick (object sender, EventArgs e)
+		{
+			List<string> allitems = LayoutDetails.Instance.TableLayout.GetListOfStringsFromSystemTable(LayoutPanel.SYSTEM_KEYWORDS,1);
+
+
+			List<string> checkeditems = new List<string> ();
+			string[] temp = GetKeywords();
+			if (temp != null && temp.Length > 0) {
+				checkeditems = new List<string> (temp);
+			}
+
+			CheckBoxForm checkers = new CheckBoxForm (allitems, checkeditems, Loc.Instance.GetString ("Keywords"), appframe.MainFormBase.MainFormIcon);
+			if (checkers.ShowDialog () == DialogResult.OK) {
+				string result = Constants.BLANK;
+				foreach (string s in checkers.GetItems())
+				{
+					string delim = Constants.BLANK;
+					if (result != Constants.BLANK)
+					{
+						delim = "|";
+					}
+					result = String.Format ("{0}{1}{2}", result, delim, s);
+				}
+				Notes.Keywords = result;
+				// need to redraw the keywords
+				UpdateHeader();
+				Layout.SetSaveRequired(true);
+			}
+		}
+
+		string HandleRatingChanged ()
+		{
+			Notes.Stars = starControl.GetStars(); 
+			return "";
 		}
 		// list of notebooks
 	
@@ -285,7 +374,7 @@ namespace LayoutPanels
 			// 
 			Notebook.Items.Clear ();
 
-			foreach (string s in LayoutDetails.Instance.SystemLayout.GetListOfStringsFromSystemTable(LayoutPanel.SYSTEM_NOTEBOOKS,1)) {
+			foreach (string s in LayoutDetails.Instance.TableLayout.GetListOfStringsFromSystemTable(LayoutPanel.SYSTEM_NOTEBOOKS,1)) {
 
 				ToolStripItem item = Notebook.Items.Add (s);
 				//NewMessage.Show (Notebook.OwnerItem.ToString ());
@@ -297,7 +386,7 @@ namespace LayoutPanels
 			}
 
 			Sections.Items.Clear ();
-			System.Collections.Generic.List<string> basestrings = LayoutDetails.Instance.SystemLayout.GetListOfStringsFromSystemTable (LayoutPanel.SYSTEM_NOTEBOOKS, 2, 
+			System.Collections.Generic.List<string> basestrings = LayoutDetails.Instance.TableLayout.GetListOfStringsFromSystemTable (LayoutPanel.SYSTEM_NOTEBOOKS, 2, 
 			                                                                                                                           String.Format ("1|{0}",Notes.Notebook));
 			System.Collections.Generic.List<string> truelist = new System.Collections.Generic.List<string>();
 
@@ -319,7 +408,7 @@ namespace LayoutPanels
 
 			Subtypes.Items.Clear();
 
-			foreach (string s in LayoutDetails.Instance.SystemLayout.GetListOfStringsFromSystemTable(LayoutPanel.SYSTEM_SUBTYPE,1)) {
+			foreach (string s in LayoutDetails.Instance.TableLayout.GetListOfStringsFromSystemTable(LayoutPanel.SYSTEM_SUBTYPE,1)) {
 
 					ToolStripItem item = Subtypes.Items.Add (s);
 					item.Click+= HandleSubtypeClick;
@@ -327,7 +416,7 @@ namespace LayoutPanels
 
 			Status.Items.Clear ();
 			
-			foreach (string s in LayoutDetails.Instance.SystemLayout.GetListOfStringsFromSystemTable(LayoutPanel.SYSTEM_STATUS,1)) {
+			foreach (string s in LayoutDetails.Instance.TableLayout.GetListOfStringsFromSystemTable(LayoutPanel.SYSTEM_STATUS,1)) {
 				
 				ToolStripItem item = Status.Items.Add (s);
 				//NewMessage.Show (Notebook.OwnerItem.ToString ());
@@ -375,21 +464,7 @@ namespace LayoutPanels
 		}
 
 	
-		/// <summary>
-		/// Handles the stars text changed.
-		/// </summary>
-		/// <param name='sender'>
-		/// Sender.
-		/// </param>
-		/// <param name='e'>
-		/// E.
-		/// </param>
-		void HandleStarsTextChanged (object sender, EventArgs e)
-		{
-			int stars = Notes.Stars;
-			Int32.TryParse((sender as ToolStripTextBox).Text, out stars);
-			Notes.Stars = stars;
-		}
+
 		public void SendToBack()
 		{
 			headerBar.SendToBack();

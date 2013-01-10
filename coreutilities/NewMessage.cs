@@ -14,7 +14,7 @@ namespace CoreUtilities
 	public  static class NewMessage
 	{
 		private static Image image = null;
-		private static string icon = null;
+		private static Icon icon = null;
 		
 		private static bool bSetupRan = false;
 		static ImageLayout newLayout;
@@ -23,7 +23,7 @@ namespace CoreUtilities
 		static Color captionColor; static Color textColor; static Color formBackColor;
 		static Color captionBackColor;
 		static Color textBackColor;
-		
+
 		
 		/// <summary>
 		/// because this is static we can set some varibles that
@@ -34,7 +34,7 @@ namespace CoreUtilities
 		/// <param name="image"></param>
 		/// <param name="newIcon">STRING to a file, leave NULL if none</param>
 		/// <param name="_buttonColor"></param>
-		public static void SetupBoxFirstTime(Image newImage, string newIcon,
+		public static void SetupBoxFirstTime(Image newImage, Icon newIcon,
 		                                     ImageLayout _newLayout, Color _transKey,
 		                                     Font _captionFont, Font _textFont, Color _buttonColor,
 		                                     Color _captionColor, Color _textColor, Color _formBackColor,
@@ -239,11 +239,11 @@ namespace CoreUtilities
 				form.BackgroundImageLayout = newLayout;
 				form.TransparencyKey = transKey;
 			}
-			if (icon != null && File.Exists(icon))
+			if (icon != null /*&& File.Exists(icon)*/)
 			{
 				try
 				{
-					form.Icon = new Icon(icon, 24, 24);
+					form.Icon = icon;//new Icon(icon, 24, 24);
 				}
 				catch (Exception)
 				{
