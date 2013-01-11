@@ -22,7 +22,7 @@ namespace Layout
 		#endregion
 
 		#region formcontrols
-		TablePanel Table= null;
+		protected TablePanel Table= null;
 		#endregion
 
 		#region variables
@@ -82,13 +82,16 @@ namespace Layout
 			{
 				if (value == null) return;
 				mColumns = value;
+				lg.Instance.Line("NoteDataXML_table->Columns", ProblemType.TEMPORARY, String.Format ("Setting mColumns to array of length{0}", value.Length), Loud.CTRIVIAL);
 				
 				// if we keep this without the condition, it blanks the table
 				// I honestly do not understand how this worked in previous version of YOM
 				if (dataSource == null)
 				{
-					dataSource = TablePanel.BuildTableFromColumns(value);
+					lg.Instance.Line("NoteDataXML_table->Columns", ProblemType.TEMPORARY,"Hooking up DataSource", Loud.CTRIVIAL);
 
+					dataSource = TablePanel.BuildTableFromColumns(value);
+					lg.Instance.Line("NoteDataXML_table->Columns", ProblemType.TEMPORARY,"Hooking up DataSource" +((DataTable)dataSource).Columns.Count, Loud.CTRIVIAL);
 
 
 					//dataSource = table;//new DataTable();
@@ -108,6 +111,10 @@ namespace Layout
 //					}
 //					dataSource.Tables.Add(table);
 
+				}
+				else
+				{
+					lg.Instance.Line("NoteDataXML_table->Columns", ProblemType.TEMPORARY,"NOT Hooking up DataSource", Loud.CTRIVIAL);
 				}
 
 				
@@ -130,16 +137,18 @@ namespace Layout
 		/// </summary>
 		private void BuildDefaultColumns()
 		{
+			lg.Instance.Line("NoteDataXML_Table->BuildDefaultColumns", ProblemType.MESSAGE, "Building Columns Start", Loud.CTRIVIAL);
 			Columns = new ColumnDetails[4] { 
 				new ColumnDetails(TableWrapper.Roll,TablePanel.defaultwidth), new ColumnDetails(TableWrapper.Result,TablePanel.defaultwidth), 
 				new ColumnDetails(TableWrapper.NextTable, TablePanel.defaultwidth),
 				new ColumnDetails(TableWrapper.Modifier,TablePanel.defaultwidth)};
+			lg.Instance.Line("NoteDataXML_Table->BuildDefaultColumns", ProblemType.MESSAGE, "Building Columns Done", Loud.CTRIVIAL);
 		}
 
 		public NoteDataXML_Table(int height, int width) : base(height, width)
 		{
 			Caption = Loc.Instance.Cat.GetString("Table");
-
+			lg.Instance.Line("NoteDataXML_Table->BuildDefaultColumns", ProblemType.MESSAGE, "Creating a Table", Loud.CTRIVIAL);
 			// This constructor is called ONLY when the note is first being created (not loaded)
 			// so we create a default datasource here and now.
 			//dataSource = new DataSet("Table");
@@ -155,14 +164,10 @@ namespace Layout
 			base.Save ();
 			if (Table != null) {
 
-				// Does not appear we need to store anythign extra
 
 				dataSource = Table.GetTable();
 				Columns=Table.GetColumns();
-				// TODO: Save table stuff
-//				DataSet ds = new DataSet();
-//				ds.Tables.Add((DataTable)Table.dataGrid1.DataSource);
-//				dataSource = ds;
+
 
 			}
 		}
@@ -174,27 +179,24 @@ namespace Layout
 			base.CreateParent (Layout);
 			CaptionLabel.Dock = DockStyle.Top;
 
+			if (null != dataSource) {
+
+
+			} else {
+				NewMessage.Show ("CreateParent: You have a null datasource");
+				lg.Instance.Line("NoteDataXML_Table->CreateParent", ProblemType.WARNING, Loc.Instance.GetString("You have a null table which should not happen. This usually occurs only during UNIT TESTING because proper create constructor is not used"));
+				BuildDefaultColumns();
+			}
+			lg.Instance.Line("NoteDataXML_Table-CreateParent",ProblemType.MESSAGE, String.Format ("Passing {0} columns into new TablePanel", Columns.Length));
 			Table = new TablePanel (dataSource, HandleCellBeginEdit, Columns, GoToNote, this.Caption, GetRandomTableResults);
 			Table.Parent = ParentNotePanel;
 			Table.Dock = DockStyle.Fill;
 			Table.BringToFront ();
-			// TODO: Load table data richBox.Rtf = this.Data1;
-			if (null != dataSource) {
-			//Table.dataGrid1.DataSource = dataSource;// This works but then we lose the hook.Tables [0];
-				//Table.dataGrid1.DataMember = "Table";
 
-			} else {
-				//NewMessage.Show ();
-				lg.Instance.Line("NoteDataXML_Table->CreateParent", ProblemType.WARNING, Loc.Instance.GetString("You have a null table which should not happen. This usually occurs only during UNIT TESTING because proper create constructor is not used"));
-				BuildDefaultColumns();
-			}
 
-			//Table.dataGrid1.NavigateTo(0, "Table1"); // same as Table1 referenced by column styles
-			//Table.appearance = this;
 				
 		
 
-			// TODO: Set up table handlersrichBox.TextChanged+= HandleTextChanged;
 			
 		}
 
@@ -789,6 +791,14 @@ namespace Layout
 				((DataTable)dataSource).Rows.Add(row);
 
 			}
+		}
+		public int RowCount ()
+		{
+			int result = 0;
+			if (dataSource != null) {
+				result = ((DataTable)dataSource).Rows.Count;
+			}
+			return result;
 		}
 	}
 }

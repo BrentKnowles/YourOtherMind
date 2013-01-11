@@ -17,13 +17,14 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ApplicationFramework", "App
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MEF_Interfaces", "MEF_Interfaces\MEF_Interfaces.csproj", "{2E366A51-224A-4C3B-90D6-FE8C81C9EB78}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "z_Testing_Addin_Test1", "Addin_Test1\z_Testing_Addin_Test1.csproj", "{91530865-0485-488F-BDBA-BA4FD512D1E6}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Addins", "Addins", "{01C11865-2A85-4386-935C-E28B9E8B2612}"
+	ProjectSection(MonoDevelopProperties) = preProject
+		BaseDirectory = ..\Addins
+	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Addin_MemoryTrack", "Addin_Test2\Addin_MemoryTrack.csproj", "{412B4B36-71BA-445A-B851-4E876771FA04}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Addin_MemoryTrack", "..\Addins\Addin_MemoryTrack\Addin_MemoryTrack.csproj", "{B9876312-84C9-4ECF-A245-B20AEA535B96}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Addin_Note_Picture", "Addin_Test2\NoteDataXML_Picture\Addin_Note_Picture.csproj", "{BB081736-EF38-4718-B4CF-330DB17C2B1C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Addin_NoteDataXML_Picture", "..\Addins\Addin_NoteDataXML_Picture\Addin_NoteDataXML_Picture.csproj", "{3F04C173-401B-4719-83DF-A36B79A01EFE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,10 +40,10 @@ Global
 		{2E366A51-224A-4C3B-90D6-FE8C81C9EB78}.Debug|x86.Build.0 = Debug|Any CPU
 		{2E366A51-224A-4C3B-90D6-FE8C81C9EB78}.Release|x86.ActiveCfg = Release|Any CPU
 		{2E366A51-224A-4C3B-90D6-FE8C81C9EB78}.Release|x86.Build.0 = Release|Any CPU
-		{412B4B36-71BA-445A-B851-4E876771FA04}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{412B4B36-71BA-445A-B851-4E876771FA04}.Debug|x86.Build.0 = Debug|Any CPU
-		{412B4B36-71BA-445A-B851-4E876771FA04}.Release|x86.ActiveCfg = Release|Any CPU
-		{412B4B36-71BA-445A-B851-4E876771FA04}.Release|x86.Build.0 = Release|Any CPU
+		{3F04C173-401B-4719-83DF-A36B79A01EFE}.Debug|x86.ActiveCfg = Debug|x86
+		{3F04C173-401B-4719-83DF-A36B79A01EFE}.Debug|x86.Build.0 = Debug|x86
+		{3F04C173-401B-4719-83DF-A36B79A01EFE}.Release|x86.ActiveCfg = Release|x86
+		{3F04C173-401B-4719-83DF-A36B79A01EFE}.Release|x86.Build.0 = Release|x86
 		{5B046A7A-5C1B-4903-B077-4A6083E2E606}.Debug|x86.ActiveCfg = Debug|x86
 		{5B046A7A-5C1B-4903-B077-4A6083E2E606}.Debug|x86.Build.0 = Debug|x86
 		{5B046A7A-5C1B-4903-B077-4A6083E2E606}.Release|x86.ActiveCfg = Release|x86
@@ -55,14 +56,10 @@ Global
 		{77AADEE3-CCBF-4802-9703-30EA7A4424AC}.Debug|x86.Build.0 = Debug|x86
 		{77AADEE3-CCBF-4802-9703-30EA7A4424AC}.Release|x86.ActiveCfg = Release|x86
 		{77AADEE3-CCBF-4802-9703-30EA7A4424AC}.Release|x86.Build.0 = Release|x86
-		{91530865-0485-488F-BDBA-BA4FD512D1E6}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{91530865-0485-488F-BDBA-BA4FD512D1E6}.Debug|x86.Build.0 = Debug|Any CPU
-		{91530865-0485-488F-BDBA-BA4FD512D1E6}.Release|x86.ActiveCfg = Release|Any CPU
-		{91530865-0485-488F-BDBA-BA4FD512D1E6}.Release|x86.Build.0 = Release|Any CPU
-		{BB081736-EF38-4718-B4CF-330DB17C2B1C}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{BB081736-EF38-4718-B4CF-330DB17C2B1C}.Debug|x86.Build.0 = Debug|Any CPU
-		{BB081736-EF38-4718-B4CF-330DB17C2B1C}.Release|x86.ActiveCfg = Release|Any CPU
-		{BB081736-EF38-4718-B4CF-330DB17C2B1C}.Release|x86.Build.0 = Release|Any CPU
+		{B9876312-84C9-4ECF-A245-B20AEA535B96}.Debug|x86.ActiveCfg = Debug|x86
+		{B9876312-84C9-4ECF-A245-B20AEA535B96}.Debug|x86.Build.0 = Debug|x86
+		{B9876312-84C9-4ECF-A245-B20AEA535B96}.Release|x86.ActiveCfg = Release|x86
+		{B9876312-84C9-4ECF-A245-B20AEA535B96}.Release|x86.Build.0 = Release|x86
 		{C08FDDB5-5C59-4611-98E7-76674F290896}.Debug|x86.ActiveCfg = Debug|Any CPU
 		{C08FDDB5-5C59-4611-98E7-76674F290896}.Debug|x86.Build.0 = Debug|Any CPU
 		{C08FDDB5-5C59-4611-98E7-76674F290896}.Release|x86.ActiveCfg = Release|Any CPU
@@ -77,8 +74,8 @@ Global
 		{F7DBB8CB-7B0B-40EA-BF65-A9F2668BE450}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{412B4B36-71BA-445A-B851-4E876771FA04} = {01C11865-2A85-4386-935C-E28B9E8B2612}
-		{BB081736-EF38-4718-B4CF-330DB17C2B1C} = {01C11865-2A85-4386-935C-E28B9E8B2612}
+		{B9876312-84C9-4ECF-A245-B20AEA535B96} = {01C11865-2A85-4386-935C-E28B9E8B2612}
+		{3F04C173-401B-4719-83DF-A36B79A01EFE} = {01C11865-2A85-4386-935C-E28B9E8B2612}
 	EndGlobalSection
 	GlobalSection(MonoDevelopProperties) = preSolution
 		StartupItem = YOM2013\YOM2013.csproj

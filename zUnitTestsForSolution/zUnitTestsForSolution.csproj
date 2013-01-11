@@ -36,6 +36,8 @@
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
@@ -60,6 +62,7 @@
     <Compile Include="NoteDataTableTests.cs" />
     <Compile Include="CheckedListBoxFormTest.cs" />
     <Compile Include="ClassesUsedInTesting\FAKE_NoteDataXML_Text.cs" />
+    <Compile Include="ClassesUsedInTesting\FAKE_NoteDataXML_Table.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

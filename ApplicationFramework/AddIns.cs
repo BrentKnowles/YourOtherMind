@@ -126,6 +126,7 @@ namespace appframe
 			}*/
 
 
+
 			foreach (MefAddIns.Extensibility.mef_IBase plug in AddInsList) {
 
 				ListViewItem item = new ListViewItem(plug.CalledFrom.MyMenuName);
@@ -156,7 +157,7 @@ namespace appframe
 
 
 				checkers.Items.Add (item, IsChecked);
-				//TODO: determine if they are activated
+
 
 			}
 
@@ -311,6 +312,26 @@ namespace appframe
 			}
 
 			
+			foreach (var language in bootStrapper.Notes) {
+				
+				// We look to see if this is a copy of another addin loaded already
+				mef_IBase AddInAlreadyIn = AddInsList.Find (mef_IBase => mef_IBase.CalledFrom.GUID == language.CalledFrom.GUID);
+				if (null != AddInAlreadyIn)
+				{
+					lg.Instance.Line("AddIns.BuildListOfAddIns", ProblemType.MESSAGE,"This AddIn is already found. Adding as a copy");
+					language.SetGuid(language.CalledFrom.GUID +  Loc.Instance.GetString(" (COPY) "));
+					language.IsCopy = true;
+					
+				}
+				lg.Instance.Line("AddIns.BuildListOfAddIns", ProblemType.MESSAGE,
+				                 String.Format ("[{0}] {1} by {2}.\n\t{3}\n", language.Version, language.Name, language.Author, language.Description));
+				
+				i++;
+				AddInsList.Add (language);
+				
+				
+				
+			}
 
 			foreach (var form in bootStrapper.FormBasic) {
 

@@ -152,12 +152,12 @@ namespace CoreUtilities.Tables
 		/// <summary>
 		/// imports the list into the Result oclumn and autonumbers the roll column
 		/// will not do anything without botha  roll and result column (not true; and that's good because this makes it more flexible)
+		/// 
+		/// If # of columns do not match, dumps everything into second column
+		/// 
 		/// </summary>
 		/// <param name="list"></param>
-		/// <summary>
-		/// imports the list into the Result oclumn and autonumbers the roll column
-		/// will not do anything without botha  roll and result column (not true; and that's good because this makes it more flexible)
-		/// </summary>
+		/// 
 		/// <param name="list"></param>
 		public static void ImportList(string[] list, DataTable currentTable)
 		{

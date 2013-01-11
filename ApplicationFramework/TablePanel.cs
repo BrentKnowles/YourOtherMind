@@ -48,18 +48,25 @@ namespace appframe
 			if (null != _dataSource) {
 
 				dataGrid1.DataSource = _dataSource;
-				dataGrid1.DataBindingComplete+= HandleDataBindingComplete;
+				dataGrid1.DataBindingComplete += HandleDataBindingComplete;
 				dataGrid1.CellBeginEdit += HandleCellBeginEdit;
-				dataGrid1.DataSourceChanged+= HandleDataSourceChanged;
+				dataGrid1.DataSourceChanged += HandleDataSourceChanged;
+//				NewMessage.Show (((DataTable)dataGrid1.DataSource).Columns.Count.ToString());
+//				NewMessage.Show (Columns.Length.ToString ());
+//				NewMessage.Show (dataGrid1.Rows.Count.ToString ());
+			} else {
+				NewMessage.Show ("passed a null datasource in!");
 			}
+
 			TableChanged = _tableChanged;
 			IncomingColumns = incomingColumns;
 			GoToNote = _GoToNote;
 			// this would be the Note.Caption and is used in GenerateAllResults
-			TableName=_TableName;
+			TableName = _TableName;
 			GenerateResults = _GenerateResults;
 
 			panel1.Visible = false;
+
 
 		}
 		/// <summary>
@@ -566,6 +573,8 @@ namespace appframe
 			get {
 
 				ColumnDetails[] columns = new ColumnDetails[dataGrid1.Columns.Count];
+
+				if (0 == dataGrid1.Columns.Count) NewMessage.Show("This table has no columns! This usually happens if loading the Table without the Layout it contains being on a form! And form has to call its Show method");
 				for (int i = 0; i <  dataGrid1.Columns.Count; i++) {
 					columns [i] = new ColumnDetails (dataGrid1.Columns[i].Name, dataGrid1.Columns[i].Width);
 				}
@@ -659,16 +668,10 @@ namespace appframe
 //				return panelTable.dataSource;
 //			}
 		//}
-		
-		/// <summary>
-		/// allows editing of columns
-		/// </summary>
-		/// <param name="sender"></param>
-		/// <param name="e"></param>
-		private void buttonEditColumns_Click(object sender, EventArgs e)
-		{
 
-			
+
+		protected void EditColumns()
+		{
 			// changing columns can destroy data
 			// pick columns
 			form_StringControl addColumn = new form_StringControl(MainFormBase.MainFormIcon);
@@ -695,10 +698,10 @@ namespace appframe
 				// we do not import table if we have removed columns
 				if (afterlength >= beforelength)
 				{
-				
+					
 					try
 					{
-
+						
 						sOldData = TableToString((DataTable)dataGrid1.DataSource, true, (afterlength - beforelength));
 						lg.Instance.Line("TablePanel->ButtonEditCOlumns", ProblemType.MESSAGE, sOldData, Loud.CTRIVIAL);
 					}
@@ -716,12 +719,12 @@ namespace appframe
 				{
 					newColumns[i] = new ColumnDetails(addColumn.Strings[i], defaultwidth);
 				}
-
-
+				
+				
 				//Cols = addColumn.Strings;
 				dataGrid1.DataSource = null;
 				dataGrid1.DataSource = BuildTableFromColumns(newColumns);
-
+				
 				
 				if ("" != sOldData)
 				{
@@ -738,6 +741,18 @@ namespace appframe
 				}
 				
 			}
+		}
+
+		/// <summary>
+		/// allows editing of columns
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void buttonEditColumns_Click(object sender, EventArgs e)
+		{
+			EditColumns ();
+			
+
 		}
 		
 		private void buttonJumpLink_Click (object sender, EventArgs e)
@@ -789,10 +804,16 @@ namespace appframe
 			}
 			
 		}
-		
-		private void CopyToClipboardClick(object sender, EventArgs e)
+
+		public void Copy()
 		{
 			CopyToClipboard(dataGrid1, TableWrapper.TablePageTableName);
+
+		}
+
+		private void CopyToClipboardClick(object sender, EventArgs e)
+		{
+			Copy ();
 			NewMessage.Show("Data copied in CSV format to clipboard.");
 		}
 		/// <summary>
@@ -839,7 +860,7 @@ namespace appframe
 		/// </summary>
 		/// <param name="dg"></param>
 		/// <param name="tableName"></param>
-		public void CopyToClipboard(DataGridView dg, string tableName)
+		private void CopyToClipboard(DataGridView dg, string tableName)
 		{
 			DataTable dt = GetTable(dg, tableName);
 			if (dt != null)
@@ -995,12 +1016,8 @@ namespace appframe
 				}
 			}
 		}
-		/// <summary>
-		/// insert a row
-		/// </summary>
-		/// <param name="sender"></param>
-		/// <param name="e"></param>
-		private void toolStripButtonInsert_Click (object sender, EventArgs e)
+
+		public void InsertRow()
 		{
 			//	int row = last_row;
 			//((DataSet)dataGrid1.DataSource).Tables[0].DefaultView(
@@ -1010,6 +1027,16 @@ namespace appframe
 				((DataTable)dataGrid1.DataSource).Rows.InsertAt (row, last_row);
 				SetSaveNeeded (true);
 			}
+		}
+
+		/// <summary>
+		/// insert a row
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void toolStripButtonInsert_Click (object sender, EventArgs e)
+		{
+			InsertRow ();
 		}
 		
 		/// <summary>

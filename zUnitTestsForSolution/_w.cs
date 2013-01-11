@@ -1,5 +1,5 @@
 using System;
-
+using CoreUtilities;
 namespace Testing
 {
 	public static class _w
@@ -12,6 +12,7 @@ namespace Testing
 		/// </param>
 		public static void output(object s)
 		{
+			lg.Instance.Loudness = Loud.CTRIVIAL;
 			Console.WriteLine(s);
 		}
 

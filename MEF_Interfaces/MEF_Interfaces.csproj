@@ -37,6 +37,7 @@
     <Compile Include="mef_IShowFormBasic.cs" />
     <Compile Include="mef_IBase.cs" />
     <Compile Include="mef_INotes.cs" />
+    <Compile Include="PlugInBase.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>
