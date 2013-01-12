@@ -41,6 +41,7 @@
     <Compile Include="TablePanel_Form_ImportList.cs" />
     <Compile Include="Stars.cs" />
     <Compile Include="ColumnDetails.cs" />
+    <Compile Include="NoteTextAction.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System.Windows.Forms" />

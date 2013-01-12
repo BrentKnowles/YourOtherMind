@@ -58,6 +58,15 @@ namespace MefAddIns
 		public virtual void RegisterType()
 		{
 		}
+
+		public virtual bool DeregisterType()
+		{
+			return false;
+		}
+		public virtual string BuildFileName()
+		{
+			return "";
+		}
 	}
 }
 

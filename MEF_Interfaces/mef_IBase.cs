@@ -25,6 +25,12 @@ namespace MefAddIns.Extensibility
 		PlugInAction CalledFrom { get; }
 		// What happens when the menu is clicked or a hotkey called
 		void RespondToCallToAction();
+		// called by utlities such as SendTextAway
+		void ActionWithParam(object param);
+		// if any files need to be generated (such as with SendTextAway, then define this). Empty version created in base class
+		string BuildFileName();
+
+
 		// needed to modify the plugin in situation wherein we intentionally have a temporary copy
 		void SetGuid(string s);
 		//string Tester(string incoming);
@@ -34,6 +40,8 @@ namespace MefAddIns.Extensibility
 		/// </summary>
 		List<IDisposable> Hookups { get; set; }
 		void RegisterType();
+		// returns true if we have had to deregister a type
+		bool DeregisterType();
 		object Storage {get;set;}
 		// hooking up a database, usually via string
 		void SetStorage(object storage);

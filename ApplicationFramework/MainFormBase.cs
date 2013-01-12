@@ -30,17 +30,31 @@ namespace appframe
 
 		// Add to this list to register more optionPanels
 		protected List<iConfig> optionPanels;
-
+		protected List<ContextMenuStrip> ContextMenus;
+		protected List<NoteTextAction> NoteTextActions;
 		#endregion
 
 		#region gui
 		protected MenuStrip MainMenu;
-
+		protected StatusStrip FooterStatus; 
 
 		Action<bool> ForceShutDownMethod;
 		public static Icon MainFormIcon;
 
 		#endregion
+
+		void BuildFooterStatus ()
+		{
+			FooterStatus = new StatusStrip();
+			this.Controls.Add (FooterStatus);
+		}
+
+
+
+		public virtual void BuildContextMenuStrips()
+		{
+			// will be overriden in mainform to create
+		}
 		/// <summary>
 		/// Initializes a new instance of the <see cref="appframe.MainFormBase"/> class.
 		/// </summary>
@@ -55,6 +69,15 @@ namespace appframe
 		/// </param>
 		public MainFormBase (string _path, Action<bool> _ForceShutDownMethod, string Storage, Icon mainFormIcon)
 		{
+			// stores any contextmenus we use, for access by plugin system
+			ContextMenus = new List<System.Windows.Forms.ContextMenuStrip>();
+
+			// List needs to be created here so it is available in derived MainForm AND in AddIn system
+			NoteTextActions = new List<NoteTextAction> ();
+			BuildListOfNoteTextAction(); 
+
+			BuildContextMenuStrips();
+
 			MainFormIcon = mainFormIcon;
 
 			this.Icon = mainFormIcon;
@@ -67,12 +90,40 @@ namespace appframe
 
 			ToolMenuItem = new ToolStripMenuItem(ToolMenu);
 			ToolMenuItem.Name="ToolsMenu";
+
+			ContextMenuStrip AdvancedStrip = new System.Windows.Forms.ContextMenuStrip();
+			AdvancedStrip.AutoSize = true;
+			//AdvancedStrip.Items.Add ("test");
+
+			ToolStripMenuItem Advanced = new ToolStripMenuItem();
+			Advanced.AutoSize = true;
+			Advanced.Name = "AdvancedMenu";
+			Advanced.Text = Loc.Instance.GetString("Advanced");
+			Advanced.DropDown = AdvancedStrip;
+
+
+		
+		
+
+			ToolStripMenuItem Notes = new ToolStripMenuItem();
+			Notes.Name="NotesMenu";
+			Notes.Text = Loc.Instance.GetString ("Notes");
+
+
+
+
 			ToolStripButton optionsButton = new ToolStripButton();
 			optionsButton.Text = Loc.Instance.GetString("Options");
-			ToolMenuItem.DropDownItems.Add (optionsButton);
+
 			optionsButton.Click+= HandleOptionsButtonClick;
-			
+
+			// build tools menu
+			ToolMenuItem.DropDownItems.Add (optionsButton);
+			ToolMenuItem.DropDownItems.Add (Advanced);
+
+
 			MainMenu.Items.Add (FindMenuItem);
+			MainMenu.Items.Add (Notes);
 			MainMenu.Items.Add (ToolMenuItem);
 			this.Controls.Add(MainMenu);
 			this.FormClosing+= HandleFormClosing;
@@ -90,6 +141,7 @@ namespace appframe
 			// STEP #3 When Option Panel closed needs to activate/deacative : return a list of Plugins that should be Activated (if not) and those that should be deactivated (if are)
 			StartAndStopPlugIns();
 
+			BuildFooterStatus();
 
 		}
 	
@@ -120,6 +172,13 @@ namespace appframe
 							// If Plug not already Loaded then Load it
 							//NewMessage.Show ("Adding " + AddIn.Name);
 							AddInsLoaded.Add (AddIn);
+							AddIn.RegisterType();
+
+							if (AddIn.CalledFrom.IsNoteAction == true)
+							{
+								NoteTextActions.Add (new NoteTextAction(AddIn.ActionWithParam, AddIn.BuildFileName, AddIn.CalledFrom.MyMenuName, AddIn.CalledFrom.ToolTip));
+							}
+							else
 							if (AddIn.CalledFrom.IsOnAMenu == true) {
 				
 			
@@ -129,26 +188,85 @@ namespace appframe
 								if (Constants.BLANK != myMenuName) {
 									string parentName = AddIn.CalledFrom.ParentMenuName;
 									if (Constants.BLANK != parentName) {
+
+										if (AddIn.CalledFrom.IsOnContextStrip == true)
+										{
+											// search for a context strip
+											ContextMenuStrip strip = ContextMenus.Find (ContextMenuStrip=>ContextMenuStrip.Name==parentName);
+											if (strip != null)
+											{
+												ToolStripButton but = new ToolStripButton (AddIn.CalledFrom.MyMenuName);
+												but.Tag = AddIn;
+												but.AutoSize = true;
+												but.Click += HandleAddInClick;
+												if (AddIn.CalledFrom.Image != null)
+												{
+													but.Image = AddIn.CalledFrom.Image;
+												}
+												strip.Items.Add (but);
+												but.ToolTipText = AddIn.CalledFrom.ToolTip;
+												AddIn.Hookups.Add (but);
+											}
+										}
+
+										else // search The MainMenuInstead
+										{
+
+
+
+
+
+
 										// add this menu option
 										ToolStripItem[] items = MainMenu.Items.Find (parentName, true);
 										if (items.Length > 0) {
 											if (items [0].GetType () == typeof(ToolStripMenuItem)) {
-												ToolStripButton but = new ToolStripButton (AddIn.CalledFrom.MyMenuName);
-												((ToolStripMenuItem)items [0]).DropDownItems.Add (but);
-												but.Tag = AddIn;
-												but.Click += HandleAddInClick;
 
+												if (((ToolStripMenuItem)items[0]).DropDown != null)
+												{
+												ToolStripButton but = new ToolStripButton (AddIn.CalledFrom.MyMenuName);
+											
+
+
+
+												but.Tag = AddIn;
+													but.AutoSize = true;
+												but.Click += HandleAddInClick;
+												((ToolStripMenuItem)items [0]).DropDownItems.Add (but);
+												// hack to make sure menu is 'wide enough' tried associating contextmenustrip but that did not help
+												((ToolStripMenuItem)items [0]).DropDownItems.Remove (((ToolStripMenuItem)items [0]).DropDownItems.Add ("removeme"));
+												//((ContextMenuStrip)((ToolStripMenuItem)items[0]).DropDown).Items.Add (but);
+														but.ToolTipText = AddIn.CalledFrom.ToolTip;
+												//	AdvancedStrip.Items.Add (but);
+
+													//((ContextMenuStrip)((ToolStripMenuItem)items[0]).Tag).Items.Add (but);
+												if (AddIn.CalledFrom.Image != null)
+												{
+													but.Image = AddIn.CalledFrom.Image;
+												}
 												AddIn.Hookups.Add (but);
+												}
+												else
+												{
+													NewMessage.Show (Loc.Instance.GetString ("A dropdown contextmenustrip needs to be defined for parent menu item"));
+												}
 
 											}
 										}
-
+										}// searching thru main mnenu
 									} else {
 										// create us as a parent
 							
 										ToolStripMenuItem parent = new ToolStripMenuItem (AddIn.CalledFrom.MyMenuName);
-										parent.Click += (object sender2, EventArgs e2) => AddIn.RespondToCallToAction ();
+										parent.Click += HandleAddInClick;
+										parent.Tag= AddIn;
+										parent.ToolTipText = AddIn.CalledFrom.ToolTip;
+										if (AddIn.CalledFrom.Image != null)
+										{
+											parent.Image = AddIn.CalledFrom.Image;
+										}
 										MainMenu.Items.Add (parent);
+
 										AddIn.Hookups.Add (parent);
 
 
@@ -157,7 +275,7 @@ namespace appframe
 							} // OnAMenu
 						} // Is allowed to be loaded (i.e., set in Options)
 						// We call this method. If this is a notetype we get registered, others ignore it
-						AddIn.RegisterType();
+
 					}//Not Added Yet
 				}
 			
@@ -173,10 +291,15 @@ namespace appframe
 							// we are NOT in the list but we exist in the active list
 							// this means we must be destroyed!!
 							NewMessage.Show ("Destroy : " + addin.CalledFrom.GUID);
+
 							foreach (IDisposable connection in addin.Hookups) {
 								connection.Dispose ();
 							}
-
+							if (addin.DeregisterType() == true)
+							{
+								NewMessage.Show (Loc.Instance.GetString("Because a NoteType was removed, we must shut down now, because any Layout open will not be able to be edited until this NoteType is added again."));
+								Application.Exit ();
+							}
 							// TODO: if notetype need to degresigtser
 
 							AddInsLoaded.Remove (addin);
@@ -301,7 +424,10 @@ namespace appframe
 			this.WindowState = FormWindowState.Maximized;
 			// adjust height to /smallest screen
 		}
+		protected virtual void BuildListOfNoteTextAction ()
+		{
 
+		}
 	}
 }
 

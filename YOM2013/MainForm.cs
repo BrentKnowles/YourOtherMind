@@ -10,7 +10,7 @@ using System.IO;
 using System.Collections;
 using System.ComponentModel.Composition.Hosting;
 	using System.ComponentModel.Composition;
-
+using appframe;
 
 namespace YOM2013
 {
@@ -37,7 +37,7 @@ namespace YOM2013
 		#region variables
 		private Sparkle _sparkle; 
 		private Options Settings ;
-		private List<NoteTextAction> NoteTextActions;
+	
 		#endregion
 		#region delegates
 
@@ -73,6 +73,10 @@ namespace YOM2013
 			
 
 		}
+		protected string BuildBatchFileName ()
+		{
+			return  System.IO.Path.Combine (System.IO.Path.GetTempPath (), Guid.NewGuid().ToString () + ".bat");
+		}
 		/// <summary>
 		/// Builds the list of note text action.
 		/// 
@@ -83,13 +87,15 @@ namespace YOM2013
 		/// <returns>
 		/// The list of note text action.
 		/// </returns>
-		private List<NoteTextAction> BuildListOfNoteTextAction ()
+		protected override void BuildListOfNoteTextAction ()
 		{
-			List<NoteTextAction> result = new List<NoteTextAction>();
 
-			result.Add (new NoteTextAction(RunAsBatchFile, Loc.Instance.GetString("Batch"), Loc.Instance.GetString ("Runs the text on this note as a batch file.")));
+			base.BuildListOfNoteTextAction();
+		
 
-			return result;
+			NoteTextActions.Add (new NoteTextAction(RunAsBatchFile, BuildBatchFileName, Loc.Instance.GetString("Batch"), Loc.Instance.GetString ("Runs the text on this note as a batch file.")));
+
+
 		}
 		/// <summary>
 		/// called from SaveTextLineToFile
@@ -238,7 +244,7 @@ namespace YOM2013
 			
 
 		// hook
-		private void RunAsBatchFile (string FileToProcess)
+		private void RunAsBatchFile (object FileToProcess)
 		{
 			// save as a TMP text file
 
@@ -246,7 +252,7 @@ namespace YOM2013
 			// run as a batch file
 
 		
-			General.OpenDocument(FileToProcess, "");
+			General.OpenDocument(FileToProcess.ToString (), "");
 		}
 
 		/// <summary>
@@ -256,11 +262,16 @@ namespace YOM2013
 		/// Note text actions.
 		/// </param>
 		void BuildMenuForNoteTextActions (List<NoteTextAction> noteTextActions)
-		{
+		{   
+
+
+
 			ToolStripItem[] foldersFound = TextEditContextStrip.Items.Find ("actionfolder", true);
 			ToolStripMenuItem folder = null;
 			if (foldersFound != null && foldersFound.Length > 0) {
 				folder = (ToolStripMenuItem)foldersFound [0];
+				// remove previous contextmenu strip
+				folder.DropDown = null;
 			
 			}
 			if (folder == null) {
@@ -279,6 +290,8 @@ namespace YOM2013
 				button.Click += HandleNoteTextActionClick;
 				actionStrip.Items.Add (button);
 			}
+			// allow full width for last item dynamically added
+			actionStrip.Items.Remove (actionStrip.Items.Add ("hack"));
 			folder.DropDown = actionStrip;
 
 		}
@@ -297,7 +310,7 @@ namespace YOM2013
 				if (LayoutDetails.Instance.CurrentLayout.CurrentTextNote != null) {
 					string[] lines = LayoutDetails.Instance.CurrentLayout.CurrentTextNote.Lines ();
 					if (lines.Length > 0) {
-						string FileName = System.IO.Path.Combine (System.IO.Path.GetTempPath (), Guid.NewGuid().ToString () + ".bat");
+						string FileName = ((NoteTextAction)(sender as ToolStripButton).Tag).BuildTheFileName();
 						SaveTextLineToFile (lines, FileName);
 
 						((NoteTextAction)(sender as ToolStripButton).Tag).RunAction (FileName);
@@ -404,7 +417,7 @@ namespace YOM2013
 			//LoadLayout ( "");
 
 
-			BuildTextEditorContextMenuStrip();
+
 
 			ToolStripMenuItem file = this.GetFileMenu ();
 			if (file == null) {
@@ -478,8 +491,8 @@ namespace YOM2013
 			optionPanels.Add (SettingsInterfaceOptions);
 
 
-			NoteTextActions = BuildListOfNoteTextAction();
-				BuildMenuForNoteTextActions(NoteTextActions);
+
+		
 
 
 			//Check for updates
@@ -504,11 +517,21 @@ namespace YOM2013
 		/// 
 		/// This will set up the context menu strip that the text boxes will later acquire
 		/// </summary>
-		void BuildTextEditorContextMenuStrip ()
+		public override void BuildContextMenuStrips ()
 		{
 			TextEditContextStrip = new System.Windows.Forms.ContextMenuStrip();
-			ToolStripMenuItem test = new ToolStripMenuItem("test");
-			TextEditContextStrip.Items.Add (test);
+			TextEditContextStrip.Name = "TextEditContextStrip";
+
+			ContextMenus.Add (TextEditContextStrip);
+
+
+			TextEditContextStrip.Opening+= HandleTextEditOpening;
+		}
+
+		void HandleTextEditOpening (object sender, System.ComponentModel.CancelEventArgs e)
+		{
+
+			BuildMenuForNoteTextActions(NoteTextActions);
 		}
 
 		/// <summary>

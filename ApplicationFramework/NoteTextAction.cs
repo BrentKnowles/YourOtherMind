@@ -1,7 +1,7 @@
 using System;
 using CoreUtilities;
 
-namespace Layout
+namespace appframe
 {
 	/// <summary>
 	/// Note action.
@@ -14,11 +14,16 @@ namespace Layout
 		Action<string> PerformAction;
 		string MenuString=Constants.BLANK;
 		string ToolTip=Constants.BLANK;
-		public NoteTextAction (Action<string> performAction, string menuString, string tooltip)
+		// function used to create the filename the NoteTextAction expects to find the data it wants to work with
+		// we allow this to be defined by the AddIns and whatnot because some devs will want to use Temp files, others with files of particular exensions
+		Func<string> BuildFileName;
+		public NoteTextAction (Action<object> performAction, Func<string> buildFileName, string menuString, string tooltip)
 		{
 			PerformAction = performAction;
 			MenuString = menuString;
 			ToolTip = tooltip;
+			BuildFileName = buildFileName;
+
 		}
 
 		public string GetMenuTitle()
@@ -28,6 +33,15 @@ namespace Layout
 		public string GetMenuTooltip()
 		{
 			return ToolTip;
+		}
+		public string BuildTheFileName ()
+		{
+			if (null == BuildFileName) {
+				NewMessage.Show (Loc.Instance.GetStringFmt ("The NoteTextAction '{0}' did not have a BuildFileName method assigned to it"));
+			} else {
+				return BuildFileName();
+			}
+			return Constants.BLANK;
 		}
 		public void RunAction (string TextFromNote)
 		{

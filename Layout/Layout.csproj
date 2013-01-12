@@ -56,7 +56,6 @@
     <Compile Include="MasterOfLayouts.cs" />
     <Compile Include="notetypes\NoteDataXML_Table.cs" />
     <Compile Include="AsDatabase\dbConstants.cs" />
-    <Compile Include="NoteTextAction.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

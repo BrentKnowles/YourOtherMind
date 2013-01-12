@@ -130,7 +130,7 @@ namespace appframe
 			foreach (MefAddIns.Extensibility.mef_IBase plug in AddInsList) {
 
 				ListViewItem item = new ListViewItem(plug.CalledFrom.MyMenuName);
-				item.Text = String.Format ("{0} ({1}) ", plug.CalledFrom.MyMenuName, plug.Version.ToString());
+				item.Text = String.Format ("{0} ({1}) ", plug.Name, plug.Version.ToString());
 				if (plug.IsCopy )
 				{
 					// a copy of this GUID was present
