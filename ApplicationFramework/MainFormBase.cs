@@ -135,9 +135,11 @@ namespace appframe
 											if (items [0].GetType () == typeof(ToolStripMenuItem)) {
 												ToolStripButton but = new ToolStripButton (AddIn.CalledFrom.MyMenuName);
 												((ToolStripMenuItem)items [0]).DropDownItems.Add (but);
-												but.Click += (object sender2, EventArgs e2) => AddIn.RespondToCallToAction ();
+												but.Tag = AddIn;
+												but.Click += HandleAddInClick;
 
 												AddIn.Hookups.Add (but);
+
 											}
 										}
 
@@ -154,16 +156,8 @@ namespace appframe
 								}
 							} // OnAMenu
 						} // Is allowed to be loaded (i.e., set in Options)
-						//TODO: Register NoteTYpes
-						if (AddIn.GetType () == typeof(MefAddIns.Extensibility.mef_INotes)) {
-							((MefAddIns.Extensibility.mef_INotes)AddIn).RegisterType ();
-						} else {
-
-							// Means we WERE NOT added and WE DO NOT WANT TO ADD THEM
-							// Do not do anything here
-
-					
-						}
+						// We call this method. If this is a notetype we get registered, others ignore it
+						AddIn.RegisterType();
 					}//Not Added Yet
 				}
 			
@@ -189,6 +183,25 @@ namespace appframe
 						}
 					}
 				} // count > 0
+			}
+		}
+
+		/// <summary>
+		/// Handles the add in click. (When the menu option that was added for the AddIn is clicked by usr)
+		/// </summary>
+		/// <param name='sender'>
+		/// Sender.
+		/// </param>
+		/// <param name='e'>
+		/// E.
+		/// </param>
+		void HandleAddInClick (object sender, EventArgs e)
+		{
+			// the tag contains the original addin
+			if ((sender as ToolStripItem).Tag != null) {
+				((MefAddIns.Extensibility.mef_IBase)(sender as ToolStripItem).Tag).RespondToCallToAction();
+				// just a quick test to see if databse string made it in
+				//NewMessage.Show (((MefAddIns.Extensibility.mef_IBase)(sender as ToolStripItem).Tag).Storage.ToString());
 			}
 		}
 

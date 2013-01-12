@@ -139,6 +139,8 @@ namespace appframe
 				}
 
 
+		
+
 				item.Tag = plug.CalledFrom;
 				bool IsChecked = false;
 
@@ -305,53 +307,54 @@ namespace appframe
 				                 String.Format ("[{0}] {1} by {2}.\n\t{3}\n", language.Version, language.Name, language.Author, language.Description));
 
 				i++;
+				language.SetStorage(DatabaseName);
 				AddInsList.Add (language);
 
 
 
 			}
 
-			
-			foreach (var language in bootStrapper.Notes) {
-				
-				// We look to see if this is a copy of another addin loaded already
-				mef_IBase AddInAlreadyIn = AddInsList.Find (mef_IBase => mef_IBase.CalledFrom.GUID == language.CalledFrom.GUID);
-				if (null != AddInAlreadyIn)
-				{
-					lg.Instance.Line("AddIns.BuildListOfAddIns", ProblemType.MESSAGE,"This AddIn is already found. Adding as a copy");
-					language.SetGuid(language.CalledFrom.GUID +  Loc.Instance.GetString(" (COPY) "));
-					language.IsCopy = true;
-					
-				}
-				lg.Instance.Line("AddIns.BuildListOfAddIns", ProblemType.MESSAGE,
-				                 String.Format ("[{0}] {1} by {2}.\n\t{3}\n", language.Version, language.Name, language.Author, language.Description));
-				
-				i++;
-				AddInsList.Add (language);
-				
-				
-				
-			}
+//			// added this back in, but as part of the "Consdensceing process", will remove again TO DO
+//			foreach (var language in bootStrapper.Notes) {
+//				
+//				// We look to see if this is a copy of another addin loaded already
+//				mef_IBase AddInAlreadyIn = AddInsList.Find (mef_IBase => mef_IBase.CalledFrom.GUID == language.CalledFrom.GUID);
+//				if (null != AddInAlreadyIn)
+//				{
+//					lg.Instance.Line("AddIns.BuildListOfAddIns", ProblemType.MESSAGE,"This AddIn is already found. Adding as a copy");
+//					language.SetGuid(language.CalledFrom.GUID +  Loc.Instance.GetString(" (COPY) "));
+//					language.IsCopy = true;
+//					
+//				}
+//				lg.Instance.Line("AddIns.BuildListOfAddIns", ProblemType.MESSAGE,
+//				                 String.Format ("[{0}] {1} by {2}.\n\t{3}\n", language.Version, language.Name, language.Author, language.Description));
+//				
+//				i++;
+//				AddInsList.Add (language);
+//				
+//				
+//				
+//			}
 
-			foreach (var form in bootStrapper.FormBasic) {
-
-				// We look to see if this is a copy of another addin loaded already
-				mef_IBase AddInAlreadyIn = AddInsList.Find (mef_IBase => mef_IBase.CalledFrom.GUID == form.CalledFrom.GUID);
-				if (null != AddInAlreadyIn)
-				{
-					lg.Instance.Line("AddIns.BuildListOfAddIns", ProblemType.MESSAGE,"This AddIn is already found. Adding as a copy");
-					form.SetGuid(form.CalledFrom.GUID +  Loc.Instance.GetString(" (COPY) "));
-					form.IsCopy = true;
-					
-				}
-				lg.Instance.Line("AddIns.BuildListOfAddIns", ProblemType.MESSAGE,
-				                 String.Format ("[{0}] {1} by {2}.\n\t{3} {4}\n", form.Version, form.Name, form.Author, form.Description, form.IsCopy));
-				
-				i++;
-				AddInsList.Add (form);
-
-//				form.ShowWindow();
-			}
+//			foreach (var form in bootStrapper.FormBasic) {
+//
+//				// We look to see if this is a copy of another addin loaded already
+//				mef_IBase AddInAlreadyIn = AddInsList.Find (mef_IBase => mef_IBase.CalledFrom.GUID == form.CalledFrom.GUID);
+//				if (null != AddInAlreadyIn)
+//				{
+//					lg.Instance.Line("AddIns.BuildListOfAddIns", ProblemType.MESSAGE,"This AddIn is already found. Adding as a copy");
+//					form.SetGuid(form.CalledFrom.GUID +  Loc.Instance.GetString(" (COPY) "));
+//					form.IsCopy = true;
+//					
+//				}
+//				lg.Instance.Line("AddIns.BuildListOfAddIns", ProblemType.MESSAGE,
+//				                 String.Format ("[{0}] {1} by {2}.\n\t{3} {4}\n", form.Version, form.Name, form.Author, form.Description, form.IsCopy));
+//				
+//				i++;
+//				AddInsList.Add (form);
+//
+////				form.ShowWindow();
+//			}
 			/*
 			foreach (var note in bootStrapper.Notes) {
 				Console.WriteLine ("[{0}] {1} by {2}.\n\t{3}\n", note.Version, note.Name, note.Author, note.Description);

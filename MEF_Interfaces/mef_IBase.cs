@@ -5,23 +5,7 @@ namespace MefAddIns.Extensibility
 	using System.Text;
 
 
- 	public struct PlugInAction
-	{
-
-		public bool IsOnAMenu;
-		public bool IsOnAToolbar;
-		public bool IsANote;
-
-		// If ParentMenuName = "" then will appear at toplevel
-		public string ParentMenuName;
-		// If "" then *ONLY* hotkey functions
-		public string MyMenuName;
-
-		// Will tie into the Hotkey system later
-		public int HotkeyNumber;
-		public string GUID;
-
-	}
+ 	
 
 
 
@@ -49,5 +33,9 @@ namespace MefAddIns.Extensibility
 		/// The hookups, where this addin has been added. This are disposed of when remove
 		/// </summary>
 		List<IDisposable> Hookups { get; set; }
+		void RegisterType();
+		object Storage {get;set;}
+		// hooking up a database, usually via string
+		void SetStorage(object storage);
 	}
 }

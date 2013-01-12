@@ -38,6 +38,10 @@ namespace Layout
 		{
 			return richBox.Text;
 		}
+		public string[] Lines()
+		{
+			return richBox.Lines;
+		}
 		/// <summary>
 		/// Overwrites the with RTF file.
 		/// </summary>

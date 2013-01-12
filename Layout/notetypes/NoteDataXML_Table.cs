@@ -122,10 +122,22 @@ namespace Layout
 		}
 
 		#endregion
+		public void CommonConstructor ()
+		{
+			Caption = Loc.Instance.Cat.GetString("Table");
+			lg.Instance.Line("NoteDataXML_Table->BuildDefaultColumns", ProblemType.MESSAGE, "Creating a Table", Loud.CTRIVIAL);
+			// This constructor is called ONLY when the note is first being created (not loaded)
+			// so we create a default datasource here and now.
+			//dataSource = new DataSet("Table");
+			//dataSource = new DataTable(); // A new datasource is already being created when column default is made.
+			BuildDefaultColumns();
+			
+			// the table is created when the columns are manifested
+		}
 
 		public NoteDataXML_Table () : base()
 		{
-			Caption = Loc.Instance.Cat.GetString("Table");
+			CommonConstructor();
 		}
 
 		/// <summary>
@@ -147,15 +159,7 @@ namespace Layout
 
 		public NoteDataXML_Table(int height, int width) : base(height, width)
 		{
-			Caption = Loc.Instance.Cat.GetString("Table");
-			lg.Instance.Line("NoteDataXML_Table->BuildDefaultColumns", ProblemType.MESSAGE, "Creating a Table", Loud.CTRIVIAL);
-			// This constructor is called ONLY when the note is first being created (not loaded)
-			// so we create a default datasource here and now.
-			//dataSource = new DataSet("Table");
-			//dataSource = new DataTable(); // A new datasource is already being created when column default is made.
-			BuildDefaultColumns();
-
-			// the table is created when the columns are manifested
+			CommonConstructor();
 
 		}
 

@@ -6,7 +6,8 @@ using System.Collections.ObjectModel;
 using System.Collections.Generic;
 using AppLimit.NetSparkle;
 using System.Drawing;
-
+using System.IO;
+using System.Collections;
 using System.ComponentModel.Composition.Hosting;
 	using System.ComponentModel.Composition;
 
@@ -36,6 +37,7 @@ namespace YOM2013
 		#region variables
 		private Sparkle _sparkle; 
 		private Options Settings ;
+		private List<NoteTextAction> NoteTextActions;
 		#endregion
 		#region delegates
 
@@ -71,6 +73,241 @@ namespace YOM2013
 			
 
 		}
+		/// <summary>
+		/// Builds the list of note text action.
+		/// 
+		/// Called from MainForm constructor.
+		/// 
+		/// Will hold the default batch file one AND any addin generated actions
+		/// </summary>
+		/// <returns>
+		/// The list of note text action.
+		/// </returns>
+		private List<NoteTextAction> BuildListOfNoteTextAction ()
+		{
+			List<NoteTextAction> result = new List<NoteTextAction>();
+
+			result.Add (new NoteTextAction(RunAsBatchFile, Loc.Instance.GetString("Batch"), Loc.Instance.GetString ("Runs the text on this note as a batch file.")));
+
+			return result;
+		}
+		/// <summary>
+		/// called from SaveTextLineToFile
+		/// </summary>
+		/// <param name="NoteToOpen">if present and we encounter [[title]] we replace [[title]] with NoteToOpen   ///  </param>
+		/// <param name="sText"></param>
+		void SaveTextLineByLine (StreamWriter writer, string[] linesOfText, string empty)
+		{
+			foreach (string s in linesOfText)
+			{
+				writer.WriteLine(s);
+			}
+		}
+
+		/// <summary>
+		/// Goes through rich edit line by line saving to a plain text file
+		/// 
+		/// December 2009
+		///  Here we need to do a redesign.
+		/// 
+		/// If we encounter [[index]] on the first line we know that we have an index page. So instead we need to do the following:
+		/// 
+		/// Each line is either a NOTE NAME to add to the text file (which will be parsed line by line and converted to plain text)
+		/// 
+		/// OR
+		/// 
+		/// It returns a list of names that are then parsed line by line as above, in the order of the list
+		///   
+		/// An example index would be
+		/// [[index]]
+		/// _Header [[words]]
+		/// [[Group,Storyboard,Chapter*,words]         !- This returns an array of note names that match the criteria (i.e., Chapter 01, Chapter 02)
+		/// _Footer
+		/// 
+		/// 
+		/// 
+		/// * Note: Choose not to let the groups handl
+		/// </summary>
+		/// <param name="sFile"></param>
+		public void SaveTextLineToFile(string[] LinesOfText,  string sFilepath)
+		{
+				string sWordInformation = "";
+				int TotalWords = 0;
+				
+				
+				
+				
+				try
+				{
+					StreamWriter writer = new StreamWriter(sFilepath);
+					if (LinesOfText[0].ToLower() == "[[index]]")
+					{
+						// we are actually an index note
+						// which will instead list a bunch of other pages to use
+						// we now iterate through LinesOfText[1] to end and parse those instead
+						for (int i = 1; i < LinesOfText.Length; i++)
+						{
+							string sLine = LinesOfText[i];
+							bool bGetWords = false;
+							ArrayList ListOfParsePages = new ArrayList();
+							
+						//TODO hook up to Custom Scripting Language system
+							if (sLine.IndexOf("[[words]]") > -1)
+							{
+								
+								// if we have the words keyword we know we want to display some word info at the end
+								sLine = sLine.Replace("[[words]]", "").Trim();
+								
+								bGetWords = true;
+							}
+						//TODO hook up to Custom Scripting Language system
+							if (sLine.IndexOf("[[Group") > -1)
+							{
+								//TODO Hook up again laterListOfParsePages = GetListOfPages(sLine, ref bGetWords);
+								
+								// we have a group
+								
+							}
+							else
+							{
+								ListOfParsePages.Add(sLine);
+							}
+							
+							// Now we go through the pages and write them into the text file
+							// feb 19 2010 - added because chapter notes were not coming out in alphaetical
+							ListOfParsePages.Sort();
+							
+							foreach (string notetoopen in ListOfParsePages)
+							{
+//								DrawingTest.NotePanel panel = ((mdi)_CORE_GetActiveChild()).page_Visual.GetPanelByName(notetoopen);
+//								
+//								
+//							//TODO hook up to Custom Scripting Language system and make more efficient
+//								if (panel != null)
+//								{
+//									RichTextBox tempBox = new RichTextBox();
+//									tempBox.Rtf = panel.appearance.Text;
+//								SaveTextLineByLine(writer, tempBox.Lines, notetoopen);
+//									
+//									if (true == bGetWords)
+//									{
+//										
+//										int Words = RichTextBoxLinks.RichTextBoxEx.WordCount(tempBox.Text);
+//										TotalWords = TotalWords + Words;
+//										
+//										
+//										
+//										
+//										sWordInformation = sWordInformation + String.Format("{0}: {1}\n", notetoopen, Words.ToString());
+//									}
+//									
+//									tempBox.Dispose();
+								//}
+							} //open each note list
+							
+							//                            panel.Dispose(); Don't think I can do this becauseit would dlette hte note, benig an ojbect
+							ListOfParsePages = null;
+							
+						}
+					}
+					else
+					{
+						
+					SaveTextLineByLine(writer, LinesOfText, "");
+					}
+					
+					writer.Close();
+					writer.Dispose();
+					if (sWordInformation != "")
+					{
+						string sResult = Loc.Instance.GetStringFmt("Total Words:{0}\n{1}", TotalWords.ToString(), sWordInformation);
+						Clipboard.SetText(sResult);
+						NewMessage.Show(Loc.Instance.GetString ("Your Text Has Been Sent! Press Ctrl + V to paste word count information into current note."));
+						//NewMessage.Show(sResult);
+					}
+				}
+				catch (Exception)
+				{
+					NewMessage.Show(Loc.Instance.GetStringFmt("Unable to write to {0} please shut down and try again", sFilepath));
+				}
+				
+				LinesOfText = null;
+
+				
+		}
+			
+
+		// hook
+		private void RunAsBatchFile (string FileToProcess)
+		{
+			// save as a TMP text file
+
+
+			// run as a batch file
+
+		
+			General.OpenDocument(FileToProcess, "");
+		}
+
+		/// <summary>
+		/// Builds the menu for note text actions.
+		/// </summary>
+		/// <param name='noteTextActions'>
+		/// Note text actions.
+		/// </param>
+		void BuildMenuForNoteTextActions (List<NoteTextAction> noteTextActions)
+		{
+			ToolStripItem[] foldersFound = TextEditContextStrip.Items.Find ("actionfolder", true);
+			ToolStripMenuItem folder = null;
+			if (foldersFound != null && foldersFound.Length > 0) {
+				folder = (ToolStripMenuItem)foldersFound [0];
+			
+			}
+			if (folder == null) {
+				folder = new ToolStripMenuItem ();
+				folder.Text = Loc.Instance.GetString ("Actions");
+				folder.Name = "actionfolder";
+				TextEditContextStrip.Items.Add (folder);
+			}
+			ContextMenuStrip actionStrip = new ContextMenuStrip ();
+
+			foreach (NoteTextAction action in noteTextActions) {
+				ToolStripButton button = new ToolStripButton ();
+				button.Text = action.GetMenuTitle ();
+				button.ToolTipText = action.GetMenuTooltip ();
+				button.Tag = action;
+				button.Click += HandleNoteTextActionClick;
+				actionStrip.Items.Add (button);
+			}
+			folder.DropDown = actionStrip;
+
+		}
+		/// <summary>
+		/// Handles the note text action click. (i.e., run as batch file)
+		/// </summary>
+		/// <param name='sender'>
+		/// Sender.
+		/// </param>
+		/// <param name='e'>
+		/// E.
+		/// </param>
+		void HandleNoteTextActionClick (object sender, EventArgs e)
+		{
+			if ((sender as ToolStripButton).Tag != null && ((sender as ToolStripButton).Tag is NoteTextAction)) {
+				if (LayoutDetails.Instance.CurrentLayout.CurrentTextNote != null) {
+					string[] lines = LayoutDetails.Instance.CurrentLayout.CurrentTextNote.Lines ();
+					if (lines.Length > 0) {
+						string FileName = System.IO.Path.Combine (System.IO.Path.GetTempPath (), Guid.NewGuid().ToString () + ".bat");
+						SaveTextLineToFile (lines, FileName);
+
+						((NoteTextAction)(sender as ToolStripButton).Tag).RunAction (FileName);
+					} 
+				}
+				else {
+					NewMessage.Show (Loc.Instance.GetString ("Please select a text note."));
+				}
+			}
+		}
 
 /// <summary>
 /// Initializes a new instance of the <see cref="YOM2013.MainForm"/> class.
@@ -94,6 +331,7 @@ namespace YOM2013
 
 			this.Load += HandleFormLoad;
 
+		
 
 			SetupMessageBox ();
 			LayoutsOpen = new List<LayoutsInMemory> ();
@@ -238,6 +476,10 @@ namespace YOM2013
 	
 		    optionPanels.Add(Settings);
 			optionPanels.Add (SettingsInterfaceOptions);
+
+
+			NoteTextActions = BuildListOfNoteTextAction();
+				BuildMenuForNoteTextActions(NoteTextActions);
 
 
 			//Check for updates

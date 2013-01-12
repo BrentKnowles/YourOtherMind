@@ -7,14 +7,11 @@ namespace MefAddIns.Terminal
 	public class Bootstrapper
 	{
 		/// <summary>
-		/// Holds a list of all the valid languages for this application
+		/// Holds a list of all the valid addins for this application
 		/// </summary>
 		[ImportMany]
 		public IEnumerable<mef_IBase> Base { get; set; }
-		[ImportMany]
-		public IEnumerable<mef_IShowFormBasic> FormBasic { get; set; }
-		[ImportMany]
-		public IEnumerable<mef_INotes> Notes { get; set; }
+
 		
 	}
 }
