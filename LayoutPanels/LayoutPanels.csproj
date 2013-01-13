@@ -35,6 +35,7 @@
     <Compile Include="LayoutPanel.cs" />
     <Compile Include="NoteDataXML_Panel.cs" />
     <Compile Include="HeaderBar.cs" />
+    <Compile Include="GetInformationADDINS.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Layout\Layout.csproj">
@@ -48,6 +49,10 @@
     <ProjectReference Include="..\ApplicationFramework\ApplicationFramework.csproj">
       <Project>{1C8CC9F9-FD0A-4DDF-B227-61E8135DFCE5}</Project>
       <Name>ApplicationFramework</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MEF_Interfaces\MEF_Interfaces.csproj">
+      <Project>{2E366A51-224A-4C3B-90D6-FE8C81C9EB78}</Project>
+      <Name>MEF_Interfaces</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

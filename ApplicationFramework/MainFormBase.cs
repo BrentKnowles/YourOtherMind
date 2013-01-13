@@ -144,6 +144,29 @@ namespace appframe
 			BuildFooterStatus();
 
 		}
+		/// <summary>
+		/// Builds the addin tool strip. (Wrapper function)
+		/// </summary>
+		/// <param name='AddIn'>
+		/// Add in.
+		/// </param>
+		/// <param name='but'>
+		/// But.
+		/// </param>
+		void BuildAddinToolStrip (MefAddIns.Extensibility.mef_IBase AddIn, ToolStripItem but)
+		{
+			but.Tag = AddIn;
+			AddIn.DelegateTargetForGetAfterRespondInformation = HandleRespondInformationFromAddin;
+			but.AutoSize = true;
+			but.Click += HandleAddInClick;
+			if (AddIn.CalledFrom.Image != null) {
+				but.Image = AddIn.CalledFrom.Image;
+			}
+
+			but.ToolTipText = AddIn.CalledFrom.ToolTip;
+			AddIn.Hookups.Add (but);
+
+		}
 	
 		/// <summary>
 		/// Starts the and stop plug ins.
@@ -196,16 +219,8 @@ namespace appframe
 											if (strip != null)
 											{
 												ToolStripButton but = new ToolStripButton (AddIn.CalledFrom.MyMenuName);
-												but.Tag = AddIn;
-												but.AutoSize = true;
-												but.Click += HandleAddInClick;
-												if (AddIn.CalledFrom.Image != null)
-												{
-													but.Image = AddIn.CalledFrom.Image;
-												}
+												BuildAddinToolStrip (AddIn, but);
 												strip.Items.Add (but);
-												but.ToolTipText = AddIn.CalledFrom.ToolTip;
-												AddIn.Hookups.Add (but);
 											}
 										}
 
@@ -225,26 +240,26 @@ namespace appframe
 												if (((ToolStripMenuItem)items[0]).DropDown != null)
 												{
 												ToolStripButton but = new ToolStripButton (AddIn.CalledFrom.MyMenuName);
-											
+											    BuildAddinToolStrip (AddIn, but);
 
 
 
-												but.Tag = AddIn;
-													but.AutoSize = true;
-												but.Click += HandleAddInClick;
+												//but.Tag = AddIn;
+												//but.AutoSize = true;
+												//but.Click += HandleAddInClick;
 												((ToolStripMenuItem)items [0]).DropDownItems.Add (but);
 												// hack to make sure menu is 'wide enough' tried associating contextmenustrip but that did not help
 												((ToolStripMenuItem)items [0]).DropDownItems.Remove (((ToolStripMenuItem)items [0]).DropDownItems.Add ("removeme"));
 												//((ContextMenuStrip)((ToolStripMenuItem)items[0]).DropDown).Items.Add (but);
-														but.ToolTipText = AddIn.CalledFrom.ToolTip;
+												//		but.ToolTipText = AddIn.CalledFrom.ToolTip;
 												//	AdvancedStrip.Items.Add (but);
 
 													//((ContextMenuStrip)((ToolStripMenuItem)items[0]).Tag).Items.Add (but);
-												if (AddIn.CalledFrom.Image != null)
-												{
-													but.Image = AddIn.CalledFrom.Image;
-												}
-												AddIn.Hookups.Add (but);
+//												if (AddIn.CalledFrom.Image != null)
+//												{
+//													but.Image = AddIn.CalledFrom.Image;
+//												}
+//												AddIn.Hookups.Add (but);
 												}
 												else
 												{
@@ -258,16 +273,17 @@ namespace appframe
 										// create us as a parent
 							
 										ToolStripMenuItem parent = new ToolStripMenuItem (AddIn.CalledFrom.MyMenuName);
-										parent.Click += HandleAddInClick;
-										parent.Tag= AddIn;
-										parent.ToolTipText = AddIn.CalledFrom.ToolTip;
-										if (AddIn.CalledFrom.Image != null)
-										{
-											parent.Image = AddIn.CalledFrom.Image;
-										}
+//										parent.Click += HandleAddInClick;
+//										parent.Tag= AddIn;
+//										parent.ToolTipText = AddIn.CalledFrom.ToolTip;
+//										if (AddIn.CalledFrom.Image != null)
+//										{
+//											parent.Image = AddIn.CalledFrom.Image;
+//										}
+										BuildAddinToolStrip (AddIn, parent);
 										MainMenu.Items.Add (parent);
 
-										AddIn.Hookups.Add (parent);
+										//AddIn.Hookups.Add (parent);
 
 
 									}
@@ -309,6 +325,18 @@ namespace appframe
 			}
 		}
 
+
+		protected virtual object GetInformationForAddInBeforeRun(int getinfo)
+		{
+			return null;
+		}
+		
+
+		protected virtual void HandleRespondInformationFromAddin (object infoFromAddIn, int typeOfInformationSentBack)
+		{
+		}
+	
+
 		/// <summary>
 		/// Handles the add in click. (When the menu option that was added for the AddIn is clicked by usr)
 		/// </summary>
@@ -322,7 +350,34 @@ namespace appframe
 		{
 			// the tag contains the original addin
 			if ((sender as ToolStripItem).Tag != null) {
-				((MefAddIns.Extensibility.mef_IBase)(sender as ToolStripItem).Tag).RespondToCallToAction();
+
+				MefAddIns.Extensibility.mef_IBase thisAddIn = ((MefAddIns.Extensibility.mef_IBase)(sender as ToolStripItem).Tag);
+				object NeededInfo = GetInformationForAddInBeforeRun(thisAddIn.TypeOfInformationNeeded);
+
+				// if we have NO type info needed, we proceed. Otherwise, we must supply that info too
+				if ( (thisAddIn.TypeOfInformationNeeded == 0) || (thisAddIn.TypeOfInformationNeeded > 0 && NeededInfo != null))
+				{
+				thisAddIn.SetBeforeRespondInformation(NeededInfo);
+				thisAddIn.RespondToCallToAction();
+					// this routine sends the needed info to the callback which was setup at Initialization 
+					// we don't call this externally, it is called internally
+					//thisAddIn.GetAfterRespondInformation();
+				//object InfoFromAddIn = thisAddIn.GetAfterRespondInformation();
+				//HandleRespondInformationFromAddin(InfoFromAddIn, thisAddIn.TypeOfInformationSentBack);
+
+					if (true == thisAddIn.CalledFrom.QuickLinkShows)
+					{
+
+						Console.WriteLine ("hook my quicklink up please");
+						if (thisAddIn.ActiveForm() == null) Console.WriteLine ("can't, no form active!");
+					}
+				}
+				else
+				{
+					lg.Instance.Line("MainFormBase->HandleAddInClick", ProblemType.WARNING, String.Format ("Addin {0} did not get called because TypeOfInformation or NeededInfo unavailable.", thisAddIn.Name));
+				}
+
+
 				// just a quick test to see if databse string made it in
 				//NewMessage.Show (((MefAddIns.Extensibility.mef_IBase)(sender as ToolStripItem).Tag).Storage.ToString());
 			}

@@ -11,6 +11,7 @@ using System.Collections;
 using System.ComponentModel.Composition.Hosting;
 	using System.ComponentModel.Composition;
 using appframe;
+using LayoutPanels;
 
 namespace YOM2013
 {
@@ -863,6 +864,44 @@ namespace YOM2013
 				NewMessage.Show ("Shutting down without saving due to file corruption");
 			}
 			Application.Exit ();
+		}
+		protected override object GetInformationForAddInBeforeRun (int getinfo)
+		{
+			string returnvalue = Constants.BLANK;
+			switch (getinfo) {
+			case (int)GetInformationADDINS.GET_SELECTED_TEXT:
+				if (LayoutDetails.Instance.CurrentLayout.CurrentTextNote != null && LayoutDetails.Instance.CurrentLayout.CurrentTextNote.SelectedText != Constants.BLANK)
+				{
+					returnvalue = LayoutDetails.Instance.CurrentLayout.CurrentTextNote.SelectedText;
+				}
+				else
+				{
+					NewMessage.Show (Loc.Instance.GetString("Please select text inside of a note before activating this feature."));
+					returnvalue = null;
+				}
+				break;
+			}
+			return returnvalue;
+		}
+		protected override void HandleRespondInformationFromAddin (object infoFromAddIn, int typeOfInformationSentBack)
+		{
+			switch (typeOfInformationSentBack) {
+			case (int)SetInformationADDINS.REPLACE_SELECTED_TEXT:
+				if (LayoutDetails.Instance.CurrentLayout.CurrentTextNote.SelectionLength > 0)
+				{
+					bool hasspace=false;
+					string newword =  infoFromAddIn.ToString ();
+					if (LayoutDetails.Instance.CurrentLayout.CurrentTextNote.SelectedText[LayoutDetails.Instance.CurrentLayout.CurrentTextNote.SelectedText.Length-1] == ' ')
+					{
+						hasspace = true;
+						newword = newword + ' ';
+
+					}
+					LayoutDetails.Instance.CurrentLayout.CurrentTextNote.SelectedText = newword;
+
+				}
+				break;
+			}
 		}
 	}
 }

@@ -67,6 +67,36 @@ namespace MefAddIns
 		{
 			return "";
 		}
+
+		// default both these to 0 because most plugins will not use them
+		public virtual int TypeOfInformationNeeded { get { return 0; } }
+		public virtual int TypeOfInformationSentBack { get { return 0; } }
+		public virtual void SetBeforeRespondInformation (object neededInfo)
+		{
+		}
+		private Action<object, int> delegateTargetForGetAfterRespondInformation;
+		// this is set by MainFormBase, when initializing AddIns
+		public Action<object, int> DelegateTargetForGetAfterRespondInformation {
+			get { return delegateTargetForGetAfterRespondInformation;}
+			set { delegateTargetForGetAfterRespondInformation = value;}
+		}
+		// Override ride this in target but use this code as skeleton for what is needed
+		public virtual void GetAfterRespondInformation ()
+		{
+//			if (null == DelegateTargetForGetAfterRespondInformation) {
+//
+//			} else {
+//
+//			}
+
+
+		}
+		public  virtual object ActiveForm()
+		{
+			return null;
+		}
+		// we set this to blank, by default. Few addins will/should use this
+		public virtual string dependencyguid { get { return ""; } }
 	}
 }
 

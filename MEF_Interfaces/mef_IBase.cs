@@ -45,5 +45,30 @@ namespace MefAddIns.Extensibility
 		object Storage {get;set;}
 		// hooking up a database, usually via string
 		void SetStorage(object storage);
+
+		// Defines what the application passes into the ADDIN
+		int TypeOfInformationNeeded { get; }
+		/// <summary>
+		/// Gets the type of information sent back, from the ADDIN
+		/// </summary>
+		/// <value>
+		/// The type of information sent back.
+		/// </value>
+		int TypeOfInformationSentBack { get; }
+
+		// Passes needed information into the Addin
+		void SetBeforeRespondInformation (object neededInfo);
+
+
+		Action<object, int> DelegateTargetForGetAfterRespondInformation{ get; set; }
+
+		// any modifications or return values from the ADDIN, will be influneced by the TypeOfInformationSentBack field
+		void GetAfterRespondInformation ();
+		// if this addin puts a QuickLink in the footer than this is the method used to retrieve the form to bring into focus when that link is clicked
+		// note we return an object instead of a form to avoid direct reference to Windows.Forms
+		object ActiveForm();
+
+		// if set, the addin with this guid needs to be loaded BEFORE this Addin will be loaded
+		string dependencyguid { get; }
 	}
 }
