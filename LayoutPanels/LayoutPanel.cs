@@ -1160,13 +1160,16 @@ namespace Layout
 		/// <returns>
 		/// The link table.
 		/// </returns>
-		public CoreUtilities.Links.LinkTable GetLinkTable ()
+		public override CoreUtilities.Links.LinkTable GetLinkTable ()
 		{
 			if (GetIsChild == false) {
 				LinkTable linkTable = new LinkTable ();
 				// we create a new table
 				//(AddShape(Appearance.shapetype.Table, STICKY_TABLE)).appearance.Caption = STICKY_TABLE;
 			
+				// the danger here is that we LinkTable is not deserialized by the time the NOTE referencing this
+				// the solution seems to be to set the Order of Serialization ([XmlElement(Order = 1)])
+
 				NoteDataXML_Table table = (NoteDataXML_Table)FindNoteByName (LinkTable.STICKY_TABLE);
 				//bool newTableNeeded = false;
 				// could not find a table with this name
@@ -1178,9 +1181,11 @@ namespace Layout
 					table.dataSource = linkTable.BuildNewTable ().Copy ();
 					((System.Data.DataTable)table.dataSource).TableName = CoreUtilities.Tables.TableWrapper.TablePageTableName;
 
+					// Note Table must AddToStart so that it is instantiated Before any other notes
+
 					// if we have to create a table we Assume that we can do a Convert too
 					//newTableNeeded = true;
-					Notes.Add (table);
+					Notes.AddToStart (table);
 					table.CreateParent(this);
 					RefreshTabs ();
 					SaveLayout ();

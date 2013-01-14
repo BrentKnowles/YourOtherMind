@@ -889,11 +889,11 @@ namespace YOM2013
 			case (int)SetInformationADDINS.REPLACE_SELECTED_TEXT:
 				if (LayoutDetails.Instance.CurrentLayout.CurrentTextNote.SelectionLength > 0)
 				{
-					bool hasspace=false;
+
 					string newword =  infoFromAddIn.ToString ();
 					if (LayoutDetails.Instance.CurrentLayout.CurrentTextNote.SelectedText[LayoutDetails.Instance.CurrentLayout.CurrentTextNote.SelectedText.Length-1] == ' ')
 					{
-						hasspace = true;
+
 						newword = newword + ' ';
 
 					}

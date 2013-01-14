@@ -4,11 +4,8 @@ using System.IO;
 
 namespace CoreUtilities
 {
-	public class General
+	public partial class General
 	{
-		public General ()
-		{
-		}
 
 		/// <summary>
 		/// Default parameters make it check for file existence

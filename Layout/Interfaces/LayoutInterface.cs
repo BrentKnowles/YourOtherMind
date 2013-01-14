@@ -40,7 +40,7 @@ namespace Layout
 		// The list of Notes
 		//List<NoteDataInterface> DataForThisLayout {get; set;}
 		void Add(NoteDataInterface note);
-
+		void AddToStart(NoteDataInterface note);
 
 		// Methods
 

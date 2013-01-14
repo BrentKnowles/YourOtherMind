@@ -111,6 +111,7 @@ namespace Layout
 		public abstract List<string> GetListOfStringsFromSystemTable (string tableName, int Column);
 		public abstract NoteDataXML_SystemOnly GetSystemPanel ();
 		public abstract void NewLayout (string _GUID, bool AddDefaultNote, ContextMenuStrip textEditorContextStrip);
+		public abstract CoreUtilities.Links.LinkTable GetLinkTable ();
 	//	public abstract void SystemNoteHasClosedDown (bool closed);
 	}
 }

@@ -19,7 +19,7 @@ namespace Layout
 	/// Because I intend to store the entire Note data inside an XML that is inside a table this would work with either XML or database representations.
 	/// </summary>
 	[Serializable]
-	public partial class NoteDataXML : NoteDataInterface, IComparable
+	public partial class NoteDataXML : NoteDataInterface, IComparable, IDisposable
 	{
 		#region constants
 		const string BLANK = "";
@@ -185,7 +185,7 @@ namespace Layout
 		/// <param name='Layout'>
 		/// Layout.
 		/// </param>
-		public void Update (LayoutPanelBase Layout)
+		public virtual void Update (LayoutPanelBase Layout)
 		{
 			Save ();
 			ParentNotePanel.Dispose();

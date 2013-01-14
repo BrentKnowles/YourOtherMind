@@ -506,7 +506,8 @@ namespace Layout
 					if (null != ListAsDataObjectsOfType) {
 						dataForThisLayout = new List<NoteDataInterface> ();
 						for (int i = 0; i < ListAsDataObjectsOfType.Count; i++) {
-							dataForThisLayout.Add (ListAsDataObjectsOfType [i]);
+
+								dataForThisLayout.Add (ListAsDataObjectsOfType [i]);
 							if (null != LayoutPanelToLoadNoteOnto) {
 								ListAsDataObjectsOfType [i].CreateParent (LayoutPanelToLoadNoteOnto);
 							}
@@ -578,17 +579,38 @@ namespace Layout
 				
 					if (dataForThisLayout != null  && dataForThisLayout.Count > 0)
 					{
+//						try causes an Exception LATER ON!
+//						{
+//
+//						dataForThisLayout.Sort ();
+//						}
+//						catch (Exception ex)
+//						{
+//							NewMessage.Show (ex.ToString());
+//						}
 					NoteDataXML[] ListAsDataObjectsOfType = new NoteDataXML[dataForThisLayout.Count-CountSystemNotes()];
 
 
 				//	dataForThisLayout.CopyTo (ListAsDataObjectsOfType);
-				
+
+						// the sort is important because it forces a LINKTABLE to the top of the stack. If it is not saved out there,
+						// then on load anytning needing it will create a new linktable
+
 
 					// Remove System Notes (these should never end up in save data
 					for (int i = dataForThisLayout.Count-1 ; i >= 0; i--)
 					{
 						if (dataForThisLayout[i].GetType () != typeof(NoteDataXML_SystemOnly))
 						{
+
+//								if (ListAsDataObjectsOfType[i].GuidForNote == CoreUtilities.Links.LinkTable.STICKY_TABLE)
+//								{
+//									// tables get moved to front of list, so LinkTable
+//									// is also loaded before other objects
+//									dataForThisLayout.Insert (0, ListAsDataObjectsOfType[i]);
+//								}
+//								else
+
 							ListAsDataObjectsOfType[i] = (NoteDataXML)dataForThisLayout[i];
 						}
 					}
@@ -822,13 +844,17 @@ namespace Layout
 		
 		}
 
-
-		/*Not needed?
-		private List<NoteDataInterface> DataForThisLayout {
-			get { return dataForThisLayout;}
-			set { dataForThisLayout = value;}
+		public void AddToStart (NoteDataInterface note)
+		{
+			// need to make sure linktable goes to start of list
+			// only link table should do this
+			if (note.GuidForNote != CoreUtilities.Links.LinkTable.STICKY_TABLE) {
+				throw new Exception ("Only LinkTables call this method");
+			}
+			if (null != note) {
+				dataForThisLayout.Insert (0, note);
+			}
 		}
-		*/
 		/// <summary>
 		/// Add the specified note to the DataForThisLayout list
 		/// </summary>
@@ -839,6 +865,7 @@ namespace Layout
 		{
 			if (null != note) {
 				dataForThisLayout.Add ((NoteDataXML)note);
+
 			}
 		}
 		/// <summary>

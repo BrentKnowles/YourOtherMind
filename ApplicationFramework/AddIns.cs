@@ -87,12 +87,13 @@ namespace appframe
 		public Panel GetConfigPanel ()
 		{
 			// if panel made then leave it alone
-			if (PanelWasMade == true) return configPanel;
+			if (PanelWasMade == true)
+				return configPanel;
 
 	
-				PanelWasMade = true;
+			PanelWasMade = true;
 
-			 configPanel = new Panel ();
+			configPanel = new Panel ();
 			configPanel.BackColor = Color.Blue;
 			checkers = new CheckedListBox ();
 			checkers.Parent = configPanel;
@@ -113,7 +114,7 @@ namespace appframe
 			//#STEP #1 : Load the previous preferences (go back into GetConfigPanel)
 		
 
-			List<string> myList =  GetListOfInstalledPlugs ();
+			List<string> myList = GetListOfInstalledPlugs ();
 			/*List<string>Guids = new List<string>();
 
 
@@ -129,12 +130,11 @@ namespace appframe
 
 			foreach (MefAddIns.Extensibility.mef_IBase plug in AddInsList) {
 
-				ListViewItem item = new ListViewItem(plug.CalledFrom.MyMenuName);
-				item.Text = String.Format ("{0} ({1}) ", plug.Name, plug.Version.ToString());
-				if (plug.IsCopy )
-				{
+				ListViewItem item = new ListViewItem (plug.CalledFrom.MyMenuName);
+				item.Text = String.Format ("{0} ({1}) ", plug.Name, plug.Version.ToString ());
+				if (plug.IsCopy) {
 					// a copy of this GUID was present
-					item.Text = item.Text + Loc.Instance.GetString ( " (COPY) ");
+					item.Text = item.Text + Loc.Instance.GetString (" (COPY) ");
 					
 				}
 
@@ -143,22 +143,33 @@ namespace appframe
 
 				item.Tag = plug.CalledFrom;
 				bool IsChecked = false;
-
-				foreach (string guid in myList)
-				{
-					if (guid ==  plug.CalledFrom.GUID)
-					{
+				bool IsDisabled = false;
+				if (plug.dependencyguid != Constants.BLANK) {
+					IsDisabled = true;
+				}
+				foreach (string guid in myList) {
+					if (guid == plug.CalledFrom.GUID) {
 						IsChecked = true;
 					}
+					if (IsDisabled == true)
+					{
+						// check to see if the GUID is enabled for my dependency
+						if (guid == plug.dependencyguid)
+						{
+							IsDisabled = false;
+						}
+					}
+
 				}
-
-
-
-
-
-
-
-				checkers.Items.Add (item, IsChecked);
+					
+				// we do not add Disabled Items
+				if (true != IsDisabled) {
+					checkers.Items.Add (item, IsChecked);
+				}
+				else
+				{
+					NewMessage.Show (Loc.Instance.GetStringFmt("The AddIn '{0}' was not added because it requires the AddIn '{1}' to be installed", plug.Name, plug.dependencyguid));
+				}
 
 
 			}

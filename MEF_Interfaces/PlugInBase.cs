@@ -81,7 +81,7 @@ namespace MefAddIns
 			set { delegateTargetForGetAfterRespondInformation = value;}
 		}
 		// Override ride this in target but use this code as skeleton for what is needed
-		public virtual void GetAfterRespondInformation ()
+		protected virtual void GetAfterRespondInformation ()
 		{
 //			if (null == DelegateTargetForGetAfterRespondInformation) {
 //
@@ -91,6 +91,13 @@ namespace MefAddIns
 
 
 		}
+		// the footster toolitem that is created if a quicklink is requeested
+		object quickLinkMenuItem=null;
+		public object QuickLinkMenuItem {
+			get { return quickLinkMenuItem;}
+			set { quickLinkMenuItem = value;}
+		}
+
 		public  virtual object ActiveForm()
 		{
 			return null;

@@ -62,8 +62,12 @@ namespace MefAddIns.Extensibility
 
 		Action<object, int> DelegateTargetForGetAfterRespondInformation{ get; set; }
 
+
+		// TODO: Remove me from this and PlugInBase -- ended up not being needed
+		// if QuickLink, then we set this to the ToolStriPButton we created
+		object QuickLinkMenuItem{ get; set; }
 		// any modifications or return values from the ADDIN, will be influneced by the TypeOfInformationSentBack field
-		void GetAfterRespondInformation ();
+		//void GetAfterRespondInformation ();
 		// if this addin puts a QuickLink in the footer than this is the method used to retrieve the form to bring into focus when that link is clicked
 		// note we return an object instead of a form to avoid direct reference to Windows.Forms
 		object ActiveForm();

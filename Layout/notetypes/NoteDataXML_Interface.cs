@@ -7,7 +7,7 @@ using System.Xml.Serialization;
 /* This is to contain the interface related elements (interaction with the GUID) to keep that distinct from the xml definition*/
 namespace Layout
 {
-	public partial class NoteDataXML
+	public partial class NoteDataXML 
 	{
 		#region UI
 		protected ToolStrip CaptionLabel;
@@ -22,7 +22,9 @@ namespace Layout
 		#endregion
 
 	
-
+		public virtual void Dispose ()
+		{
+		}
 
 		// http://stackoverflow.com/questions/7367152/c-dynamically-assign-method-method-as-variable
 		Func<System.Collections.Generic.List<NoteDataInterface>> GetAvailableFolders;
@@ -81,7 +83,7 @@ namespace Layout
 			//if (Caption == "")				NewMessage.Show ("Caption is blank");
 
 
-			properties = new ToolStripDropDownButton (Loc.Instance.GetString ("*"));
+			properties = new ToolStripDropDownButton (Loc.Instance.GetString ("***"));
 			CaptionLabel.Items.Add (properties);
 
 
@@ -409,6 +411,7 @@ namespace Layout
 		
 		void HandleMouseUp (object sender, MouseEventArgs e)
 		{
+
 			if (this.Dock == DockStyle.None) {
 				//TODO: Needs to be the default apeparance color
 				CaptionLabel.BackColor = Color.Green;
@@ -417,6 +420,7 @@ namespace Layout
 		Point PanelMouseDownLocation ;
 		void HandleMouseDown (object sender, MouseEventArgs e)
 		{
+			BringToFront();
 			if (this.Dock == DockStyle.None) {
 				if (e.Button == MouseButtons.Left) {
 					// start moving

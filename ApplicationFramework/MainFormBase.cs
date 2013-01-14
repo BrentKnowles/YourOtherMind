@@ -155,6 +155,7 @@ namespace appframe
 		/// </param>
 		void BuildAddinToolStrip (MefAddIns.Extensibility.mef_IBase AddIn, ToolStripItem but)
 		{
+			but.Name = AddIn.CalledFrom.GUID;
 			but.Tag = AddIn;
 			AddIn.DelegateTargetForGetAfterRespondInformation = HandleRespondInformationFromAddin;
 			but.AutoSize = true;
@@ -165,6 +166,7 @@ namespace appframe
 
 			but.ToolTipText = AddIn.CalledFrom.ToolTip;
 			AddIn.Hookups.Add (but);
+
 
 		}
 	
@@ -316,7 +318,7 @@ namespace appframe
 								NewMessage.Show (Loc.Instance.GetString("Because a NoteType was removed, we must shut down now, because any Layout open will not be able to be edited until this NoteType is added again."));
 								Application.Exit ();
 							}
-							// TODO: if notetype need to degresigtser
+						
 
 							AddInsLoaded.Remove (addin);
 						}
@@ -367,9 +369,28 @@ namespace appframe
 
 					if (true == thisAddIn.CalledFrom.QuickLinkShows)
 					{
+						if (thisAddIn.ActiveForm() == null) lg.Instance.Line ("MainFormBase->HandleAddInClick", ProblemType.WARNING, "can't, no form active!");
 
-						Console.WriteLine ("hook my quicklink up please");
-						if (thisAddIn.ActiveForm() == null) Console.WriteLine ("can't, no form active!");
+							else
+						{
+							//if (thisAddIn.QuickLinkMenuItem is ToolStripButton)
+							{
+								ToolStripButton link = new ToolStripButton ();
+								link.Name = "quicklink";
+								link.Tag =thisAddIn;
+								link.Text = thisAddIn.CalledFrom.MyMenuName;
+								link.BackColor = Color.Yellow;
+								link.Click += HandleQuickLinkClick;
+								//thisAddIn.QuickLinkMenuItem = link;
+								thisAddIn.Hookups.Add (link);
+
+
+
+							//FooterStatus.Items.Add ((ToolStripButton)thisAddIn.QuickLinkMenuItem);
+								FooterStatus.Items.Add (link);
+							}
+						}
+
 					}
 				}
 				else
@@ -380,6 +401,13 @@ namespace appframe
 
 				// just a quick test to see if databse string made it in
 				//NewMessage.Show (((MefAddIns.Extensibility.mef_IBase)(sender as ToolStripItem).Tag).Storage.ToString());
+			}
+		}
+
+		void HandleQuickLinkClick (object sender, EventArgs e)
+		{
+			if ((sender as ToolStripButton).Tag is MefAddIns.Extensibility.mef_IBase) {
+				(((sender as ToolStripButton).Tag as MefAddIns.Extensibility.mef_IBase).ActiveForm() as Form).BringToFront();
 			}
 		}
 
