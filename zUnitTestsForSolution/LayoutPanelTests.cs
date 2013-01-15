@@ -38,8 +38,21 @@ namespace Testing
 			// table saved in my backup paths
 			// will also output a DAAbackup file (text readable) format too
 			_SetupForLayoutPanelTests ();
-			
+
+
+			System.Windows.Forms .Form form = new System.Windows.Forms.Form();
+		
+		
+
 			FAKE_LayoutPanel panel = new FAKE_LayoutPanel (CoreUtilities.Constants.BLANK, false);
+
+			form.Controls.Add (panel);
+			
+			// needed else DataGrid does not initialize
+			
+			form.Show ();
+			//form.Visible = false;
+
 			//NOTE: For now remember that htis ADDS 1 Extra notes
 			string panelname = System.Guid.NewGuid().ToString();
 			panel.NewLayout (panelname,true, null);
@@ -50,6 +63,7 @@ namespace Testing
 				for (int i = 0; i < 10; i++) {
 					NoteDataInterface note = (NoteDataInterface)Activator.CreateInstance (t);
 					panel.AddNote (note);
+					note.CreateParent(panel);
 				}
 			}
 			FAKE_NoteDataXML_Panel panelA = new FAKE_NoteDataXML_Panel ();
@@ -86,6 +100,7 @@ namespace Testing
 			TimeSpan time;
 			time = CoreUtilities.TimerCore.Time (() => {
 			panel = new FAKE_LayoutPanel (CoreUtilities.Constants.BLANK, false);
+				form.Controls.Add (panel);
 				panel.LoadLayout(panelname, false,null);
 			});
 			Console.WriteLine("TIME " + time);
@@ -384,6 +399,14 @@ namespace Testing
 			Assert.AreEqual (panelA.myLayoutPanel().CurrentTextNote, texter);
 			Assert.AreEqual (panel.CurrentTextNote, texter);
 
+		}
+
+		[Test]
+		public void CreateExampleAndSystemLayouts()
+		{
+			// creates the example and system layouts
+			// to catch if any popups or other oddities introduced
+			Assert.True (false);
 		}
 	}
 }

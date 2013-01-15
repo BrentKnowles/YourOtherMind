@@ -4,6 +4,7 @@ using System.Xml.Serialization;
 using database;
 using Layout.data;
 using CoreUtilities;
+using CoreUtilities.Links;
 namespace Layout
 {
 	/// <summary>
@@ -13,7 +14,11 @@ namespace Layout
 	{
 		#region variables
 
-
+		// This is the reference to the LinkTable. It is moved from a seperate Database column during Load (or created) then. Reference set in Load.
+		// At save time, the NOTE is removed, after the LinkTable itself is stoed in the seperate Database column.
+		protected LinkTable MyLinkTable=null;
+		// this is used when 'saving' to remove note (and it back to the list)
+		protected NoteDataXML_Table MyLinkTableNote=null;
 
 		// just a debug counter to see if anything weird is happening on save and load
 		protected int debug_ObjectCount = 0;
@@ -389,6 +394,75 @@ namespace Layout
 			return true;
 		}
 
+
+
+		public CoreUtilities.Links.LinkTable GetLinkTable ()
+		{
+			return MyLinkTable;
+			// moving THis into LayoutDatabase
+			// will pull from custom field
+
+			//LinkTable linkTable = new LinkTable ();
+			// we create a new table
+			//(AddShape(Appearance.shapetype.Table, STICKY_TABLE)).appearance.Caption = STICKY_TABLE;
+			
+			// the danger here is that we LinkTable is not deserialized by the time the NOTE referencing this
+			// the solution seems to be to set the Order of Serialization ([XmlElement(Order = 1)])
+			
+			//NoteDataXML_Table table = (NoteDataXML_Table)FindNoteByName (LinkTable.STICKY_TABLE);
+
+
+			//bool newTableNeeded = false;
+			// could not find a table with this name
+
+			
+
+
+		}
+
+		/// <summary>
+		/// Creates the link table if necessary.
+		/// Also handles all the hooking up events (i.e., Load will never need to create the table BUT does need the hookups)
+		/// Called from Load and when a New Layout is created (LayoutPanel calls this)
+		/// </summary>
+		/// <param name='table'>
+		/// Table.
+		/// </param>
+		public void CreateLinkTableIfNecessary (NoteDataXML_Table table, LayoutPanelBase LayoutPanelToLoadNoteOnto)
+		{
+			MyLinkTable = new LinkTable ();
+			// either no note was in data or it came out wrong, we build a new LinkTable
+			if (table.GuidForNote != LinkTable.STICKY_TABLE) {
+
+				NewMessage.Show (String.Format ("Creating link table on '{0} Subpanel='{1}' ParenGUID='{2}', My GUID='{3}' Table GUID = '{4}'", this.Name, this.IsSubPanel, 
+				                                LayoutPanelToLoadNoteOnto.ParentGUID, this.LayoutGUID, table.GuidForNote));
+				table = new NoteDataXML_Table ();
+				table.Caption = LinkTable.STICKY_TABLE;
+				table.GuidForNote = LinkTable.STICKY_TABLE;
+				table.dataSource = MyLinkTable.BuildNewTable ().Copy ();
+				((System.Data.DataTable)table.dataSource).TableName = CoreUtilities.Tables.TableWrapper.TablePageTableName;
+				
+				// Note Table must AddToStart so that it is instantiated Before any other notes
+				
+				// if we have to create a table we Assume that we can do a Convert too
+				//newTableNeeded = true;
+				
+				//SaveTo ();
+				
+			}
+
+			AddToStart (table);
+			if (null == LayoutPanelToLoadNoteOnto) {
+				NewMessage.Show ("LayoutPanel was null 456 LayoutDatabase");
+			}
+			table.CreateParent(LayoutPanelToLoadNoteOnto);
+			MyLinkTable.SetTable (table.dataSource);
+
+			MyLinkTableNote = table;
+			if (null == MyLinkTableNote) NewMessage.Show ("CreateLinkTable LinkTable Note is null");
+		}
+
+
 		/// <summary>
 		/// Loads from the appropriate Data Location. If pass Layout as null this is a REMOTE NOTE load, meaning we are grabbing this information without
 		///    the layout being loaded into a LayoutPanel.
@@ -429,6 +503,46 @@ namespace Layout
 				if (result != null && result.Length > 0) {
 
 
+
+
+					//
+					// LINK TABLE SECTION, start
+					//
+
+					// skip linktables if we are a child
+					// LayoutPanelToLoadNoteOnto will be null when doing searches, which mean swe should not 
+					// try to load link tables, for sure.
+					if (false == IsSubPanel && LayoutPanelToLoadNoteOnto != null)
+					{
+
+					
+					// Deal with LINKTABLE first, as it causes complexity elsewhere
+					NoteDataXML_Table table = new NoteDataXML_Table();
+					lg.Instance.Line("LayoutDatabase->LoadFrom", ProblemType.MESSAGE,"LinkTableLoadData = " + result [dbConstants.LINKTABLE.Index].ToString ());
+					if (result [dbConstants.LINKTABLE.Index].ToString () != Constants.BLANK)
+					{
+						// Loading existing table
+						System.IO.StringReader LinkTableReader = new System.IO.StringReader (result [dbConstants.LINKTABLE.Index].ToString ());
+						System.Xml.Serialization.XmlSerializer LinkTableXML = new System.Xml.Serialization.XmlSerializer (typeof(NoteDataXML_Table));
+					
+
+
+						table =  (NoteDataXML_Table)LinkTableXML.Deserialize (LinkTableReader);
+//						if (table != null)
+//						{
+//							MyLinkTable.SetTable (table.dataSource);
+//						}
+							//NewMessage.Show("Loading a link table with GUID = " + table.GuidForNote);
+						LinkTableXML = null;
+						LinkTableReader.Close();
+						LinkTableReader.Dispose();
+					}
+
+						CreateLinkTableIfNecessary(table, LayoutPanelToLoadNoteOnto);
+					}
+					//
+					// LINK TABLE SECTION, end
+					//
 
 
 					// Fill in LAYOUT specific details
@@ -505,6 +619,15 @@ namespace Layout
 					}
 					if (null != ListAsDataObjectsOfType) {
 						dataForThisLayout = new List<NoteDataInterface> ();
+
+						// need to add LinkTable back (since we have rebuilt the array!!)
+						// We want the LinkTable BEFORE the other notes are CreateParent'ed
+						if (false == IsSubPanel)
+						{
+							if (MyLinkTableNote == null) NewMessage.Show ("LinkTableNote is null??");
+							dataForThisLayout.Add (MyLinkTableNote);
+						}
+
 						for (int i = 0; i < ListAsDataObjectsOfType.Count; i++) {
 
 								dataForThisLayout.Add (ListAsDataObjectsOfType [i]);
@@ -512,11 +635,15 @@ namespace Layout
 								ListAsDataObjectsOfType [i].CreateParent (LayoutPanelToLoadNoteOnto);
 							}
 						}
+					
 						Success = true;
 						debug_ObjectCount = ListAsDataObjectsOfType.Count;
 					}
 				}
 			}
+
+
+
 
 			long workingSet = System.Diagnostics.Process.GetCurrentProcess().WorkingSet64;
 			lg.Instance.Line("LoadFrom", ProblemType.TEMPORARY, workingSet.ToString());
@@ -565,7 +692,7 @@ namespace Layout
 					throw new Exception ("GUID need to be set before calling SaveTo");
 				}
 				string XMLAsString = CoreUtilities.Constants.BLANK;
-
+				string LinkTableString = CoreUtilities.Constants.BLANK;
 				BaseDatabase MyDatabase = CreateDatabase ();
 
 				if (MyDatabase == null) {
@@ -588,7 +715,29 @@ namespace Layout
 //						{
 //							NewMessage.Show (ex.ToString());
 //						}
-					NoteDataXML[] ListAsDataObjectsOfType = new NoteDataXML[dataForThisLayout.Count-CountSystemNotes()];
+
+					// the -1 is because we never save the LInkTable out. So there is always one note we skip
+						int SKIPLINKTABLE = 1;
+
+
+
+						// skip linktables if we are a child
+						if (IsSubPanel == true)
+						{
+							//NewMessage.Show ("subpanel!");
+							// a child won't have a linktable so we don't have to account for it
+							SKIPLINKTABLE = 0;
+						}
+						else
+						{
+							if (MyLinkTableNote == null) NewMessage.Show ("Saving with no valid MyLinkTableNote " + LayoutGUID);
+							NoteDataXML note = (NoteDataXML)dataForThisLayout.Find (NoteDataInterface=>NoteDataInterface.GuidForNote == LinkTable.STICKY_TABLE );
+							if (note == null) NewMessage.Show ("Saving with no Link Table found in list of notes " + LayoutGUID);
+						}
+						int NumberOfNotesToCopy = dataForThisLayout.Count-CountSystemNotes()-SKIPLINKTABLE;
+						lg.Instance.Line("SaveTo", ProblemType.MESSAGE, String.Format ("Number of Notes to copy = {0} On GUID'{1}' Name'{2}' IsSubpanel '{3}' Starting Count {4} System Notes {5} SkipLinkTable {6}", 
+						                                                               NumberOfNotesToCopy, this.LayoutGUID, this.Name, IsSubPanel, dataForThisLayout.Count, CountSystemNotes(), SKIPLINKTABLE));
+						NoteDataXML[] ListAsDataObjectsOfType = new NoteDataXML[NumberOfNotesToCopy];
 
 
 				//	dataForThisLayout.CopyTo (ListAsDataObjectsOfType);
@@ -596,11 +745,15 @@ namespace Layout
 						// the sort is important because it forces a LINKTABLE to the top of the stack. If it is not saved out there,
 						// then on load anytning needing it will create a new linktable
 
-
+						int position = 0;
 					// Remove System Notes (these should never end up in save data
-					for (int i = dataForThisLayout.Count-1 ; i >= 0; i--)
-					{
-						if (dataForThisLayout[i].GetType () != typeof(NoteDataXML_SystemOnly))
+
+						// we need to iterate through the ENTIRE original list.
+						for (int i = 0; i < dataForThisLayout.Count  ; i++)					{
+
+
+							// we skip System Notes and the LinkTable
+							if (dataForThisLayout[i].GetType () != typeof(NoteDataXML_SystemOnly) && dataForThisLayout[i].GuidForNote != LinkTable.STICKY_TABLE)
 						{
 
 //								if (ListAsDataObjectsOfType[i].GuidForNote == CoreUtilities.Links.LinkTable.STICKY_TABLE)
@@ -610,10 +763,26 @@ namespace Layout
 //									dataForThisLayout.Insert (0, ListAsDataObjectsOfType[i]);
 //								}
 //								else
-
-							ListAsDataObjectsOfType[i] = (NoteDataXML)dataForThisLayout[i];
+								try
+								{
+									lg.Instance.Line("LayoutDatabase->SaveTo", ProblemType.MESSAGE, String.Format ("Trying to set Note with Caption {0}", dataForThisLayout[i].Caption));
+								// We add SkipLinkTable because the first position of dataForThisLayout is always the LINK TABLE which we want to skip
+								ListAsDataObjectsOfType[position] = (NoteDataXML)dataForThisLayout[i];
+								}
+								catch (Exception ex)
+								{
+									NewMessage.Show ("Setting Position = " +position.ToString() + ex.ToString());
+								}
+								lg.Instance.Line("LayoutDatabase->SaveTo", ProblemType.MESSAGE, String.Format ("writing position {0} with caption {1}", position, dataForThisLayout[i].Caption));
+								position = position +1;
 						}
-					}
+							else
+							{
+								lg.Instance.Line("LayoutDatabase->SaveTo", ProblemType.MESSAGE, String.Format ("SKIPPED writing position {0} with caption {1} and GUID{2} and Type {3}", 
+								                                                                               position, dataForThisLayout[i].Caption, dataForThisLayout[i].GuidForNote, dataForThisLayout[i].GetType ().ToString()));
+							}
+
+						}
 
 					// doing some data tracking to try to detect save failures later
 					if (ListAsDataObjectsOfType.Length < debug_ObjectCount) {
@@ -623,26 +792,70 @@ namespace Layout
 
 					foreach (NoteDataInterface note in ListAsDataObjectsOfType) {
 						// saves the actual UI elements
-						note.Save ();
+							if (note == null)
+							{
+								NewMessage.Show ("LayoutDatabase->SNull note?");
+							}
+							else
+							{
+							try
+							{
 
-					}
+								
+						lg.Instance.Line("SaveTo", ProblemType.MESSAGE, String.Format ("Trying to save note of type {0} with Guid {1}", note.GetType().ToString (), note.GuidForNote));
+						note.Save ();
+							}
+							catch (Exception ex)
+							{
+								NewMessage.Show (ex.ToString ());
+							}
+							}
+
+						}
 					debug_ObjectCount = ListAsDataObjectsOfType.Length;
 			
-					System.Xml.Serialization.XmlSerializer x3 = 
-					new System.Xml.Serialization.XmlSerializer (typeof(NoteDataXML[]), 
-					                                            LayoutDetails.Instance.ListOfTypesToStoreInXML ());
+						System.Xml.Serialization.XmlSerializer x3 = null;
+					
 
 					/*This worked but would need to iterate and get a list of all potential types present, not just the first, else it will fail withmixed types
 				System.Xml.Serialization.XmlSerializer x4 = 
 					new System.Xml.Serialization.XmlSerializer (ListAsDataObjectsOfType.GetType(), 
 					                                            new Type[1] {ListAsDataObjectsOfType[0].GetType()});
 */
-					System.IO.StringWriter sw = new System.IO.StringWriter ();
+
+
+						// FIRST serialize the LInkTable, so it is stored in a seperate column
+						System.IO.StringWriter sw = null;
+						// skip linktables if we are a child
+						if (IsSubPanel == false)
+						{
+							sw = new System.IO.StringWriter ();
+							//sw.Encoding = "";
+							x3 = new System.Xml.Serialization.XmlSerializer (typeof(NoteDataXML_Table)); 
+							x3.Serialize (sw, MyLinkTableNote);
+							x3 = null;
+							//x3.Serialize (sw, ListAsDataObjectsOfType,ns, "utf-8");
+							LinkTableString = sw.ToString ();
+							sw.Close ();
+						    // we don't have to remove the note from the list because it was not included in the list of notes to save
+						}
+
+						// Now serialize the list of notes
+					x3 =	new System.Xml.Serialization.XmlSerializer (typeof(NoteDataXML[]), 
+						                                            LayoutDetails.Instance.ListOfTypesToStoreInXML ());
+					 sw = new System.IO.StringWriter ();
 					//sw.Encoding = "";
 					x3.Serialize (sw, ListAsDataObjectsOfType);
 					//x3.Serialize (sw, ListAsDataObjectsOfType,ns, "utf-8");
 					XMLAsString = sw.ToString ();
-					sw.Close ();
+					lg.Instance.Line("LayoutDatabase->SaveTo", ProblemType.MESSAGE, String.Format ("Guid = '{0}' Xml = {1}", LayoutGUID, XMLAsString));
+				sw.Close ();
+
+
+					
+
+
+
 					}
 
 					// here is where we need to test whether the Data exists
@@ -654,7 +867,7 @@ namespace Layout
 				                      dbConstants.Columns,
 				                      new object[dbConstants.ColumnCount]
 				                      {DBNull.Value,LayoutGUID, XMLAsString, Status,Name,ShowTabs, 
-							IsSubPanel, MaximizeTabs, Stars, Hits, DateCreated,DateEdited, Notebook, Section, Subtype, Source, Words, Keywords});
+							IsSubPanel, MaximizeTabs, Stars, Hits, DateCreated,DateEdited, Notebook, Section, Subtype, Source, Words, Keywords, LinkTableString});
 
 					} else {
 						//TODO: Still need to save all the object properties out. And existing data.
@@ -666,7 +879,7 @@ namespace Layout
 						dbConstants.NAME, dbConstants.SHOWTABS, dbConstants.SUBPANEL, dbConstants.MAXIMIZETABS, 
 							dbConstants.STARS,dbConstants.HITS,dbConstants.DATECREATED,
 						dbConstants.DATEEDITED, dbConstants.NOTEBOOK, dbConstants.SECTION,
-						dbConstants.TYPE, dbConstants.SOURCE, dbConstants.WORDS, dbConstants.KEYWORDS},
+						dbConstants.TYPE, dbConstants.SOURCE, dbConstants.WORDS, dbConstants.KEYWORDS, dbConstants.LINKTABLE},
 				                                    new object[dbConstants.ColumnCount - 1]
 				                                    {
 						LayoutGUID as string, 
@@ -685,7 +898,8 @@ namespace Layout
 						Subtype,
 						Source,
 						Words,
-						Keywords},
+						Keywords,
+						LinkTableString},
 				dbConstants.GUID, LayoutGUID);
 					}
 
@@ -700,6 +914,11 @@ namespace Layout
 				}
 				AmSaving = false;
 				saveworked = true;
+
+
+				// We removed the LinkTable to save the dataout, now we must add it again.
+				//AddToStart(MyLinkTableNote); WE do not have to do this because we only remove the note from the list to be saved, not the true list
+
 			} else {
 				// we were already saving information when this was called again
 				saveworked = false;
@@ -852,7 +1071,9 @@ namespace Layout
 				throw new Exception ("Only LinkTables call this method");
 			}
 			if (null != note) {
-				dataForThisLayout.Insert (0, note);
+				lg.Instance.Line("AddToStart", ProblemType.MESSAGE, String.Format ("Adding  to {0}  the linktable. Count before was {1}", LayoutGUID, dataForThisLayout.Count));
+				dataForThisLayout.Insert (0, (NoteDataXML) note);
+				lg.Instance.Line("AddToStart", ProblemType.MESSAGE, String.Format ("Adding  to {0}  the linktable. Count AFTER was {1}", LayoutGUID, dataForThisLayout.Count));
 			}
 		}
 		/// <summary>

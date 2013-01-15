@@ -27,6 +27,12 @@ namespace Testing
 		{
 			Assert.False (CoreUtilities.FileUtils.CheckForFileError());
 		}
+
+		[Test]
+		public void TestEveryThingInCoreUtilities ()
+		{
+			Assert.True (false);
+		}
 	}
 }
 

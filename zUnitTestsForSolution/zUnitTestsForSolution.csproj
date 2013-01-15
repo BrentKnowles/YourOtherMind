@@ -63,6 +63,7 @@
     <Compile Include="CheckedListBoxFormTest.cs" />
     <Compile Include="ClassesUsedInTesting\FAKE_NoteDataXML_Text.cs" />
     <Compile Include="ClassesUsedInTesting\FAKE_NoteDataXML_Table.cs" />
+    <Compile Include="NotePictureTesting.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

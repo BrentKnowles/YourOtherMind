@@ -20,14 +20,17 @@ namespace Layout.data
 		static public ColumnConstant SOURCE = new ColumnConstant("source", 15, "TEXT",12);
 		static public ColumnConstant WORDS = new ColumnConstant("words", 16, "INTEGER",13);
 		static public ColumnConstant KEYWORDS = new ColumnConstant("keywords", 17, "TEXT", 14);
-		public const  int ColumnCount = 18;
+		static public ColumnConstant LINKTABLE = new ColumnConstant("linktable", 18, "LONGTEXT", 15);
+		public const  int ColumnCount = 19;
 		// The number of columns in the array being stoed
-		public  const int LayoutCount = 15 ; // 11 - 3
+		public  const int LayoutCount = 16 ; // 11 - 3
 
 		static public string[] Columns = new string[ColumnCount]{"id",     "guid",        "xml",      "status", "name", "showtabs", SUBPANEL.Name,
-			MAXIMIZETABS.Name, STARS.Name, HITS.Name, DATECREATED.Name, DATEEDITED.Name, NOTEBOOK.Name, SECTION.Name, TYPE.Name, SOURCE.Name, WORDS.Name, KEYWORDS.Name};
+			MAXIMIZETABS.Name, STARS.Name, HITS.Name, DATECREATED.Name, DATEEDITED.Name, NOTEBOOK.Name, SECTION.Name, TYPE.Name, SOURCE.Name, WORDS.Name, KEYWORDS.Name,
+		    LINKTABLE.Name};
 		static public string[] Types   = new string[ColumnCount]{"INTEGER","TEXT UNIQUE",	"LONGTEXT",	"TEXT",   "VARCHAR(50)", "boolean", SUBPANEL.Type,
-			MAXIMIZETABS.Type, STARS.Type, HITS.Type, DATECREATED.Type, DATEEDITED.Type, NOTEBOOK.Type, SECTION.Type, TYPE.Type, SOURCE.Type, WORDS.Type, KEYWORDS.Type};
+			MAXIMIZETABS.Type, STARS.Type, HITS.Type, DATECREATED.Type, DATEEDITED.Type, NOTEBOOK.Type, SECTION.Type, TYPE.Type, SOURCE.Type, WORDS.Type, KEYWORDS.Type,
+		    LINKTABLE.Type};
 
 
 

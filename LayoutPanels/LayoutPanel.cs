@@ -693,7 +693,8 @@ namespace Layout
 				{
 					 
 					LayoutDetails.Instance.TableLayout=new Layout.LayoutPanel(Constants.BLANK, false);
-					LayoutDetails.Instance.TableLayout.LoadLayout ("tables", false, TextEditContextStrip);
+					// Jan 14 2013 - changing this to a subnote.
+					LayoutDetails.Instance.TableLayout.LoadLayout ("tables", true, TextEditContextStrip);
 				}
 			}
 			else
@@ -738,6 +739,7 @@ namespace Layout
 
 
 			Notes = new LayoutDatabase (GUID);
+			Notes.IsSubPanel = IsSubPanel;
 			if (Notes.LoadFrom (this) == false) {
 				lg.Instance.Line("LayoutPanel.LoadLayout", ProblemType.MESSAGE, "This note is blank still.");
 				//Notes = null;
@@ -747,7 +749,7 @@ namespace Layout
 				UpdateListOfNotes ();
 			//	NewMessage.Show (String.Format ("Name={0}, Status={1}", Notes.Name, Notes.Status));
 			}
-			Notes.IsSubPanel = IsSubPanel;
+		
 			NoteCanvas.AutoScroll = true;
 			RefreshTabs();
 			if (!GetIsChild && !GetIsSystemLayout) {
@@ -890,6 +892,16 @@ namespace Layout
 				noteCanvas.Controls.Clear ();
 					//
 				Notes = new LayoutDatabase (GUID);
+
+
+				// Not sure a linktable was added to a child note!? Adding both tests (which is bad) TODO there should only be one test
+				if (GetIsChild == false && Notes.IsSubPanel == false)
+				{
+					NoteDataXML_Table temp = new NoteDataXML_Table();
+					// we set this to NOT STICKY_TABLE so that it knows to build a link table.
+					temp.GuidForNote="nonsense";
+					Notes.CreateLinkTableIfNecessary(temp, this);
+				}
 				//	Notes = new LayoutDatabase("system");
 				if (true == AddDefaultNote)
 				{
@@ -1163,37 +1175,9 @@ namespace Layout
 		public override CoreUtilities.Links.LinkTable GetLinkTable ()
 		{
 			if (GetIsChild == false) {
-				LinkTable linkTable = new LinkTable ();
-				// we create a new table
-				//(AddShape(Appearance.shapetype.Table, STICKY_TABLE)).appearance.Caption = STICKY_TABLE;
-			
-				// the danger here is that we LinkTable is not deserialized by the time the NOTE referencing this
-				// the solution seems to be to set the Order of Serialization ([XmlElement(Order = 1)])
+				return Notes.GetLinkTable();
 
-				NoteDataXML_Table table = (NoteDataXML_Table)FindNoteByName (LinkTable.STICKY_TABLE);
-				//bool newTableNeeded = false;
-				// could not find a table with this name
-				if (null == table) {
-
-					table = new NoteDataXML_Table ();
-					table.Caption = LinkTable.STICKY_TABLE;
-					table.GuidForNote = LinkTable.STICKY_TABLE;
-					table.dataSource = linkTable.BuildNewTable ().Copy ();
-					((System.Data.DataTable)table.dataSource).TableName = CoreUtilities.Tables.TableWrapper.TablePageTableName;
-
-					// Note Table must AddToStart so that it is instantiated Before any other notes
-
-					// if we have to create a table we Assume that we can do a Convert too
-					//newTableNeeded = true;
-					Notes.AddToStart (table);
-					table.CreateParent(this);
-					RefreshTabs ();
-					SaveLayout ();
-				
-				}
-
-				linkTable.SetTable (table.dataSource);
-				return linkTable;
+	
 			}
 
 			// if I am a child, get my parents LinkTable, please

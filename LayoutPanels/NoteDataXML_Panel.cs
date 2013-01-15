@@ -88,10 +88,13 @@ namespace LayoutPanels
 			panelLayout = new LayoutPanel(Layout.GUID, false);
 			panelLayout.SetSubNoteSaveRequired = Layout.SetSaveRequired;
 
+			// must set the Parent before loading
+			panelLayout.Parent = ParentNotePanel;
+
 			// load the layout based on the note
 			panelLayout.LoadLayout(this.GuidForNote, true, Layout.GetLayoutTextEditContextStrip());
 
-			panelLayout.Parent = ParentNotePanel;
+		
 			panelLayout.Visible = true;
 			panelLayout.Dock = DockStyle.Fill;
 			panelLayout.BringToFront();

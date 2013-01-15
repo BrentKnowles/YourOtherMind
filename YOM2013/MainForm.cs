@@ -344,7 +344,13 @@ namespace YOM2013
 			
 
 			this.Load += HandleFormLoad;
-
+			
+			this.FormClosed += HandleFormClosed;
+			this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
+			//KEY HANDLERS
+			
+			this.KeyPreview = true;
+			this.KeyDown += HandleMainFormKeyDown;
 		
 
 			SetupMessageBox ();
@@ -370,51 +376,9 @@ namespace YOM2013
 
 
 
-			this.FormClosed += HandleFormClosed;
-			this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
-
 			//GetSystemPanel ();
 
-			if (MasterOfLayouts.ExistsByGUID ("example") == false) {
-				DefaultLayouts.CreateExampleLayout (this,TextEditContextStrip);
-			}
-
-			//SystemLayout.Visible = false;
-			Layout.LayoutPanel SystemLayout;
-			if (MasterOfLayouts.ExistsByGUID ("system") == false || MasterOfLayouts.ExistsByGUID("tables") == false) {
-				NewMessage.Show ("recreating system note");
-				DefaultLayouts.CreateASystemLayout (TextEditContextStrip);//did not work.SaveLayout();
-
-//				LayoutDetails.Instance.SystemLayout = SystemLayout;
-//				SystemLayout.SaveLayout();
-//				SystemLayout.Dock = System.Windows.Forms.DockStyle.Fill;
-//				SystemLayout.BringToFront ();
-			} else {
-
-				// we always do a load
-
-			}
-
-			// Can't do this because the notes are all part of an interior Layout
-//			SplitContainer container = new SplitContainer();
-//			this.Controls.Add (container);
-//			container.Dock = DockStyle.Fill;
-
-			SystemLayout = new Layout.LayoutPanel (CoreUtilities.Constants.BLANK, true);
-			//container.Panel1.Controls.Add (SystemLayout);
-			SystemLayout.Parent = this;
-			SystemLayout.Visible = true;
-			SystemLayout.Dock = System.Windows.Forms.DockStyle.Fill;
-			SystemLayout.BringToFront ();
-			SystemLayout.LoadLayout ("system", false, TextEditContextStrip);
-			LayoutDetails.Instance.SystemLayout = SystemLayout;
-
-
-			// now load the table layout which is a subnote of System (For FASTER lookups)
-			// we REBUILD this if necessary, above
-			LayoutDetails.Instance.TableLayout=new Layout.LayoutPanel(Constants.BLANK, false);
-			LayoutDetails.Instance.TableLayout.LoadLayout ("tables", false, TextEditContextStrip);
-
+		
 			//LoadLayout ( "");
 
 
@@ -479,10 +443,7 @@ namespace YOM2013
 			LayoutDetails.Instance.UpdateTitle = UpdateTitle;
 
 
-			//KEY HANDLERS
 
-			this.KeyPreview = true;
-			this.KeyDown += HandleMainFormKeyDown;
 
 			// Add option panels to options menu
 			Settings = new Options(LayoutDetails.Instance.YOM_DATABASE);
@@ -547,6 +508,52 @@ namespace YOM2013
 		/// </param>
 		void HandleFormLoad (object sender, EventArgs e)
 		{
+
+
+			// moving the creation of layouts here so form exists before they are init
+			if (MasterOfLayouts.ExistsByGUID ("example") == false) {
+				DefaultLayouts.CreateExampleLayout (this,TextEditContextStrip);
+			}
+			
+			//SystemLayout.Visible = false;
+			Layout.LayoutPanel SystemLayout;
+			if (MasterOfLayouts.ExistsByGUID ("system") == false || MasterOfLayouts.ExistsByGUID("tables") == false) {
+				NewMessage.Show ("recreating system note");
+				DefaultLayouts.CreateASystemLayout (this,TextEditContextStrip);
+				
+				//				LayoutDetails.Instance.SystemLayout = SystemLayout;
+				//				SystemLayout.SaveLayout();
+				//				SystemLayout.Dock = System.Windows.Forms.DockStyle.Fill;
+				//				SystemLayout.BringToFront ();
+			} else {
+				
+				// we always do a load
+				
+			}
+			
+			// Can't do this because the notes are all part of an interior Layout
+			//			SplitContainer container = new SplitContainer();
+			//			this.Controls.Add (container);
+			//			container.Dock = DockStyle.Fill;
+			
+			SystemLayout = new Layout.LayoutPanel (CoreUtilities.Constants.BLANK, true);
+			//container.Panel1.Controls.Add (SystemLayout);
+			SystemLayout.Parent = this;
+			SystemLayout.Visible = true;
+			SystemLayout.Dock = System.Windows.Forms.DockStyle.Fill;
+			SystemLayout.BringToFront ();
+			SystemLayout.LoadLayout ("system", false, TextEditContextStrip);
+			LayoutDetails.Instance.SystemLayout = SystemLayout;
+			
+			
+			// now load the table layout which is a subnote of System (For FASTER lookups)
+			// we REBUILD this if necessary, above
+			LayoutDetails.Instance.TableLayout=new Layout.LayoutPanel(Constants.BLANK, false);
+			//Jan 14 2013 - did not know if it this is intentional but I'm trying to set tables to be 'SubNote' so they don't get LinkTables
+			LayoutDetails.Instance.TableLayout.LoadLayout ("tables", true, TextEditContextStrip);
+
+
+			// this is Causing Latest Crash
 			this.Save ();
 		}
 
@@ -729,6 +736,12 @@ namespace YOM2013
 		void LoadLayout (string guidtoload)
 		{
 
+
+
+
+
+
+			
 			// if Layout NOT open already THEN open it
 			LayoutsInMemory existing = LayoutPresent  (guidtoload);
 			if (existing == null) {
@@ -736,7 +749,7 @@ namespace YOM2013
 				newLayout.LoadLayout (guidtoload, false, TextEditContextStrip);
 				LayoutDetails.Instance.CurrentLayout = newLayout;
 			} else {
-
+				
 				GotoExistingLayout(existing.Container, existing.LayoutPanel);
 			}
 

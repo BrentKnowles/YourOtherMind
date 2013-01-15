@@ -55,6 +55,7 @@ namespace Layout
 
 		bool SaveTo ();
 
+
 		//string Backup();
 
 		bool IsLayoutExists (string GUID);
@@ -72,6 +73,8 @@ namespace Layout
 		void RemoveNote (NoteDataInterface NoteToMove);
 		void UpdateListOfNotes();
 
+		CoreUtilities.Links.LinkTable GetLinkTable ();
+		void CreateLinkTableIfNecessary(NoteDataXML_Table table, LayoutPanelBase LayoutPanelToLoadNoteOnto);
 		NoteDataXML_SystemOnly GetAvailableSystemNote (LayoutPanelBase LayoutPanel);
 		//List<LayoutDetails.NameAndGuid> GetListOfLayouts (string filter);
 
