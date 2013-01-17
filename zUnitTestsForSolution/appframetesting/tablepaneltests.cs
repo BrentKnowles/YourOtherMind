@@ -18,27 +18,14 @@ namespace Testing
 		{
 		}
 
-		protected void _SetupForLayoutPanelTests ()
-		{
-			LayoutDetails.Instance.YOM_DATABASE = "yom_test_database.s3db";
-			LayoutDetails.Instance.AddToList(typeof(FAKE_NoteDataXML_Panel),"testingpanel");
-			LayoutDetails.Instance.AddToList(typeof(FAKE_NoteDataXML_Text),"testingtext");
-			LayoutDetails.Instance.AddToList(typeof(FAKE_NoteDataXML_Table),"testingtable");
-			
-			FakeLayoutDatabase layout = new FakeLayoutDatabase("testguid");
-			FAKE_SqlLiteDatabase db = new FAKE_SqlLiteDatabase(layout.GetDatabaseName ());
-			db.DropTableIfExists(Layout.data.dbConstants.table_name);
-			_w.output ("dropping table " + Layout.data.dbConstants.table_name);
-			
-		}
 
 		[Test]
 		public void ImportListTest_MatchingColumns()
 		{
-			_SetupForLayoutPanelTests();
+			_TestSingleTon.Instance._SetupForLayoutPanelTests();
 
 
-			_SetupForLayoutPanelTests ();
+		
 			Form form = new Form();
 			FAKE_LayoutPanel panel = new FAKE_LayoutPanel (CoreUtilities.Constants.BLANK, false);
 			form.Controls.Add (panel);
@@ -78,7 +65,7 @@ namespace Testing
 
 			
 			
-			_SetupForLayoutPanelTests ();
+			_TestSingleTon.Instance._SetupForLayoutPanelTests();
 			Form form = new Form();
 			FAKE_LayoutPanel panel = new FAKE_LayoutPanel (CoreUtilities.Constants.BLANK, false);
 			form.Controls.Add (panel);
@@ -115,7 +102,7 @@ namespace Testing
 //					beer.This is the story that never was,e,,,bb,,
 
 			
-			_SetupForLayoutPanelTests ();
+			_TestSingleTon.Instance._SetupForLayoutPanelTests();
 			Form form = new Form();
 			FAKE_LayoutPanel panel = new FAKE_LayoutPanel (CoreUtilities.Constants.BLANK, false);
 			form.Controls.Add (panel);
@@ -152,7 +139,7 @@ namespace Testing
 		[Test]
 		public void InsertRowTest()
 		{
-			_SetupForLayoutPanelTests ();
+			_TestSingleTon.Instance._SetupForLayoutPanelTests();
 			Form form = new Form();
 			FAKE_LayoutPanel panel = new FAKE_LayoutPanel (CoreUtilities.Constants.BLANK, false);
 			form.Controls.Add (panel);

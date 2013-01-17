@@ -74,5 +74,11 @@ namespace MefAddIns.Extensibility
 
 		// if set, the addin with this guid needs to be loaded BEFORE this Addin will be loaded
 		string dependencyguid { get; }
+		// a mininum version #, defaulting to 1.0.0.0  If the ACTUAL version number of the main app is lower then this plugin cannot be loaded
+		string dependencymainapplicationversion {get;}
+
+		// used for addins like the Picture one to know where to store captured files
+		string path_filelocation { get; set; }
+
 	}
 }

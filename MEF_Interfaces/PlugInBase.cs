@@ -104,6 +104,20 @@ namespace MefAddIns
 		}
 		// we set this to blank, by default. Few addins will/should use this
 		public virtual string dependencyguid { get { return ""; } }
+
+
+		public virtual string dependencymainapplicationversion { get { return "1.0.0.0"; }}
+
+		private string _path_filelocation = CoreUtilities.Constants.BLANK;
+		// used for addins like the Picture one to know where to store captured files
+		public string path_filelocation { 
+			get {
+			return _path_filelocation	;
+			}
+			set {
+				_path_filelocation = value	;
+			}
+		}
 	}
 }
 

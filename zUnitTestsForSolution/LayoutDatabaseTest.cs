@@ -17,11 +17,12 @@ namespace Testing
 		#region general
 		private void _setupforlayoutests()
 		{
-			_w.output("boo");
-			LayoutDetails.Instance.YOM_DATABASE = "yom_test_database.s3db";
-			FakeLayoutDatabase layout = new FakeLayoutDatabase("testguid");
-			FAKE_SqlLiteDatabase db = new FAKE_SqlLiteDatabase(layout.GetDatabaseName ());
-			db.DropTableIfExists(dbConstants.table_name);
+			_TestSingleTon.Instance._SetupForLayoutPanelTests();
+//			_w.output("boo");
+//			LayoutDetails.Instance.YOM_DATABASE = "yom_test_database.s3db";
+//			FakeLayoutDatabase layout = new FakeLayoutDatabase("testguid");
+//			FAKE_SqlLiteDatabase db = new FAKE_SqlLiteDatabase(layout.GetDatabaseName ());
+//			db.DropTableIfExists(dbConstants.table_name);
 			// drop the table
 		}
 		#endregion
@@ -78,26 +79,31 @@ namespace Testing
 		[Test]
 		public void SaveAndLoadTest_Works ()
 		{
-			_setupforlayoutests();
+			_TestSingleTon.Instance._SetupForLayoutPanelTests();
+
+			int linktable = 1;
+			int extranodeadded = 1;
 			int count = 25;
-			FakeLayoutDatabase layout = new FakeLayoutDatabase ("testguid");
+			///FakeLayoutDatabase layout = new FakeLayoutDatabase ("testguid");
 			LayoutPanel layoutPanel = new LayoutPanel(CoreUtilities.Constants.BLANK, false);
-			layout.LoadFrom(layoutPanel);
+			layoutPanel.NewLayout("testguid", true, null);
+			//layout.LoadFrom(layoutPanel);
 			NoteDataXML note = new NoteDataXML ();
 			for (int i = 0; i < count; i++) {
 				note.Caption = "boo" + i.ToString();
-				layout.Add (note);
+				layoutPanel.AddNote (note);
 			}
 
-			layout.SaveTo();
+			layoutPanel.SaveLayout();
 			_w.output("save worked");
-			layout = new FakeLayoutDatabase ("testguid");
-
-			layout.LoadFrom(layoutPanel);
+			//layout = new FakeLayoutDatabase ("testguid");
+			layoutPanel = new LayoutPanel(CoreUtilities.Constants.BLANK, false);
+			layoutPanel.LoadLayout("testguid", false, null);
+			//layout.LoadFrom(layoutPanel);
 
 		//	_w.output (layout.Backup ());
-			_w.output(layout.GetNotes().Count.ToString());
-			Assert.AreEqual(count, layout.GetNotes().Count);
+			//_w.output(layout.GetNotes().Count.ToString());
+			Assert.AreEqual(count+linktable +extranodeadded, layoutPanel.GetAllNotes().Count);
 
 
 		}
@@ -124,27 +130,35 @@ namespace Testing
 		[Test]
 		public void SaveAndLoadStressLoad()
 		{
-			_setupforlayoutests();
+			System.Windows.Forms .Form form = new System.Windows.Forms.Form();
+			_TestSingleTon.Instance._SetupForLayoutPanelTests();
+			int linktable = 1;
+			int extranodeadded = 1;
+			_w.output("this is a slow test");
 			int count = 200;
-			FakeLayoutDatabase layout = new FakeLayoutDatabase ("testguid");
+			//FakeLayoutDatabase layout = new FakeLayoutDatabase ("testguid");
 			LayoutPanel layoutPanel = new LayoutPanel(CoreUtilities.Constants.BLANK, false);
+			layoutPanel.NewLayout("testguid", true, null);
+			form.Controls.Add (layoutPanel);
+			form.Show ();
 
 			NoteDataXML note = new NoteDataXML ();
 			for (int i = 0; i < count; i++) {
 				note.Caption = "boo" + i.ToString();
-				layout.Add (note);
+				layoutPanel.AddNote (note);
 			}
-			_w.output(String.Format ("{0} Notes in Layout before save", layout.GetNotes().Count.ToString()));
-			layout.SaveTo();
+			//_w.output(String.Format ("{0} Notes in Layout before save", layout.GetNotes().Count.ToString()));
+			layoutPanel.SaveLayout();
 
-			_w.output(String.Format ("{0} Objects Saved", layout.ObjectsSaved().ToString()));
-			layout = new FakeLayoutDatabase ("testguid");
-			
-			layout.LoadFrom(layoutPanel);
+			//_w.output(String.Format ("{0} Objects Saved", layout.ObjectsSaved().ToString()));
+			//layoutPanel = new FakeLayoutDatabase ("testguid");
+			 layoutPanel = new LayoutPanel(CoreUtilities.Constants.BLANK, false);
+			layoutPanel.LoadLayout("testguid", false, null);
+			//layoutPanel.LoadFrom(layoutPanel);
 
-			_w.output(String.Format ("{0} Objects Loaded", layout.GetNotes().Count));
+			//_w.output(String.Format ("{0} Objects Loaded", layout.GetNotes().Count));
 			//NOT DONE YET
-			Assert.AreEqual (200, layout.GetNotes().Count); 
+			Assert.AreEqual (count + linktable + extranodeadded, layoutPanel.GetAllNotes().Count); 
 		}
 
 		/*// I made the decision to suppress Errors (hence not required CreateParent, for the purpose of MOVING notes
@@ -198,17 +212,21 @@ namespace Testing
 		{
 
 			// 1. write data to notes
-			_setupforlayoutests ();
+			//System.Windows.Forms .Form form = new System.Windows.Forms.Form();
+			_TestSingleTon.Instance._SetupForLayoutPanelTests();
+
+
 			int count = 25;
-			FakeLayoutDatabase layout = new FakeLayoutDatabase ("testguid");
+		//	FakeLayoutDatabase layout = new FakeLayoutDatabase ("testguid");
 			LayoutPanel layoutPanel = new LayoutPanel (CoreUtilities.Constants.BLANK, false);
-			
+			layoutPanel.NewLayout("testguid", true, null);
+
 			NoteDataInterface note = null; 
 			for (int i = 0; i < count; i++) {
 				note = (NoteDataInterface)Activator.CreateInstance(TypeToTest);//new NoteDataXML ();
 				note.CreateParent(layoutPanel);
 				note.Caption = "boo" + i.ToString ();
-				layout.Add (note);
+				layoutPanel.AddNote (note);
 			}
 			
 			
@@ -217,18 +235,19 @@ namespace Testing
 			string guid = note.GuidForNote;
 			note.CreateParent(layoutPanel);
 			_w.output("new guid" + guid);
-			layout.Add (note);
-			layout.SaveTo ();
+			layoutPanel.AddNote (note);
+			layoutPanel.SaveLayout ();
 			_w.output ("save worked");
 			
 			// 2. Now we pretend that later one, elsewhere in code, we need to get access to this (i.e., a Random Table)
+			layoutPanel = new LayoutPanel (CoreUtilities.Constants.BLANK, false);
+			//layout = new FakeLayoutDatabase ("testguid");
+			layoutPanel.LoadLayout("testguid",false, null);
 			
-			layout = new FakeLayoutDatabase ("testguid");
-			
-			layout.LoadFrom (null);
+			//layoutPanel.LoadLayout( (null);
 			//	_w.output (layout.Backup ());
-			_w.output(layout.GetNotes().Count.ToString());
-			foreach (NoteDataXML _note in layout.GetNotes()) {
+			//_w.output(layoutPanel.GetNotes().Count.ToString());
+			foreach (NoteDataXML _note in layoutPanel.GetAllNotes()) {
 				
 				if( _note.GuidForNote == guid)
 				{
@@ -245,15 +264,15 @@ namespace Testing
 			// 1. write data to notes
 			_setupforlayoutests ();
 			int count = 25;
-			FakeLayoutDatabase layout = new FakeLayoutDatabase ("testguid");
+		//	FakeLayoutDatabase layout = new FakeLayoutDatabase ("testguid");
 			LayoutPanel layoutPanel = new LayoutPanel (CoreUtilities.Constants.BLANK, false);
-			
+			layoutPanel.NewLayout("testguid", true, null);
 			NoteDataInterface note = null; 
 			for (int i = 0; i < count; i++) {
 				note = (NoteDataInterface)Activator.CreateInstance(typeof(NoteDataXML));//new NoteDataXML ();
 				note.CreateParent(layoutPanel);
 				note.Caption = "boo" + i.ToString ();
-				layout.Add (note);
+				layoutPanel.AddNote (note);
 			}
 			
 			// store a SECOND TYPE into the mix
@@ -262,8 +281,8 @@ namespace Testing
 			string guid = note.GuidForNote;
 			note.CreateParent(layoutPanel);
 			_w.output("new guid" + guid);
-			layout.Add (note);
-			layout.SaveTo ();
+			layoutPanel.AddNote (note);
+			layoutPanel.SaveLayout ();
 		}
 		[Test]
 		public void RemoteGrabNote_base ()
@@ -290,15 +309,15 @@ namespace Testing
 			// 1. write data to notes
 			_setupforlayoutests ();
 			int count = 15;
-			FakeLayoutDatabase layout = new FakeLayoutDatabase ("testguid");
-			LayoutPanel layoutPanel = new LayoutPanel (CoreUtilities.Constants.BLANK, false);
-			
+			//FakeLayoutDatabase layout = new FakeLayoutDatabase ("testguid");
+			FAKE_LayoutPanel layoutPanel = new FAKE_LayoutPanel (CoreUtilities.Constants.BLANK, false);
+			layoutPanel.NewLayout("testguid", true, null);
 			NoteDataInterface note = null; 
 			for (int i = 0; i < count; i++) {
 				note = (NoteDataInterface)Activator.CreateInstance(TypeToTest);//new NoteDataXML ();
 					note.CreateParent(layoutPanel);
 				note.Caption = "boo" + i.ToString ();
-				layout.Add (note);
+				layoutPanel.AddNote (note);
 			}
 			
 			
@@ -318,16 +337,17 @@ namespace Testing
 			note.CreateParent(layoutPanel);
 			_w.output("new guid" + guid);
 
-			layout.Add (note);
-			layout.SaveTo ();
-
-			layout = new FakeLayoutDatabase ("testguid");
+			layoutPanel.AddNote (note);
+			//layout.SaveTo ();
+			layoutPanel.SaveLayout();
+			//layout = new FakeLayoutDatabase ("testguid");
+			layoutPanel = new FAKE_LayoutPanel (CoreUtilities.Constants.BLANK, false);
+			layoutPanel.LoadLayout("testguid", false, null);
+			//layout.LoadFrom(layoutPanel);
 			
-			layout.LoadFrom(layoutPanel);
-			
-			_w.output(String.Format ("{0} Objects Loaded", layout.GetNotes().Count));
+			//_w.output(String.Format ("{0} Objects Loaded", layout.GetNotes().Count));
 
-			NoteDataInterface result = layout.GetNoteByGUID(guid);
+			NoteDataInterface result = layoutPanel.GetLayoutDatabase().GetNoteByGUID(guid);
 			string astest = ((NoteDataXML_RichText)result).GetAsText();
 			_w.output(result.Data1);
 			_w.output (astest);
@@ -339,11 +359,22 @@ namespace Testing
 		public void CountSpecificSubType ()
 		{
 			//-- do unit tests counting store 6 textboxes and know this (countbytype)
-			_setupforlayoutests ();
-			int count = 25;
-			FakeLayoutDatabase layout = new FakeLayoutDatabase ("testguid");
-			LayoutPanel layoutPanel = new LayoutPanel (CoreUtilities.Constants.BLANK, false);
 			
+			System.Windows.Forms .Form form = new System.Windows.Forms.Form();
+			_TestSingleTon.Instance._SetupForLayoutPanelTests();
+
+
+			int count = 25;
+		//	FakeLayoutDatabase layout = new FakeLayoutDatabase ("testguid");
+			FAKE_LayoutPanel layoutPanel = new FAKE_LayoutPanel (CoreUtilities.Constants.BLANK, false);
+			layoutPanel.NewLayout("testguid", true, null);
+
+			// jan152013 - tweak to allow this to work with new system without rewriting all the tstings in LayoutDatabasetest
+			LayoutDatabase layout = layoutPanel.GetLayoutDatabase();
+
+			form.Controls.Add (layoutPanel);
+			form.Show ();
+
 			NoteDataXML note = new NoteDataXML ();
 			for (int i = 0; i < count; i++) {
 				note.CreateParent(layoutPanel);
@@ -361,7 +392,7 @@ namespace Testing
 
 			layout.SaveTo();
 			
-			_w.output(String.Format ("{0} Objects Saved", layout.ObjectsSaved().ToString()));
+		//	_w.output(String.Format ("{0} Objects Saved", layout.ObjectsSaved().ToString()));
 			layout = new FakeLayoutDatabase ("testguid");
 			
 			layout.LoadFrom(layoutPanel);
@@ -378,54 +409,70 @@ namespace Testing
 				}
 
 			_w.output(String.Format ("{0} Objects Loaded", layout.GetNotes().Count));
-			//NOT DONE YET
-			Assert.AreEqual (6, count2); 
+
+
+			// added linktable
+			Assert.AreEqual (7, count2); 
 		}
 
 		[Test]
 		public void CountPanelsSubType ()
 		{
+
+			System.Windows.Forms .Form form = new System.Windows.Forms.Form();
+			_TestSingleTon.Instance._SetupForLayoutPanelTests();
+			
+			//FAKE_LayoutPanel panel = new FAKE_LayoutPanel(CoreUtilities.Constants.BLANK, false);
+
+
+
 			_w.output("here");
 			//-- do unit tests counting store 6 textboxes and know this (countbytype)
-			_setupforlayoutests ();
+			//_setupforlayoutests ();
 
 			_w.output("here");
 			int count = 25;
 
-			FakeLayoutDatabase layout = new FakeLayoutDatabase ("testguid");
+		//	FakeLayoutDatabase layout = new FakeLayoutDatabase ("testguid");
 			LayoutPanel layoutPanel = new LayoutPanel (CoreUtilities.Constants.BLANK, false);
-			
+			form.Controls.Add (layoutPanel);
+			form.Show ();
+			layoutPanel.NewLayout("testlayout", false, null);
+
+
 			NoteDataXML note = new NoteDataXML ();
 			for (int i = 0; i < count; i++) {
 				note.CreateParent(layoutPanel);
 				note.Caption = "boo" + i.ToString ();
-				layout.Add (note);
+				layoutPanel.AddNote (note);
 			}
-			_w.output (String.Format ("{0} Notes in Layout before save", layout.GetNotes ().Count.ToString ()));
+			_w.output (String.Format ("{0} Notes in Layout before save", layoutPanel.GetAllNotes ().Count.ToString ()));
 			
 			for (int i = 0; i < 6; i++) {
 				note = new NoteDataXML_Panel ();
 				note.CreateParent(layoutPanel);
 
 				note.Caption = "Panel";
-				layout.Add (note);
+				layoutPanel.AddNote (note);
 				((NoteDataXML_Panel)note).Add10TestNotes();
 			}
 
 
 
 			
-			layout.SaveTo();
+			layoutPanel.SaveLayout();
 			
-			_w.output(String.Format ("{0} Objects Saved", layout.ObjectsSaved().ToString()));
-			layout = new FakeLayoutDatabase ("testguid");
-			
-			layout.LoadFrom(layoutPanel);
+			//_w.output(String.Format ("{0} Objects Saved", layoutPanel.ObjectsSaved().ToString()));
+			layoutPanel.LoadLayout("testlayout",false, null);
+
+//			layout = new FakeLayoutDatabase ("testguid");
+//			
+//			layout.LoadFrom(layoutPanel);
 			
 			// now count RichText notes
 			int count2 = 0;
 			int subnotecount = 0;
-			foreach (NoteDataInterface _note in layout.GetNotes ())
+			foreach (NoteDataInterface _note in layoutPanel.GetAllNotes ())
 			{
 				if (_note.GetType() == typeof(NoteDataXML_Panel))
 				{
@@ -438,12 +485,14 @@ namespace Testing
 
 			// total note count should be (once I get GetNotes working on Child Notes = 60 + 6 + 25 = 91
 
-			_w.output(String.Format ("{0} Objects Loaded", layout.GetAllNotes().Count));
+			_w.output(String.Format ("{0} Objects Loaded", layoutPanel.GetAllNotes().Count));
 			//NOT DONE YET
 			Assert.AreEqual (6, count2); 
 			Assert.AreEqual (60, subnotecount); 
-			Assert.AreEqual (count2, layout.GetAvailableFolders().Count);
-			Assert.AreEqual (91, layout.GetAllNotes().Count); 
+			Assert.AreEqual (count2, layoutPanel.GetAvailableFolders().Count);
+
+			// had to change because a linktable makes 91 become 92
+			Assert.AreEqual (92, layoutPanel.GetAllNotes().Count); 
 		}
 		[Test]
 		public void LayoutShouldNotExist()
@@ -468,20 +517,23 @@ namespace Testing
 		[Test]
 		public void LayoutExists()
 		{
-			_setupforlayoutests ();
+			System.Windows.Forms .Form form = new System.Windows.Forms.Form();
+			_TestSingleTon.Instance._SetupForLayoutPanelTests();
+
 			int count = 25;
-			FakeLayoutDatabase layout = new FakeLayoutDatabase ("testguid");
+			//FakeLayoutDatabase layout = new FakeLayoutDatabase ("testguid");
 			LayoutPanel layoutPanel = new LayoutPanel (CoreUtilities.Constants.BLANK, false);
-			
+			layoutPanel.NewLayout("testguid", true, null);
+
 			NoteDataXML note = new NoteDataXML ();
 			for (int i = 0; i < count; i++) {
 				note.CreateParent(layoutPanel);
 				note.Caption = "boo" + i.ToString ();
-				layout.Add (note);
+				layoutPanel.AddNote (note);
 			}
-			layout.SaveTo();
+			layoutPanel.SaveLayout();
 
-			Assert.True (layout.IsLayoutExists("testguid"));
+			Assert.True (MasterOfLayouts.ExistsByGUID("testguid"));
 		}
 		[Test]
 		public void SaveNotequired()
@@ -527,8 +579,9 @@ namespace Testing
 		public void TestDeleteNote()
 		{
 			// add a note with specific label
-			LayoutPanel layoutPanel = new LayoutPanel (CoreUtilities.Constants.BLANK, false);
-			FakeLayoutDatabase layout = new FakeLayoutDatabase ("testguid");
+			FAKE_LayoutPanel layoutPanel = new FAKE_LayoutPanel (CoreUtilities.Constants.BLANK, false);
+			//FakeLayoutDatabase layout = new FakeLayoutDatabase ("testguid");
+			layoutPanel.NewLayout("testguid", true, null);
 			NoteDataXML_RichText note = new NoteDataXML_RichText ();
 			string guid2find = "";
 			NoteDataInterface mynotetogo = null;
@@ -537,17 +590,18 @@ namespace Testing
 				note.Caption = "boo" + i.ToString ();
 				note.UpdateLocation();
 				guid2find = note.GuidForNote;
-				layout.Add (note);
+				layoutPanel.AddNote (note);
 				mynotetogo = note;
 			}
-			layout.SaveTo(); 
+		//	layout.SaveTo(); 
+			layoutPanel.SaveLayout();
 			_w.output (guid2find);
-			Assert.True (layout.IsNoteExistsInLayout (guid2find));
+			Assert.True (layoutPanel.GetLayoutDatabase().IsNoteExistsInLayout (guid2find));
 			_w.output("here");
 			// then delete it
 
-			layout.RemoveNote(mynotetogo);
-			Assert.False (layout.IsNoteExistsInLayout (guid2find));
+			layoutPanel.GetLayoutDatabase().RemoveNote(mynotetogo);
+			Assert.False (layoutPanel.GetLayoutDatabase().IsNoteExistsInLayout (guid2find));
 		}
 
 		[Test]

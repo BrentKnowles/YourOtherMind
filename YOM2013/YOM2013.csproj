@@ -9,7 +9,7 @@
     <OutputType>Exe</OutputType>
     <RootNamespace>YOM2013</RootNamespace>
     <AssemblyName>YOM2013</AssemblyName>
-    <ReleaseVersion>1.1</ReleaseVersion>
+    <ReleaseVersion>1.0.0.0</ReleaseVersion>
     <SynchReleaseVersion>False</SynchReleaseVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">

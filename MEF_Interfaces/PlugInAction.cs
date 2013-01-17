@@ -4,14 +4,14 @@ namespace MefAddIns.Extensibility
 {
 	public struct PlugInAction
 	{
-		
+		// Jan 2013 - Considered removing this struct, but one benefit (though a lazy one) is that I don't have to create get;set; for everything I pass arond
 		public bool IsOnAMenu;
 
 		// Have to remove this because there will be multiple Toolbars, not able to remove it. Will have to suffice on a Menu
 		//public bool IsOnAToolbar;
-
 		// Optional. Some elements will display an image
 		public System.Drawing.Bitmap Image; 
+	
 		public bool IsNoteAction;
 		public bool IsANote;
 		// Will show a quicklink on the Footer, while this is running

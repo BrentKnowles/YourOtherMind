@@ -893,6 +893,13 @@ namespace YOM2013
 					returnvalue = null;
 				}
 				break;
+
+			case (int)GetInformationADDINS.GET_CURRENT_LAYOUT_PANEL:
+				if (LayoutDetails.Instance.CurrentLayout != null)
+				{
+					return LayoutDetails.Instance.CurrentLayout;
+				}
+				break;
 			}
 			return returnvalue;
 		}

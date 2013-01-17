@@ -64,6 +64,9 @@
     <Compile Include="ClassesUsedInTesting\FAKE_NoteDataXML_Text.cs" />
     <Compile Include="ClassesUsedInTesting\FAKE_NoteDataXML_Table.cs" />
     <Compile Include="NotePictureTesting.cs" />
+    <Compile Include="MainFormTests.cs" />
+    <Compile Include="_TestSingleTon.cs" />
+    <Compile Include="ClassesUsedInTesting\FAKE_NoteDataPicture.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
@@ -86,6 +89,14 @@
     <ProjectReference Include="..\ApplicationFramework\ApplicationFramework.csproj">
       <Project>{1C8CC9F9-FD0A-4DDF-B227-61E8135DFCE5}</Project>
       <Name>ApplicationFramework</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\YOM2013\YOM2013.csproj">
+      <Project>{5B046A7A-5C1B-4903-B077-4A6083E2E606}</Project>
+      <Name>YOM2013</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Addins\Addin_NoteDataXML_Picture\Addin_NoteDataXML_Picture.csproj">
+      <Project>{3F04C173-401B-4719-83DF-A36B79A01EFE}</Project>
+      <Name>Addin_NoteDataXML_Picture</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

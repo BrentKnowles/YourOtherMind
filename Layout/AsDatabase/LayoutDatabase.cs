@@ -285,8 +285,11 @@ namespace Layout
 		/// <param name='sFile'>
 		/// S file.
 		/// </param>
-		public bool LoadFromOld (string sFile)
+		public bool LoadFromOld (string sFile, LayoutPanelBase layoutPanel)
 		{
+
+
+		
 			System.IO.FileInfo fi = new System.IO.FileInfo (sFile);
 
 			Name = sFile;
@@ -301,7 +304,39 @@ namespace Layout
 			System.IO.StreamReader reader = new System.IO.StreamReader (sFile);
 			NoteDataXML[] cars = (NoteDataXML[])serializer.Deserialize (reader);
 
+
+
+
+
+
 			if (null != cars) {
+
+				if (IsSubPanel == false)
+				{
+				// 2 passes -- the first is just to find the linktable
+				NoteDataXML_Table table = null; //new NoteDataXML_Table();
+				for (int i = 0; i < cars.Length; i++) {
+					if (cars [i].GetType () == typeof(NoteDataXML_Table))
+					{
+						// we have found a table
+						// is it link table?
+						if (cars[i].GuidForNote == LinkTable.STICKY_TABLE)
+						{
+							//  yes. Link table
+							table = (NoteDataXML_Table)cars[i];
+						}
+					}
+				}
+				if (null == table)
+				{
+					throw new Exception("You must have a linktable on each imported record");
+				}
+
+				CreateLinkTableIfNecessary(table, layoutPanel);
+				}
+
+
+
 				dataForThisLayout = new List<NoteDataInterface> ();
 				for (int i = 0; i < cars.Length; i++) {
 
@@ -316,7 +351,7 @@ namespace Layout
 
 							tempLayoutDatabaseForSubPanel.IsSubPanel = true;
 
-							if (tempLayoutDatabaseForSubPanel.LoadFromOld (subpanel)) {
+							if (tempLayoutDatabaseForSubPanel.LoadFromOld (subpanel, null)) {
 								tempLayoutDatabaseForSubPanel.SaveTo ();
 							} else {
 								NewMessage.Show (String.Format ("{0} subpanel failed to load", subpanel));
@@ -434,8 +469,10 @@ namespace Layout
 			// either no note was in data or it came out wrong, we build a new LinkTable
 			if (table.GuidForNote != LinkTable.STICKY_TABLE) {
 
-				NewMessage.Show (String.Format ("Creating link table on '{0} Subpanel='{1}' ParenGUID='{2}', My GUID='{3}' Table GUID = '{4}'", this.Name, this.IsSubPanel, 
+				lg.Instance.Line ("LayoutDatabase->CreateLinkTableIfNecessary", ProblemType.MESSAGE, String.Format ("Creating link table on '{0} Subpanel='{1}' ParenGUID='{2}', My GUID='{3}' Table GUID = '{4}'", this.Name, this.IsSubPanel, 
 				                                LayoutPanelToLoadNoteOnto.ParentGUID, this.LayoutGUID, table.GuidForNote));
+			//	NewMessage.Show (String.Format ("Creating link table on '{0} Subpanel='{1}' ParenGUID='{2}', My GUID='{3}' Table GUID = '{4}'", this.Name, this.IsSubPanel, 
+			//	                                LayoutPanelToLoadNoteOnto.ParentGUID, this.LayoutGUID, table.GuidForNote));
 				table = new NoteDataXML_Table ();
 				table.Caption = LinkTable.STICKY_TABLE;
 				table.GuidForNote = LinkTable.STICKY_TABLE;

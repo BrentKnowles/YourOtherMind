@@ -300,7 +300,7 @@ namespace database
 			//	param.Value = ValueToAdd;
 			string sqlStatement = "";
 			
-			Console.WriteLine("WHERE: " + WhereValue);
+			lg.Instance.Line("SqlLiteDatabase->UpdateDataCore", ProblemType.MESSAGE, "WHERE: " + WhereValue);
 			try {
 				
 				string[] ColumnsWithValues = new string[ColumnToAddTo.Length];

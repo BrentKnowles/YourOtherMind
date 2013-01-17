@@ -360,6 +360,7 @@ namespace appframe
 				if ( (thisAddIn.TypeOfInformationNeeded == 0) || (thisAddIn.TypeOfInformationNeeded > 0 && NeededInfo != null))
 				{
 				thisAddIn.SetBeforeRespondInformation(NeededInfo);
+				thisAddIn.path_filelocation = path;
 				thisAddIn.RespondToCallToAction();
 					// this routine sends the needed info to the callback which was setup at Initialization 
 					// we don't call this externally, it is called internally

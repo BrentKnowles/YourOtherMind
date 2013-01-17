@@ -147,6 +147,18 @@ namespace appframe
 				if (plug.dependencyguid != Constants.BLANK) {
 					IsDisabled = true;
 				}
+				bool IsVersionDisabled = false;
+				if (plug.dependencymainapplicationversion != Constants.BLANK)
+				{
+				//	NewMessage.Show(String.Format ("Comparing {0} with Application {1}",plug.dependencymainapplicationversion, Application.ProductVersion));
+					Version plugNeedsVersion = new Version(plug.dependencymainapplicationversion);
+					Version appVersion = new Version(Application.ProductVersion);
+					if (plugNeedsVersion > appVersion)
+					{
+						IsVersionDisabled = true;
+					}
+				}
+
 				foreach (string guid in myList) {
 					if (guid == plug.CalledFrom.GUID) {
 						IsChecked = true;
@@ -163,8 +175,15 @@ namespace appframe
 				}
 					
 				// we do not add Disabled Items
-				if (true != IsDisabled) {
-					checkers.Items.Add (item, IsChecked);
+				if (true != IsDisabled ) {
+					if (true != IsVersionDisabled)
+					{
+						checkers.Items.Add (item, IsChecked);
+					}
+					else
+					{
+						NewMessage.Show (Loc.Instance.GetStringFmt ("The Addin '{0}' was not added because it requires version '{1}' of the main application.", plug.Name, plug.dependencymainapplicationversion));
+					}
 				}
 				else
 				{

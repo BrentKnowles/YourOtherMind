@@ -106,6 +106,11 @@ namespace appframe
 			if (dataGrid1.DataSource != null && IncomingColumns != null) {
 				// set column widths
 				for (int i = 0 ; i < IncomingColumns.Length ; i++) {
+					if (i >= dataGrid1.Columns.Count)
+					{
+						NewMessage.Show ("(Jan 16 2013) Import Only Error? There are more IncomingColumns than columns in the datagrid?");
+					}
+					else
 					dataGrid1.Columns[i].Width = IncomingColumns[i].ColumnWidth;
 				}
 				IncomingColumns = null;

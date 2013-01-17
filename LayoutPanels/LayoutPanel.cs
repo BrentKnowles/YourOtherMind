@@ -781,7 +781,7 @@ namespace Layout
 		{
 
 			if (Notes.ShowTabs == true && tabsBar != null) {
-				Console.WriteLine (String.Format (">>> refresh tabs for: {0}!<<<", this.Name));
+				lg.Instance.Line("LayoutPanel->RefreshTables", ProblemType.MESSAGE,String.Format (">>> refresh tabs for: {0}!<<<", this.Name), Loud.CTRIVIAL);
 				tabsBar.Visible = true;
 				tabsBar.Items.Clear ();
 				// redraw the list of tabs
@@ -854,7 +854,7 @@ namespace Layout
 				//
 				Notes = new LayoutDatabase (GUID);
 
-				((LayoutDatabase)Notes).LoadFromOld (File);
+				((LayoutDatabase)Notes).LoadFromOld (File, this);
 
 				foreach (NoteDataInterface note in Notes.GetNotes())
 				{

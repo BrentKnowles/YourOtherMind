@@ -40,17 +40,26 @@ namespace Layout
 		// in rare case of harddrive failure this variable can be set and checked when the application closes to prevent saving empty files (December 2012)
 		// for YOM this is Set ONLY IN MainformBase
 		public bool ForceShutdown = false; 
+		// added this for testing purposes
+		public string OverridePath=Constants.BLANK;
+
+
 		public string Path {
 			get {
 
 
 				string path = "";
+
 #if(DEBUG)
 				path = System.IO.Path.Combine (Environment.GetFolderPath (Environment.SpecialFolder.MyDocuments), "YOMDEBUG");
 #else
 				path =System.IO.Path.Combine ( Environment.CurrentDirectory, "YOMRELEASE");
 #endif
 
+				if (Constants.BLANK != OverridePath)
+				{
+					path = OverridePath;
+				}
 
 				if (!System.IO.Directory.Exists (path)) {
 					System.IO.Directory.CreateDirectory(path);

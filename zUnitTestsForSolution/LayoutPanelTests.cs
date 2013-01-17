@@ -14,17 +14,17 @@ namespace Testing
 		{
 		}
 
-		protected void _SetupForLayoutPanelTests ()
-		{
-			LayoutDetails.Instance.YOM_DATABASE = "yom_test_database.s3db";
-			LayoutDetails.Instance.AddToList(typeof(FAKE_NoteDataXML_Panel),"testingpanel");
-			LayoutDetails.Instance.AddToList(typeof(FAKE_NoteDataXML_Text),"testingtext");
-
-			FakeLayoutDatabase layout = new FakeLayoutDatabase("testguid");
-			FAKE_SqlLiteDatabase db = new FAKE_SqlLiteDatabase(layout.GetDatabaseName ());
-			db.DropTableIfExists(Layout.data.dbConstants.table_name);
-			_w.output ("dropping table " + Layout.data.dbConstants.table_name);
-		}
+//		protected void _SetupForLayoutPanelTests ()
+//		{
+//			LayoutDetails.Instance.YOM_DATABASE = "yom_test_database.s3db";
+//			LayoutDetails.Instance.AddToList(typeof(FAKE_NoteDataXML_Panel),"testingpanel");
+//			LayoutDetails.Instance.AddToList(typeof(FAKE_NoteDataXML_Text),"testingtext");
+//
+//			FakeLayoutDatabase layout = new FakeLayoutDatabase("testguid");
+//			FAKE_SqlLiteDatabase db = new FAKE_SqlLiteDatabase(layout.GetDatabaseName ());
+//			db.DropTableIfExists(Layout.data.dbConstants.table_name);
+//			_w.output ("dropping table " + Layout.data.dbConstants.table_name);
+//		}
 
 		[Test]
 		public void SpeedTest ()
@@ -37,7 +37,7 @@ namespace Testing
 			// Then it will time and record the results of LOADING and SAVING that layout into a 
 			// table saved in my backup paths
 			// will also output a DAAbackup file (text readable) format too
-			_SetupForLayoutPanelTests ();
+			_TestSingleTon.Instance._SetupForLayoutPanelTests();
 
 
 			System.Windows.Forms .Form form = new System.Windows.Forms.Form();
@@ -144,10 +144,12 @@ namespace Testing
 		[Test]
 		public void TestMovingNotes()
 		{
-		
-			_SetupForLayoutPanelTests ();
+			System.Windows.Forms .Form form = new System.Windows.Forms.Form();
+			_TestSingleTon.Instance._SetupForLayoutPanelTests();
 
 			FAKE_LayoutPanel panel = new FAKE_LayoutPanel(CoreUtilities.Constants.BLANK, false);
+			form.Controls.Add (panel);
+			form.Show ();
 
 			//NOTE: For now remember that htis ADDS 1 Extra notes
 			panel.NewLayout("mynewpanel", true, null);
@@ -187,8 +189,11 @@ namespace Testing
 			panelA.AddNote(basicNote);  // Panel A has 1 note
 			basicNote.CreateParent(panelA.myLayoutPanel());  // DO need to call it when adding notes like this (to a subpanel, I think)
 			panel.SaveLayout();
-			Assert.AreEqual(1, panelA.CountNotes(), "Panel A holds one note");
-	  	Assert.AreEqual (5, panel.CountNotes(), "Total notes now is 5");
+			Assert.AreEqual(1, panelA.CountNotes(), "Panel A holds one note");  // So this counts as  + 2
+
+			// so we have (1 + 1 note on it)panel A + (1)panelB + basicNote +DefaultNote = 5  + (NEW) LinkTable = 6
+
+			Assert.AreEqual (6, panel.CountNotes(), "Total notes SHOULD BE 6 :  (1 + 1 note on it)panel A + (1)panelB + basicNote +DefaultNote = 5  + (NEW) LinkTable = 6");
 			//COUNT SHOULD BE: panelA has 1 note
 			//COUNT Total should be: Default Note + Note + PanelA + Panel B  + (Note Inside Panel A) = 5
 
@@ -200,7 +205,7 @@ namespace Testing
 
 			//COUNT SHOULD BE: panelA has 2 notes (Panel C + the Note I add)
 			Assert.AreEqual(2, panelA.CountNotes(), "two notes in panelA");
-			Assert.AreEqual (6, panel.CountNotes(), "total of six notes");
+			Assert.AreEqual (7, panel.CountNotes(), "total of SEVEN notes");
 			Assert.AreEqual (0, panelB.CountNotes(),"0 count worked?");
 			//COUNT Total should be: Default Note + Note + PanelA + Panel B + (NoteInside Panel A) + (Panel C Inside Panel A) = 6
 
@@ -233,11 +238,11 @@ namespace Testing
 			_w.output("_------------------------------");
 			_w.output (panel.CountNotes());
 			_w.output("_------------------------------");
-			Assert.AreEqual (7, panel.CountNotes(), "We have only added one panel so we should be up to 7");
+			Assert.AreEqual (8, panel.CountNotes(), "We have only added one panel so we should be up to 8");
 
 			Assert.AreEqual(3, panelA.CountNotes());
 
-			Assert.AreEqual (7, panel.CountNotes(),"number of notes in main panel");
+			Assert.AreEqual (8, panel.CountNotes(),"number of notes in main panel");
 			Assert.AreEqual (0, panelB.CountNotes(),"testt");
 			Assert.AreEqual (1, panelC.CountNotes(),"testt");
 
@@ -251,7 +256,7 @@ namespace Testing
 			panelC.myLayoutPanel().MoveNote(panelD.GuidForNote, "up");
 			panel.SaveLayout();
 			Assert.AreEqual(4, panelA.CountNotes()); // 4 because I added a note to D which is inside A
-			Assert.AreEqual (8, panel.CountNotes());
+			Assert.AreEqual (9, panel.CountNotes());
 			Assert.AreEqual (0, panelC.CountNotes());
 			Assert.AreEqual (0, panelB.CountNotes());
 			Assert.AreEqual (1, panelD.CountNotes());
@@ -259,7 +264,7 @@ namespace Testing
 			panelA.myLayoutPanel().MoveNote(panelD.GuidForNote, "up");
 			panel.SaveLayout();
 			Assert.AreEqual(2, panelA.CountNotes());
-			Assert.AreEqual (8, panel.CountNotes());
+			Assert.AreEqual (9, panel.CountNotes());
 			Assert.AreEqual (0, panelC.CountNotes());
 			Assert.AreEqual (0, panelB.CountNotes());
 			Assert.AreEqual (1, panelD.CountNotes());
@@ -272,7 +277,7 @@ namespace Testing
 			panel.MoveNote(richy.GuidForNote, panelA.GuidForNote);
 			panel.SaveLayout();
 			Assert.AreEqual(3, panelA.CountNotes());
-			Assert.AreEqual (9, panel.CountNotes());
+			Assert.AreEqual (10, panel.CountNotes());
 			Assert.AreEqual (0, panelC.CountNotes());
 			Assert.AreEqual (0, panelB.CountNotes());
 
@@ -286,8 +291,8 @@ namespace Testing
 			[Test]
 		public void AdvancedSearchingForNotesTests()
 		{
-			
-			_SetupForLayoutPanelTests ();
+			_TestSingleTon.Instance._SetupForLayoutPanelTests();
+			//_SetupForLayoutPanelTests ();
 			
 			FAKE_LayoutPanel panel = new FAKE_LayoutPanel(CoreUtilities.Constants.BLANK, false);
 			
@@ -338,7 +343,7 @@ namespace Testing
 		{
 
 			// nest several panels
-			_SetupForLayoutPanelTests ();
+			_TestSingleTon.Instance._SetupForLayoutPanelTests();
 			
 			FAKE_LayoutPanel panel = new FAKE_LayoutPanel(CoreUtilities.Constants.BLANK, false);
 			
@@ -401,13 +406,7 @@ namespace Testing
 
 		}
 
-		[Test]
-		public void CreateExampleAndSystemLayouts()
-		{
-			// creates the example and system layouts
-			// to catch if any popups or other oddities introduced
-			Assert.True (false);
-		}
+
 	}
 }
 
