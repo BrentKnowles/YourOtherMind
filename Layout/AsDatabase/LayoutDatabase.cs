@@ -498,7 +498,11 @@ namespace Layout
 			MyLinkTableNote = table;
 			if (null == MyLinkTableNote) NewMessage.Show ("CreateLinkTable LinkTable Note is null");
 		}
-
+		public override string ToString ()
+		{
+//			return string.Format ("[LayoutDatabase: Status={0}, Name={1}, ShowTabs={2}, IsSubPanel={3}, MaximizeTabs={4}, Hits={5}, Stars={6}, DateCreated={7}, DateEdited={8}, Notebook={9}, Section={10}, Subtype={11}, Source={12}, Words={13}, Keywords={14}]", Status, Name, ShowTabs, IsSubPanel, MaximizeTabs, Hits, Stars, DateCreated, DateEdited, Notebook, Section, Subtype, Source, Words, Keywords);
+			return string.Format ("LayoutDatabase: Name={0} Guid = {1}", this.Name, this.LayoutGUID);
+		}
 
 		/// <summary>
 		/// Loads from the appropriate Data Location. If pass Layout as null this is a REMOTE NOTE load, meaning we are grabbing this information without
@@ -514,7 +518,9 @@ namespace Layout
 		/// 
 		/// </param>
 		public bool LoadFrom (LayoutPanelBase LayoutPanelToLoadNoteOnto)
-		{
+		{ //CoreUtilities.TimerCore.TimerOn=false;
+			lg.Instance.OnlyTime = true;
+
 			BaseDatabase MyDatabase = CreateDatabase ();
 			
 			if (MyDatabase == null) {
@@ -522,11 +528,15 @@ namespace Layout
 			}
 			bool Success = false;
 
-
+			List<object[]> myList = null;
 			// we only care about FIRST ROW. THere should never be two matches on a GUID
-
-			List<object[]> myList = MyDatabase.GetValues (dbConstants.table_name, dbConstants.Columns
+			TimeSpan time;
+			time = CoreUtilities.TimerCore.Time (() => {
+				myList = MyDatabase.GetValues (dbConstants.table_name, dbConstants.Columns
 			                      , dbConstants.GUID, LayoutGUID);
+			});
+			lg.Instance.Line ("LayoutDatabase->LoadFrom", ProblemType.TIMING, String.Format ("GETVALUES for {0}  took {1}", this.ToString (), time));
+
 			if (myList != null && myList.Count > 0) {
 
 				object[] result = myList [0];
@@ -549,141 +559,170 @@ namespace Layout
 					// skip linktables if we are a child
 					// LayoutPanelToLoadNoteOnto will be null when doing searches, which mean swe should not 
 					// try to load link tables, for sure.
-					if (false == IsSubPanel && LayoutPanelToLoadNoteOnto != null)
-					{
+					if (false == IsSubPanel && LayoutPanelToLoadNoteOnto != null) {
 
 					
-					// Deal with LINKTABLE first, as it causes complexity elsewhere
-					NoteDataXML_Table table = new NoteDataXML_Table();
-					lg.Instance.Line("LayoutDatabase->LoadFrom", ProblemType.MESSAGE,"LinkTableLoadData = " + result [dbConstants.LINKTABLE.Index].ToString ());
-					if (result [dbConstants.LINKTABLE.Index].ToString () != Constants.BLANK)
-					{
-						// Loading existing table
-						System.IO.StringReader LinkTableReader = new System.IO.StringReader (result [dbConstants.LINKTABLE.Index].ToString ());
-						System.Xml.Serialization.XmlSerializer LinkTableXML = new System.Xml.Serialization.XmlSerializer (typeof(NoteDataXML_Table));
+						// Deal with LINKTABLE first, as it causes complexity elsewhere
+						NoteDataXML_Table table = new NoteDataXML_Table ();
+						lg.Instance.Line ("LayoutDatabase->LoadFrom", ProblemType.MESSAGE, "LinkTableLoadData = " + result [dbConstants.LINKTABLE.Index].ToString ());
+						if (result [dbConstants.LINKTABLE.Index].ToString () != Constants.BLANK) {
+							time = CoreUtilities.TimerCore.Time (() => {
+								// Loading existing table
+								System.IO.StringReader LinkTableReader = new System.IO.StringReader (result [dbConstants.LINKTABLE.Index].ToString ());
+								System.Xml.Serialization.XmlSerializer LinkTableXML = new System.Xml.Serialization.XmlSerializer (typeof(NoteDataXML_Table));
 					
 
 
-						table =  (NoteDataXML_Table)LinkTableXML.Deserialize (LinkTableReader);
+								table = (NoteDataXML_Table)LinkTableXML.Deserialize (LinkTableReader);
 //						if (table != null)
 //						{
 //							MyLinkTable.SetTable (table.dataSource);
 //						}
-							//NewMessage.Show("Loading a link table with GUID = " + table.GuidForNote);
-						LinkTableXML = null;
-						LinkTableReader.Close();
-						LinkTableReader.Dispose();
-					}
+								//NewMessage.Show("Loading a link table with GUID = " + table.GuidForNote);
+								LinkTableXML = null;
+								LinkTableReader.Close ();
+								LinkTableReader.Dispose ();
+							});
+							lg.Instance.Line ("LayoutDatabase->LoadFrom", ProblemType.TIMING, String.Format ("LINKTABLE for {0}  took {1}", this.ToString (), time));
 
-						CreateLinkTableIfNecessary(table, LayoutPanelToLoadNoteOnto);
+						}
+
+						time = CoreUtilities.TimerCore.Time (() => {
+							CreateLinkTableIfNecessary (table, LayoutPanelToLoadNoteOnto);
+						});
+						lg.Instance.Line ("LayoutDatabase->LoadFrom", ProblemType.TIMING, String.Format ("CREATELINKTABLE for {0}  took {1}", this.ToString (), time));
 					}
 					//
 					// LINK TABLE SECTION, end
 					//
 
-
-					// Fill in LAYOUT specific details
-					Status = result [3].ToString ();
-					Name = result [4].ToString ();
-					if (result [5].ToString () != Constants.BLANK) {
-						ShowTabs = (bool)result [5];
-					} else {
-						//ToDo: This does not seem growable easily
-						ShowTabs = true;
-					}
-					if (result [dbConstants.SUBPANEL.Index].ToString () != Constants.BLANK) {
-						IsSubPanel = (bool)result[dbConstants.SUBPANEL.Index];
-					}else {
-						IsSubPanel = false;
-					}
-					if (result[dbConstants.MAXIMIZETABS.Index].ToString () != Constants.BLANK)
-					{
-					MaximizeTabs = (bool)result[dbConstants.MAXIMIZETABS.Index];
-					}else MaximizeTabs = true;
-					int stars = 0;
-					if (Int32.TryParse (result[dbConstants.STARS.Index].ToString (), out stars) == false) Stars = 0; else Stars = stars;
-					int hits = 0;
-					if (Int32.TryParse (result[dbConstants.HITS.Index].ToString (), out hits) == false) Hits = 0; else Hits = hits;
-					DateTime date = DateTime.Now;
-					if (DateTime.TryParse(result[dbConstants.DATECREATED.Index].ToString (), out date) == false) DateCreated = DateTime.Now; else DateCreated = date;
-					date = DateTime.Now;
-					if (DateTime.TryParse(result[dbConstants.DATEEDITED.Index].ToString (), out date) == false) DateEdited = DateTime.Now; else DateEdited = date;
-					Notebook = result[dbConstants.NOTEBOOK.Index].ToString ();
-					Section = result[dbConstants.SECTION.Index].ToString();
-					Subtype = result [dbConstants.TYPE.Index].ToString();
-					Source = result[dbConstants.SOURCE.Index].ToString();
-
-					int words = 0;
-					if (Int32.TryParse(result[dbConstants.WORDS.Index].ToString(), out words)) Words = words; else Words = 0;
-
-					Keywords = result[dbConstants.KEYWORDS.Index].ToString();
-					// Fill in XML details
-
-					//dataForThisLayout
-					System.IO.StringReader reader = new System.IO.StringReader (result [2].ToString ());
-					System.Xml.Serialization.XmlSerializer test = new System.Xml.Serialization.XmlSerializer (typeof(System.Collections.Generic.List<NoteDataXML>),
-					                                                                                         LayoutDetails.Instance.ListOfTypesToStoreInXML ());
-					List<NoteDataXML> ListAsDataObjectsOfType = null;
-					try {
-						// have to load it in an as array of target type and then convert
-						if (result [2].ToString() != Constants.BLANK)
-						{
-						ListAsDataObjectsOfType = (System.Collections.Generic.List<NoteDataXML>)test.Deserialize (reader);
+					time = CoreUtilities.TimerCore.Time (() => {
+						// Fill in LAYOUT specific details
+						Status = result [3].ToString ();
+						Name = result [4].ToString ();
+						if (result [5].ToString () != Constants.BLANK) {
+							ShowTabs = (bool)result [5];
+						} else {
+							//ToDo: This does not seem growable easily
+							ShowTabs = true;
 						}
+						if (result [dbConstants.SUBPANEL.Index].ToString () != Constants.BLANK) {
+							IsSubPanel = (bool)result [dbConstants.SUBPANEL.Index];
+						} else {
+							IsSubPanel = false;
+						}
+						if (result [dbConstants.MAXIMIZETABS.Index].ToString () != Constants.BLANK) {
+							MaximizeTabs = (bool)result [dbConstants.MAXIMIZETABS.Index];
+						} else
+							MaximizeTabs = true;
+						int stars = 0;
+						if (Int32.TryParse (result [dbConstants.STARS.Index].ToString (), out stars) == false)
+							Stars = 0;
 						else
-						{
-							lg.Instance.Line("LayoutDatabase->LoadFrom", ProblemType.ERROR, String.Format ("For note '{0}' the XML was blank! This happens when there is a panel with no note in it. Not serious", Name));
-						}
-					} catch (System.InvalidOperationException e) {
-						string exception = e.ToString ();
-						int pos = exception.IndexOf ("name");
-						int pos2 = exception.IndexOf ("namespace");
-						if (pos2 < pos)
-							pos2 = pos + 1;
-						try
-						{
-						string notetype = exception.Substring (pos, pos2 - pos - 2);
-						string message = 
+							Stars = stars;
+						int hits = 0;
+						if (Int32.TryParse (result [dbConstants.HITS.Index].ToString (), out hits) == false)
+							Hits = 0;
+						else
+							Hits = hits;
+						DateTime date = DateTime.Now;
+						if (DateTime.TryParse (result [dbConstants.DATECREATED.Index].ToString (), out date) == false)
+							DateCreated = DateTime.Now;
+						else
+							DateCreated = date;
+						date = DateTime.Now;
+						if (DateTime.TryParse (result [dbConstants.DATEEDITED.Index].ToString (), out date) == false)
+							DateEdited = DateTime.Now;
+						else
+							DateEdited = date;
+						Notebook = result [dbConstants.NOTEBOOK.Index].ToString ();
+						Section = result [dbConstants.SECTION.Index].ToString ();
+						Subtype = result [dbConstants.TYPE.Index].ToString ();
+						Source = result [dbConstants.SOURCE.Index].ToString ();
+
+						int words = 0;
+						if (Int32.TryParse (result [dbConstants.WORDS.Index].ToString (), out words))
+							Words = words;
+						else
+							Words = 0;
+
+						Keywords = result [dbConstants.KEYWORDS.Index].ToString ();
+						// Fill in XML details
+					});
+					lg.Instance.Line ("LayoutDatabase->LoadFrom", ProblemType.TIMING, String.Format ("ASSIGNVALUES for {0}  took {1}", this.ToString (), time));
+					List<NoteDataXML> ListAsDataObjectsOfType = null;
+					time = CoreUtilities.TimerCore.Time (() => {
+						//dataForThisLayout
+						System.IO.StringReader reader = new System.IO.StringReader (result [2].ToString ());
+						System.Xml.Serialization.XmlSerializer test = new System.Xml.Serialization.XmlSerializer (typeof(System.Collections.Generic.List<NoteDataXML>),
+					                                                                                         LayoutDetails.Instance.ListOfTypesToStoreInXML ());
+				
+						try {
+							// have to load it in an as array of target type and then convert
+							if (result [2].ToString () != Constants.BLANK) {
+								ListAsDataObjectsOfType = (System.Collections.Generic.List<NoteDataXML>)test.Deserialize (reader);
+							} else {
+								lg.Instance.Line ("LayoutDatabase->LoadFrom", ProblemType.ERROR, String.Format ("For note '{0}' the XML was blank! This happens when there is a panel with no note in it. Not serious", Name));
+							}
+						} catch (System.InvalidOperationException e) {
+							string exception = e.ToString ();
+							int pos = exception.IndexOf ("name");
+							int pos2 = exception.IndexOf ("namespace");
+							if (pos2 < pos)
+								pos2 = pos + 1;
+							try {
+								string notetype = exception.Substring (pos, pos2 - pos - 2);
+								string message = 
 			Loc.Instance.Cat.GetStringFmt ("The notetype {0} was present in this Layout but not loaded in memory! This means that the AddIn used to add this note to this Layout has been removed. Loading of this layout is now aborted. Please exit this note and close it to prevent data loss and reinstall the disabled AddIn", notetype);
-						NewMessage.Show (message);
+								NewMessage.Show (message);
+							} catch (Exception) {
+								NewMessage.Show ("unknown error in LoadFrom");
+							}
+						} catch (Exception ex) {
+							throw new Exception (ex.ToString ());
 						}
-						catch (Exception)
-						{
-							NewMessage.Show("unknown error in LoadFrom");
-						}
-					} catch (Exception ex) {
-						throw new Exception (ex.ToString ());
-					}
+
+					});
+					lg.Instance.Line ("LayoutDatabase->LoadFrom", ProblemType.TIMING, String.Format ("DESERIALIZEALL for {0}  took {1}", this.ToString (), time));
+
 					if (null != ListAsDataObjectsOfType) {
 						dataForThisLayout = new List<NoteDataInterface> ();
+						time = CoreUtilities.TimerCore.Time (() => {
+							// need to add LinkTable back (since we have rebuilt the array!!)
+							// We want the LinkTable BEFORE the other notes are CreateParent'ed
+							if (false == IsSubPanel) {
+								if (MyLinkTableNote == null)
+									NewMessage.Show ("LinkTableNote is null??");
+								dataForThisLayout.Add (MyLinkTableNote);
+								// always minimize the linktable note
+								//MyLinkTableNote.Minimize(true);
+								MyLinkTableNote.Visible = false;
+							}
 
-						// need to add LinkTable back (since we have rebuilt the array!!)
-						// We want the LinkTable BEFORE the other notes are CreateParent'ed
-						if (false == IsSubPanel)
-						{
-							if (MyLinkTableNote == null) NewMessage.Show ("LinkTableNote is null??");
-							dataForThisLayout.Add (MyLinkTableNote);
-						}
-
-						for (int i = 0; i < ListAsDataObjectsOfType.Count; i++) {
+							for (int i = 0; i < ListAsDataObjectsOfType.Count; i++) {
 
 								dataForThisLayout.Add (ListAsDataObjectsOfType [i]);
-							if (null != LayoutPanelToLoadNoteOnto) {
-								ListAsDataObjectsOfType [i].CreateParent (LayoutPanelToLoadNoteOnto);
+								if (null != LayoutPanelToLoadNoteOnto) {
+									ListAsDataObjectsOfType [i].CreateParent (LayoutPanelToLoadNoteOnto);
+								}
 							}
-						}
 					
-						Success = true;
-						debug_ObjectCount = ListAsDataObjectsOfType.Count;
+							Success = true;
+							debug_ObjectCount = ListAsDataObjectsOfType.Count;
+						});
+						lg.Instance.Line ("LayoutDatabase->LoadFrom", ProblemType.TIMING, String.Format ("COPYARRAYS for {0}  took {1}", this.LayoutGUID, time));
 					}
 				}
+			} else {
+				throw new Exception("Critical Error. Nothing was found to load on: " + this.ToString());
 			}
 
 
 
 
-			long workingSet = System.Diagnostics.Process.GetCurrentProcess().WorkingSet64;
-			lg.Instance.Line("LoadFrom", ProblemType.TEMPORARY, workingSet.ToString());
+
+			//long workingSet = System.Diagnostics.Process.GetCurrentProcess().WorkingSet64;
+			//lg.Instance.Line("LoadFrom", ProblemType.TEMPORARY, workingSet.ToString());
 			// we loaded this, so we increase the hits
 			Hits++; 
 			return Success;

@@ -11,6 +11,9 @@ namespace YOM2013
 		[STAThread()]
 		public static void Main (string[] args)
 		{
+			CoreUtilities.TimerCore.TimerOn=true;
+			lg.Instance.Loudness = Loud.CTRIVIAL;
+			//lg.Instance.Loudness = Loud.DOFF;
 			//Application.Init ();
 			MainForm win = new MainForm (LayoutDetails.Instance.Path, LayoutDetails.Instance.DoForceShutDown, LayoutDetails.Instance.YOM_DATABASE,  FileUtils.GetIcon("main.ico"));
 			win.Show ();

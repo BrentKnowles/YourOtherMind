@@ -1,4 +1,4 @@
-#define ShowLogs
+//#define SHOWLOGS not working the way it should BUT if I uncomment, the Conditionals, below, it is removed. Just won't reapepar with the This on it sown
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -37,6 +37,8 @@ namespace CoreUtilities
 		{
 			logWriter = File.AppendText(LOG_FILE);
 		}
+		// if set to true then only TIMING messages will be seen
+		public bool OnlyTime=false;
 
 		/// <summary>
 		/// Releases all resource used by the <see cref="CoreUtilities.lg"/> object.
@@ -82,16 +84,6 @@ namespace CoreUtilities
 				return (lg)instance;
 			}
 		}
-
-
-		public void Line(string Routine, ProblemType Problem, string Details)
-		{
-		
-		
-			//return
-				Line(Routine, Problem, Details, Loud.ACRITICAL);
-		}
-
 		/// <summary>
 		/// Writes the log. Called after the buffer reaches a certain size
 		/// </summary>
@@ -107,19 +99,37 @@ namespace CoreUtilities
 			}
 			LogLines = new List<string>();
 		}
+		//[Conditional("SHOWLOGS")]
+		public void Line(string Routine, ProblemType Problem, string Details)
+		{
+		
+		
+			//return
+				Line(Routine, Problem, Details, Loud.ACRITICAL);
+		}
 
-
-		[Conditional("ShowLogs")]
+	
+	
+		//[Conditional("SHOWLOGS")]
 		public void Line (string Routine, ProblemType Problem, string Details, Loud myLoudness)
 		{
+			bool show = true;
+			if (OnlyTime == true && Problem != ProblemType.TIMING) {
+				show = false;
+			}
 		
 
 			if ((this.Loudness == Loud.DOFF) || (this.Loudness < myLoudness)) {
+				//NewMessage.Show("Not loud enough!");
 				//Console.WriteLine ("exiting log");
 				// if this message is not loud enough we don't post it
 				//return false;
-			} else {
+				show = false;
+			} 
 
+			if (true == show)
+			{
+				//NewMessage.Show("loud enough!");
 				string log = (String.Format ("{0}, {1}, {2}, {3}", Routine, Problem.ToString (), Details, myLoudness));
 				LogLines.Add (log);
 
@@ -129,7 +139,24 @@ namespace CoreUtilities
 			}
 			//return true;
 		}
-
+		// used for testing
+		public bool IsThereALog()
+		{
+			bool result = false;
+			// calls WriteLog
+			if (LogLines.Count >0) result= true;
+			
+			// we empty the loglines so each test is neutral
+		
+			Reset ();
+			
+			return result;
+		}
+		// clears the buffer, generally should only be used for unit testing
+		public void Reset ()
+		{
+			LogLines = new List<string>();
+		}
 	}
 }
 

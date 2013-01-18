@@ -35,6 +35,7 @@ namespace Layout
 		{
 			this.BackColor = Color.Beige;
 			Child = child;
+			// removing DoubleBuffered had no impact on load time performance
 			this.DoubleBuffered = true;
 			this.SetStyle(ControlStyles.ResizeRedraw, true);
 

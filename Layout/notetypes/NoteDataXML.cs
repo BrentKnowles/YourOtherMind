@@ -22,6 +22,7 @@ namespace Layout
 	public partial class NoteDataXML : NoteDataInterface, IComparable, IDisposable
 	{
 		#region constants
+
 		const string BLANK = "";
 		protected int defaultheight = 200;
 		protected int defaultwidth = 200;
@@ -78,8 +79,16 @@ namespace Layout
 				width =  defaultWidth;
 			}
 		}
+		private bool visible = true;
 
-
+		public bool Visible {
+			get {
+				return visible;
+			}
+			set {
+				visible = value;
+			}
+		}
 
 		private NotePanel parent;
 		[XmlIgnore]
@@ -218,6 +227,7 @@ namespace Layout
 			ParentNotePanel.Height = Height;
 			ParentNotePanel.Width = Width;
 			ParentNotePanel.Dock = this.Dock;
+			ParentNotePanel.Visible = this.Visible;
 			SetSaveRequired(true);
 
 
@@ -229,7 +239,12 @@ namespace Layout
 		{
 			return Loc.Instance.Cat.GetString("Label");
 		}
-
+		public void Minimize()
+		{
+			// perform an actual minimize
+			this.Visible = false;
+			UpdateLocation ();
+		}
 /// <summary>
 /// Maximize the specified Maximize.
 /// </summary>
@@ -238,7 +253,7 @@ namespace Layout
 /// </param>
 		public void Maximize (bool Maximize)
 		{
-			lg.Instance.Line("Maximize", ProblemType.WARNING, String.Format ("Calling Maximize for note with GUID = {0} and Parent LayoutPanel GUID Of {1}",this.GuidForNote, Layout.GUID ));
+			lg.Instance.Line("Maximize", ProblemType.MESSAGE, String.Format ("Calling Maximize for note with GUID = {0} and Parent LayoutPanel GUID Of {1}",this.GuidForNote, Layout.GUID ));
 			// is this actually dock=none/bringtofront, full width?
 			if (true == Maximize) {
 				ParentNotePanel.Dock = DockStyle.None;
@@ -250,7 +265,8 @@ namespace Layout
 				ParentNotePanel.BringToFront ();
 			} else {
 				// restore defaults
-				ParentNotePanel.Dock = DockStyle.Fill;
+				this.Dock = DockStyle.None;
+			//	ParentNotePanel.Dock = DockStyle.Fill;
 				UpdateLocation ();
 			}
 

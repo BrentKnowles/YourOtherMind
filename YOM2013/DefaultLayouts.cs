@@ -37,7 +37,7 @@ namespace YOM2013
 
 			list.Dock = DockStyle.Fill;
 
-			sidedockpanel.BringToFront();
+			sidedockpanel.BringToFrontAndShow();
 			sidedockpanel.Dock = DockStyle.Left;
 
 			//

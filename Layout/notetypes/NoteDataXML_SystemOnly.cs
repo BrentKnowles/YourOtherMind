@@ -67,7 +67,15 @@ namespace Layout
 			}
 			return null;
 		}
+		public string GetLayoutName()
+		{
+			return GetChildLayout().Caption;
 
+		}
+		public string GetLayoutGUID()
+		{
+			return GetChildLayout().GUID;
+		}
 		/// <summary>
 		/// Handles the mouse enter.
 		/// </summary>
@@ -96,26 +104,36 @@ namespace Layout
 		{
 			return Loc.Instance.Cat.GetString("System");
 		}
-		protected override void HandleCloseClick (object sender, EventArgs e)
+
+		public void DoCloseNote (bool save)
 		{
+			if (true == save) {
+				NewMessage.Show ("saving when note closes not implemented yet");
+			}
 
 			if (AlertWhenClosed != null) {
 				// gets removed from the Windows list
 				AlertWhenClosed (GetChildLayout ());
 			}
-
-
-
-
+			
+			
+			
+			
 			if (GetChildLayout().GetSaveRequired == true) {
 				NewMessage.Show("HandleCloseClick Save is required ");
 			}
-
-//			if (CloseNoteDelegate != null) {
-//				CloseNoteDelegate(true);
-//			}
-
+			
+			//			if (CloseNoteDelegate != null) {
+			//				CloseNoteDelegate(true);
+			//			}
+			
 			DeleteNote(this);
+		}
+		protected override void HandleCloseClick (object sender, EventArgs e)
+		{
+			// TODO: probably should save, when I finish that system
+			DoCloseNote (false);
+
 		}
 	}
 }

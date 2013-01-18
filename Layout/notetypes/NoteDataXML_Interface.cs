@@ -44,8 +44,11 @@ namespace Layout
 		//delegate_UpdateListOfNotes UpdateListOfNotes;
 		public virtual void CreateParent (LayoutPanelBase _Layout)
 		{
+
+
+
 			ParentNotePanel = new NotePanel (this);
-			
+			ParentNotePanel.SuspendLayout ();
 
 			
 			ParentNotePanel.Visible = true;
@@ -64,6 +67,8 @@ namespace Layout
 			
 			
 			CaptionLabel = new ToolStrip ();
+			CaptionLabel.SuspendLayout ();
+			CaptionLabel.DoubleClick += HandleCaptionLabelDoubleClick;
 			CaptionLabel.MouseDown += HandleMouseDown;
 			CaptionLabel.MouseUp += HandleMouseUp;
 			CaptionLabel.MouseLeave += HandleMouseLeave;
@@ -74,6 +79,7 @@ namespace Layout
 			CaptionLabel.GripStyle = ToolStripGripStyle.Hidden;
 			//CaptionLabel.Text = this.Caption;
 			captionLabel = new ToolStripLabel (this.Caption);
+			captionLabel.ToolTipText = "Doubleclick this to set the note to its regular size";
 
 			captionLabel.MouseDown += HandleMouseDown;
 			captionLabel.MouseUp += HandleMouseUp;
@@ -87,23 +93,26 @@ namespace Layout
 			CaptionLabel.Items.Add (properties);
 
 
-			ToolStripButton MinimizeButton = new ToolStripButton();
+			ToolStripButton MinimizeButton = new ToolStripButton ();
 			MinimizeButton.Text = "--";
-			MinimizeButton.Click+= HandleMinimizeButtonClick;
+			MinimizeButton.ToolTipText = "Hides the note. Bring it back by using the List or a Tab";
+			MinimizeButton.Click += HandleMinimizeButtonClick;
+
 			CaptionLabel.Items.Add (MinimizeButton);
 
 
-			ToolStripButton MaximizeButton = new ToolStripButton();
+			ToolStripButton MaximizeButton = new ToolStripButton ();
 			MaximizeButton.Text = "[  ]";
-			MaximizeButton.Click+= HandleMaximizeButtonClick;
+			MaximizeButton.ToolTipText = Loc.Instance.GetString("Fills available screen");
+			MaximizeButton.Click += HandleMaximizeButtonClick;
 			CaptionLabel.Items.Add (MaximizeButton);
 
-			if (true == IsSystemNote)
-			{
+			if (true == IsSystemNote) {
 				// not really a delete, more of a close
-			ToolStripButton closeButton = new ToolStripButton();
+				ToolStripButton closeButton = new ToolStripButton ();
 				closeButton.Text = " X ";
-				closeButton.Click+= HandleCloseClick;;
+				closeButton.Click += HandleCloseClick;
+				;
 				CaptionLabel.Items.Add (closeButton);
 			}
 
@@ -135,6 +144,13 @@ namespace Layout
 				deleteNote.Text = Loc.Instance.Cat.GetString ("Delete This Note");
 				properties.DropDownItems.Add (deleteNote);
 				deleteNote.Click += HandleDeleteNoteClick;
+			} else
+				if (true == IsSystemNote) {
+				// add a way to DELETE a Layout?
+				ToolStripButton deleteNote = new ToolStripButton ();
+				deleteNote.Text = Loc.Instance.Cat.GetString ("Delete This Layout");
+				properties.DropDownItems.Add (deleteNote);
+				deleteNote.Click += HandleDeleteLayoutClick;;
 			}
 			ToolStripButton BringToFront = new ToolStripButton();
 			BringToFront.Text = Loc.Instance.Cat.GetString("Bring to Front");
@@ -166,13 +182,7 @@ namespace Layout
 			PropertyPanel.Dock = DockStyle.Top;
 			PropertyPanel.AutoScroll = true;
 
-			 propertyGrid = new PropertyGrid();
-			propertyGrid.SelectedObject = this;
-
-			propertyGrid.PropertyValueChanged+= HandlePropertyValueChanged;
-			propertyGrid.Parent = PropertyPanel;
-
-			propertyGrid.Dock = DockStyle.Fill;
+//			
 
 			Button CommitChanges = new Button();
 			CommitChanges.Text = Loc.Instance.Cat.GetString("Update Note");
@@ -180,6 +190,12 @@ namespace Layout
 			CommitChanges.Dock = DockStyle.Bottom;
 			CommitChanges.Click += HandleCommitChangesClick;
 			CommitChanges.BringToFront();
+
+
+
+			ParentNotePanel.Visible = this.Visible;
+			CaptionLabel.ResumeLayout();
+			ParentNotePanel.ResumeLayout();
 
 
 			// Set up delegates
@@ -191,6 +207,34 @@ namespace Layout
 			Layout = _Layout;
 
 		}
+		/// <summary>
+		/// Handles the delete layout click for a SYSTEM NOTE
+		/// </summary>
+		/// <param name='sender'>
+		/// Sender.
+		/// </param>
+		/// <param name='e'>
+		/// E.
+		/// </param>
+		void HandleDeleteLayoutClick (object sender, EventArgs e)
+		{
+			if (NewMessage.Show (Loc.Instance.GetString ("Delete?"), Loc.Instance.GetStringFmt ("Do you REALLY want to delete Layout '{0}'?", ((NoteDataXML_SystemOnly) this).GetLayoutName()),
+			                    MessageBoxButtons.YesNo, null) == DialogResult.Yes) {
+				// delete
+				// then dispose
+				MasterOfLayouts.DeleteLayout(((NoteDataXML_SystemOnly) this).GetLayoutGUID());
+				// close this one final time wihtout saving since we are now gone
+				((NoteDataXML_SystemOnly) this).DoCloseNote(false);
+			}
+		}
+
+		void HandleCaptionLabelDoubleClick (object sender, EventArgs e)
+		{
+
+			Maximize(false);
+		}
+
+	
 
 		/// <summary>
 		/// Handles the delete click. SHOULD DO NOTHING IN ALL CLASSES EXCEPT THE SYSTEM NOTE
@@ -208,7 +252,12 @@ namespace Layout
 
 		void HandleMinimizeButtonClick (object sender, EventArgs e)
 		{
-			Maximize (false);
+			// if just click then we UnMaximize
+			// doubleclick does a mnimize
+
+			Minimize ();
+				//Maximize (false);
+
 		}
 
 		void HandleMaximizeButtonClick (object sender, EventArgs e)
@@ -216,13 +265,16 @@ namespace Layout
 			Maximize(true);
 		}
 
-		public void BringToFront ()
+		public void BringToFrontAndShow ()
 		{
 			if (ParentNotePanel == null) {
-				NewMessage.Show (Loc.Instance.GetStringFmt("The note {0} with guid={1} does not have a valid parent.", this.Caption, this.GuidForNote));
+				NewMessage.Show (Loc.Instance.GetStringFmt ("The note {0} with guid={1} does not have a valid parent.", this.Caption, this.GuidForNote));
+			} else {
+				// we always make the note visible if showing
+				this.Visible = true;
+				ParentNotePanel.Visible = true;
+				ParentNotePanel.BringToFront ();
 			}
-			else
-			ParentNotePanel.BringToFront();
 		}
 
 		/// <summary>
@@ -238,7 +290,7 @@ namespace Layout
 		/// </param>
 		void HandleBringToFrontClick (object sender, EventArgs e)
 		{
-			BringToFront();
+			BringToFrontAndShow();
 		}
 
 		/// <summary>
@@ -257,10 +309,13 @@ namespace Layout
 				return;
 			}
 
-			NewMessage.Show ("Need a yes/no here");
-			if (DeleteNote != null) {
-				DeleteNote(this);
+			if (NewMessage.Show (Loc.Instance.GetString ("Delete?"), Loc.Instance.GetStringFmt ("Do you REALLY want to delete Note {0}?", this.Caption),
+			                     MessageBoxButtons.YesNo, null) == DialogResult.Yes) {
+				if (DeleteNote != null) {
+					DeleteNote(this);
+				}
 			}
+		
 		}
 
 		void HandleCaptionEditorKeyDown (object sender, KeyEventArgs e)
@@ -309,6 +364,17 @@ namespace Layout
 
 			PropertyPanel.Visible = !PropertyPanel.Visible;
 			if (PropertyPanel.Visible == true) {
+
+				if (propertyGrid == null)
+				{
+				propertyGrid = new PropertyGrid();
+				propertyGrid.SelectedObject = this;
+				
+				propertyGrid.PropertyValueChanged+= HandlePropertyValueChanged;
+				propertyGrid.Parent = PropertyPanel;
+				
+				propertyGrid.Dock = DockStyle.Fill;
+				}
 				ParentNotePanel.AutoScroll = true;
 
 				PropertyPanel.AutoScroll = true;
@@ -318,6 +384,7 @@ namespace Layout
 
 			} else {
 				ParentNotePanel.AutoScroll = false;
+
 			}
 		}
 		/// <summary>
@@ -420,7 +487,7 @@ namespace Layout
 		Point PanelMouseDownLocation ;
 		void HandleMouseDown (object sender, MouseEventArgs e)
 		{
-			BringToFront();
+			BringToFrontAndShow();
 			if (this.Dock == DockStyle.None) {
 				if (e.Button == MouseButtons.Left) {
 					// start moving

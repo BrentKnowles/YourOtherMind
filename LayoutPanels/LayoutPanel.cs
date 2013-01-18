@@ -657,7 +657,7 @@ namespace Layout
 					Notes.Add (note);
 			
 					note.CreateParent (this);
-					note.BringToFront();
+					note.BringToFrontAndShow();
 					UpdateListOfNotes ();
 					SetSaveRequired (true); // TODO: Also need to go through and hook delegates/callbacks for when a note itself changes.
 				} else {
@@ -1157,7 +1157,9 @@ namespace Layout
 
 
 			if (note.ParentNotePanel != null) {
-				note.BringToFront ();
+				// if we ever go to a note we make it visisble
+				note.Visible = true;
+				note.BringToFrontAndShow ();
 				note.Flash ();
 			} else {
 				lg.Instance.Line("LayoutPanel->GoToNote", ProblemType.MESSAGE, "Even with advanced search we did not find note");

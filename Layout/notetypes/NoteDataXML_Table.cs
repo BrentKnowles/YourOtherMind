@@ -194,6 +194,7 @@ namespace Layout
 			}
 			lg.Instance.Line("NoteDataXML_Table-CreateParent",ProblemType.MESSAGE, String.Format ("Passing {0} columns into new TablePanel", Columns.Length));
 			Table = new TablePanel (dataSource, HandleCellBeginEdit, Columns, GoToNote, this.Caption, GetRandomTableResults);
+			lg.Instance.Line("NoteDataXML_Table->CreateParent", ProblemType.MESSAGE, String.Format ("Before HANDLEDATABINING my name is {0}", this.Caption));
 			Table.Parent = ParentNotePanel;
 			Table.Dock = DockStyle.Fill;
 			Table.BringToFront ();
@@ -413,18 +414,17 @@ namespace Layout
 		/// </summary>
 		/// <param name="nModifier">Some tables influence the value of the next table. Generally this should be 0</param>
 		/// 
-		public static resultReturn GenerateResult(int nModifier, DataTable currentTable, ref string nextTable, string Title, NoteDataInterface[] notes)
+		public static resultReturn GenerateResult (int nModifier, DataTable currentTable, ref string nextTable, string Title, NoteDataInterface[] notes)
 		{
-			resultReturn returner = new resultReturn();
+			resultReturn returner = new resultReturn ();
 			returner.nModifier = 0;
 			returner.sResult = Constants.BLANK;
 			
 			// error checking
 			// if result column does not exist
-			if (currentTable.Columns.IndexOf(TableWrapper.Result) == -1 ||
-			    currentTable.Columns.IndexOf(TableWrapper.Roll) == -1)
-			{
-				NewMessage.Show(String.Format (TableWrapper.ColumnDoesNotExist,"result or roll"));
+			if (currentTable.Columns.IndexOf (TableWrapper.Result) == -1 ||
+				currentTable.Columns.IndexOf (TableWrapper.Roll) == -1) {
+				NewMessage.Show (String.Format (TableWrapper.ColumnDoesNotExist, "result or roll"));
 				return returner;
 			}
 			
@@ -441,8 +441,7 @@ namespace Layout
 			int nValue = 0;
 			int nMin = 0;
 			int nMax = 0;
-			if (currentTable.Rows[0][0].ToString() == "-1" )
-			{
+			if (currentTable.Rows [0] [0].ToString () == "-1") {
 				// This is a linear table
 				// Linear tables go through a checklist, one table after another. 
 				// RULES:
@@ -451,29 +450,24 @@ namespace Layout
 				// - If a result results in a next_table that is TAKEN, breaking the linear table
 				// - to navigate we set Nexttable to the next row number but with a MINUS preceding it
 				
-				if (nextTable.Length > 0 && nextTable[0] == '-')
-				{
-					nFoundRowNumber = Math.Abs(Int32.Parse(nextTable));
-				}
-				else
-				{
+				if (nextTable.Length > 0 && nextTable [0] == '-') {
+					nFoundRowNumber = Math.Abs (Int32.Parse (nextTable));
+				} else {
 					nFoundRowNumber = 0;
 				}
-			}
-			else
-			{
+			} else {
 				// fill in ranges values
-				ranges = TableWrapper.BuildRangeArray(ranges, currentTable);
+				ranges = TableWrapper.BuildRangeArray (ranges, currentTable);
 				
 				if (ranges == null)
 					return returner;
 				
 				// find maximum value in last row
-				nMin = ranges[0].nMin;
-				nMax = ranges[ranges.Length - 1].nMax;
+				nMin = ranges [0].nMin;
+				nMax = ranges [ranges.Length - 1].nMax;
 				// roll the die
-				Random r = new Random();
-				nValue = nModifier + r.Next(nMin, nMax + 1);
+				Random r = new Random ();
+				nValue = nModifier + r.Next (nMin, nMax + 1);
 				
 				// if the value, with modifier, is now greater than the max, then set it to max
 				if (nValue > nMax)
@@ -481,14 +475,11 @@ namespace Layout
 				
 				
 				// Go through each row and test to see if the number fits within the range
-				for (int j = 0; j < ranges.Length; j++)
-				{
+				for (int j = 0; j < ranges.Length; j++) {
 					// am I greater than or equal to min value?
-					if (nValue >= ranges[j].nMin)
-					{
+					if (nValue >= ranges [j].nMin) {
 						// am I less than or equal to max value for this row
-						if (nValue <= ranges[j].nMax)
-						{
+						if (nValue <= ranges [j].nMax) {
 							nFoundRowNumber = j;
 						}
 					}
@@ -496,50 +487,35 @@ namespace Layout
 			} // random lookup
 			
 			// we override the NExtTable result if there is a valid valu
-			try
-			{
-				
-				if (!Convert.IsDBNull(currentTable.Rows[nFoundRowNumber][TableWrapper.NextTable]))
-				{
+			try {
+				if (currentTable.Columns.IndexOf (TableWrapper.NextTable) > -1) {
+					if (!Convert.IsDBNull (currentTable.Rows [nFoundRowNumber] [TableWrapper.NextTable])) {
 					
-					string sNext = currentTable.Rows[nFoundRowNumber][TableWrapper.NextTable].ToString();
-					if (sNext != null && sNext != Constants.BLANK)
-					{
-						nextTable = sNext;
+						string sNext = currentTable.Rows [nFoundRowNumber] [TableWrapper.NextTable].ToString ();
+						if (sNext != null && sNext != Constants.BLANK) {
+							nextTable = sNext;
+						}
+					} else if (nextTable.Length > 1 && nextTable [0] == '-') {
+						// a linear table
+						// to keep from falling into an infinite loop we need to drop out
+						nextTable = "";
 					}
 				}
-				else if (nextTable.Length > 1 && nextTable[0] == '-')
-				{
-					// a linear table
-					// to keep from falling into an infinite loop we need to drop out
-					nextTable = "";
-				}
-			}
-			catch (Exception ex)
-			{
-				NewMessage.Show (ex.ToString());
+			} catch (Exception ex) {
+				NewMessage.Show (ex.ToString ());
 			}
 			
-			if (currentTable.Columns.IndexOf(TableWrapper.Modifier) > -1)
-			{
-				if (currentTable.Rows[nFoundRowNumber][TableWrapper.Modifier] == null)
-				{
+			if (currentTable.Columns.IndexOf (TableWrapper.Modifier) > -1) {
+				if (currentTable.Rows [nFoundRowNumber] [TableWrapper.Modifier] == null) {
 					returner.nModifier = 0;
-				}
-				else
-				{
-					try
-					{
-						returner.nModifier = (int)Int32.Parse(currentTable.Rows[nFoundRowNumber][TableWrapper.Modifier].ToString());
-					}
-					catch (Exception)
-					{
+				} else {
+					try {
+						returner.nModifier = (int)Int32.Parse (currentTable.Rows [nFoundRowNumber] [TableWrapper.Modifier].ToString ());
+					} catch (Exception) {
 						returner.nModifier = 0;
 					}
 				}
-			}
-			else
-			{
+			} else {
 				returner.nModifier = 0;
 			}
 			string sDebugOnly = Constants.BLANK;
@@ -549,20 +525,18 @@ namespace Layout
 //			}
 			
 			
-			string sResult = currentTable.Rows[nFoundRowNumber][TableWrapper.Result].ToString();
+			string sResult = currentTable.Rows [nFoundRowNumber] [TableWrapper.Result].ToString ();
 			
 			
-			if (sResult.ToLower().IndexOf("lookup") > -1)
-			{
+			if (sResult.ToLower ().IndexOf ("lookup") > -1) {
 				
 				// NewMessage.Show("lookup found");
-				sResult = lookup(sResult, currentTable, notes);
+				sResult = lookup (sResult, currentTable, notes);
 				
 			}
 			
 			string sTitle = sDebugOnly + Title + " ";
-			if (sTitle == " ")
-			{
+			if (sTitle == " ") {
 				sTitle = ""; // get rid of space if there was no title
 			}
 			returner.sResult = sTitle + sResult + Environment.NewLine;

@@ -5,7 +5,7 @@ namespace CoreUtilities
 
 
 	public enum Loud {ACRITICAL=0, BDEFAULT=1,CTRIVIAL=2, DOFF=3};
-	public enum ProblemType {MESSAGE, ERROR, TEMPORARY,EXCEPTION, WARNING};
+	public enum ProblemType {MESSAGE, ERROR, TEMPORARY,EXCEPTION, WARNING, TIMING};
 	public interface iLogging
 	{
 

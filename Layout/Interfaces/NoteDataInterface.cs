@@ -13,6 +13,7 @@ namespace Layout
 		Point Location {get; set;}
 		int Height {get;set;}
 		int Width{get;set;}
+		bool Visible{get;set;}
 		DockStyle Dock {get; set;}
 
 
@@ -53,9 +54,10 @@ namespace Layout
 
 		Action<bool> SetSaveRequired { get; set; }
 		void Save();
-		 void BringToFront();
+		 void BringToFrontAndShow();
 		 void Flash();
 		void Maximize (bool Maximize);
+		void Minimize();
 		string RegisterType();
 
 		/// <summary>

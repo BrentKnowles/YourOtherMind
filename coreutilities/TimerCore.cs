@@ -4,6 +4,8 @@ namespace CoreUtilities
 {
 	public class TimerCore
 	{
+		// must be set to true else no timing happens
+		public static bool TimerOn;
 		/// <summary>
 		/// Time the specified action.
 		/// 
@@ -21,12 +23,18 @@ namespace CoreUtilities
 		/// <param name='action'>
 		/// Action.
 		/// </param>
-		public static TimeSpan Time(Action action)
+		public static TimeSpan Time (Action action)
 		{
-			Stopwatch stopwatch = Stopwatch.StartNew();
-			action();
-			stopwatch.Stop();
-			return stopwatch.Elapsed;
+			if (TimerOn) {
+				Stopwatch stopwatch = Stopwatch.StartNew ();
+				action ();
+				stopwatch.Stop ();
+				return stopwatch.Elapsed;
+			} else {
+				// still need to run the action
+				action ();
+				return TimeSpan.Zero;
+			}
 		}
 
 	}

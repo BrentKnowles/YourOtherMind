@@ -17,6 +17,8 @@ namespace YOM2013
 {
 	public class MainForm : appframe.MainFormBase 
 	{
+		// the types of footer messages, influences the control that is updated
+		enum FootMessageType  {LOAD, NOTES};
 		#region gui
 		ToolStripMenuItem Windows;
 		ContextMenuStrip TextEditContextStrip;
@@ -339,6 +341,18 @@ namespace YOM2013
 		public MainForm (string _path, Action<bool>ForceShutDownMethod, string storage, Icon mainIcon) : base (_path,ForceShutDownMethod,storage, mainIcon)
 		{
 
+			//Check for updates
+			string sparkupdatefile = "http://www.yourothermind.com/yomcast.xml";//update.applimit.com/netsparkle/versioninfo.xml
+			try {
+				_sparkle = new Sparkle (sparkupdatefile); 
+				//_sparkle.ShowDiagnosticWindow = true;
+				_sparkle.StartLoop (true); 
+				
+				
+				lg.Instance.Line("MainForm.MainForm", ProblemType.MESSAGE, "Loading appcast: " + sparkupdatefile);
+			} catch (Exception ex) {
+				lg.Instance.Line("MainForm.MainForm", ProblemType.ERROR, "Sparkle was unable to find the update file " + ex.ToString());
+			}
 
 
 			
@@ -358,8 +372,7 @@ namespace YOM2013
 
 			Switches ();
 
-			lg.Instance.Loudness = Loud.CTRIVIAL;
-			//lg.Instance.Loudness = Loud.DOFF;
+
 			LayoutDetails.Instance.LoadLayoutRef = LoadLayout;
 
 
@@ -455,25 +468,39 @@ namespace YOM2013
 
 
 		
+			BuildFooter();
 
-
-			//Check for updates
-			string sparkupdatefile = "http://www.yourothermind.com/yomcast.xml";//update.applimit.com/netsparkle/versioninfo.xml
-			try {
-				_sparkle = new Sparkle (sparkupdatefile); 
-				//_sparkle.ShowDiagnosticWindow = true;
-				_sparkle.StartLoop (true); 
-
-
-				lg.Instance.Line("MainForm.MainForm", ProblemType.MESSAGE, "Loading appcast: " + sparkupdatefile);
-			} catch (Exception ex) {
-				lg.Instance.Line("MainForm.MainForm", ProblemType.ERROR, "Sparkle was unable to find the update file " + ex.ToString());
-			}
-
+		
 
 
 		}
 
+		/// <summary>
+		/// Builds the footer.
+		/// </summary>
+		void BuildFooter ()
+		{
+			ToolStripButton Load = new ToolStripButton();
+			Load.Name = FootMessageType.LOAD.ToString();
+			FooterStatus.Items.Add (Load);
+
+		}
+
+		void UpdateFooter (FootMessageType messageType, string message)
+		{
+			string searchname = Constants.BLANK;
+			searchname = messageType.ToString ();
+		
+
+			if (Constants.BLANK != searchname) {
+				ToolStripItem[] found = FooterStatus.Items.Find (searchname, true);
+				if (null != found && found.Length > 0)
+				{
+					found[0].Text = message;
+				}
+
+			}
+		}
 		/// <summary>
 		/// Builds the text editor context menu strip.
 		/// 
@@ -572,6 +599,13 @@ namespace YOM2013
 				
 				LayoutPanel newLayout = CreateLayoutContainer(guid);
 				newLayout.NewLayoutFromOldFile (guid, open.FileName);
+				NewMessage.Show ("We close the note after the import to avoid errors");
+				//newLayout.Dispose();
+				newLayout.SaveLayout();
+				MDIHOST.DoCloseNote(false);
+
+
+
 				LayoutDetails.Instance.CurrentLayout = newLayout;
 			}
 		}
@@ -735,40 +769,38 @@ namespace YOM2013
 		/// </param>
 		void LoadLayout (string guidtoload)
 		{
-
-
-
+			if (MasterOfLayouts.ExistsByGUID (guidtoload) == true) {
+				this.Cursor = Cursors.WaitCursor;
+				TimeSpan time;
+				time = CoreUtilities.TimerCore.Time (() => {
+			
+		
 
 
 
 			
-			// if Layout NOT open already THEN open it
-			LayoutsInMemory existing = LayoutPresent  (guidtoload);
-			if (existing == null) {
-				LayoutPanel newLayout = CreateLayoutContainer (guidtoload);
-				newLayout.LoadLayout (guidtoload, false, TextEditContextStrip);
-				LayoutDetails.Instance.CurrentLayout = newLayout;
-			} else {
+
+			
+					// if Layout NOT open already THEN open it
+					LayoutsInMemory existing = LayoutPresent (guidtoload);
+					if (existing == null) {
+						LayoutPanel newLayout = CreateLayoutContainer (guidtoload);
+						newLayout.LoadLayout (guidtoload, false, TextEditContextStrip);
+						LayoutDetails.Instance.CurrentLayout = newLayout;
+					} else {
 				
-				GotoExistingLayout(existing.Container, existing.LayoutPanel);
+						GotoExistingLayout (existing.Container, existing.LayoutPanel);
+					}
+
+				});
+
+				UpdateFooter (FootMessageType.LOAD, Loc.Instance.GetStringFmt ("Loaded in {0}", time));
+				//	UpdateFooter(FootMessageType.NOTES, Loc.Instance.GetStringFmt("{0} Notes", LayoutDetails.Instance.CurrentLayout.Note how to count notes cheaply? Rturn value?
+		
+				this.Cursor = Cursors.Default;
+			} else {
+				NewMessage.Show (Loc.Instance.GetStringFmt("The layout with ID = '{0}' does not exist. Perhaps it has been deleted. Try refreshing the list.", guidtoload));
 			}
-
-
-
-			// otherwise just 'go to it'
-			//
-
-			//CurrentLayout = new Layout.LayoutPanel (CoreUtilities.Constants.BLANK);
-			//CurrentLayout.Name;
-			/*CurrentLayout.BorderStyle = BorderStyle.Fixed3D;
-			CurrentLayout.Parent = MDIHOST.Parent;
-			CurrentLayout.Visible = true;
-			CurrentLayout.Dock = System.Windows.Forms.DockStyle.Fill;
-			CurrentLayout.BringToFront ();
-			CurrentLayout.LoadLayout(guidtoload);
-			*/
-			//RebuildWindowMenu(); NOPE: Call this when the window is opened
-
 		}
 
 		void RefreshWindowsMenu ()
@@ -810,7 +842,8 @@ namespace YOM2013
 
 		void GotoExistingLayout (NoteDataXML_SystemOnly panel, LayoutPanel layoutPanel)
 		{
-
+			// in case minimized we make it visible
+			panel.ParentNotePanel.Visible = true;
 			panel.ParentNotePanel.BringToFront();
 			panel.ParentNotePanel.Focus();
 			LayoutDetails.Instance.CurrentLayout = layoutPanel;
@@ -870,6 +903,8 @@ namespace YOM2013
 
 		void HandleFormClosed (object sender, FormClosedEventArgs e)
 		{
+			lg.Instance.Dispose();
+
 			if (false == LayoutDetails.Instance.ForceShutdown) {
 				TestAndSaveIfNecessary ();
 			} else {

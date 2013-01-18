@@ -103,7 +103,7 @@ namespace Testing
 				form.Controls.Add (panel);
 				panel.LoadLayout(panelname, false,null);
 			});
-			Console.WriteLine("TIME " + time);
+			_w.output("TIME " + time);
 
 	
 
