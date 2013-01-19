@@ -31,6 +31,11 @@ namespace Layout
 				}
 				lg.Instance.Line ("LayoutDetails->CurrentLayout", ProblemType.MESSAGE, "Setting Layout to " + currentLayout.GUID);
 				}
+				else
+				{
+					// if null, blank the title
+					UpdateTitle("");
+				}
 			}
 		}
 

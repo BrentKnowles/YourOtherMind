@@ -14,7 +14,11 @@ namespace MefAddIns.Extensibility
 	
 		public bool IsNoteAction;
 		public bool IsANote;
-		// Will show a quicklink on the Footer, while this is running
+	
+
+		/// <summary>
+		/// 	// Will show a quicklink on the Footer, while this is running. You must override ACTIVEFORM for this to work.
+		/// </summary>
 		public bool QuickLinkShows;
 		// If ParentMenuName = "" then will appear at toplevel
 		public string ParentMenuName;

@@ -5,13 +5,16 @@ NoteDataXML_table->Columns, TEMPORARY, Hooking up DataSource, CTRIVIAL
 NoteDataXML_table->Columns, TEMPORARY, Hooking up DataSource4, CTRIVIAL
 NoteDataXML_Table->BuildDefaultColumns, MESSAGE, Building Columns Done, CTRIVIAL
 AddIns.BuildListOfAddIns, MESSAGE, Scanning C:\Users\BrentK\Documents\YOMDEBUG\plugins for addins, ACRITICAL
+AddIns.BuildListOfAddIns, MESSAGE, [1.0.0.0] LookupWord by Brent Knowles.
+	Retrieves a definition and synonyms from online service.
+, ACRITICAL
 AddIns.BuildListOfAddIns, MESSAGE, [1.0.0.1] Memory Tracker by Brent Knowles.
 	Displays current memory usage.
 , ACRITICAL
 AddIns.BuildListOfAddIns, MESSAGE, [1.0.0.0] Pictures by Brent Knowles.
 	Allows pictures to be added to a Layout.
 , ACRITICAL
-AddIns.BuildListOfAddIns, MESSAGE, AddIns Found: 2., ACRITICAL
+AddIns.BuildListOfAddIns, MESSAGE, AddIns Found: 3., ACRITICAL
 SqLiteDatabase->CreateTableIfDoesNotExist, MESSAGE, CREATE TABLE if not exists [addins_active] ( id INTEGER,  guid TEXT, PRIMARY KEY (id)), ACRITICAL
 SqlLiteDatabase.GetValues, WARNING, SELECT guid FROM addins_active where 1 = 1 , CTRIVIAL
 MainForm.MainForm, MESSAGE, Loading appcast: http://www.yourothermind.com/yomcast.xml, ACRITICAL
@@ -21,49 +24,61 @@ SqLiteDatabase->CreateTableIfDoesNotExist, MESSAGE, CREATE TABLE if not exists [
 SqLiteDatabase->CreateTableIfDoesNotExist, MESSAGE, CREATE TABLE if not exists [pages] ( id INTEGER,  guid TEXT UNIQUE,  xml LONGTEXT,  status TEXT,  name VARCHAR(50),  showtabs boolean,  subpanel boolean,  maximizetabs boolean,  stars INTEGER,  hits INTEGER,  datecreated datetime,  dateedited datetime,  notebook TEXT,  section TEXT,  type TEXT,  source TEXT,  words INTEGER,  keywords TEXT,  linktable LONGTEXT, PRIMARY KEY (id)), ACRITICAL
 SqLiteDatabase->CreateTableIfDoesNotExist, MESSAGE, CREATE TABLE if not exists [pages] ( id INTEGER,  guid TEXT UNIQUE,  xml LONGTEXT,  status TEXT,  name VARCHAR(50),  showtabs boolean,  subpanel boolean,  maximizetabs boolean,  stars INTEGER,  hits INTEGER,  datecreated datetime,  dateedited datetime,  notebook TEXT,  section TEXT,  type TEXT,  source TEXT,  words INTEGER,  keywords TEXT,  linktable LONGTEXT, PRIMARY KEY (id)), ACRITICAL
 SqLiteDatabase->CreateTableIfDoesNotExist, MESSAGE, CREATE TABLE if not exists [pages] ( id INTEGER,  guid TEXT UNIQUE,  xml LONGTEXT,  status TEXT,  name VARCHAR(50),  showtabs boolean,  subpanel boolean,  maximizetabs boolean,  stars INTEGER,  hits INTEGER,  datecreated datetime,  dateedited datetime,  notebook TEXT,  section TEXT,  type TEXT,  source TEXT,  words INTEGER,  keywords TEXT,  linktable LONGTEXT, PRIMARY KEY (id)), ACRITICAL
-LayoutDatabase->LoadFrom, TIMING, GETVALUES for LayoutDatabase: Name=default name Guid = system  took 00:00:00.0108971, ACRITICAL
-LayoutDatabase->LoadFrom, TIMING, LINKTABLE for LayoutDatabase: Name=default name Guid = system  took 00:00:00.7382793, ACRITICAL
-LayoutDatabase->LoadFrom, TIMING, CREATELINKTABLE for LayoutDatabase: Name=default name Guid = system  took 00:00:00.1710084, ACRITICAL
-LayoutDatabase->LoadFrom, TIMING, ASSIGNVALUES for LayoutDatabase: Name=system Guid = system  took 00:00:00.0018894, ACRITICAL
-LayoutDatabase->LoadFrom, TIMING, DESERIALIZEALL for LayoutDatabase: Name=system Guid = system  took 00:00:00.1904642, ACRITICAL
-LayoutDatabase->LoadFrom, TIMING, GETVALUES for LayoutDatabase: Name=default name Guid = 937d6cef-43ef-4807-8968-a47c4f7d4770  took 00:00:00.0010178, ACRITICAL
-LayoutDatabase->LoadFrom, TIMING, ASSIGNVALUES for LayoutDatabase: Name=default name Guid = 937d6cef-43ef-4807-8968-a47c4f7d4770  took 00:00:00.0000636, ACRITICAL
-LayoutDatabase->LoadFrom, TIMING, DESERIALIZEALL for LayoutDatabase: Name=default name Guid = 937d6cef-43ef-4807-8968-a47c4f7d4770  took 00:00:00.2213999, ACRITICAL
-LayoutDatabase->LoadFrom, TIMING, GETVALUES for LayoutDatabase: Name=default name Guid = tables  took 00:00:00.0014509, ACRITICAL
+LayoutDatabase->LoadFrom, TIMING, GETVALUES for LayoutDatabase: Name=default name Guid = system  took 00:00:00.0177550, ACRITICAL
+LayoutDatabase->LoadFrom, TIMING, LINKTABLE for LayoutDatabase: Name=default name Guid = system  took 00:00:00.7234763, ACRITICAL
+LayoutDatabase->LoadFrom, TIMING, CREATELINKTABLE for LayoutDatabase: Name=default name Guid = system  took 00:00:00.2323661, ACRITICAL
+LayoutDatabase->LoadFrom, TIMING, ASSIGNVALUES for LayoutDatabase: Name=system Guid = system  took 00:00:00.0020644, ACRITICAL
+LayoutDatabase->LoadFrom, TIMING, DESERIALIZEALL for LayoutDatabase: Name=system Guid = system  took 00:00:00.1838135, ACRITICAL
+LayoutDatabase->LoadFrom, TIMING, GETVALUES for LayoutDatabase: Name=default name Guid = 937d6cef-43ef-4807-8968-a47c4f7d4770  took 00:00:00.0010638, ACRITICAL
+LayoutDatabase->LoadFrom, TIMING, ASSIGNVALUES for LayoutDatabase: Name=default name Guid = 937d6cef-43ef-4807-8968-a47c4f7d4770  took 00:00:00.0000493, ACRITICAL
+LayoutDatabase->LoadFrom, TIMING, DESERIALIZEALL for LayoutDatabase: Name=default name Guid = 937d6cef-43ef-4807-8968-a47c4f7d4770  took 00:00:00.1601774, ACRITICAL
+LayoutDatabase->LoadFrom, TIMING, GETVALUES for LayoutDatabase: Name=default name Guid = tables  took 00:00:00.0014665, ACRITICAL
+LayoutDatabase->LoadFrom, TIMING, ASSIGNVALUES for LayoutDatabase: Name=default name Guid = tables  took 00:00:00.0000398, ACRITICAL
+LayoutDatabase->LoadFrom, TIMING, DESERIALIZEALL for LayoutDatabase: Name=default name Guid = tables  took 00:00:00.2032204, ACRITICAL
+LayoutDatabase->LoadFrom, TIMING, COPYARRAYS for tables  took 00:00:00.2715030, ACRITICAL
+LayoutDatabase->LoadFrom, TIMING, COPYARRAYS for 937d6cef-43ef-4807-8968-a47c4f7d4770  took 00:00:00.8423678, ACRITICAL
+LayoutDatabase->LoadFrom, TIMING, COPYARRAYS for system  took 00:00:01.1436436, ACRITICAL
+LayoutDatabase->LoadFrom, TIMING, GETVALUES for LayoutDatabase: Name=default name Guid = tables  took 00:00:00.0033925, ACRITICAL
+LayoutDatabase->LoadFrom, TIMING, ASSIGNVALUES for LayoutDatabase: Name=default name Guid = tables  took 00:00:00.0000883, ACRITICAL
+LayoutDatabase->LoadFrom, TIMING, DESERIALIZEALL for LayoutDatabase: Name=default name Guid = tables  took 00:00:00.1694555, ACRITICAL
+LayoutDatabase->LoadFrom, TIMING, COPYARRAYS for tables  took 00:00:00.1147124, ACRITICAL
+LayoutDatabase->LoadFrom, TIMING, GETVALUES for LayoutDatabase: Name=default name Guid = tables  took 00:00:00.0012191, ACRITICAL
+LayoutDatabase->LoadFrom, TIMING, ASSIGNVALUES for LayoutDatabase: Name=default name Guid = tables  took 00:00:00.0000382, ACRITICAL
+LayoutDatabase->LoadFrom, TIMING, DESERIALIZEALL for LayoutDatabase: Name=default name Guid = tables  took 00:00:00.1815563, ACRITICAL
+LayoutDatabase->LoadFrom, TIMING, COPYARRAYS for tables  took 00:00:00.1459669, ACRITICAL
+LayoutDatabase->LoadFrom, TIMING, GETVALUES for LayoutDatabase: Name=default name Guid = dc59ab30-2794-4e09-8a97-da035a01ddf9  took 00:00:00.0138028, ACRITICAL
+LayoutDatabase->LoadFrom, TIMING, LINKTABLE for LayoutDatabase: Name=default name Guid = dc59ab30-2794-4e09-8a97-da035a01ddf9  took 00:00:00.0187342, ACRITICAL
+LayoutDatabase->LoadFrom, TIMING, CREATELINKTABLE for LayoutDatabase: Name=default name Guid = dc59ab30-2794-4e09-8a97-da035a01ddf9  took 00:00:00.0141327, ACRITICAL
+LayoutDatabase->LoadFrom, TIMING, ASSIGNVALUES for LayoutDatabase: Name=charactermaker Guid = dc59ab30-2794-4e09-8a97-da035a01ddf9  took 00:00:00.0000497, ACRITICAL
+LayoutDatabase->LoadFrom, TIMING, DESERIALIZEALL for LayoutDatabase: Name=charactermaker Guid = dc59ab30-2794-4e09-8a97-da035a01ddf9  took 00:00:00.2333224, ACRITICAL
+LayoutDatabase->LoadFrom, TIMING, COPYARRAYS for dc59ab30-2794-4e09-8a97-da035a01ddf9  took 00:00:01.2985123, ACRITICAL
+LayoutDatabase->LoadFrom, TIMING, GETVALUES for LayoutDatabase: Name=default name Guid = tables  took 00:00:00.0035035, ACRITICAL
+LayoutDatabase->LoadFrom, TIMING, ASSIGNVALUES for LayoutDatabase: Name=default name Guid = tables  took 00:00:00.0000402, ACRITICAL
+LayoutDatabase->LoadFrom, TIMING, DESERIALIZEALL for LayoutDatabase: Name=default name Guid = tables  took 00:00:00.1645286, ACRITICAL
+LayoutDatabase->LoadFrom, TIMING, COPYARRAYS for tables  took 00:00:00.1081241, ACRITICAL
+LayoutDatabase->LoadFrom, TIMING, GETVALUES for LayoutDatabase: Name=default name Guid = dc59ab30-2794-4e09-8a97-da035a01ddf9  took 00:00:00.0115221, ACRITICAL
+LayoutDatabase->LoadFrom, TIMING, LINKTABLE for LayoutDatabase: Name=default name Guid = dc59ab30-2794-4e09-8a97-da035a01ddf9  took 00:00:00.0102093, ACRITICAL
+LayoutDatabase->LoadFrom, TIMING, CREATELINKTABLE for LayoutDatabase: Name=default name Guid = dc59ab30-2794-4e09-8a97-da035a01ddf9  took 00:00:00.0113122, ACRITICAL
+LayoutDatabase->LoadFrom, TIMING, ASSIGNVALUES for LayoutDatabase: Name=charactermaker Guid = dc59ab30-2794-4e09-8a97-da035a01ddf9  took 00:00:00.0000456, ACRITICAL
+LayoutDatabase->LoadFrom, TIMING, DESERIALIZEALL for LayoutDatabase: Name=charactermaker Guid = dc59ab30-2794-4e09-8a97-da035a01ddf9  took 00:00:00.2865246, ACRITICAL
+LayoutDatabase->LoadFrom, TIMING, COPYARRAYS for dc59ab30-2794-4e09-8a97-da035a01ddf9  took 00:00:01.2749831, ACRITICAL
+LayoutDatabase->LoadFrom, TIMING, GETVALUES for LayoutDatabase: Name=default name Guid = testguid  took 00:00:00.0010240, ACRITICAL
+LayoutDatabase->LoadFrom, TIMING, LINKTABLE for LayoutDatabase: Name=default name Guid = testguid  took 00:00:00.0010593, ACRITICAL
+LayoutDatabase->LoadFrom, TIMING, CREATELINKTABLE for LayoutDatabase: Name=default name Guid = testguid  took 00:00:00.0251125, ACRITICAL
+LayoutDatabase->LoadFrom, TIMING, ASSIGNVALUES for LayoutDatabase: Name=default name Guid = testguid  took 00:00:00.0000464, ACRITICAL
+LayoutDatabase->LoadFrom, TIMING, DESERIALIZEALL for LayoutDatabase: Name=default name Guid = testguid  took 00:00:00.1650258, ACRITICAL
+LayoutDatabase->LoadFrom, TIMING, COPYARRAYS for testguid  took 00:00:00.0139490, ACRITICAL
+LayoutDatabase->LoadFrom, TIMING, GETVALUES for LayoutDatabase: Name=default name Guid = tables  took 00:00:00.0016938, ACRITICAL
+LayoutDatabase->LoadFrom, TIMING, ASSIGNVALUES for LayoutDatabase: Name=default name Guid = tables  took 00:00:00.0000472, ACRITICAL
+LayoutDatabase->LoadFrom, TIMING, DESERIALIZEALL for LayoutDatabase: Name=default name Guid = tables  took 00:00:00.1653246, ACRITICAL
+LayoutDatabase->LoadFrom, TIMING, COPYARRAYS for tables  took 00:00:00.1106549, ACRITICAL
+LayoutDatabase->LoadFrom, TIMING, GETVALUES for LayoutDatabase: Name=default name Guid = testguid  took 00:00:00.0009788, ACRITICAL
+LayoutDatabase->LoadFrom, TIMING, LINKTABLE for LayoutDatabase: Name=default name Guid = testguid  took 00:00:00.0009944, ACRITICAL
+LayoutDatabase->LoadFrom, TIMING, CREATELINKTABLE for LayoutDatabase: Name=default name Guid = testguid  took 00:00:00.0118920, ACRITICAL
+LayoutDatabase->LoadFrom, TIMING, ASSIGNVALUES for LayoutDatabase: Name=My New Name Guid = testguid  took 00:00:00.0000460, ACRITICAL
+LayoutDatabase->LoadFrom, TIMING, DESERIALIZEALL for LayoutDatabase: Name=My New Name Guid = testguid  took 00:00:00.1838776, ACRITICAL
+LayoutDatabase->LoadFrom, TIMING, COPYARRAYS for testguid  took 00:00:00.0133306, ACRITICAL
+LayoutDatabase->LoadFrom, TIMING, GETVALUES for LayoutDatabase: Name=default name Guid = tables  took 00:00:00.0016383, ACRITICAL
 LayoutDatabase->LoadFrom, TIMING, ASSIGNVALUES for LayoutDatabase: Name=default name Guid = tables  took 00:00:00.0000406, ACRITICAL
-LayoutDatabase->LoadFrom, TIMING, DESERIALIZEALL for LayoutDatabase: Name=default name Guid = tables  took 00:00:00.2011732, ACRITICAL
-LayoutDatabase->LoadFrom, TIMING, COPYARRAYS for tables  took 00:00:00.0840791, ACRITICAL
-LayoutDatabase->LoadFrom, TIMING, COPYARRAYS for 937d6cef-43ef-4807-8968-a47c4f7d4770  took 00:00:00.6379100, ACRITICAL
-LayoutDatabase->LoadFrom, TIMING, COPYARRAYS for system  took 00:00:00.9168207, ACRITICAL
-LayoutDatabase->LoadFrom, TIMING, GETVALUES for LayoutDatabase: Name=default name Guid = tables  took 00:00:00.0015162, ACRITICAL
-LayoutDatabase->LoadFrom, TIMING, ASSIGNVALUES for LayoutDatabase: Name=default name Guid = tables  took 00:00:00.0000431, ACRITICAL
-LayoutDatabase->LoadFrom, TIMING, DESERIALIZEALL for LayoutDatabase: Name=default name Guid = tables  took 00:00:00.1665236, ACRITICAL
-LayoutDatabase->LoadFrom, TIMING, COPYARRAYS for tables  took 00:00:00.0738677, ACRITICAL
-LayoutDatabase->LoadFrom, TIMING, GETVALUES for LayoutDatabase: Name=default name Guid = tables  took 00:00:00.0011440, ACRITICAL
-LayoutDatabase->LoadFrom, TIMING, ASSIGNVALUES for LayoutDatabase: Name=default name Guid = tables  took 00:00:00.0000369, ACRITICAL
-LayoutDatabase->LoadFrom, TIMING, DESERIALIZEALL for LayoutDatabase: Name=default name Guid = tables  took 00:00:00.2242180, ACRITICAL
-LayoutDatabase->LoadFrom, TIMING, COPYARRAYS for tables  took 00:00:00.0770253, ACRITICAL
-LayoutDatabase->LoadFrom, TIMING, GETVALUES for LayoutDatabase: Name=default name Guid = system  took 00:00:00.0024667, ACRITICAL
-LayoutDatabase->LoadFrom, TIMING, LINKTABLE for LayoutDatabase: Name=default name Guid = system  took 00:00:00.0010482, ACRITICAL
-LayoutDatabase->LoadFrom, TIMING, CREATELINKTABLE for LayoutDatabase: Name=default name Guid = system  took 00:00:00.0093328, ACRITICAL
-LayoutDatabase->LoadFrom, TIMING, ASSIGNVALUES for LayoutDatabase: Name=system Guid = system  took 00:00:00.0000452, ACRITICAL
-LayoutDatabase->LoadFrom, TIMING, DESERIALIZEALL for LayoutDatabase: Name=system Guid = system  took 00:00:00.1721618, ACRITICAL
-LayoutDatabase->LoadFrom, TIMING, GETVALUES for LayoutDatabase: Name=default name Guid = 937d6cef-43ef-4807-8968-a47c4f7d4770  took 00:00:00.0009763, ACRITICAL
-LayoutDatabase->LoadFrom, TIMING, ASSIGNVALUES for LayoutDatabase: Name=default name Guid = 937d6cef-43ef-4807-8968-a47c4f7d4770  took 00:00:00.0000386, ACRITICAL
-LayoutDatabase->LoadFrom, TIMING, DESERIALIZEALL for LayoutDatabase: Name=default name Guid = 937d6cef-43ef-4807-8968-a47c4f7d4770  took 00:00:00.1662701, ACRITICAL
-LayoutDatabase->LoadFrom, TIMING, GETVALUES for LayoutDatabase: Name=default name Guid = tables  took 00:00:00.0013161, ACRITICAL
-LayoutDatabase->LoadFrom, TIMING, ASSIGNVALUES for LayoutDatabase: Name=default name Guid = tables  took 00:00:00.0000378, ACRITICAL
-LayoutDatabase->LoadFrom, TIMING, DESERIALIZEALL for LayoutDatabase: Name=default name Guid = tables  took 00:00:00.1684455, ACRITICAL
-LayoutDatabase->LoadFrom, TIMING, COPYARRAYS for tables  took 00:00:00.0828763, ACRITICAL
-LayoutDatabase->LoadFrom, TIMING, COPYARRAYS for 937d6cef-43ef-4807-8968-a47c4f7d4770  took 00:00:00.4062971, ACRITICAL
-LayoutDatabase->LoadFrom, TIMING, COPYARRAYS for system  took 00:00:00.6076975, ACRITICAL
-LayoutDatabase->LoadFrom, TIMING, GETVALUES for LayoutDatabase: Name=default name Guid = tables  took 00:00:00.0042530, ACRITICAL
-LayoutDatabase->LoadFrom, TIMING, ASSIGNVALUES for LayoutDatabase: Name=default name Guid = tables  took 00:00:00.0000406, ACRITICAL
-LayoutDatabase->LoadFrom, TIMING, DESERIALIZEALL for LayoutDatabase: Name=default name Guid = tables  took 00:00:00.1804402, ACRITICAL
-LayoutDatabase->LoadFrom, TIMING, COPYARRAYS for tables  took 00:00:00.0000032, ACRITICAL
-LayoutDatabase->LoadFrom, TIMING, GETVALUES for LayoutDatabase: Name=default name Guid = testguid  took 00:00:00.0039238, ACRITICAL
-LayoutDatabase->LoadFrom, TIMING, LINKTABLE for LayoutDatabase: Name=default name Guid = testguid  took 00:00:00.0011468, ACRITICAL
-LayoutDatabase->LoadFrom, TIMING, CREATELINKTABLE for LayoutDatabase: Name=default name Guid = testguid  took 00:00:00.0161844, ACRITICAL
-LayoutDatabase->LoadFrom, TIMING, ASSIGNVALUES for LayoutDatabase: Name=default name Guid = testguid  took 00:00:00.0000497, ACRITICAL
-LayoutDatabase->LoadFrom, TIMING, DESERIALIZEALL for LayoutDatabase: Name=default name Guid = testguid  took 00:00:00.1785044, ACRITICAL
-LayoutDatabase->LoadFrom, TIMING, COPYARRAYS for testguid  took 00:00:00.0329734, ACRITICAL
+LayoutDatabase->LoadFrom, TIMING, DESERIALIZEALL for LayoutDatabase: Name=default name Guid = tables  took 00:00:00.1708827, ACRITICAL
+LayoutDatabase->LoadFrom, TIMING, COPYARRAYS for tables  took 00:00:00.0963097, ACRITICAL

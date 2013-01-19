@@ -108,6 +108,7 @@ namespace Testing
 
 		}
 		[Test]
+
 		public void LoadSomethingNotThere()
 		{
 			_setupforlayoutests();
@@ -461,7 +462,7 @@ namespace Testing
 
 			
 			layoutPanel.SaveLayout();
-			
+			layoutPanel = new LayoutPanel (CoreUtilities.Constants.BLANK, false);
 			//_w.output(String.Format ("{0} Objects Saved", layoutPanel.ObjectsSaved().ToString()));
 			layoutPanel.LoadLayout("testlayout",false, null);
 

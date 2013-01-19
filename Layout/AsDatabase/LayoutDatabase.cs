@@ -537,7 +537,10 @@ namespace Layout
 			});
 			lg.Instance.Line ("LayoutDatabase->LoadFrom", ProblemType.TIMING, String.Format ("GETVALUES for {0}  took {1}", this.ToString (), time));
 
-			if (myList != null && myList.Count > 0) {
+			if (myList != null)
+			{
+
+			    if (myList.Count > 0) {
 
 				object[] result = myList [0];
 
@@ -713,6 +716,7 @@ namespace Layout
 						lg.Instance.Line ("LayoutDatabase->LoadFrom", ProblemType.TIMING, String.Format ("COPYARRAYS for {0}  took {1}", this.LayoutGUID, time));
 					}
 				}
+				}
 			} else {
 				throw new Exception("Critical Error. Nothing was found to load on: " + this.ToString());
 			}
@@ -728,6 +732,18 @@ namespace Layout
 			return Success;
 
 		}
+
+		/// <summary>
+		/// Counts the notes. Just the ones in the dataarray (not child notes)
+		/// </summary>
+		/// <returns>
+		/// The notes.
+		/// </returns>
+		public int CountNotes ()
+		{
+			return dataForThisLayout.Count;
+		}
+
 		/// <summary>
 		/// Counts the system notes.
 		/// Needed to prevent system notes from being saved out

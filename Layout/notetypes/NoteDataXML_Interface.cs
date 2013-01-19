@@ -89,31 +89,41 @@ namespace Layout
 			//if (Caption == "")				NewMessage.Show ("Caption is blank");
 
 
-			properties = new ToolStripDropDownButton (Loc.Instance.GetString ("***"));
+			properties = new ToolStripDropDownButton ("");
+			properties.Image = CoreUtilities.FileUtils.GetImage_ForDLL("application_form_edit.png");
 			CaptionLabel.Items.Add (properties);
 
 
 			ToolStripButton MinimizeButton = new ToolStripButton ();
-			MinimizeButton.Text = "--";
+			//MinimizeButton.Text = "--";
+			//TODO: Optimization: Should these images just be stored somewhere and retrieved?
+			MinimizeButton.Image = CoreUtilities.FileUtils.GetImage_ForDLL("application_put.png");
 			MinimizeButton.ToolTipText = "Hides the note. Bring it back by using the List or a Tab";
 			MinimizeButton.Click += HandleMinimizeButtonClick;
 
-			CaptionLabel.Items.Add (MinimizeButton);
 
 
 			ToolStripButton MaximizeButton = new ToolStripButton ();
-			MaximizeButton.Text = "[  ]";
+			//MaximizeButton.Text = "[  ]";
+			MaximizeButton.Image = CoreUtilities.FileUtils.GetImage_ForDLL("application_xp.png");
 			MaximizeButton.ToolTipText = Loc.Instance.GetString("Fills available screen");
 			MaximizeButton.Click += HandleMaximizeButtonClick;
-			CaptionLabel.Items.Add (MaximizeButton);
+
+
 
 			if (true == IsSystemNote) {
 				// not really a delete, more of a close
 				ToolStripButton closeButton = new ToolStripButton ();
-				closeButton.Text = " X ";
+				//closeButton.Text = " X ";
+				closeButton.Image = CoreUtilities.FileUtils.GetImage_ForDLL("delete_x.png");
 				closeButton.Click += HandleCloseClick;
 				;
 				CaptionLabel.Items.Add (closeButton);
+				//closeButton.Anchor = AnchorStyles.Right;
+				closeButton.Alignment = ToolStripItemAlignment.Right;
+			//	ToolStripItem item = new ToolStripItem();
+				//item.ToolStripItemAlignment = ToolStripItemAlignment.Right;
+				//closeButton.Dock = DockStyle.Right;
 			}
 
 			if (false == IsSystemNote) {
@@ -126,6 +136,10 @@ namespace Layout
 
 			}
 
+			CaptionLabel.Items.Add (MaximizeButton);
+			MaximizeButton.Alignment = ToolStripItemAlignment.Right;
+			CaptionLabel.Items.Add (MinimizeButton);
+			MinimizeButton.Alignment = ToolStripItemAlignment.Right;
 
 
 			//contextMenu = new ContextMenuStrip();
@@ -166,12 +180,13 @@ namespace Layout
 
 
 			// Should be at the end
-			ToolStripSeparator sep = new ToolStripSeparator ();
-			sep.Width = 0;
-			sep.BackColor = CaptionLabel.BackColor;
-			sep.ForeColor = CaptionLabel.ForeColor;
+//			ToolStripSeparator sep = new ToolStripSeparator ();
+//			sep.Width = 0;
+//			sep.BackColor = CaptionLabel.BackColor;
+//			sep.ForeColor = CaptionLabel.ForeColor;
 			//HACK for some reason labels inside of panels don't draw LAST toolstripitem on LOAD (on only on load!) 
-			CaptionLabel.Items.Add (sep);
+			// NOTE JAN 2013 this problem MAY have gone away
+			//CaptionLabel.Items.Add (sep);
 
 			//CaptionLabel.ContextMenuStrip = contextMenu;
 

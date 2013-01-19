@@ -98,6 +98,7 @@ namespace Testing
 
 			// * Now start the Load Test
 			TimeSpan time;
+			CoreUtilities.TimerCore.TimerOn = true;
 			time = CoreUtilities.TimerCore.Time (() => {
 			panel = new FAKE_LayoutPanel (CoreUtilities.Constants.BLANK, false);
 				form.Controls.Add (panel);

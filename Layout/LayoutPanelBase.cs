@@ -112,6 +112,7 @@ namespace Layout
 		public abstract NoteDataXML_SystemOnly GetSystemPanel ();
 		public abstract void NewLayout (string _GUID, bool AddDefaultNote, ContextMenuStrip textEditorContextStrip);
 		public abstract CoreUtilities.Links.LinkTable GetLinkTable ();
+		public abstract int CountNotes();
 	//	public abstract void SystemNoteHasClosedDown (bool closed);
 	}
 }

@@ -27,6 +27,7 @@ namespace Layout
 		public const string SYSTEM_STATUS = "list_status";
 		public const string SYSTEM_SUBTYPE = "list_subtypes";
 		public const string SYSTEM_KEYWORDS = "list_keywords";
+		public const string SYSTEM_LAYOUT ="system";
 		#endregion
 		#region TEMPVARIABLES
 
@@ -188,7 +189,7 @@ namespace Layout
 			ShowTabs.Checked = Notes.ShowTabs;
 			ShowTabs.CheckedChanged+= HandleCheckedChanged;
 			
-			ToolStripButton MaximizeTabs = new ToolStripButton(Loc.Instance.GetString ("Maximize Strings"));
+			ToolStripButton MaximizeTabs = new ToolStripButton(Loc.Instance.GetString ("Maximize Tabs"));
 			MaximizeTabs.CheckOnClick = true;
 			MaximizeTabs.Checked = Notes.MaximizeTabs;
 			MaximizeTabs.CheckedChanged+= HandleMaximizedTabsCheckedChanged;
@@ -596,13 +597,23 @@ namespace Layout
 
 
 		}
+
 		/// <summary>
-		/// Counts the notes. Added for testing
+		/// Count the number of notes on the main screen (not inside of other panels).
+		/// This is a faster lookup than CountNotes() which  l;ooks through childrens
+		/// </summary>
+		public int Count()
+		{
+			return Notes.CountNotes();
+		}
+		/// <summary>
+		/// Counts the notes. Added for testing. This COUNTS all the notes on the page by going through the children
+		/// So it can be slow
 		/// </summary>
 		/// <returns>
 		/// The notes.
 		/// </returns>
-		public int CountNotes()
+		public override int CountNotes()
 		{
 
 			int count = 0;
@@ -689,12 +700,16 @@ namespace Layout
 				{
 					NewMessage.Show (Loc.Instance.Cat.GetString("This note is already being saved. Try again."));
 				}
-				if (GUID == "system")
+				if (GUID == SYSTEM_LAYOUT)
 				{
 					 
 					LayoutDetails.Instance.TableLayout=new Layout.LayoutPanel(Constants.BLANK, false);
 					// Jan 14 2013 - changing this to a subnote.
 					LayoutDetails.Instance.TableLayout.LoadLayout ("tables", true, TextEditContextStrip);
+
+
+
+
 				}
 			}
 			else
@@ -902,7 +917,7 @@ namespace Layout
 					temp.GuidForNote="nonsense";
 					Notes.CreateLinkTableIfNecessary(temp, this);
 				}
-				//	Notes = new LayoutDatabase("system");
+			
 				if (true == AddDefaultNote)
 				{
 				NoteDataXML_RichText newNote = new NoteDataXML_RichText();

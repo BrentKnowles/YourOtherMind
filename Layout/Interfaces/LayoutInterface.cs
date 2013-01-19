@@ -54,7 +54,7 @@ namespace Layout
 		bool LoadFrom(LayoutPanelBase parent);
 
 		bool SaveTo ();
-
+		int CountNotes ();
 
 		//string Backup();
 

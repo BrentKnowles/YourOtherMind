@@ -18,7 +18,9 @@ namespace YOM2013
 	public class MainForm : appframe.MainFormBase 
 	{
 		// the types of footer messages, influences the control that is updated
-		enum FootMessageType  {LOAD, NOTES};
+		enum FootMessageType  {LOAD, NOTES, SAVE, SWITCHWINDOWS};
+		// the position of the label that is used to display the FooterMessages
+		const int MAIN_MESSAGE_INDEX = 0;
 		#region gui
 		ToolStripMenuItem Windows;
 		ContextMenuStrip TextEditContextStrip;
@@ -480,26 +482,73 @@ namespace YOM2013
 		/// </summary>
 		void BuildFooter ()
 		{
-			ToolStripButton Load = new ToolStripButton();
-			Load.Name = FootMessageType.LOAD.ToString();
-			FooterStatus.Items.Add (Load);
+			ToolStripButton Messages = new ToolStripButton();
+//			Load.Name = FootMessageType.LOAD.ToString();
+//
+//			ToolStripButton LoadNumber = new ToolStripButton();
+//			LoadNumber.Name = FootMessageType.NOTES.ToString();
+//
+//			ToolStripButton SaveTool = new ToolStripButton();
+//			SaveTool.Name = FootMessageType.SAVE.ToString();
+//
+//			FooterStatus.Items.Add (SaveTool);
+//			FooterStatus.Items.Add (Load);
+			FooterStatus.Items.Add (Messages);
+			FooterStatus.Items[0].Tag = Constants.BLANK;
 
+			Messages.Click+= HandleMessagesOnFooterDoubleClick;
+
+		}
+
+		/// <summary>
+		/// Handles the messages on footer double click. Which means popping open the logfile
+		/// </summary>
+		/// <param name='sender'>
+		/// Sender.
+		/// </param>
+		/// <param name='e'>
+		/// E.
+		/// </param>
+		void HandleMessagesOnFooterDoubleClick (object sender, EventArgs e)
+		{
+			string logfile = System.IO.Path.Combine (Environment.CurrentDirectory, lg.LOG_FILE);
+			if (File.Exists (logfile)) {
+				CoreUtilities.General.OpenDocument(logfile,"");
+			}
 		}
 
 		void UpdateFooter (FootMessageType messageType, string message)
 		{
-			string searchname = Constants.BLANK;
-			searchname = messageType.ToString ();
-		
 
-			if (Constants.BLANK != searchname) {
-				ToolStripItem[] found = FooterStatus.Items.Find (searchname, true);
-				if (null != found && found.Length > 0)
-				{
-					found[0].Text = message;
-				}
 
+			// this was clever but I don't really want a ToolItem for each message
+			// what we will do instead is a Two-Count. You can have two items on at a time, but the l
+
+			if (messageType == FootMessageType.SAVE || messageType == FootMessageType.SWITCHWINDOWS) {
+				FooterStatus.Items [MAIN_MESSAGE_INDEX].Tag = "";
 			}
+
+			string space = Constants.BLANK;
+
+			string oldMessage = FooterStatus.Items [0].Tag.ToString ();
+			if (oldMessage != Constants.BLANK) {
+				space = "/";
+			}
+			FooterStatus.Items[0].Tag = message;
+			FooterStatus.Items[0].Text = String.Format ("{0} {1} {2}", message, space, oldMessage);
+
+//			string searchname = Constants.BLANK;
+//			searchname = messageType.ToString ();
+//		
+//
+//			if (Constants.BLANK != searchname) {
+//				ToolStripItem[] found = FooterStatus.Items.Find (searchname, true);
+//				if (null != found && found.Length > 0)
+//				{
+//					found[0].Text = message;
+//				}
+
+		//	}
 		}
 		/// <summary>
 		/// Builds the text editor context menu strip.
@@ -544,8 +593,8 @@ namespace YOM2013
 			
 			//SystemLayout.Visible = false;
 			Layout.LayoutPanel SystemLayout;
-			if (MasterOfLayouts.ExistsByGUID ("system") == false || MasterOfLayouts.ExistsByGUID("tables") == false) {
-				NewMessage.Show ("recreating system note");
+			if (MasterOfLayouts.ExistsByGUID (LayoutPanel.SYSTEM_LAYOUT) == false || MasterOfLayouts.ExistsByGUID("tables") == false) {
+				NewMessage.Show (Loc.Instance.GetString("Recreating system note."));
 				DefaultLayouts.CreateASystemLayout (this,TextEditContextStrip);
 				
 				//				LayoutDetails.Instance.SystemLayout = SystemLayout;
@@ -569,7 +618,7 @@ namespace YOM2013
 			SystemLayout.Visible = true;
 			SystemLayout.Dock = System.Windows.Forms.DockStyle.Fill;
 			SystemLayout.BringToFront ();
-			SystemLayout.LoadLayout ("system", false, TextEditContextStrip);
+			SystemLayout.LoadLayout (LayoutPanel.SYSTEM_LAYOUT, false, TextEditContextStrip);
 			LayoutDetails.Instance.SystemLayout = SystemLayout;
 			
 			
@@ -581,7 +630,7 @@ namespace YOM2013
 
 
 			// this is Causing Latest Crash
-			this.Save ();
+			this.Save (false);
 		}
 
 		void HandleMonitorOneScreenClick (object sender, EventArgs e)
@@ -769,37 +818,44 @@ namespace YOM2013
 		/// </param>
 		void LoadLayout (string guidtoload)
 		{
-			if (MasterOfLayouts.ExistsByGUID (guidtoload) == true) {
-				this.Cursor = Cursors.WaitCursor;
-				TimeSpan time;
-				time = CoreUtilities.TimerCore.Time (() => {
-			
-		
-
-
-
-			
-
-			
-					// if Layout NOT open already THEN open it
-					LayoutsInMemory existing = LayoutPresent (guidtoload);
-					if (existing == null) {
-						LayoutPanel newLayout = CreateLayoutContainer (guidtoload);
-						newLayout.LoadLayout (guidtoload, false, TextEditContextStrip);
-						LayoutDetails.Instance.CurrentLayout = newLayout;
-					} else {
-				
-						GotoExistingLayout (existing.Container, existing.LayoutPanel);
-					}
-
-				});
-
-				UpdateFooter (FootMessageType.LOAD, Loc.Instance.GetStringFmt ("Loaded in {0}", time));
-				//	UpdateFooter(FootMessageType.NOTES, Loc.Instance.GetStringFmt("{0} Notes", LayoutDetails.Instance.CurrentLayout.Note how to count notes cheaply? Rturn value?
-		
-				this.Cursor = Cursors.Default;
+			if (guidtoload == LayoutPanel.SYSTEM_LAYOUT) {
+				NewMessage.Show (Loc.Instance.GetString ("You are not permitted to load the SYSTEM layout directly but you can make edits to it as it is."));
 			} else {
-				NewMessage.Show (Loc.Instance.GetStringFmt("The layout with ID = '{0}' does not exist. Perhaps it has been deleted. Try refreshing the list.", guidtoload));
+				if (MasterOfLayouts.ExistsByGUID (guidtoload) == true) {
+					this.Cursor = Cursors.WaitCursor;
+					TimeSpan time;
+					time = CoreUtilities.TimerCore.Time (() => {
+			
+		
+
+
+
+			
+
+			
+						// if Layout NOT open already THEN open it
+						LayoutsInMemory existing = LayoutPresent (guidtoload);
+						if (existing == null) {
+							LayoutPanel newLayout = CreateLayoutContainer (guidtoload);
+							newLayout.LoadLayout (guidtoload, false, TextEditContextStrip);
+							LayoutDetails.Instance.CurrentLayout = newLayout;
+
+					
+						} else {
+				
+							GotoExistingLayout (existing.Container, existing.LayoutPanel);
+						}
+
+					});
+
+
+					UpdateFooter (FootMessageType.LOAD, Loc.Instance.GetStringFmt ("Loaded Layout: {0} in {1}", LayoutDetails.Instance.CurrentLayout.Caption, time));
+					UpdateFooter (FootMessageType.NOTES, Loc.Instance.GetStringFmt ("{0} Notes Loaded", LayoutDetails.Instance.CurrentLayout.CountNotes ()));
+
+					this.Cursor = Cursors.Default;
+				} else {
+					NewMessage.Show (Loc.Instance.GetStringFmt ("The layout with ID = '{0}' does not exist. Perhaps it has been deleted. Try refreshing the list.", guidtoload));
+				}
 			}
 		}
 
@@ -842,12 +898,15 @@ namespace YOM2013
 
 		void GotoExistingLayout (NoteDataXML_SystemOnly panel, LayoutPanel layoutPanel)
 		{
-			// in case minimized we make it visible
-			panel.ParentNotePanel.Visible = true;
-			panel.ParentNotePanel.BringToFront();
-			panel.ParentNotePanel.Focus();
-			LayoutDetails.Instance.CurrentLayout = layoutPanel;
-			panel.Flash();
+
+				// in case minimized we make it visible
+				panel.ParentNotePanel.Visible = true;
+				panel.ParentNotePanel.BringToFront ();
+				panel.ParentNotePanel.Focus ();
+				LayoutDetails.Instance.CurrentLayout = layoutPanel;
+				panel.Flash ();
+				UpdateFooter (FootMessageType.SWITCHWINDOWS, Loc.Instance.GetStringFmt ("Switching to Layout: {0}", layoutPanel.Caption));
+
 		}
 
 
@@ -870,19 +929,33 @@ namespace YOM2013
 			master.Dispose();
 		}
 
-		void Save ()
+		/// <summary>
+		/// Save this instance.
+		/// </summary>
+		void Save (bool user)
 		{
+			this.Cursor = Cursors.WaitCursor;
+
 
 			LayoutDetails.Instance.SystemLayout.SaveLayout ();
 			if (CurrentLayout != null) {
 				CurrentLayout.SaveLayout ();
+				if (user == true)
+				{
+					UpdateFooter(FootMessageType.SAVE, Loc.Instance.GetStringFmt("User Saved Layout: {0}", CurrentLayout.Caption));
+				}
+				else
+				{
+					UpdateFooter(FootMessageType.SAVE, Loc.Instance.GetStringFmt("Code Saved Layout: {0}", CurrentLayout.Caption));
+				}
 			}
+			this.Cursor = Cursors.Default;
 
 		}
 
 		void HandleSaveClick (object sender, EventArgs e)
 		{
-			Save ();
+			Save (true);
 		}
 		/// <summary>
 		/// TODO: Finish properly
@@ -918,6 +991,8 @@ namespace YOM2013
 			string returnvalue = Constants.BLANK;
 			switch (getinfo) {
 			case (int)GetInformationADDINS.GET_SELECTED_TEXT:
+				if (LayoutDetails.Instance.CurrentLayout != null)
+				{
 				if (LayoutDetails.Instance.CurrentLayout.CurrentTextNote != null && LayoutDetails.Instance.CurrentLayout.CurrentTextNote.SelectedText != Constants.BLANK)
 				{
 					returnvalue = LayoutDetails.Instance.CurrentLayout.CurrentTextNote.SelectedText;
@@ -925,6 +1000,12 @@ namespace YOM2013
 				else
 				{
 					NewMessage.Show (Loc.Instance.GetString("Please select text inside of a note before activating this feature."));
+					returnvalue = null;
+				}
+				}
+				else
+				{
+					NewMessage.Show (Loc.Instance.GetString ("Please LOAD a layout before activating this feature."));
 					returnvalue = null;
 				}
 				break;

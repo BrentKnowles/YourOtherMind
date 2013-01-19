@@ -183,6 +183,7 @@ namespace Layout
 
 			base.CreateParent (Layout);
 			CaptionLabel.Dock = DockStyle.Top;
+			CaptionLabel.SuspendLayout();
 
 			if (null != dataSource) {
 
@@ -200,11 +201,77 @@ namespace Layout
 			Table.BringToFront ();
 
 
-				
-		
 
-			
+
+
+			ToolStripMenuItem TableCaptionLabel = 
+				BuildMenuPropertyEdit (TableCaption,Loc.Instance.GetString ("When generating random data this caption will be used to present the results."),HandleTableCaptionKeyDown );
+
+
+
+
+			ToolStripMenuItem NextTableLabel =
+				BuildMenuPropertyEdit (NextTable,Loc.Instance.GetString ("Set a value here and if the random results of this table resolve without finding a 'NextTable' in the table itself, it will proceed with randomization on the table specified here."),HandleNextTableKeyDown );
+
+
+
+
+
+			properties.DropDownItems.Add (new ToolStripSeparator());
+			properties.DropDownItems.Add (TableCaptionLabel);
+			properties.DropDownItems.Add (NextTableLabel);
+			CaptionLabel.ResumeLayout();
 		}
+
+		ToolStripMenuItem BuildMenuPropertyEdit (string Title, string ToolTip, KeyEventHandler action)
+		{
+			ToolStripMenuItem TableCaptionLabel = new ToolStripMenuItem ();
+			TableCaptionLabel.Text = Title;
+			TableCaptionLabel.ToolTipText = ToolTip;
+			ContextMenuStrip TableCaptionMenu = new ContextMenuStrip ();
+			ToolStripTextBox TableCaptionText = new ToolStripTextBox ();
+			TableCaptionText.Tag = TableCaptionLabel;
+			TableCaptionText.Text = Title;
+			TableCaptionText.KeyDown += action;
+			TableCaptionMenu.Items.Add (TableCaptionText);
+
+			TableCaptionLabel.DropDown = TableCaptionMenu;
+			return TableCaptionLabel;
+		}
+
+		void HandleTableCaptionKeyDown (object sender, KeyEventArgs e)
+		{
+			if (e.KeyData == Keys.Enter) {
+				// the header is not updated unti enter pressed but the NAME is being updated
+				TableCaption = (sender as ToolStripTextBox).Text;
+				if ( (sender as ToolStripTextBox).Tag != null && ((sender as ToolStripTextBox).Tag is ToolStripMenuItem))
+				{
+					((sender as ToolStripTextBox).Tag as ToolStripMenuItem).Text = TableCaption;
+				}
+
+				// silenece beep
+				e.SuppressKeyPress = true;
+				SetSaveRequired(true);
+
+			}
+		}
+		void HandleNextTableKeyDown (object sender, KeyEventArgs e)
+		{
+			if (e.KeyData == Keys.Enter) {
+				// the header is not updated unti enter pressed but the NAME is being updated
+				NextTable = (sender as ToolStripTextBox).Text;
+				if ( (sender as ToolStripTextBox).Tag != null && ((sender as ToolStripTextBox).Tag is ToolStripMenuItem))
+				{
+					((sender as ToolStripTextBox).Tag as ToolStripMenuItem).Text = NextTable;
+				}
+				
+				// silenece beep
+				e.SuppressKeyPress = true;
+				SetSaveRequired(true);
+				
+			}
+		}
+
 
 		int HandleCellBeginEdit ()
 		{
@@ -441,106 +508,107 @@ namespace Layout
 			int nValue = 0;
 			int nMin = 0;
 			int nMax = 0;
-			if (currentTable.Rows [0] [0].ToString () == "-1") {
-				// This is a linear table
-				// Linear tables go through a checklist, one table after another. 
-				// RULES:
-				// 
-				// - A result is taken (generally flat values or lookup results) and then we go to the next row
-				// - If a result results in a next_table that is TAKEN, breaking the linear table
-				// - to navigate we set Nexttable to the next row number but with a MINUS preceding it
+			if (currentTable.Rows.Count > 0) {
+				if (currentTable.Rows [0] [0].ToString () == "-1") {
+					// This is a linear table
+					// Linear tables go through a checklist, one table after another. 
+					// RULES:
+					// 
+					// - A result is taken (generally flat values or lookup results) and then we go to the next row
+					// - If a result results in a next_table that is TAKEN, breaking the linear table
+					// - to navigate we set Nexttable to the next row number but with a MINUS preceding it
 				
-				if (nextTable.Length > 0 && nextTable [0] == '-') {
-					nFoundRowNumber = Math.Abs (Int32.Parse (nextTable));
+					if (nextTable.Length > 0 && nextTable [0] == '-') {
+						nFoundRowNumber = Math.Abs (Int32.Parse (nextTable));
+					} else {
+						nFoundRowNumber = 0;
+					}
 				} else {
-					nFoundRowNumber = 0;
-				}
-			} else {
-				// fill in ranges values
-				ranges = TableWrapper.BuildRangeArray (ranges, currentTable);
+					// fill in ranges values
+					ranges = TableWrapper.BuildRangeArray (ranges, currentTable);
 				
-				if (ranges == null)
-					return returner;
+					if (ranges == null)
+						return returner;
 				
-				// find maximum value in last row
-				nMin = ranges [0].nMin;
-				nMax = ranges [ranges.Length - 1].nMax;
-				// roll the die
-				Random r = new Random ();
-				nValue = nModifier + r.Next (nMin, nMax + 1);
+					// find maximum value in last row
+					nMin = ranges [0].nMin;
+					nMax = ranges [ranges.Length - 1].nMax;
+					// roll the die
+					Random r = new Random ();
+					nValue = nModifier + r.Next (nMin, nMax + 1);
 				
-				// if the value, with modifier, is now greater than the max, then set it to max
-				if (nValue > nMax)
-					nValue = nMax;
+					// if the value, with modifier, is now greater than the max, then set it to max
+					if (nValue > nMax)
+						nValue = nMax;
 				
 				
-				// Go through each row and test to see if the number fits within the range
-				for (int j = 0; j < ranges.Length; j++) {
-					// am I greater than or equal to min value?
-					if (nValue >= ranges [j].nMin) {
-						// am I less than or equal to max value for this row
-						if (nValue <= ranges [j].nMax) {
-							nFoundRowNumber = j;
+					// Go through each row and test to see if the number fits within the range
+					for (int j = 0; j < ranges.Length; j++) {
+						// am I greater than or equal to min value?
+						if (nValue >= ranges [j].nMin) {
+							// am I less than or equal to max value for this row
+							if (nValue <= ranges [j].nMax) {
+								nFoundRowNumber = j;
+							}
 						}
 					}
-				}
-			} // random lookup
+				} // random lookup
 			
-			// we override the NExtTable result if there is a valid valu
-			try {
-				if (currentTable.Columns.IndexOf (TableWrapper.NextTable) > -1) {
-					if (!Convert.IsDBNull (currentTable.Rows [nFoundRowNumber] [TableWrapper.NextTable])) {
+				// we override the NExtTable result if there is a valid valu
+				try {
+					if (currentTable.Columns.IndexOf (TableWrapper.NextTable) > -1) {
+						if (!Convert.IsDBNull (currentTable.Rows [nFoundRowNumber] [TableWrapper.NextTable])) {
 					
-						string sNext = currentTable.Rows [nFoundRowNumber] [TableWrapper.NextTable].ToString ();
-						if (sNext != null && sNext != Constants.BLANK) {
-							nextTable = sNext;
+							string sNext = currentTable.Rows [nFoundRowNumber] [TableWrapper.NextTable].ToString ();
+							if (sNext != null && sNext != Constants.BLANK) {
+								nextTable = sNext;
+							}
+						} else if (nextTable.Length > 1 && nextTable [0] == '-') {
+							// a linear table
+							// to keep from falling into an infinite loop we need to drop out
+							nextTable = "";
 						}
-					} else if (nextTable.Length > 1 && nextTable [0] == '-') {
-						// a linear table
-						// to keep from falling into an infinite loop we need to drop out
-						nextTable = "";
 					}
+				} catch (Exception ex) {
+					NewMessage.Show (ex.ToString ());
 				}
-			} catch (Exception ex) {
-				NewMessage.Show (ex.ToString ());
-			}
 			
-			if (currentTable.Columns.IndexOf (TableWrapper.Modifier) > -1) {
-				if (currentTable.Rows [nFoundRowNumber] [TableWrapper.Modifier] == null) {
-					returner.nModifier = 0;
-				} else {
-					try {
-						returner.nModifier = (int)Int32.Parse (currentTable.Rows [nFoundRowNumber] [TableWrapper.Modifier].ToString ());
-					} catch (Exception) {
+				if (currentTable.Columns.IndexOf (TableWrapper.Modifier) > -1) {
+					if (currentTable.Rows [nFoundRowNumber] [TableWrapper.Modifier] == null) {
 						returner.nModifier = 0;
+					} else {
+						try {
+							returner.nModifier = (int)Int32.Parse (currentTable.Rows [nFoundRowNumber] [TableWrapper.Modifier].ToString ());
+						} catch (Exception) {
+							returner.nModifier = 0;
+						}
 					}
+				} else {
+					returner.nModifier = 0;
 				}
-			} else {
-				returner.nModifier = 0;
-			}
-			string sDebugOnly = Constants.BLANK;
+				string sDebugOnly = Constants.BLANK;
 //			if (DebugMode == true)
 //			{
 //				sDebugOnly = "Modifier = " + nModifier.ToString() + " Roll =" + nValue.ToString() + "/" + nMin.ToString() + "-" + nMax.ToString() + " ::: ";
 //			}
 			
 			
-			string sResult = currentTable.Rows [nFoundRowNumber] [TableWrapper.Result].ToString ();
+				string sResult = currentTable.Rows [nFoundRowNumber] [TableWrapper.Result].ToString ();
 			
 			
-			if (sResult.ToLower ().IndexOf ("lookup") > -1) {
+				if (sResult.ToLower ().IndexOf ("lookup") > -1) {
 				
-				// NewMessage.Show("lookup found");
-				sResult = lookup (sResult, currentTable, notes);
+					// NewMessage.Show("lookup found");
+					sResult = lookup (sResult, currentTable, notes);
 				
-			}
+				}
 			
-			string sTitle = sDebugOnly + Title + " ";
-			if (sTitle == " ") {
-				sTitle = ""; // get rid of space if there was no title
+				string sTitle = sDebugOnly + Title + " ";
+				if (sTitle == " ") {
+					sTitle = ""; // get rid of space if there was no title
+				}
+				returner.sResult = sTitle + sResult + Environment.NewLine;
 			}
-			returner.sResult = sTitle + sResult + Environment.NewLine;
-			
 			return returner;
 		}
 

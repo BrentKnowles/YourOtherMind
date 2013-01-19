@@ -100,13 +100,14 @@ namespace LayoutPanels
 			panelLayout.BringToFront();
 			panelLayout.SetParentLayoutCurrentNote = Layout.SetCurrentTextNote;
 
-
+			/* I do not know why I duplicated this!
 			ToolStripButton ShowTabs = new ToolStripButton(Loc.Instance.GetString("Show Tabs?"));
 			ShowTabs.CheckOnClick = true;
 			ShowTabs.Checked = panelLayout.ShowTabs;
 			ShowTabs.CheckedChanged+= HandleCheckedChanged;
 			
 			properties.DropDownItems.Add (ShowTabs);
+			*/
 			
 		}
 		/// <summary>

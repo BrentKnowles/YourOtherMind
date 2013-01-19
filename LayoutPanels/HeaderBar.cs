@@ -169,6 +169,7 @@ namespace LayoutPanels
 				// the header is not updated unti enter pressed but the NAME is being updated
 				//UpdateHeader ();
 				 NameOfLayout.Text= changeName.Text;
+				LayoutDetails.Instance.UpdateTitle(changeName.Text);
 				// silenece beep
 				e.SuppressKeyPress = true;
 			}

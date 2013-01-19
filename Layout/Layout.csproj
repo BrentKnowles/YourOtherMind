@@ -63,6 +63,7 @@
     <Folder Include="AsXML\" />
     <Folder Include="AsDatabase\" />
     <Folder Include="notetypes\" />
+    <Folder Include="icons\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\coreutilities\coreutilities2013.csproj">
@@ -77,5 +78,19 @@
       <Project>{1C8CC9F9-FD0A-4DDF-B227-61E8135DFCE5}</Project>
       <Name>ApplicationFramework</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="icons\application_form_edit.png">
+      <LogicalName>application_form_edit.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\application_put.png">
+      <LogicalName>application_put.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\application_xp.png">
+      <LogicalName>application_xp.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\delete_x.png">
+      <LogicalName>delete_x.png</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
 </Project>
