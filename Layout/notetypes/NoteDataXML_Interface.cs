@@ -24,6 +24,8 @@ namespace Layout
 	
 		public virtual void Dispose ()
 		{
+
+
 		}
 
 		// http://stackoverflow.com/questions/7367152/c-dynamically-assign-method-method-as-variable
@@ -77,27 +79,34 @@ namespace Layout
 			CaptionLabel.BackColor = Color.Green;
 			CaptionLabel.Dock = DockStyle.Fill;
 			CaptionLabel.GripStyle = ToolStripGripStyle.Hidden;
-			//CaptionLabel.Text = this.Caption;
-			captionLabel = new ToolStripLabel (this.Caption);
-			captionLabel.ToolTipText = "Doubleclick this to set the note to its regular size";
 
-			captionLabel.MouseDown += HandleMouseDown;
-			captionLabel.MouseUp += HandleMouseUp;
-			captionLabel.MouseLeave += HandleMouseLeave;
-			captionLabel.MouseMove += HandleMouseMove;
+
+
+
+
+			captionLabel = new ToolStripLabel (this.Caption);
+			captionLabel.ToolTipText = "TIP: Doubleclick this to set the note to its regular size";
+
+			//captionLabel.MouseDown += HandleMouseDown;
+			//captionLabel.MouseUp += HandleMouseUp;
+			////captionLabel.MouseLeave += HandleMouseLeave;
+			//captionLabel.MouseMove += HandleMouseMove;
+
+
+
 			CaptionLabel.Items.Add (captionLabel);
 			//if (Caption == "")				NewMessage.Show ("Caption is blank");
 
 
 			properties = new ToolStripDropDownButton ("");
-			properties.Image = CoreUtilities.FileUtils.GetImage_ForDLL("application_form_edit.png");
+			properties.Image = CoreUtilities.FileUtils.GetImage_ForDLL ("application_form_edit.png");
 			CaptionLabel.Items.Add (properties);
 
 
 			ToolStripButton MinimizeButton = new ToolStripButton ();
 			//MinimizeButton.Text = "--";
 			//TODO: Optimization: Should these images just be stored somewhere and retrieved?
-			MinimizeButton.Image = CoreUtilities.FileUtils.GetImage_ForDLL("application_put.png");
+			MinimizeButton.Image = CoreUtilities.FileUtils.GetImage_ForDLL ("application_put.png");
 			MinimizeButton.ToolTipText = "Hides the note. Bring it back by using the List or a Tab";
 			MinimizeButton.Click += HandleMinimizeButtonClick;
 
@@ -105,8 +114,8 @@ namespace Layout
 
 			ToolStripButton MaximizeButton = new ToolStripButton ();
 			//MaximizeButton.Text = "[  ]";
-			MaximizeButton.Image = CoreUtilities.FileUtils.GetImage_ForDLL("application_xp.png");
-			MaximizeButton.ToolTipText = Loc.Instance.GetString("Fills available screen");
+			MaximizeButton.Image = CoreUtilities.FileUtils.GetImage_ForDLL ("application_xp.png");
+			MaximizeButton.ToolTipText = Loc.Instance.GetString ("Fills available screen");
 			MaximizeButton.Click += HandleMaximizeButtonClick;
 
 
@@ -115,13 +124,13 @@ namespace Layout
 				// not really a delete, more of a close
 				ToolStripButton closeButton = new ToolStripButton ();
 				//closeButton.Text = " X ";
-				closeButton.Image = CoreUtilities.FileUtils.GetImage_ForDLL("delete_x.png");
+				closeButton.Image = CoreUtilities.FileUtils.GetImage_ForDLL ("delete_x.png");
 				closeButton.Click += HandleCloseClick;
 				;
 				CaptionLabel.Items.Add (closeButton);
 				//closeButton.Anchor = AnchorStyles.Right;
 				closeButton.Alignment = ToolStripItemAlignment.Right;
-			//	ToolStripItem item = new ToolStripItem();
+				//	ToolStripItem item = new ToolStripItem();
 				//item.ToolStripItemAlignment = ToolStripItemAlignment.Right;
 				//closeButton.Dock = DockStyle.Right;
 			}
@@ -144,13 +153,30 @@ namespace Layout
 
 			//contextMenu = new ContextMenuStrip();
 
-		
+			ToolStripButton BringToFront = new ToolStripButton ();
+			BringToFront.Text = Loc.Instance.Cat.GetString ("Bring to Front");
+			BringToFront.Click += HandleBringToFrontClick;
+			properties.DropDownItems.Add (BringToFront);
+
+			properties.DropDownItems.Add (new ToolStripSeparator ());
 
 			if (false == IsSystemNote) {
-				ToolStripDropDownButton menuFolder = new ToolStripDropDownButton ();
+				ToolStripButton ReadOnly = new ToolStripButton ();
+				ReadOnly.CheckOnClick = true;
+				ReadOnly.Checked = this.ReadOnly;
+				ReadOnly.Text = Loc.Instance.Cat.GetString ("Read Only");
+				ReadOnly.Click += HandleReadOnlyClick;
+				properties.DropDownItems.Add (ReadOnly);
+			}
+
+			if (false == IsSystemNote) {
+				ToolStripMenuItem menuFolder = new ToolStripMenuItem ();
 				menuFolder.Text = Loc.Instance.Cat.GetString ("Folder");
 				properties.DropDownItems.Add (menuFolder);
-				menuFolder.MouseEnter += HandleMenuFolderMouseEnter;
+				// just here to make sure that there's a dropdown singal before populating
+				menuFolder.DropDownItems.Add ("");
+				menuFolder.DropDownOpening+= HandleFolderDropDownOpening;
+			//	menuFolder.MouseEnter += HandleMenuFolderMouseEnter;
 			}
 
 			if (false == IsSystemNote) {
@@ -166,12 +192,9 @@ namespace Layout
 				properties.DropDownItems.Add (deleteNote);
 				deleteNote.Click += HandleDeleteLayoutClick;;
 			}
-			ToolStripButton BringToFront = new ToolStripButton();
-			BringToFront.Text = Loc.Instance.Cat.GetString("Bring to Front");
-			BringToFront.Click+= HandleBringToFrontClick;
-			properties.DropDownItems.Add (BringToFront);
+		
 
-
+			properties.DropDownItems.Add (new ToolStripSeparator());
 			ToolStripButton menuProperties = new ToolStripButton();
 			menuProperties.Text = Loc.Instance.Cat.GetString ("Properties");
 			properties.DropDownItems.Add (menuProperties);
@@ -221,6 +244,22 @@ namespace Layout
 			DeleteNote = _Layout.DeleteNote;
 			Layout = _Layout;
 
+		}
+
+
+
+		/// <summary>
+		/// Will be overridden in children (i.e., a RichEdit set to readonly and whatnot
+		/// </summary> 
+		protected virtual void RespondToReadOnlyChange()
+		{
+		}
+
+		void HandleReadOnlyClick (object sender, EventArgs e)
+		{
+
+			this.ReadOnly = !this.ReadOnly;
+			RespondToReadOnlyChange();
 		}
 		/// <summary>
 		/// Handles the delete layout click for a SYSTEM NOTE
@@ -412,24 +451,43 @@ namespace Layout
 		/// <param name='e'>
 		/// E.
 		/// </param>
-		void HandleMenuFolderMouseEnter (object sender, EventArgs e)
+//		void HandleMenuFolderMouseEnter (object sender, EventArgs e)
+//		{
+//			// Draw Potential Folders
+//			(sender as ToolStripMenuItem).DropDownItems.Clear ();
+//			ToolStripMenuItem up = (ToolStripMenuItem)(sender as ToolStripMenuItem).DropDownItems.Add (Loc.Instance.Cat.GetString ("Out of Folder"));
+//			up.Tag = "up";
+//			up.Click += HandleMenuFolderClick;
+//
+//			foreach (NoteDataInterface note in GetAvailableFolders()) {
+//				// we do not add ourselves
+//				if (note.GuidForNote != this.GuidForNote) {
+//					ToolStripMenuItem item = (ToolStripMenuItem)(sender as ToolStripMenuItem).DropDownItems.Add (note.Caption);
+//					item.Click += HandleMenuFolderClick;
+//					item.Tag = note.GuidForNote;
+//				}
+//			}
+//
+//		}
+
+		void HandleFolderDropDownOpening (object sender, EventArgs e)
 		{
 			// Draw Potential Folders
-			(sender as ToolStripDropDownButton).DropDownItems.Clear ();
-			ToolStripMenuItem up = (ToolStripMenuItem)(sender as ToolStripDropDownButton).DropDownItems.Add (Loc.Instance.Cat.GetString ("Out of Folder"));
+			(sender as ToolStripMenuItem).DropDownItems.Clear ();
+			ToolStripMenuItem up = (ToolStripMenuItem)(sender as ToolStripMenuItem).DropDownItems.Add (Loc.Instance.Cat.GetString ("Out of Folder"));
 			up.Tag = "up";
 			up.Click += HandleMenuFolderClick;
-
+			
 			foreach (NoteDataInterface note in GetAvailableFolders()) {
 				// we do not add ourselves
 				if (note.GuidForNote != this.GuidForNote) {
-					ToolStripMenuItem item = (ToolStripMenuItem)(sender as ToolStripDropDownButton).DropDownItems.Add (note.Caption);
+					ToolStripMenuItem item = (ToolStripMenuItem)(sender as ToolStripMenuItem).DropDownItems.Add (note.Caption);
 					item.Click += HandleMenuFolderClick;
 					item.Tag = note.GuidForNote;
 				}
-			}
-
+			}	
 		}
+
 		/// <summary>
 		/// Handles the menu folder click.
 		/// 

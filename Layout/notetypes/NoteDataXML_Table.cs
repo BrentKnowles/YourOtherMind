@@ -199,19 +199,19 @@ namespace Layout
 			Table.Parent = ParentNotePanel;
 			Table.Dock = DockStyle.Fill;
 			Table.BringToFront ();
-
+			Table.ReadOnly = this.ReadOnly;
 
 
 
 
 			ToolStripMenuItem TableCaptionLabel = 
-				BuildMenuPropertyEdit (TableCaption,Loc.Instance.GetString ("When generating random data this caption will be used to present the results."),HandleTableCaptionKeyDown );
+				LayoutDetails.BuildMenuPropertyEdit (TableCaption,Loc.Instance.GetString ("When generating random data this caption will be used to present the results."),HandleTableCaptionKeyDown );
 
 
 
 
 			ToolStripMenuItem NextTableLabel =
-				BuildMenuPropertyEdit (NextTable,Loc.Instance.GetString ("Set a value here and if the random results of this table resolve without finding a 'NextTable' in the table itself, it will proceed with randomization on the table specified here."),HandleNextTableKeyDown );
+				LayoutDetails.BuildMenuPropertyEdit (NextTable,Loc.Instance.GetString ("Set a value here and if the random results of this table resolve without finding a 'NextTable' in the table itself, it will proceed with randomization on the table specified here."),HandleNextTableKeyDown );
 
 
 
@@ -223,37 +223,17 @@ namespace Layout
 			CaptionLabel.ResumeLayout();
 		}
 
-		ToolStripMenuItem BuildMenuPropertyEdit (string Title, string ToolTip, KeyEventHandler action)
+
+		protected override void RespondToReadOnlyChange ()
 		{
-			ToolStripMenuItem TableCaptionLabel = new ToolStripMenuItem ();
-			TableCaptionLabel.Text = Title;
-			TableCaptionLabel.ToolTipText = ToolTip;
-			ContextMenuStrip TableCaptionMenu = new ContextMenuStrip ();
-			ToolStripTextBox TableCaptionText = new ToolStripTextBox ();
-			TableCaptionText.Tag = TableCaptionLabel;
-			TableCaptionText.Text = Title;
-			TableCaptionText.KeyDown += action;
-			TableCaptionMenu.Items.Add (TableCaptionText);
-
-			TableCaptionLabel.DropDown = TableCaptionMenu;
-			return TableCaptionLabel;
+			base.RespondToReadOnlyChange ();
+			Table.ReadOnly = this.ReadOnly;
 		}
-
 		void HandleTableCaptionKeyDown (object sender, KeyEventArgs e)
 		{
-			if (e.KeyData == Keys.Enter) {
-				// the header is not updated unti enter pressed but the NAME is being updated
-				TableCaption = (sender as ToolStripTextBox).Text;
-				if ( (sender as ToolStripTextBox).Tag != null && ((sender as ToolStripTextBox).Tag is ToolStripMenuItem))
-				{
-					((sender as ToolStripTextBox).Tag as ToolStripMenuItem).Text = TableCaption;
-				}
-
-				// silenece beep
-				e.SuppressKeyPress = true;
-				SetSaveRequired(true);
-
-			}
+			string tablecaption = TableCaption;
+			LayoutDetails.HandleMenuLabelEdit (sender, e, ref tablecaption, SetSaveRequired);
+			TableCaption = tablecaption;
 		}
 		void HandleNextTableKeyDown (object sender, KeyEventArgs e)
 		{

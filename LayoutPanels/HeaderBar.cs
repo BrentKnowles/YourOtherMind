@@ -80,10 +80,18 @@ namespace LayoutPanels
 			changeName.TextChanged+= HandleChangeNameClick;
 			////////////////////////////
 
+
+			ToolStripMenuItem Blurb = LayoutDetails.BuildMenuPropertyEdit (Notes.Blurb,
+			                                     Loc.Instance.GetString ("A brief blurb discussing the purpose of this layout."),
+			                                     HandleBlurbEdit );
+
+
+
+			///////////////////////////
 			SourceItem = new ToolStripMenuItem();
 			if (Notes.Source == Constants.BLANK) Notes.Source = Loc.Instance.GetString("none");
 			SourceItem.Text = Notes.Source;
-			SourceItem.ToolTipText = Loc.Instance.GetString("If a reference, indicate where the reference originated.");
+			SourceItem.ToolTipText = Loc.Instance.GetString("Source: If a reference, indicate where the reference originated.");
 
 
 			Source = new ContextMenuStrip();
@@ -109,16 +117,58 @@ namespace LayoutPanels
 			//tabMenu.DropDownItems.Remove (tabMenu.DropDownItems.Add ("empty"));
 
 
+			//////////
+			ToolStripButton backColor = new ToolStripButton();
+			backColor.Text = Loc.Instance.GetString("Background Color");
+			backColor.BackColorChanged+= HandleBackColorChanged;
+			backColor.BackColor = Notes.BackgroundColor;
+			backColor.Click+= HandleBackGroundColorClick;
+
+
+
+			//////////
+
 			// setup contextmenus
 			SourceItem.DropDown = Source;
 			WordItem.DropDown = Words;
 
 			(sender as ToolStripDropDownButton).DropDownItems.Add (changeName);
+			(sender as ToolStripDropDownButton).DropDownItems.Add (Blurb);
 			(sender as ToolStripDropDownButton).DropDownItems.Add (SourceItem);
 			(sender as ToolStripDropDownButton).DropDownItems.Add (WordItem);
+			(sender as ToolStripDropDownButton).DropDownItems.Add (backColor);
 			//(sender as ToolStripDropDownButton).DropDownItems.Add (tabMenu);
 		}
 
+		void HandleBackColorChanged (object sender, EventArgs e)
+		{
+			(sender as ToolStripButton).ForeColor = InvertColor((sender as ToolStripButton).BackColor);
+		}
+
+		void HandleBackGroundColorClick (object sender, EventArgs e)
+		{
+			ColorDialog color = new ColorDialog ();
+			if (color.ShowDialog () == DialogResult.OK) {
+				(sender as ToolStripButton).BackColor = color.Color;
+				Notes.BackgroundColor = color.Color;
+				Layout.BackColor = color.Color;
+				
+			}
+		}
+
+		void HandleBlurbEdit (object sender, KeyEventArgs e)
+		{
+		
+				string tablecaption = Notes.Blurb;
+				LayoutDetails.HandleMenuLabelEdit (sender, e, ref tablecaption, Layout.SetSaveRequired);
+				Notes.Blurb = tablecaption;
+
+		}
+		Color InvertColor(Color ColourToInvert)
+		{const int RGBMAX = 255;
+			return Color.FromArgb(RGBMAX - ColourToInvert.R, 
+			                      RGBMAX - ColourToInvert.G, RGBMAX - ColourToInvert.B);
+		}
 		void HandleWordsKeyDown (object sender, KeyEventArgs e)
 		{
 			if (e.KeyData == Keys.Enter) {
@@ -179,9 +229,15 @@ namespace LayoutPanels
 		{
 			if (false == Layout.GetIsChild && false == Layout.GetIsSystemLayout ) {
 				headerBar.Items.Clear ();
+
+
+
 				 NameOfLayout = new ToolStripLabel ();
 				NameOfLayout.Text = Notes.Name;
-
+				int DaysSinceLastEdit = (DateTime.Now - Notes.DateEdited).Days;
+				string an_S = "";
+				if (DaysSinceLastEdit != 1) an_S = "s";
+				NameOfLayout.ToolTipText = Loc.Instance.GetStringFmt("{0} day{1} since this layout last edited", DaysSinceLastEdit,an_S);
 			
 
 				 starControl = new Stars();

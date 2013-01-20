@@ -6,7 +6,7 @@ namespace Layout
 	/// <summary>
 	/// This is the FILE/OR EQUIVALENT that is opened for the ENTIRE Layout
 	/// </summary>
-	public interface LayoutInterface
+	public interface LayoutInterface: IDisposable
 	{
 
 
@@ -34,6 +34,8 @@ namespace Layout
 		string Source {get;set;}
 		int Words {get; set;}
 		string Keywords {get;set;}
+		System.Drawing.Color BackgroundColor { get; set; }
+		string Blurb {get;set;}
 		#endregion
 
 

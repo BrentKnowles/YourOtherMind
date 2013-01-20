@@ -43,7 +43,7 @@ namespace Layout
 		#region formcontrols
 		ListBox list;
 		Label count;
-		
+		Label blurb;
 		#endregion
 
 		public NoteDataXML_NoteList () : base()
@@ -68,8 +68,8 @@ namespace Layout
 			mode.Dock = DockStyle.Top;
 			mode.BringToFront ();
 
-			mode.Items.Add (">ThisLayout");
-			mode.Items.Add (">AllLayouts");
+			mode.Items.Add (Loc.Instance.GetString ("Notes on This Layout"));
+			mode.Items.Add (Loc.Instance.GetString ("All Layouts"));
 
 
 			mode.SelectedIndexChanged += HandleDropDownSelectedIndexChanged;
@@ -83,6 +83,17 @@ namespace Layout
 			list.BringToFront();
 			list.BindingContextChanged+= HandleBindingContextChanged;
 			list.DoubleClick += HandleListBoxDoubleClick;
+			list.Click+= HandleNoteListClick;
+
+
+			count = new Label();
+			count.Parent = ParentNotePanel;
+			count.Dock = DockStyle.Bottom;
+			
+			
+			blurb = new Label();
+			blurb.Parent = ParentNotePanel;
+			blurb.Dock = DockStyle.Bottom;
 
 
 			Button refresh = new Button();
@@ -90,11 +101,6 @@ namespace Layout
 			refresh.Dock = DockStyle.Bottom;
 			refresh.Parent = ParentNotePanel;
 			refresh.Click += HandleRefreshClick;
-
-			 count = new Label();
-			count.Parent = ParentNotePanel;
-			count.Dock = DockStyle.Top;
-
 
 
 
@@ -104,6 +110,20 @@ namespace Layout
 			case Modes.LAYOUTS: mode.SelectedIndex = 1; break;
 			}
 
+		}
+
+		void HandleNoteListClick (object sender, EventArgs e)
+		{
+			switch (Mode) {
+			case Modes.NOTES: blurb.Text ="";break;
+			case Modes.LAYOUTS: 
+				if (list.SelectedItem != null)
+				{
+					MasterOfLayouts.NameAndGuid record = (MasterOfLayouts.NameAndGuid)this.list.SelectedItem;
+					blurb.Text =(record.Blurb);
+				}
+				break;
+			}
 		}
 
 		void HandleBindingContextChanged (object sender, EventArgs e)

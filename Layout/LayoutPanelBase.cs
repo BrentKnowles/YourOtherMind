@@ -10,6 +10,14 @@ namespace Layout
 		public LayoutPanelBase ()
 		{
 		}
+
+		#region delegates
+		// This delgate set in NoteDataXML_Panel, hooking the parent Layout up with the Child Layout, for the purposes of SettingCurrentTextNote accurately
+		public Action<NoteDataXML_RichText> SetParentLayoutCurrentNote;
+		// set in NoteDataXML_Panel so that a child Layout will tell a higher level to save, if needed
+		public Action<bool> SetSubNoteSaveRequired = null;
+#endregion
+
 		#region variables
 		private string _guid = CoreUtilities.Constants.BLANK;
 		protected bool _saverequired = false;
@@ -75,7 +83,12 @@ namespace Layout
 		abstract public bool GetIsSystemLayout { get; set; }	
 		abstract public NoteDataXML_RichText CurrentTextNote{ get; set; }
 		abstract public string Caption {get;}
+		abstract public string Section { get; }
+		abstract public string Keywords { get; }
+		abstract public string Subtype { get; }
+		abstract public string Notebook { get; }
 
+		abstract public void SetParentFields (string section, string keywords, string subtype, string notebook);
 #endregion
 
 		#region gui
@@ -92,6 +105,7 @@ namespace Layout
 		public abstract void LoadLayout (string _GUID, bool IsSubPanel, ContextMenuStrip textEditorContextStrip);
 
 	//	public abstract  void AddNote();
+		public abstract void AddNote(NoteDataInterface note);
 
 		public abstract System.Collections.Generic.List<NoteDataInterface> GetAvailableFolders();
 		public abstract void MoveNote (string GUIDOfNoteToMove, string GUIDOfLayoutToMoveItTo);

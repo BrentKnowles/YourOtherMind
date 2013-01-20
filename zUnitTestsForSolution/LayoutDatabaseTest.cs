@@ -113,9 +113,13 @@ namespace Testing
 		{
 			_setupforlayoutests();
 
+			// this one needs to create the database
+
 			FakeLayoutDatabase layout = new FakeLayoutDatabase ("testguid");
-			LayoutPanel layoutPanel = new LayoutPanel(CoreUtilities.Constants.BLANK, false);
-			bool result = layout.LoadFrom(layoutPanel);
+		//	LayoutPanel layoutPanel = new LayoutPanel(CoreUtilities.Constants.BLANK, false);
+			//layoutPanel.NewLayout("testguid", false, null);
+		//	layoutPanel.LoadLayout("testguid", false, null);
+			bool result = layout.LoadFrom(null);
 			_w.output("made it");
 			Assert.AreEqual(false, result);
 		}
@@ -135,7 +139,7 @@ namespace Testing
 			_TestSingleTon.Instance._SetupForLayoutPanelTests();
 			int linktable = 1;
 			int extranodeadded = 1;
-			_w.output("this is a slow test");
+			_w.output("this is a slow test. 6 minutes?");
 			int count = 200;
 			//FakeLayoutDatabase layout = new FakeLayoutDatabase ("testguid");
 			LayoutPanel layoutPanel = new LayoutPanel(CoreUtilities.Constants.BLANK, false);
@@ -147,6 +151,7 @@ namespace Testing
 			for (int i = 0; i < count; i++) {
 				note.Caption = "boo" + i.ToString();
 				layoutPanel.AddNote (note);
+				note.CreateParent(layoutPanel);
 			}
 			//_w.output(String.Format ("{0} Notes in Layout before save", layout.GetNotes().Count.ToString()));
 			layoutPanel.SaveLayout();
@@ -225,9 +230,10 @@ namespace Testing
 			NoteDataInterface note = null; 
 			for (int i = 0; i < count; i++) {
 				note = (NoteDataInterface)Activator.CreateInstance(TypeToTest);//new NoteDataXML ();
-				note.CreateParent(layoutPanel);
+
 				note.Caption = "boo" + i.ToString ();
 				layoutPanel.AddNote (note);
+				note.CreateParent(layoutPanel);
 			}
 			
 			
@@ -271,18 +277,20 @@ namespace Testing
 			NoteDataInterface note = null; 
 			for (int i = 0; i < count; i++) {
 				note = (NoteDataInterface)Activator.CreateInstance(typeof(NoteDataXML));//new NoteDataXML ();
-				note.CreateParent(layoutPanel);
+
 				note.Caption = "boo" + i.ToString ();
 				layoutPanel.AddNote (note);
+				note.CreateParent(layoutPanel);
 			}
 			
 			// store a SECOND TYPE into the mix
 			note = (NoteDataInterface)Activator.CreateInstance(typeof(NoteDataXML_RichText));
 			note.Caption = "textnote";
 			string guid = note.GuidForNote;
-			note.CreateParent(layoutPanel);
+
 			_w.output("new guid" + guid);
 			layoutPanel.AddNote (note);
+			note.CreateParent(layoutPanel);
 			layoutPanel.SaveLayout ();
 		}
 		[Test]
@@ -316,9 +324,10 @@ namespace Testing
 			NoteDataInterface note = null; 
 			for (int i = 0; i < count; i++) {
 				note = (NoteDataInterface)Activator.CreateInstance(TypeToTest);//new NoteDataXML ();
-					note.CreateParent(layoutPanel);
+
 				note.Caption = "boo" + i.ToString ();
 				layoutPanel.AddNote (note);
+				note.CreateParent(layoutPanel);
 			}
 			
 			
@@ -378,17 +387,19 @@ namespace Testing
 
 			NoteDataXML note = new NoteDataXML ();
 			for (int i = 0; i < count; i++) {
-				note.CreateParent(layoutPanel);
+
 				note.Caption = "boo" + i.ToString ();
 				layout.Add (note);
+				note.CreateParent(layoutPanel);
 			}
 			_w.output (String.Format ("{0} Notes in Layout before save", layout.GetNotes ().Count.ToString ()));
 
 			for (int i = 0; i < 6; i++) {
 				note = new NoteDataXML_RichText ();
-				note.CreateParent(layoutPanel);
+			
 				note.Caption = "richText";
 				layout.Add (note);
+				note.CreateParent(layoutPanel);
 			}
 
 			layout.SaveTo();
@@ -443,18 +454,20 @@ namespace Testing
 
 			NoteDataXML note = new NoteDataXML ();
 			for (int i = 0; i < count; i++) {
-				note.CreateParent(layoutPanel);
+
 				note.Caption = "boo" + i.ToString ();
 				layoutPanel.AddNote (note);
+				note.CreateParent(layoutPanel);
 			}
 			_w.output (String.Format ("{0} Notes in Layout before save", layoutPanel.GetAllNotes ().Count.ToString ()));
 			
 			for (int i = 0; i < 6; i++) {
 				note = new NoteDataXML_Panel ();
-				note.CreateParent(layoutPanel);
+			
 
 				note.Caption = "Panel";
 				layoutPanel.AddNote (note);
+				note.CreateParent(layoutPanel);
 				((NoteDataXML_Panel)note).Add10TestNotes();
 			}
 
@@ -500,18 +513,19 @@ namespace Testing
 		{
 			_setupforlayoutests ();
 			int count = 25;
-			FakeLayoutDatabase layout = new FakeLayoutDatabase ("testguid");
+			//FakeLayoutDatabase layout = new FakeLayoutDatabase ("testguid");
 			LayoutPanel layoutPanel = new LayoutPanel (CoreUtilities.Constants.BLANK, false);
-			
+			layoutPanel.NewLayout("testguid", true, null);
 			NoteDataXML note = new NoteDataXML ();
 			for (int i = 0; i < count; i++) {
-				note.CreateParent(layoutPanel);
+
 				note.Caption = "boo" + i.ToString ();
-				layout.Add (note);
+				layoutPanel.AddNote (note);
+				note.CreateParent(layoutPanel);
 			}
 		//	layout.SaveTo(); no save, so note should not exist
 			
-			Assert.False (layout.IsLayoutExists("testguid"));
+			Assert.False (MasterOfLayouts.ExistsByGUID("testguid"));
 		}
 
 
@@ -519,8 +533,9 @@ namespace Testing
 		public void LayoutExists()
 		{
 			System.Windows.Forms .Form form = new System.Windows.Forms.Form();
+			_w.output("1");
 			_TestSingleTon.Instance._SetupForLayoutPanelTests();
-
+			_w.output("2");
 			int count = 25;
 			//FakeLayoutDatabase layout = new FakeLayoutDatabase ("testguid");
 			LayoutPanel layoutPanel = new LayoutPanel (CoreUtilities.Constants.BLANK, false);
@@ -528,27 +543,29 @@ namespace Testing
 
 			NoteDataXML note = new NoteDataXML ();
 			for (int i = 0; i < count; i++) {
-				note.CreateParent(layoutPanel);
+
 				note.Caption = "boo" + i.ToString ();
 				layoutPanel.AddNote (note);
+				note.CreateParent(layoutPanel);
 			}
 			layoutPanel.SaveLayout();
-
+			layoutPanel.Dispose ();
 			Assert.True (MasterOfLayouts.ExistsByGUID("testguid"));
 		}
 		[Test]
 		public void SaveNotequired()
 		{	_setupforlayoutests ();
 			int count = 25;
-			FakeLayoutDatabase layout = new FakeLayoutDatabase ("testguid");
+			//FakeLayoutDatabase layout = new FakeLayoutDatabase ("testguid");
 			LayoutPanel layoutPanel = new LayoutPanel (CoreUtilities.Constants.BLANK, false);
-			
+			layoutPanel.NewLayout ("testguid", true, null);
 			NoteDataXML_RichText note = new NoteDataXML_RichText ();
 			for (int i = 0; i < count; i++) {
-				note.CreateParent(layoutPanel);
+
 				note.Caption = "boo" + i.ToString ();
 				//note.UpdateLocation();
-				layout.Add (note);
+				layoutPanel.AddNote (note);
+				note.CreateParent(layoutPanel);
 			}
 			// cannot actually save becaue LayoutPanel is just fake for this test
 			// but we check that the flag was set correclty -- i..e, nothing improtant changes, nothing needs tob e saved
@@ -562,15 +579,17 @@ namespace Testing
 		public void SaveRequired()
 		{	_setupforlayoutests ();
 			int count = 25;
-			FakeLayoutDatabase layout = new FakeLayoutDatabase ("testguid");
+			//FakeLayoutDatabase layout = new FakeLayoutDatabase ("testguid");
 			LayoutPanel layoutPanel = new LayoutPanel (CoreUtilities.Constants.BLANK, false);
-			
+			layoutPanel.NewLayout("testguid", false, null);
 			NoteDataXML_RichText note = new NoteDataXML_RichText ();
 			for (int i = 0; i < count; i++) {
-				note.CreateParent(layoutPanel);
+
 				note.Caption = "boo" + i.ToString ();
+
+				layoutPanel.AddNote (note);
+				note.CreateParent(layoutPanel);
 				note.UpdateLocation();
-				layout.Add (note);
 			}
 			//layout.SaveTo(); 
 			Assert.True (layoutPanel.GetSaveRequired);	
@@ -606,30 +625,67 @@ namespace Testing
 		}
 
 		[Test]
+		//[Ignore]
 		public void NoCrashIfSaveEmptyPanel()
 		{	_setupforlayoutests ();
 
-			FakeLayoutDatabase layout = new FakeLayoutDatabase ("testguid");
+			//FakeLayoutDatabase layout = new FakeLayoutDatabase ("testguid");
 			LayoutPanel layoutPanel = new LayoutPanel (CoreUtilities.Constants.BLANK, false);
-			
+			layoutPanel.NewLayout("testguid", true, null);
 			NoteDataXML_Panel note = new NoteDataXML_Panel ();
-			layout.SaveTo();
+			layoutPanel.AddNote (note);
+			note.CreateParent(layoutPanel);
+			layoutPanel.SaveLayout();
 
 			_w.output("This often fails if we have added a new Layout Variable and it has not been set to a default value in constructor");
 			
 		}
 		[Test]
+		//[Ignore]
 		public void DeleteTest()
 		{
+
 			_setupforlayoutests ();
-			
-			FakeLayoutDatabase layout = new FakeLayoutDatabase ("DeleteMe");
-			LayoutPanel layoutPanel = new LayoutPanel (CoreUtilities.Constants.BLANK, false);
-			layout.SaveTo ();
-			Assert.True (layout.IsLayoutExists("DeleteMe"));
+			Assert.False (MasterOfLayouts.ExistsByGUID("DeleteMe"));
+
+			//FakeLayoutDatabase layout = new FakeLayoutDatabase ("DeleteMe");
+			FAKE_LayoutPanel layoutPanel = new FAKE_LayoutPanel (CoreUtilities.Constants.BLANK, false);
+			layoutPanel.NewLayout("DeleteMe",true,  null);
+			//LayoutDatabase layout = layoutPanel.GetLayoutDatabase();
+			//layout.SaveTo ();
+			layoutPanel.SaveLayout ();
+
+
+			Assert.True (MasterOfLayouts.ExistsByGUID("DeleteMe"));
 			MasterOfLayouts.DeleteLayout ("DeleteMe");
-			Assert.False (layout.IsLayoutExists("DeleteMe"));
+			Assert.False (MasterOfLayouts.ExistsByGUID("DeleteMe"));
+			layoutPanel.Dispose();
 		}
+		[Test]
+		[ExpectedException]
+		public void TestInvalidAddToStart()
+		{
+			_TestSingleTon.Instance._SetupForLayoutPanelTests();
+			FakeLayoutDatabase layout = new FakeLayoutDatabase ("DeleteMe");
+			//LayoutPanel layoutPanel = new LayoutPanel (CoreUtilities.Constants.BLANK, false);
+			//layoutPanel.NewLayout("testguid", true, null);
+			layout.SaveTo ();
+			NoteDataXML test = new NoteDataXML();
+			test.GuidForNote = "boo";
+			layout.AddToStart(test);
+		}
+		[Test]
+		public void TestAddToStart()
+		{
+			_TestSingleTon.Instance._SetupForLayoutPanelTests();
+			FakeLayoutDatabase layout = new FakeLayoutDatabase ("DeleteMe");
+		//	LayoutPanel layoutPanel = new LayoutPanel (CoreUtilities.Constants.BLANK, false);
+			layout.SaveTo ();
+			NoteDataXML test = new NoteDataXML();
+			test.GuidForNote = CoreUtilities.Links.LinkTable.STICKY_TABLE;
+			layout.AddToStart(test);
+		}
+
 	}
 }
 

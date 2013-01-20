@@ -9,7 +9,7 @@ namespace Testing
 		}
 		public Layout.LayoutPanel myLayoutPanel()
 		{
-			return this.panelLayout;
+			return (Layout.LayoutPanel)this.panelLayout;
 		}
 		public int CountNotes ()
 		{
@@ -21,6 +21,22 @@ namespace Testing
 			}
 			return count;
 			//return this.panelLayout.CountNotes();
+		}
+		public string GetParent_Section()
+		{
+			return this.panelLayout.Section;
+		}
+		public string GetParent_Keywords()
+		{
+			return this.panelLayout.Keywords;
+		}
+		public string GetParent_Notebook()
+		{
+			return this.panelLayout.Notebook;
+		}
+		public string GetParent_Subtype()
+		{
+			return this.panelLayout.Subtype;
 		}
 	}
 }

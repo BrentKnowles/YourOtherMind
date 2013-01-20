@@ -97,6 +97,23 @@ namespace Layout
 			set{ parent = value;}
 		}
 
+
+		private bool readOnly=false;
+		/// <summary>
+		/// Gets or sets a value indicating whether this <see cref="Layout.NoteDataXML"/> read only.
+		/// </summary>
+		/// <value>
+		/// <c>true</c> if read only; otherwise, <c>false</c>.
+		/// </value>
+		public bool ReadOnly {
+			get {
+				return readOnly;
+			}
+			set {
+				readOnly = value;
+			}
+		}
+
 		#endregion
 
 		#region xml_save
@@ -209,6 +226,7 @@ namespace Layout
 		/// </summary>
 		public void Destroy()
 		{
+			//NewMessage.Show ("DO NOT CALL THIS JAN 20 2013");
 			ParentNotePanel.Dispose ();
 		}
 

@@ -327,6 +327,11 @@ namespace YOM2013
 			}
 		}
 
+		void HandleTestClick (object sender, EventArgs e)
+		{
+			NewMessage.Show (MasterOfLayouts.GetRandomNoteBy("notebook", "Writing"));
+		}
+
 /// <summary>
 /// Initializes a new instance of the <see cref="YOM2013.MainForm"/> class.
 /// </summary>
@@ -410,10 +415,6 @@ namespace YOM2013
 				//	((ToolStripMenuItem)MainMenu.Items [0]).DropDownItems.Add (Save);
 				New.Click += HandleNewClick;
 
-				ToolStripMenuItem Test = new ToolStripMenuItem (Loc.Instance.Cat.GetString ("TEST"));
-				file.DropDownItems.Add (Test);
-				//	((ToolStripMenuItem)MainMenu.Items [0]).DropDownItems.Add (Save);
-				Test.Click += HandleTestClick;
 
 				ToolStripMenuItem Save = new ToolStripMenuItem (Loc.Instance.Cat.GetString ("Save"));
 				file.DropDownItems.Add (Save);
@@ -457,6 +458,10 @@ namespace YOM2013
 			// DELEGATES
 			LayoutDetails.Instance.UpdateTitle = UpdateTitle;
 
+			ToolStripMenuItem Test = new ToolStripMenuItem (Loc.Instance.Cat.GetString ("TEST"));
+			MainMenu.Items.Add (Test);
+			//	((ToolStripMenuItem)MainMenu.Items [0]).DropDownItems.Add (Save);
+			Test.Click += HandleTestClick;
 
 
 
@@ -670,10 +675,7 @@ namespace YOM2013
 			Screens_AcrossTwo(Settings.MultipleScreenHigh);
 		}
 
-		void HandleTestClick (object sender, EventArgs e)
-		{
-		
-		}
+	
 		/// <summary>
 		/// returns a valid record if ourGUID is found to be in memory
 		/// </summary>
@@ -794,6 +796,7 @@ namespace YOM2013
 
 			if (null != existing) {
 				LayoutsOpen.Remove (existing);
+			//	existing.LayoutPanel.Dispose(); Cannot actuall do this as the Note calling this is still doing things
 				// Dec 29 2012 - adding this 
 				// Pick one of the other layouts to become current
 				if (LayoutsOpen.Count>0)
@@ -839,7 +842,13 @@ namespace YOM2013
 							LayoutPanel newLayout = CreateLayoutContainer (guidtoload);
 							newLayout.LoadLayout (guidtoload, false, TextEditContextStrip);
 							LayoutDetails.Instance.CurrentLayout = newLayout;
-
+							if (newLayout.GetIsChild)
+							{
+								NewMessage.Show ("RemoveMeEventually: Somehow you loaded a subpanel. That's wrong. Closing it.");
+								// if we have loaded this and it turns out that this is a Child Panel
+								// we are not allowed to stay open
+								AlertWhenClosed(newLayout);
+							}
 					
 						} else {
 				

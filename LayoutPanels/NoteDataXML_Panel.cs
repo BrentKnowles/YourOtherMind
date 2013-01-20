@@ -13,7 +13,7 @@ namespace LayoutPanels
 		public override int defaultWidth { get { return 500; } }
 		#endregion
 		#region gui
-		protected LayoutPanel panelLayout;
+		protected LayoutPanelBase panelLayout;
 		#endregion
 		#region variable
 		public override bool IsPanel {
@@ -38,6 +38,11 @@ namespace LayoutPanels
 
 
 
+		}
+		public override void Dispose ()
+		{
+			lg.Instance.Line("NoteDataXML_Panel->Dispose", ProblemType.MESSAGE, String.Format ("Dispose called for Note Panel Caption/Guid {0}/{1}", Caption, this.GuidForNote),Loud.ACRITICAL);
+			base.Dispose ();
 		}
 
 		/// <summary>
@@ -71,11 +76,16 @@ namespace LayoutPanels
 		public void AddNote (NoteDataInterface note)
 		{
 			panelLayout.AddNote (note);
+			// jan 20 2013 - added this because i was doing an Update in LayoutPanel but that was causing
+			// issues with destroying/disposing the original object
+			//note.CreateParent(panelLayout);
 		}
 		public override void Save()
 		{
 			base.Save();
 
+			// need some kind of copy constructor to grab things like Notebook and Section from the parent to give to the child panels
+			panelLayout.SetParentFields(Layout.Section, Layout.Keywords, Layout.Subtype, Layout.Notebook);
 			panelLayout.SaveLayout ();
 		}
 		

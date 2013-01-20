@@ -17,6 +17,17 @@ namespace Layout
 		#region structs
 		public struct NameAndGuid
 		{
+			private string _blurb;
+
+			public string Blurb {
+				get {
+					return _blurb;
+				}
+				set {
+					_blurb = value;
+				}
+			}
+
 			private string _guid;
 			private string _caption;
 			public string Guid {get {return _guid;}  set {_guid = value;}}
@@ -115,7 +126,7 @@ namespace Layout
 				throw new Exception ("Unable to create database in LoadFrom");
 			}
 			
-			List<object[]> myList = MyDatabase.GetValues (dbConstants.table_name, new string[2] {dbConstants.GUID, dbConstants.NAME},
+			List<object[]> myList = MyDatabase.GetValues (dbConstants.table_name, new string[3] {dbConstants.GUID, dbConstants.NAME, dbConstants.BLURB},
 			dbConstants.SUBPANEL , 0,String.Format(" order by {0} COLLATE NOCASE", dbConstants.NAME));
 			
 			
@@ -126,6 +137,7 @@ namespace Layout
 					NameAndGuid record = new NameAndGuid();
 					record.Guid = o[0].ToString();
 					record.Caption = o [1].ToString();
+					record.Blurb = o [2].ToString();
 					lg.Instance.Line("MasterOfLayouts->GetListOfLayouts", ProblemType.MESSAGE, "adding to ListOfLayouts " + record.Caption);
 					result.Add (record);
 				}
@@ -158,6 +170,52 @@ namespace Layout
 
 			MyDatabase.Dispose();
 		}
+		//TODO: This is just a hack to prove a deeper system. Will need to be done properly
+		//right now the context is GetLayoutBy("section", "writing")
+		//returns a random NOTE  matching context INCLUDING notes on subpanels (once subpanels able to inherit Details of their Parents)
+		public static string GetRandomNoteBy (string typeofsearch, string param)
+		{
+
+			typeofsearch = dbConstants.NOTEBOOK;
+			
+			BaseDatabase MyDatabase = CreateDatabase ();
+			List<object[]> results = MyDatabase.GetValues (dbConstants.table_name, new string[2] {
+				dbConstants.NAME, dbConstants.GUID
+
+			}, typeofsearch, param);
+			// Do a query on the database
+			// then process, grabbing first ONE Layout out of the mix
+			//
+
+			string temp = "";
+			string guid = Constants.BLANK;
+			if (results != null && results.Count > 0) {
+				int pickme = LayoutDetails.Instance.RandomNumbers.Next (1, results.Count + 1);
+				temp = results [pickme - 1] [0].ToString ();
+				guid = results [pickme - 1] [1].ToString ();
+			}
+
+
+			// TODO: Next will be loading the XML and grabbing a note.
+
+			if (Constants.BLANK != guid)
+			{
+			// we load it
+				LayoutInterface layoutdata = LayoutDetails.DATA_Layout(guid);
+			//	LayoutPanelBase panel = new Layout.LayoutPanel();
+				layoutdata.LoadFrom (null);
+				System.Collections.ObjectModel.ReadOnlyCollection<NoteDataInterface> listofnotes = layoutdata.GetNotes();
+				if (listofnotes != null && listofnotes.Count > 0)
+				{
+				int pickme = LayoutDetails.Instance.RandomNumbers.Next (1, listofnotes.Count + 1);
+				NoteDataInterface randomNote = (NoteDataInterface)listofnotes[pickme-1];
+				temp = String.Format ("Layout: {0} Note Caption: {1}", temp, randomNote.Caption);
+				}
+			}
+				// additional hack is just to return the CAPTION, not the GUID, else I won't know if it worked!
+			return temp;
+		}
+
 	}
 }
 

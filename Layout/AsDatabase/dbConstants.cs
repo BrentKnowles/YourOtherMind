@@ -5,6 +5,8 @@ namespace Layout.data
 
 	public static class dbConstants
 	{
+
+		static public ColumnConstant SHOWTABS = new ColumnConstant("showtabs", 5, "boolean", 2);
 		static public ColumnConstant SUBPANEL = new ColumnConstant("subpanel", 6, "boolean", 3);
 		static public ColumnConstant MAXIMIZETABS = new ColumnConstant("maximizetabs", 7, "boolean", 4);
 
@@ -21,16 +23,18 @@ namespace Layout.data
 		static public ColumnConstant WORDS = new ColumnConstant("words", 16, "INTEGER",13);
 		static public ColumnConstant KEYWORDS = new ColumnConstant("keywords", 17, "TEXT", 14);
 		static public ColumnConstant LINKTABLE = new ColumnConstant("linktable", 18, "LONGTEXT", 15);
-		public const  int ColumnCount = 19;
+		static public ColumnConstant BACKGROUNDCOLOR = new ColumnConstant("backcolor", 19, "INTEGER", 16);
+		static public ColumnConstant BLURB = new ColumnConstant("blurb", 20,"TEXT", 17);
+		public const  int ColumnCount = 21;
 		// The number of columns in the array being stoed
-		public  const int LayoutCount = 16 ; // 11 - 3
+		public  const int LayoutCount = 18 ; // 11 - 3
 
-		static public string[] Columns = new string[ColumnCount]{"id",     "guid",        "xml",      "status", "name", "showtabs", SUBPANEL.Name,
+		static public string[] Columns = new string[ColumnCount]{"id",     "guid",        "xml",      "status", "name", SHOWTABS.Name, SUBPANEL.Name,
 			MAXIMIZETABS.Name, STARS.Name, HITS.Name, DATECREATED.Name, DATEEDITED.Name, NOTEBOOK.Name, SECTION.Name, TYPE.Name, SOURCE.Name, WORDS.Name, KEYWORDS.Name,
-		    LINKTABLE.Name};
-		static public string[] Types   = new string[ColumnCount]{"INTEGER","TEXT UNIQUE",	"LONGTEXT",	"TEXT",   "VARCHAR(50)", "boolean", SUBPANEL.Type,
+		    LINKTABLE.Name, BACKGROUNDCOLOR.Name, BLURB.Name};
+		static public string[] Types   = new string[ColumnCount]{"INTEGER","TEXT UNIQUE",	"LONGTEXT",	"TEXT",   "VARCHAR(50)", SHOWTABS.Type, SUBPANEL.Type,
 			MAXIMIZETABS.Type, STARS.Type, HITS.Type, DATECREATED.Type, DATEEDITED.Type, NOTEBOOK.Type, SECTION.Type, TYPE.Type, SOURCE.Type, WORDS.Type, KEYWORDS.Type,
-		    LINKTABLE.Type};
+		    LINKTABLE.Type, BACKGROUNDCOLOR.Type, BLURB.Type};
 
 
 
@@ -42,7 +46,7 @@ namespace Layout.data
 		static public string XML =Columns[2];
 		static public string STATUS =Columns[3];
 		static public string NAME=Columns[4];
-		static public string SHOWTABS=Columns[5];
+		//static public string SHOWTABS=Columns[5];
 
 	
 		//having this lower case versus columns makes it easier to see

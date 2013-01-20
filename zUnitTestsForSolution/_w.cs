@@ -12,7 +12,7 @@ namespace Testing
 		/// </param>
 		public static void output(object s)
 		{
-			lg.Instance.Loudness = Loud.CTRIVIAL;
+			//lg.Instance.Loudness = Loud.CTRIVIAL;
 			Console.WriteLine(s);
 		}
 

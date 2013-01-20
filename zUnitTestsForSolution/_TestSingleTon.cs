@@ -36,8 +36,16 @@ namespace Testing
 		// the test will verify this file does not exist but then copy it in (and delete it afterwards) to the local directory
 		// a second test will move it into a subdirectory
 		public const string InvalidImageFile="012.jpg";
+
+		private void SetupForAnyTest ()
+		{
+			CoreUtilities.lg.Instance.OnlyTime= false;
+			CoreUtilities.lg.Instance.Loudness = CoreUtilities.Loud.CTRIVIAL;
+		}
+
 		public void _SetupForLayoutPanelTests ()
 		{
+			SetupForAnyTest();
 			LayoutDetails.Instance.YOM_DATABASE = "yom_test_database.s3db";
 			LayoutDetails.Instance.OverridePath = Environment.CurrentDirectory;
 

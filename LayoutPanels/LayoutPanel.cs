@@ -50,13 +50,17 @@ namespace Layout
 		#endregion
 
 
+	
+	protected override void Dispose (bool disposing)
+		{
+			//Notes=null;
+			//this will cause TestMovingNotes to fail because a panel is removed? 
+			lg.Instance.Line("LayoutPanel->Dispose", ProblemType.MESSAGE, "Called from " + new System.Diagnostics.StackFrame(1).GetMethod().Module.Name);
+			Notes.Dispose(); 
+			base.Dispose (disposing);
+		
 
-		#region delegates
-		// This delgate set in NoteDataXML_Panel, hooking the parent Layout up with the Child Layout, for the purposes of SettingCurrentTextNote accurately
-		public Action<NoteDataXML_RichText> SetParentLayoutCurrentNote;
-		// set in NoteDataXML_Panel so that a child Layout will tell a higher level to save, if needed
-		public Action<bool> SetSubNoteSaveRequired = null;
-		#endregion
+		}
 
 		public override string Caption {
 			get { return Notes.Name;}
@@ -214,9 +218,12 @@ namespace Layout
 			bar.Items.Add (tabMenu);
 
 			// tempt
-			ToolStripButton test = new ToolStripButton("test");
-			test.Click+= (object sender, EventArgs e) => {NewMessage.Show ("Records in linktable = " + GetLinkTable().GetRecords().Length);};
-			bar.Items.Add (test);
+//			ToolStripButton test = new ToolStripButton("test");
+//			test.Click+= (object sender, EventArgs e) => {NewMessage.Show ("Records in linktable = " + GetLinkTable().GetRecords().Length);};
+//			bar.Items.Add (test);
+
+
+
 			if (this.header != null)
 			this.header.SendToBack();
 
@@ -524,7 +531,7 @@ namespace Layout
 			//toolstrips.Dock = DockStyle.Top;
 		//	this.Controls.Add (toolstrips);
 
-			this.BackColor = Color.Pink;
+			//this.BackColor = Color.Pink;
 			if (!GetIsChild && !GetIsSystemLayout)
 				BuildFormatToolbar ();
 			if (!GetIsSystemLayout) BuildTabsBar ();
@@ -653,6 +660,12 @@ namespace Layout
 				//NoteDataInterface note = (NoteDataInterface)Activator.CreateInstance ("LayoutPanels", TypeToTest);
 				Type TypeTest = Type.GetType (((Type)(sender as ToolStripButton).Tag).AssemblyQualifiedName);
 
+				if (null == TypeTest)
+				{
+					// usually happens when a plugin is dynamically added
+					// This tries to load the Type differently
+					TypeTest=(Type)(sender as ToolStripButton).Tag;
+				}
 				//Type TypeTest = Type.GetType (t.AssemblyQualifiedName.ToString());
 
 				if (null != TypeTest) {
@@ -776,6 +789,7 @@ namespace Layout
 
 
 			UpdateLayoutToolbar();
+			this.BackColor = Notes.BackgroundColor;
 		}
 
 		private void UpdateLayoutToolbar()
@@ -930,6 +944,7 @@ namespace Layout
 
 				}
 				UpdateLayoutToolbar();
+				this.BackColor = Notes.BackgroundColor;
 			}
 			NoteCanvas.AutoScroll = true;
 		}
@@ -943,7 +958,7 @@ namespace Layout
 			return Notes.GetAvailableFolders();
 
 		}
-		public void AddNote(NoteDataInterface note)
+		public override void AddNote(NoteDataInterface note)
 		{
 			Notes.Add (note);
 			// added to simplilfy things but need to test
@@ -952,23 +967,40 @@ namespace Layout
 		}
 		public override void MoveNote (string GUIDOfNoteToMove, string GUIDOfLayoutToMoveItTo)
 		{
+			lg.Instance.Line("LayoutPanel->MoveNote", ProblemType.MESSAGE, String.Format ("moving note {0} to panel {1}", 
+			                                                                              GUIDOfNoteToMove, GUIDOfLayoutToMoveItTo), Loud.ACRITICAL);
 			// Take 1 was using LayoutDatabase
 
 			// Take 2 - just manipulating the note arrays here and then saving?
 
 			//  a. find note we want to move
-			NoteDataXML_Panel newPanel = null;
+		//	NoteDataXML_Panel newPanel = null;
 			NoteDataInterface movingNote = null;
 
-			foreach (NoteDataInterface note in Notes.GetNotes ()) {
-				if (note.GuidForNote == GUIDOfLayoutToMoveItTo && note.IsPanel == true) {
-					newPanel = (NoteDataXML_Panel)note;
-				}
-				if (note.GuidForNote == GUIDOfNoteToMove) {
-					movingNote = note;
+			System.Collections.ObjectModel.ReadOnlyCollection<NoteDataInterface> notes = Notes.GetNotes ();
+			int PositionOfNewPanel=-1;
+			// try to resolve a 'missing parent' noteproblem with TestMovingNotes unit test
+			for (int i = 0; i < notes.Count; i++) {
 
+				if (notes[i].GuidForNote == GUIDOfLayoutToMoveItTo && notes[i].IsPanel == true) {
+					PositionOfNewPanel=i;
+				}
+				if (notes[i].GuidForNote == GUIDOfNoteToMove) {
+					movingNote = notes[i];
+					
 				}
 			}
+
+
+//			foreach (NoteDataInterface note in notes) {
+//				if (note.GuidForNote == GUIDOfLayoutToMoveItTo && note.IsPanel == true) {
+//					newPanel = (NoteDataXML_Panel)note;
+//				}
+//				if (note.GuidForNote == GUIDOfNoteToMove) {
+//					movingNote = note;
+//
+//				}
+//			}
 			if (movingNote != null) {
 				movingNote.Save ();
 			}
@@ -1006,32 +1038,68 @@ namespace Layout
 
 
 						upstreamLayout.AddNote (movingNote);
-
+						upstreamLayout.SaveLayout ();
 					
 					}
 				}
 			} else {
 
-				if (newPanel == null || movingNote == null) {
+				if (-1 == PositionOfNewPanel)
+				{
+					throw new Exception("PositionOfNewPanel is still -1. We did not find the panel with guid = " + GUIDOfLayoutToMoveItTo);
+				}
+
+
+				if (/*newPanel == null*/ null==notes[PositionOfNewPanel] || null==movingNote) {
 					NewMessage.Show (Loc.Instance.Cat.GetString ("Destination or note was null. No move"));
 					return;
 				}
 
-				// remove note
-			
-				Notes.RemoveNote (movingNote);
+
+
+
 				// add note
-				newPanel.AddNote (movingNote);
+				//newPanel.AddNote (movingNote);
+
+
+				// remove note
+
+				// THe Add has to HAPPEN first because the Index gets Changed (and hence would be messed up)
+				// but still runing into issues
+				NoteDataXML_Panel NewPanel =(NoteDataXML_Panel)notes[PositionOfNewPanel];
+
+				Notes.RemoveNote (movingNote);
+				NewPanel.AddNote(movingNote);
+
 			}
+			/*
 			try {
 				movingNote.Location = new Point (0, 0);
 			} catch (Exception) {
 				lg.Instance.Line("LayoutPanel.MoveNote", ProblemType.WARNING, "problem setting location of note. Ok if this is unit testing");
 			}
+			*/
 			SaveLayout ();
+
 			// must save before calling this
-			if (newPanel != null) {
-				newPanel.Update (this);
+			//if (newPanel != null) {
+
+			// both 'paths' come through here, the UP path, the PositionOfNewPanel will not have been set
+			if (-1 != PositionOfNewPanel && notes[PositionOfNewPanel] !=null){
+
+				//newPanel.Update (this);
+
+				//error happens because of this line! Destroying the old note to build the new?
+				// WAS: notes[PositionOfNewPanel].Update(this);
+
+				// can't work
+				//movingNote.CreateParent(notes[PositionOfNewPanel]);
+
+				// so we tru
+				//((NoteDataXML_Panel)notes[PositionOfNewPanel]).
+
+				// all this removed in favor of adding a CreateParent to the NoteDataXML_Panel.AddNote
+
 			}
 
 			this.RefreshTabs();
@@ -1220,6 +1288,43 @@ namespace Layout
 			return null;
 		}
 
+		// For testing
+		public override string Section {
+			get { return Notes.Section;}
+		}
+		public override string Subtype {
+			get { return Notes.Subtype;}
+
+		}
+		public override string Notebook {
+			get { return Notes.Notebook;}
+		}
+		public override string Keywords {
+			get { return Notes.Keywords;}
+		}
+		public override string ToString ()
+		{
+			return string.Format ("[LayoutPanel: NoteCanvas={0}, Caption={1}, GetIsSystemLayout={2}, CurrentTextNote={3}, ShowTabs={4}, Section={5}, Subtype={6}, Notebook={7}, Keywords={8}]", NoteCanvas, Caption, GetIsSystemLayout, CurrentTextNote, ShowTabs, Section, Subtype, Notebook, Keywords);
+		}
+		/// <summary>
+		/// Sets the parent fields. Calledf rom NoteDataXML_Panel
+		/// and is used to make the children have the same fields
+		/// as the parents to make GetRandomNote work
+		/// </summary>
+		/// <param name='section'>
+		/// Section.
+		/// </param>
+		public override void SetParentFields (string section, string keywords, string subtype, string notebook)
+		{
+			if (GetIsChild == false) {
+				throw new Exception("this should only be called on CHILD PANELS");
+			} else {
+				Notes.Section = section;
+				Notes.Keywords = keywords;
+				Notes.Subtype = subtype;
+				Notes.Notebook = notebook;
+			}
+		}
 	}
 }
 

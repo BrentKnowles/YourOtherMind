@@ -41,6 +41,13 @@ namespace appframe
 		//used to load default settings
 		ColumnDetails[] IncomingColumns= null;
 		string TableName=Constants.BLANK;
+
+
+		public bool ReadOnly {
+			get {return dataGrid1.ReadOnly;}
+			set {dataGrid1.ReadOnly = value;}
+		}
+
 #endregion
 		public TablePanel (DataTable _dataSource, Func<int> _tableChanged, ColumnDetails[] incomingColumns, Action<string>_GoToNote, string _TableName, Func<string> _GenerateResults)
 		{

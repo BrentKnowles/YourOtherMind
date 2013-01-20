@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using CoreUtilities;
+using System.Windows.Forms;
 namespace Layout
 {
 	/// <summary>
@@ -12,6 +13,8 @@ namespace Layout
 		protected static volatile LayoutDetails instance;
 		protected static object syncRoot = new Object();
 
+		// used when needing random numbers
+		public Random RandomNumbers;
 
 
 		public LayoutPanelBase SystemLayout = null;
@@ -94,6 +97,10 @@ namespace Layout
 		#endregion;
 		public LayoutDetails ()
 		{
+
+
+			RandomNumbers = new Random();
+
 			//TypeList = new Type[4] {typeof(NoteDataXML), typeof(NoteDataXML_RichText), typeof(NoteDataXML_NoteList), typeof(NoteDataXML_SystemOnly)};
 			TypeList = new ArrayList();
 			NameList = new ArrayList();
@@ -175,8 +182,50 @@ namespace Layout
 			return ArrayOfTypes;
 		}
 
-	
+	/// <summary>
+	/// Convenience function to make it easier to build Menu option that show the 'Field' and then allow a sideclick to edit them.
+	/// </summary>
+	/// <returns>
+	/// The menu property edit.
+	/// </returns>
+	/// <param name='Title'>
+	/// Title.
+	/// </param>
+	/// <param name='ToolTip'>
+	/// Tool tip.
+	/// </param>
+	/// <param name='action'>
+	/// Action.
+	/// </param>
+		public static ToolStripMenuItem BuildMenuPropertyEdit (string Title, string ToolTip, KeyEventHandler action)
+		{
+			ToolStripMenuItem TableCaptionLabel = new ToolStripMenuItem ();
+			TableCaptionLabel.Text = Title;
+			TableCaptionLabel.ToolTipText = ToolTip;
+			ContextMenuStrip TableCaptionMenu = new ContextMenuStrip ();
+			ToolStripTextBox TableCaptionText = new ToolStripTextBox ();
+			TableCaptionText.Tag = TableCaptionLabel;
+			TableCaptionText.Text = Title;
+			TableCaptionText.KeyDown += action;
+			TableCaptionMenu.Items.Add (TableCaptionText);
+			
+			TableCaptionLabel.DropDown = TableCaptionMenu;
+			return TableCaptionLabel;
+		}
 
+		public static void HandleMenuLabelEdit (object sender, KeyEventArgs e, ref string Caption, Action<bool>SetSaveRequired)
+		{
+			if (e.KeyData == Keys.Enter) {
+				// the header is not updated unti enter pressed but the NAME is being updated
+				Caption = (sender as ToolStripTextBox).Text;
+				if ((sender as ToolStripTextBox).Tag != null && ((sender as ToolStripTextBox).Tag is ToolStripMenuItem)) {
+					((sender as ToolStripTextBox).Tag as ToolStripMenuItem).Text = Caption;
+				}
+				// silenece beep
+				e.SuppressKeyPress = true;
+				SetSaveRequired (true);
+			}
+		}
 		public static LayoutDetails Instance
 		{
 			get
@@ -194,6 +243,13 @@ namespace Layout
 				}
 				return (LayoutDetails)instance;
 			}
+		}
+
+
+		// The Data Wrappers -- Here is where the specific subclass/impelmentation of interfaces are used
+		public static LayoutInterface DATA_Layout(string GUID)
+		{
+			return new LayoutDatabase(GUID);
 		}
 	}
 }

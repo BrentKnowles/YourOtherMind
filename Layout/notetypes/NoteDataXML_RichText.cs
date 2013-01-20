@@ -77,7 +77,7 @@ namespace Layout
 			richBox.BringToFront();
 			richBox.Rtf = this.Data1;
 			richBox.TextChanged+= HandleTextChanged;
-		
+			richBox.ReadOnly = this.ReadOnly;
 		}
 
 		protected void SetThisTextNoteAsActive()
@@ -110,7 +110,10 @@ namespace Layout
 		{
 			return Loc.Instance.Cat.GetString("Text");
 		}
-
+		protected override void RespondToReadOnlyChange()
+		{
+			this.richBox.ReadOnly = this.ReadOnly;
+		}
 
 		/// <summary>
 		/// RichText Accessors

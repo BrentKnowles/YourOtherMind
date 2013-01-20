@@ -5,6 +5,7 @@ using database;
 using Layout.data;
 using CoreUtilities;
 using CoreUtilities.Links;
+using System.Drawing;
 namespace Layout
 {
 	/// <summary>
@@ -12,6 +13,10 @@ namespace Layout
 	/// </summary>
 	public class LayoutDatabase : Layout.LayoutInterface
 	{
+
+		#region constants
+		Color DefaultBackColor = Color.Black;
+		#endregion
 		#region variables
 
 		// This is the reference to the LinkTable. It is moved from a seperate Database column during Load (or created) then. Reference set in Load.
@@ -111,6 +116,23 @@ namespace Layout
 			get { return data [dbConstants.KEYWORDS.LayoutIndex].ToString ();}
 			set { data [dbConstants.KEYWORDS.LayoutIndex] = value;}
 		}
+
+
+		public Color BackgroundColor {
+			get {
+				Color returnColor = Color.FromArgb ((int)data [dbConstants.BACKGROUNDCOLOR.LayoutIndex]);
+				return returnColor;
+			}
+			set {
+				data[dbConstants.BACKGROUNDCOLOR.LayoutIndex] = ((Color)value).ToArgb();
+			}
+		}
+
+		public string Blurb {
+			get { return data [dbConstants.BLURB.LayoutIndex].ToString ();}
+			set {data[dbConstants.BLURB.LayoutIndex] = value;}
+		}
+
 		// This is the GUID for the page. It comes from
 		//  
 		//  (a) When a New Layout is Created or  a Layout Loaded (in both cases constructor is called
@@ -144,8 +166,8 @@ namespace Layout
 			Source=Constants.BLANK;
 			Words=0;
 			Keywords = Constants.BLANK;
-
-
+			BackgroundColor = DefaultBackColor;
+			Blurb = Constants.BLANK;
 		}
 		/// <summary>
 		/// Gets the note by GUI.
@@ -233,6 +255,9 @@ namespace Layout
 		public System.Collections.ArrayList GetAllNotes ()
 		{
 			System.Collections.ArrayList result = new System.Collections.ArrayList ();
+			if (null == dataForThisLayout) {
+				throw new Exception(String.Format ("There is no note array for {0}/{1}!", this.Name, this.LayoutGUID));
+			}
 			foreach (NoteDataInterface data in dataForThisLayout) {
 				lg.Instance.Line("LayoutDatabase->GetAllNotes", ProblemType.TEMPORARY, String.Format ("GetAllNotes.AddingNoteGUID {0}",data.GuidForNote));
 				result.Add (data);
@@ -396,6 +421,9 @@ namespace Layout
 						this.LayoutGUID = LayoutElements [i];
 						break;
 					case 4:
+
+						/// JUST THIS REMAINS!
+
 						break; //page.HighPriority); break;
 					case 5:
 						this.Hits = Int32.Parse (LayoutElements [i]);
@@ -407,6 +435,7 @@ namespace Layout
 						this.DateEdited = DateTime.Parse (LayoutElements[i]);
 						break; // page.LastEdited); break;
 					case 8:
+						this.Section = LayoutElements[i];
 						break;// page.Section); break;
 					case 9:
 						this.Stars = Int32.Parse (LayoutElements [i]);
@@ -474,6 +503,7 @@ namespace Layout
 			//	NewMessage.Show (String.Format ("Creating link table on '{0} Subpanel='{1}' ParenGUID='{2}', My GUID='{3}' Table GUID = '{4}'", this.Name, this.IsSubPanel, 
 			//	                                LayoutPanelToLoadNoteOnto.ParentGUID, this.LayoutGUID, table.GuidForNote));
 				table = new NoteDataXML_Table ();
+				table.ReadOnly = true;
 				table.Caption = LinkTable.STICKY_TABLE;
 				table.GuidForNote = LinkTable.STICKY_TABLE;
 				table.dataSource = MyLinkTable.BuildNewTable ().Copy ();
@@ -518,8 +548,7 @@ namespace Layout
 		/// 
 		/// </param>
 		public bool LoadFrom (LayoutPanelBase LayoutPanelToLoadNoteOnto)
-		{ //CoreUtilities.TimerCore.TimerOn=false;
-			lg.Instance.OnlyTime = true;
+		{ 
 
 			BaseDatabase MyDatabase = CreateDatabase ();
 			
@@ -603,8 +632,8 @@ namespace Layout
 						// Fill in LAYOUT specific details
 						Status = result [3].ToString ();
 						Name = result [4].ToString ();
-						if (result [5].ToString () != Constants.BLANK) {
-							ShowTabs = (bool)result [5];
+						if (result [dbConstants.SHOWTABS.Index].ToString () != Constants.BLANK) {
+							ShowTabs = (bool)result [dbConstants.SHOWTABS.Index];
 						} else {
 							//ToDo: This does not seem growable easily
 							ShowTabs = true;
@@ -642,6 +671,19 @@ namespace Layout
 						Section = result [dbConstants.SECTION.Index].ToString ();
 						Subtype = result [dbConstants.TYPE.Index].ToString ();
 						Source = result [dbConstants.SOURCE.Index].ToString ();
+							string potentialBackColor = result [dbConstants.BACKGROUNDCOLOR.Index].ToString();
+							if (potentialBackColor != Constants.BLANK)
+							{
+								BackgroundColor = Color.FromArgb(Int32.Parse (potentialBackColor));
+							}
+							else
+							{
+								BackgroundColor = DefaultBackColor;
+							}
+								
+						Blurb = result[dbConstants.BLURB.Index].ToString ();
+
+
 
 						int words = 0;
 						if (Int32.TryParse (result [dbConstants.WORDS.Index].ToString (), out words))
@@ -693,7 +735,7 @@ namespace Layout
 						time = CoreUtilities.TimerCore.Time (() => {
 							// need to add LinkTable back (since we have rebuilt the array!!)
 							// We want the LinkTable BEFORE the other notes are CreateParent'ed
-							if (false == IsSubPanel) {
+								if (false == IsSubPanel && null != LayoutPanelToLoadNoteOnto) {
 								if (MyLinkTableNote == null)
 									NewMessage.Show ("LinkTableNote is null??");
 								dataForThisLayout.Add (MyLinkTableNote);
@@ -940,7 +982,9 @@ namespace Layout
 					x3.Serialize (sw, ListAsDataObjectsOfType);
 					//x3.Serialize (sw, ListAsDataObjectsOfType,ns, "utf-8");
 					XMLAsString = sw.ToString ();
-					lg.Instance.Line("LayoutDatabase->SaveTo", ProblemType.MESSAGE, String.Format ("Guid = '{0}' Xml = {1}", LayoutGUID, XMLAsString));
+					lg.Instance.Line("LayoutDatabase->SaveTo", ProblemType.MESSAGE, String.Format ("Guid = '{0}'", LayoutGUID));
+//						lg.Instance.Line("LayoutDatabase->SaveTo", ProblemType.MESSAGE, String.Format ("Xml = {0}", XMLAsString));
+
 				sw.Close ();
 
 
@@ -959,7 +1003,8 @@ namespace Layout
 				                      dbConstants.Columns,
 				                      new object[dbConstants.ColumnCount]
 				                      {DBNull.Value,LayoutGUID, XMLAsString, Status,Name,ShowTabs, 
-							IsSubPanel, MaximizeTabs, Stars, Hits, DateCreated,DateEdited, Notebook, Section, Subtype, Source, Words, Keywords, LinkTableString});
+							IsSubPanel, MaximizeTabs, Stars, Hits, DateCreated,DateEdited, Notebook, Section, Subtype, Source, Words, Keywords, LinkTableString,
+						BackgroundColor.ToArgb(), Blurb});
 
 					} else {
 						//TODO: Still need to save all the object properties out. And existing data.
@@ -971,7 +1016,8 @@ namespace Layout
 						dbConstants.NAME, dbConstants.SHOWTABS, dbConstants.SUBPANEL, dbConstants.MAXIMIZETABS, 
 							dbConstants.STARS,dbConstants.HITS,dbConstants.DATECREATED,
 						dbConstants.DATEEDITED, dbConstants.NOTEBOOK, dbConstants.SECTION,
-						dbConstants.TYPE, dbConstants.SOURCE, dbConstants.WORDS, dbConstants.KEYWORDS, dbConstants.LINKTABLE},
+						dbConstants.TYPE, dbConstants.SOURCE, dbConstants.WORDS, dbConstants.KEYWORDS, dbConstants.LINKTABLE,
+							dbConstants.BACKGROUNDCOLOR, dbConstants.BLURB},
 				                                    new object[dbConstants.ColumnCount - 1]
 				                                    {
 						LayoutGUID as string, 
@@ -991,7 +1037,9 @@ namespace Layout
 						Source,
 						Words,
 						Keywords,
-						LinkTableString},
+						LinkTableString,
+						BackgroundColor.ToArgb(),
+						Blurb},
 				dbConstants.GUID, LayoutGUID);
 					}
 
@@ -1107,11 +1155,13 @@ namespace Layout
 		{
 			//NoteDataInterface NoteToMove = dataForThisLayout.Find (NoteDataInterface => NoteDataInterface.GuidForNote == GUIDOfNoteToMove);
 			if (NoteToMove != null) {
+				// THis was NOT causing problems with TestMovingNotes
 				NoteToMove.Destroy();
 				if (dataForThisLayout.Remove (NoteToMove) == false)
 				{
 					lg.Instance.Line("LayoutDatabase.MoveNote", ProblemType.WARNING,"Was unable to REmove this note");
 				}
+
 			}
 
 
@@ -1195,6 +1245,28 @@ namespace Layout
 			}
 
 
+		}
+		public void Dispose ()
+		{
+			//TODO: Expensive, remove when done with
+			if (false) {
+				System.Diagnostics.StackFrame frame = new System.Diagnostics.StackFrame (1);
+				System.Diagnostics.StackFrame frame2 = new System.Diagnostics.StackFrame (2);
+				System.Diagnostics.StackFrame frame3 = new System.Diagnostics.StackFrame (3);
+
+				string callingfunc = String.Format ("[{0}.{1}]", frame.GetFileLineNumber (), frame.GetMethod ().Name);
+				string callingfunc2 = String.Format ("[{0}.{1}]", frame2.GetFileLineNumber (), frame2.GetMethod ().Name);
+				string callingfunc3 = String.Format ("[{0}.{1}]", frame2.GetFileLineNumber (), frame2.GetMethod ().Name);
+
+				lg.Instance.Line ("LayoutDatabase->Dispose", ProblemType.MESSAGE, 
+			                 String.Format ("Dispose called for {0} with a list this long {1} called by {2} and {3} and {4} ", 
+			               LayoutGUID, this.dataForThisLayout.Count, callingfunc, callingfunc2, callingfunc3));
+			} else {
+				lg.Instance.Line ("LayoutDatabase->Dispose", ProblemType.MESSAGE, String.Format ("SHORT DEBUG MESSAGE: Dispose called for {0} with a list this long {1}",
+				                                                                                 LayoutGUID, this.dataForThisLayout.Count));
+			}
+			//NewMessage.Show (String.Format ("Dispose called for {0} with a list this long {1} ", LayoutGUID, this.dataForThisLayout.Count));
+			dataForThisLayout = null;
 		}
 	}
 }

@@ -8,10 +8,16 @@ namespace Testing
 		{
 
 		}
+
+		public LayoutDatabase NotesForYou()
+		{
+			return (LayoutDatabase)Notes;
+		}
 		public LayoutDatabase GetLayoutDatabase()
 		{
 			return (LayoutDatabase)Notes;
 		}
+
 	}
 }
 

@@ -178,6 +178,10 @@ namespace appframe
 				if (true != IsDisabled ) {
 					if (true != IsVersionDisabled)
 					{
+						if (plug.CalledFrom.IsANote)
+						{
+							item.Text = String.Format ("{0} ({1})",item.Text,Loc.Instance.GetString("Deactivating requires application exit."));
+						}
 						checkers.Items.Add (item, IsChecked);
 					}
 					else

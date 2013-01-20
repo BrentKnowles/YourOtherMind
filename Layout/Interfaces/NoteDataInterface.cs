@@ -15,7 +15,7 @@ namespace Layout
 		int Width{get;set;}
 		bool Visible{get;set;}
 		DockStyle Dock {get; set;}
-
+		bool ReadOnly { get; set; }
 
 		/// <summary>
 		/// This field will be used to store RTF text in the TextBox, A Link to the picture file for Picture Notes, et cetera.

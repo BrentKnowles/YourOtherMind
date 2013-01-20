@@ -87,7 +87,7 @@ namespace CoreUtilities
 		/// <summary>
 		/// Writes the log. Called after the buffer reaches a certain size
 		/// </summary>
-		protected void WriteLog ()
+		public void WriteLog ()
 		{
 			if (null == logWriter) {
 				throw new Exception("LogWriter was never initialized");
@@ -131,6 +131,10 @@ namespace CoreUtilities
 			{
 				//NewMessage.Show("loud enough!");
 				string log = (String.Format ("{0}, {1}, {2}, {3}", Routine, Problem.ToString (), Details, myLoudness));
+
+				// this happens if we try to close but the close does not happen for some reason
+				if (null == LogLines) LogLines = new List<string>();
+
 				LogLines.Add (log);
 
 				if (LogLines.Count >= BUFFER_LINES) {
