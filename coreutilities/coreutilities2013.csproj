@@ -57,6 +57,9 @@
     <Compile Include="LinkRecord.cs" />
     <Compile Include="CheckBoxForm.cs" />
     <Compile Include="Images.cs" />
+    <Compile Include="Hotkeys\KeyData.cs" />
+    <Compile Include="Hotkeys\VisualKey.cs" />
+    <Compile Include="Hotkeys\KeyEditForm.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

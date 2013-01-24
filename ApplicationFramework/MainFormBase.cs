@@ -12,6 +12,7 @@ namespace appframe
 	public class MainFormBase :  System.Windows.Forms.Form
 	{
 		#region variables
+		string _Storage = Constants.BLANK;
 		private string path = "";
 		protected string Path {
 			get { return path;}
@@ -42,6 +43,9 @@ namespace appframe
 		public static Icon MainFormIcon;
 
 		#endregion
+		#region public
+		protected List<KeyData> Hotkeys=null;
+		#endregion
 
 		void BuildFooterStatus ()
 		{
@@ -55,6 +59,21 @@ namespace appframe
 		{
 			// will be overriden in mainform to create
 		}
+
+		public virtual void BuildAndProcessHotKeys (string Storage)
+		{
+			// HOTKEYS
+			
+		
+			Hotkeys.Add (new KeyData ("Dual Screen", Test, Keys.Control, Keys.W, Constants.BLANK, false, "dualscreenguid"));
+			
+			HotKeyConfig hotKeyConfig = new HotKeyConfig(Storage, ref Hotkeys);
+			optionPanels.Add(hotKeyConfig);
+			HotKeyConfig.UpdateKeys(Hotkeys, Storage);
+
+
+		}
+
 		/// <summary>
 		/// Initializes a new instance of the <see cref="appframe.MainFormBase"/> class.
 		/// </summary>
@@ -69,14 +88,16 @@ namespace appframe
 		/// </param>
 		public MainFormBase (string _path, Action<bool> _ForceShutDownMethod, string Storage, Icon mainFormIcon)
 		{
+			_Storage = Storage;
+			Hotkeys = new List<KeyData> ();
 			// stores any contextmenus we use, for access by plugin system
-			ContextMenus = new List<System.Windows.Forms.ContextMenuStrip>();
+			ContextMenus = new List<System.Windows.Forms.ContextMenuStrip> ();
 
 			// List needs to be created here so it is available in derived MainForm AND in AddIn system
 			NoteTextActions = new List<NoteTextAction> ();
-			BuildListOfNoteTextAction(); 
+			BuildListOfNoteTextAction (); 
 
-			BuildContextMenuStrips();
+			BuildContextMenuStrips ();
 
 			MainFormIcon = mainFormIcon;
 
@@ -85,37 +106,37 @@ namespace appframe
 			ForceShutDownMethod = _ForceShutDownMethod;
 			//Mono.Unix.Catalog.Init ("yom", "strings");
 			//Console.WriteLine(Mono.Unix.Catalog.GetString("Hello world!"));
-			MainMenu = new MenuStrip();
-			FindMenuItem = new ToolStripMenuItem(FindMenu);
+			MainMenu = new MenuStrip ();
+			FindMenuItem = new ToolStripMenuItem (FindMenu);
 
-			ToolMenuItem = new ToolStripMenuItem(ToolMenu);
-			ToolMenuItem.Name="ToolsMenu";
+			ToolMenuItem = new ToolStripMenuItem (ToolMenu);
+			ToolMenuItem.Name = "ToolsMenu";
 
-			ContextMenuStrip AdvancedStrip = new System.Windows.Forms.ContextMenuStrip();
+			ContextMenuStrip AdvancedStrip = new System.Windows.Forms.ContextMenuStrip ();
 			AdvancedStrip.AutoSize = true;
 			//AdvancedStrip.Items.Add ("test");
 
-			ToolStripMenuItem Advanced = new ToolStripMenuItem();
+			ToolStripMenuItem Advanced = new ToolStripMenuItem ();
 			Advanced.AutoSize = true;
 			Advanced.Name = "AdvancedMenu";
-			Advanced.Text = Loc.Instance.GetString("Advanced");
+			Advanced.Text = Loc.Instance.GetString ("Advanced");
 			Advanced.DropDown = AdvancedStrip;
 
 
 		
 		
 
-			ToolStripMenuItem Notes = new ToolStripMenuItem();
-			Notes.Name="NotesMenu";
+			ToolStripMenuItem Notes = new ToolStripMenuItem ();
+			Notes.Name = "NotesMenu";
 			Notes.Text = Loc.Instance.GetString ("Notes");
 
 
 
 
-			ToolStripButton optionsButton = new ToolStripButton();
-			optionsButton.Text = Loc.Instance.GetString("Options");
+			ToolStripButton optionsButton = new ToolStripButton ();
+			optionsButton.Text = Loc.Instance.GetString ("Options");
 
-			optionsButton.Click+= HandleOptionsButtonClick;
+			optionsButton.Click += HandleOptionsButtonClick;
 
 			// build tools menu
 			ToolMenuItem.DropDownItems.Add (optionsButton);
@@ -125,12 +146,12 @@ namespace appframe
 			MainMenu.Items.Add (FindMenuItem);
 			MainMenu.Items.Add (Notes);
 			MainMenu.Items.Add (ToolMenuItem);
-			this.Controls.Add(MainMenu);
-			this.FormClosing+= HandleFormClosing;
+			this.Controls.Add (MainMenu);
+		
 
 
-			addIns = new AddIns(System.IO.Path.Combine(Path,"plugins") , Storage);
-			optionPanels = new List<iConfig>();
+			addIns = new AddIns (System.IO.Path.Combine (Path, "plugins"), Storage);
+			optionPanels = new List<iConfig> ();
 
 			// Register Option Panels
 			optionPanels.Add (addIns);
@@ -139,11 +160,51 @@ namespace appframe
 
 			
 			// STEP #3 When Option Panel closed needs to activate/deacative : return a list of Plugins that should be Activated (if not) and those that should be deactivated (if are)
-			StartAndStopPlugIns();
+			StartAndStopPlugIns ();
 
-			BuildFooterStatus();
+			BuildFooterStatus ();
+
+
+			BuildAndProcessHotKeys(Storage);
+
+
+			this.FormClosing+= HandleFormClosing;
+			this.KeyDown+= HandleFormKeyDown;
 
 		}
+
+		/// <summary>
+		/// Handles the form key down.
+		/// </summary>
+		/// <param name='sender'>
+		/// Sender.
+		/// </param>
+		/// <param name='e'>
+		/// E.
+		/// </param>
+		void HandleFormKeyDown (object sender, KeyEventArgs e)
+		{
+			foreach (KeyData keysy in Hotkeys) {
+				if (keysy.ModifyingKey == e.Modifiers)
+				{
+					if (keysy.Key == e.KeyCode)
+					{
+						keysy.Command(keysy.Defaultinput);
+						break;
+					}
+				}
+
+			}
+
+		}
+		void Test(bool b)
+		{
+			NewMessage.Show ("hi");
+			//return true;
+		}
+
+
+
 		/// <summary>
 		/// Builds the addin tool strip. (Wrapper function)
 		/// </summary>
@@ -430,10 +491,12 @@ namespace appframe
 					addIn.SaveRequested();
 				}
 				StartAndStopPlugIns();
+
+
 			}
 
-
-
+			//regardless of OK or cancel we need to ensure Hotkeys are not contamianted
+			HotKeyConfig.UpdateKeys(Hotkeys, _Storage);
 
 
 		}

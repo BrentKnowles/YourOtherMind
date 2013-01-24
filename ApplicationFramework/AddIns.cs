@@ -223,10 +223,11 @@ namespace appframe
 				newList.Add (o[0].ToString());
 			
 
-				db.Dispose ();
+
 				// these are all the plugins that have been set to be active;
 
 			}
+			db.Dispose ();
 			return newList;
 		}
 

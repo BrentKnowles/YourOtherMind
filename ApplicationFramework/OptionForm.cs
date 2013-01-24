@@ -19,20 +19,29 @@ namespace appframe
 			Panel bottom = new Panel();
 			bottom.Parent = this;
 			bottom.Dock = DockStyle.Bottom;
-
+			bottom.Height = 40;
 
 			Button OK = new Button();
-			OK.Text = Loc.Instance.GetString("OKAY");
-			OK.Parent = bottom;
-			OK.Dock = DockStyle.Left;
+			OK.Text = Loc.Instance.GetString("OK");
+
+			OK.Dock = DockStyle.Right;
 			OK.Click+= HandleOkayClick;
+
+
+			Button Cancel  = new Button();
+			Cancel.Text = Loc.Instance.GetString ("Cancel");
+			Cancel.Padding = new System.Windows.Forms.Padding(10);
+			Cancel.Dock = DockStyle.Right;
+			Cancel.DialogResult = DialogResult.Cancel;
+
 
 			 container = new SplitContainer ();
 			container.Parent = this;
 			container.Dock = DockStyle.Fill;
+			container.BringToFront();
 
-
-
+			OK.Parent = bottom;
+			Cancel.Parent = bottom;
 
 			foreach (iConfig panel in optionPanels) {
 				Button button = new Button();
@@ -63,6 +72,7 @@ namespace appframe
 				container.Panel2.Controls.Add (configPanel);
 				configPanel.Dock = DockStyle.Fill;
 				configPanel.BringToFront ();
+				//container.Panel2.BringToFront();
 
 			}
 		}

@@ -867,7 +867,7 @@ namespace Layout
 		/// <param name='_GUID'>
 		/// _ GUI.
 		/// </param>
-		public  void NewLayoutFromOldFile (string _GUID, string File)
+		public  void NewLayoutFromOldFile (string _GUID, string File, bool BULKIMPORT)
 		{
 			// NOTE: We will override this GUID in the LoadFromOld routine
 			GUID= _GUID;
@@ -878,12 +878,16 @@ namespace Layout
 				// if somehow we haven't not supplied a GUID then provide one now
 				if (Constants.BLANK == GUID) GUID = System.Guid.NewGuid ().ToString ();
 				
-				
+				string bulk = Constants.BLANK;
+				if (true == BULKIMPORT)
+				{
+					bulk = System.Guid.NewGuid().ToString();
+				}
 				noteCanvas.Controls.Clear ();
 				//
 				Notes = new LayoutDatabase (GUID);
 
-				((LayoutDatabase)Notes).LoadFromOld (File, this);
+				((LayoutDatabase)Notes).LoadFromOld (File, this, bulk);
 
 				foreach (NoteDataInterface note in Notes.GetNotes())
 				{

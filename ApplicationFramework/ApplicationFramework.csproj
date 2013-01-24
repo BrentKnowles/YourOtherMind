@@ -42,6 +42,7 @@
     <Compile Include="Stars.cs" />
     <Compile Include="ColumnDetails.cs" />
     <Compile Include="NoteTextAction.cs" />
+    <Compile Include="Hotkeys\HotKeyConfig.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System.Windows.Forms" />
@@ -70,6 +71,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="icons\" />
+    <Folder Include="Hotkeys\" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="icons\zoom.png">

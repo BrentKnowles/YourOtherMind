@@ -478,10 +478,14 @@ namespace YOM2013
 			BuildFooter();
 
 		
-
+		
 
 		}
-
+		public override void BuildAndProcessHotKeys (string Storage)
+		{
+			Hotkeys.Add (new KeyData (Loc.Instance.GetString ("Save"), this.Save, Keys.Control, Keys.S, Constants.BLANK, true, "saveguid"));
+			base.BuildAndProcessHotKeys(Storage);
+		}
 		/// <summary>
 		/// Builds the footer.
 		/// </summary>
@@ -645,22 +649,34 @@ namespace YOM2013
 
 		void HandleImportOldFilesClick (object sender, EventArgs e)
 		{
+			int bulkmode = 1; // just a load-test thing, should be set to 1 unless load testing
 			OpenFileDialog open = new OpenFileDialog ();
 			if (open.ShowDialog () == DialogResult.OK) {
 				TestAndSaveIfNecessary ();
+
+				for (int i = 1; i <=bulkmode; i++)
+				{
 				string guid = System.Guid.NewGuid().ToString();
 				//CurrentLayout = new LayoutPanel(Constants.BLANK);
 				
 				LayoutPanel newLayout = CreateLayoutContainer(guid);
-				newLayout.NewLayoutFromOldFile (guid, open.FileName);
-				NewMessage.Show ("We close the note after the import to avoid errors");
+				newLayout.NewLayoutFromOldFile (guid, open.FileName, bulkmode > 1);
+					if (1 == bulkmode)
+					{
+						NewMessage.Show ("We close the note after the import to avoid errors");
+					}
+					else
+					{
+					
+					}
 				//newLayout.Dispose();
 				newLayout.SaveLayout();
 				MDIHOST.DoCloseNote(false);
+					LayoutDetails.Instance.CurrentLayout = newLayout;
+				}
 
 
 
-				LayoutDetails.Instance.CurrentLayout = newLayout;
 			}
 		}
 
@@ -722,6 +738,7 @@ namespace YOM2013
 		}
 		void HandleMainFormKeyDown (object sender, KeyEventArgs e)
 		{
+
 			if (e.KeyCode == Keys.F6) {
 
 				ToggleCurrentNoteMaximized ();

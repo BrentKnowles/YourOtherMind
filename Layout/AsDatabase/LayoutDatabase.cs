@@ -310,7 +310,7 @@ namespace Layout
 		/// <param name='sFile'>
 		/// S file.
 		/// </param>
-		public bool LoadFromOld (string sFile, LayoutPanelBase layoutPanel)
+		public bool LoadFromOld (string sFile, LayoutPanelBase layoutPanel, string OVERRIDEGUIDFORBULKTESTING)
 		{
 
 
@@ -336,28 +336,24 @@ namespace Layout
 
 			if (null != cars) {
 
-				if (IsSubPanel == false)
-				{
-				// 2 passes -- the first is just to find the linktable
-				NoteDataXML_Table table = null; //new NoteDataXML_Table();
-				for (int i = 0; i < cars.Length; i++) {
-					if (cars [i].GetType () == typeof(NoteDataXML_Table))
-					{
-						// we have found a table
-						// is it link table?
-						if (cars[i].GuidForNote == LinkTable.STICKY_TABLE)
-						{
-							//  yes. Link table
-							table = (NoteDataXML_Table)cars[i];
+				if (IsSubPanel == false) {
+					// 2 passes -- the first is just to find the linktable
+					NoteDataXML_Table table = null; //new NoteDataXML_Table();
+					for (int i = 0; i < cars.Length; i++) {
+						if (cars [i].GetType () == typeof(NoteDataXML_Table)) {
+							// we have found a table
+							// is it link table?
+							if (cars [i].GuidForNote == LinkTable.STICKY_TABLE) {
+								//  yes. Link table
+								table = (NoteDataXML_Table)cars [i];
+							}
 						}
 					}
-				}
-				if (null == table)
-				{
-					throw new Exception("You must have a linktable on each imported record");
-				}
+					if (null == table) {
+						throw new Exception ("You must have a linktable on each imported record");
+					}
 
-				CreateLinkTableIfNecessary(table, layoutPanel);
+					CreateLinkTableIfNecessary (table, layoutPanel);
 				}
 
 
@@ -376,7 +372,7 @@ namespace Layout
 
 							tempLayoutDatabaseForSubPanel.IsSubPanel = true;
 
-							if (tempLayoutDatabaseForSubPanel.LoadFromOld (subpanel, null)) {
+							if (tempLayoutDatabaseForSubPanel.LoadFromOld (subpanel, null, Constants.BLANK)) {
 								tempLayoutDatabaseForSubPanel.SaveTo ();
 							} else {
 								NewMessage.Show (String.Format ("{0} subpanel failed to load", subpanel));
@@ -409,13 +405,13 @@ namespace Layout
 						this.Name = LayoutElements [i];
 						break;
 					case 1:
-						lg.Instance.Line("LayoutDatabase->LoadFromOld", ProblemType.MESSAGE, "converting " + LayoutElements[i], Loud.CTRIVIAL);
+						lg.Instance.Line ("LayoutDatabase->LoadFromOld", ProblemType.MESSAGE, "converting " + LayoutElements [i], Loud.CTRIVIAL);
 						//double date = Double.Parse (LayoutElements [i]);
 						//this.DateCreated = DateTime.FromOADate (date);
-						this.DateCreated = DateTime.Parse (LayoutElements[i]);
+						this.DateCreated = DateTime.Parse (LayoutElements [i]);
 						break;//date
 					case 2:
-						this.Notebook = LayoutElements[i];
+						this.Notebook = LayoutElements [i];
 						break; //directory
 					case 3:
 						this.LayoutGUID = LayoutElements [i];
@@ -429,22 +425,22 @@ namespace Layout
 						this.Hits = Int32.Parse (LayoutElements [i]);
 						break;// page.Hits); break;
 					case 6:
-						this.Keywords = LayoutElements[i];
+						this.Keywords = LayoutElements [i];
 						break;// Keywords); break;
 					case 7:
-						this.DateEdited = DateTime.Parse (LayoutElements[i]);
+						this.DateEdited = DateTime.Parse (LayoutElements [i]);
 						break; // page.LastEdited); break;
 					case 8:
-						this.Section = LayoutElements[i];
+						this.Section = LayoutElements [i];
 						break;// page.Section); break;
 					case 9:
 						this.Stars = Int32.Parse (LayoutElements [i]);
 						break;// page.Stars); break;
 					case 10:
-						this.Status = LayoutElements[i];
+						this.Status = LayoutElements [i];
 						break;// page.StatusType); break;
 					case 11:
-						this.Subtype = LayoutElements[i];
+						this.Subtype = LayoutElements [i];
 						break;// page.SubType); 
 					}
 				} catch (Exception ex) {
@@ -452,7 +448,9 @@ namespace Layout
 				}
 			}
 
-
+			if (OVERRIDEGUIDFORBULKTESTING != Constants.BLANK) {
+				this.LayoutGUID = OVERRIDEGUIDFORBULKTESTING;
+			}
 			dataForThisLayout.Remove (feeder);
 
 			return true;
