@@ -16,6 +16,7 @@ namespace YOM2013
 			//lg.Instance.Loudness = Loud.DOFF;
 			//Application.Init ();
 			MainForm win = new MainForm (LayoutDetails.Instance.Path, LayoutDetails.Instance.DoForceShutDown, LayoutDetails.Instance.YOM_DATABASE,  FileUtils.GetIcon("main.ico"));
+			win.Name="mainform";
 			win.Show ();
 			Application.Run ();
 		}

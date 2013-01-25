@@ -40,6 +40,11 @@ namespace MefAddIns.Extensibility
 		/// </summary>
 		List<IDisposable> Hookups { get; set; }
 		void RegisterType();
+
+
+		void AssignHotkeys(ref List<HotKeys.KeyData> HotKeys, ref mef_IBase addin, Action<mef_IBase> Runner);
+
+
 		// returns true if we have had to deregister a type
 		bool DeregisterType();
 		object Storage {get;set;}

@@ -5,7 +5,7 @@ using System.Windows.Forms;
 using System.Xml.Serialization;
 using CoreUtilities;
 
-namespace appframe
+namespace HotKeys
 {
 	/// <summary>
 	/// This class contains details about a specific key-press event.

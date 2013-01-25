@@ -1088,23 +1088,23 @@ namespace Layout
 			// must save before calling this
 			//if (newPanel != null) {
 
-			// both 'paths' come through here, the UP path, the PositionOfNewPanel will not have been set
-			if (-1 != PositionOfNewPanel && notes[PositionOfNewPanel] !=null){
-
-				//newPanel.Update (this);
-
-				//error happens because of this line! Destroying the old note to build the new?
-				// WAS: notes[PositionOfNewPanel].Update(this);
-
-				// can't work
-				//movingNote.CreateParent(notes[PositionOfNewPanel]);
-
-				// so we tru
-				//((NoteDataXML_Panel)notes[PositionOfNewPanel]).
-
-				// all this removed in favor of adding a CreateParent to the NoteDataXML_Panel.AddNote
-
-			}
+//			// both 'paths' come through here, the UP path, the PositionOfNewPanel will not have been set
+//			if (-1 != PositionOfNewPanel && notes[PositionOfNewPanel] !=null){
+//
+//				//newPanel.Update (this);
+//
+//				//error happens because of this line! Destroying the old note to build the new?
+//				// WAS: notes[PositionOfNewPanel].Update(this);
+//
+//				// can't work
+//				//movingNote.CreateParent(notes[PositionOfNewPanel]);
+//
+//				// so we tru
+//				//((NoteDataXML_Panel)notes[PositionOfNewPanel]).
+//
+//				// all this removed in favor of adding a CreateParent to the NoteDataXML_Panel.AddNote
+//
+//			}
 
 			this.RefreshTabs();
 			//  b. 

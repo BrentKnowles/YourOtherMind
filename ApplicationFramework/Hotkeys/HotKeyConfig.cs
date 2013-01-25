@@ -4,6 +4,7 @@ using System.Windows.Forms;
 using System.Collections.Generic;
 using System.IO;
 using database;
+using HotKeys;
 
 namespace appframe
 {
@@ -156,8 +157,11 @@ namespace appframe
 			// okay to call Rebuild because we have wiped modification data
 			RebuildListOfKeys();
 		}
+		public int Duplicates=0;
+
 		void CheckForErrors()
 		{
+			Duplicates =0;
 			// update for duplicates?
 			System.Collections.Hashtable hash = new System.Collections.Hashtable();
 			foreach (Control control in configPanel.Controls) {
@@ -166,6 +170,7 @@ namespace appframe
 					((VisualKey)control).IsDuplicate(false);
 					if (hash[((VisualKey)control).UniqueCode()] != null)
 					{
+						Duplicates++;
 						// this combination already exist.
 						((VisualKey)control).IsDuplicate(true);
 					}
@@ -234,7 +239,7 @@ namespace appframe
 
 
 			if (Constants.BLANK == storage) {
-				throw new Exception("must define a vaild path to search for HotKeys and a storage location where their activte status is stored");
+				throw new Exception("must specify a nonBlank database name to store the HotKeyModifications inside of.");
 			}
 
 			DatabaseName = storage;

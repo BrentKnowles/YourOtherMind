@@ -12,9 +12,11 @@ namespace appframe
 		#endregion
 		public OptionForm (List<iConfig> optionPanels)
 		{
+			this.KeyPreview = true;
 			this.Icon = MainFormBase.MainFormIcon;
 			this.Width = 400;
 			this.Height = 400;
+			this.Name = "optionform";
 
 			Panel bottom = new Panel();
 			bottom.Parent = this;

@@ -26,8 +26,7 @@ namespace MefAddIns.Extensibility
 		public string MyMenuName;
 		// if true then ParentMenuName must be the name of a valid ContextMenuStrip
 		public bool IsOnContextStrip;
-		// TODO Will tie into the Hotkey system later
-		public int HotkeyNumber;
+
 		public string ToolTip;
 		public string GUID;
 

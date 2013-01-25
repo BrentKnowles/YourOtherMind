@@ -68,6 +68,12 @@ namespace MefAddIns
 			return "";
 		}
 
+		/// <summary>
+		/// Assigns the hotkeys. (Intended to overriden by children, if necessary)
+		/// </summary>
+		public virtual void AssignHotkeys(ref List<HotKeys.KeyData> HotKeys, ref MefAddIns.Extensibility.mef_IBase addin, Action<MefAddIns.Extensibility.mef_IBase> Runner)
+		{
+		}
 		// default both these to 0 because most plugins will not use them
 		public virtual int TypeOfInformationNeeded { get { return 0; } }
 		public virtual int TypeOfInformationSentBack { get { return 0; } }

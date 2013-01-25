@@ -136,6 +136,11 @@ namespace Layout
 			get { return richBox.SelectionLength;}
 			set { richBox.SelectionLength = value;}
 		}
+		public void Bold()
+		{
+			richBox.SelectionFont = new System.Drawing.Font(richBox.SelectionFont.FontFamily, richBox.SelectionFont.Size, System.Drawing.FontStyle.Bold);
+
+		}
 
 	}
 }

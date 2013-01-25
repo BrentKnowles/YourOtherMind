@@ -67,6 +67,7 @@
     <Compile Include="MainFormTests.cs" />
     <Compile Include="_TestSingleTon.cs" />
     <Compile Include="ClassesUsedInTesting\FAKE_NoteDataPicture.cs" />
+    <Compile Include="HotkeysTest.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

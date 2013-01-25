@@ -2,7 +2,7 @@ using System;
 using System.Windows.Forms;
 using CoreUtilities;
 using System.Drawing;
-namespace appframe
+namespace HotKeys
 {
 	public class KeyEditForm : Form
 	{

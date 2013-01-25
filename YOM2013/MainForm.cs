@@ -12,7 +12,7 @@ using System.ComponentModel.Composition.Hosting;
 	using System.ComponentModel.Composition;
 using appframe;
 using LayoutPanels;
-
+using HotKeys;
 namespace YOM2013
 {
 	public class MainForm : appframe.MainFormBase 
@@ -370,7 +370,7 @@ namespace YOM2013
 			this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
 			//KEY HANDLERS
 			
-			this.KeyPreview = true;
+
 			this.KeyDown += HandleMainFormKeyDown;
 		
 
@@ -483,9 +483,32 @@ namespace YOM2013
 		}
 		public override void BuildAndProcessHotKeys (string Storage)
 		{
-			Hotkeys.Add (new KeyData (Loc.Instance.GetString ("Save"), this.Save, Keys.Control, Keys.S, Constants.BLANK, true, "saveguid"));
+			string mainform = "mainform";
+			Hotkeys.Add (new KeyData (Loc.Instance.GetString ("Save"), this.Save, Keys.Control, Keys.S, mainform, true, "saveguid"));
+			Hotkeys.Add (new KeyData(Loc.Instance.GetString ("Toggle View"), 	ToggleCurrentNoteMaximized, Keys.None,  Keys.F6,mainform, true, "toggleviewguid"));
+			Hotkeys.Add (new KeyData(Loc.Instance.GetString ("Bold"), 	Bold, Keys.Control,  Keys.B,mainform, true, "boldguid"));
+
+
+			// temporary to test the form thing
+			Hotkeys.Add (new KeyData(Loc.Instance.GetString ("test"),Test , Keys.Control, Keys.Q, "optionform", true, "testguid"));
 			base.BuildAndProcessHotKeys(Storage);
 		}
+public void Test(bool b)
+			             {
+				NewMessage.Show ("should only appear on optionform with Control Q");
+			}
+
+		//TODO: do properly, just got this in to test hotkeys acting on a textbox
+		public void Bold (bool b)
+		{
+			if (LayoutDetails.Instance.CurrentLayout != null) {
+				if (LayoutDetails.Instance.CurrentLayout.CurrentTextNote != null)
+				{
+					LayoutDetails.Instance.CurrentLayout.CurrentTextNote.Bold();
+				}
+			}
+		}
+
 		/// <summary>
 		/// Builds the footer.
 		/// </summary>
@@ -707,7 +730,7 @@ namespace YOM2013
 		/// <summary>
 		/// Toggles the current note maximized. (responds to the F6 key (default) raised in main form
 		/// </summary>
-		void ToggleCurrentNoteMaximized ()
+		void ToggleCurrentNoteMaximized (bool b)
 		{
 			if (CurrentLayout != null) {
 				string ourGUID = CurrentLayout.GUID;
@@ -739,14 +762,7 @@ namespace YOM2013
 		void HandleMainFormKeyDown (object sender, KeyEventArgs e)
 		{
 
-			if (e.KeyCode == Keys.F6) {
-
-				ToggleCurrentNoteMaximized ();
-				//wont operate on LAYOUT FROMn ListOfOpenLayouts
-				//CurrentLayout.ToggleCurrentNoteMaximized();
-
-
-			}
+		
 		}
 
 
@@ -1014,34 +1030,31 @@ namespace YOM2013
 		}
 		protected override object GetInformationForAddInBeforeRun (int getinfo)
 		{
-			string returnvalue = Constants.BLANK;
+			// this shoudl be null, that way it does not proceed though rest of checks
+			object returnvalue = null;
 			switch (getinfo) {
 			case (int)GetInformationADDINS.GET_SELECTED_TEXT:
-				if (LayoutDetails.Instance.CurrentLayout != null)
-				{
-				if (LayoutDetails.Instance.CurrentLayout.CurrentTextNote != null && LayoutDetails.Instance.CurrentLayout.CurrentTextNote.SelectedText != Constants.BLANK)
-				{
-					returnvalue = LayoutDetails.Instance.CurrentLayout.CurrentTextNote.SelectedText;
-				}
-				else
-				{
-					NewMessage.Show (Loc.Instance.GetString("Please select text inside of a note before activating this feature."));
-					returnvalue = null;
-				}
-				}
-				else
-				{
+				if (LayoutDetails.Instance.CurrentLayout != null) {
+					if (LayoutDetails.Instance.CurrentLayout.CurrentTextNote != null && LayoutDetails.Instance.CurrentLayout.CurrentTextNote.SelectedText != Constants.BLANK) {
+						returnvalue = LayoutDetails.Instance.CurrentLayout.CurrentTextNote.SelectedText;
+					} else {
+						NewMessage.Show (Loc.Instance.GetString ("Please select text inside of a note before activating this feature."));
+						returnvalue = null;
+					}
+				} else {
 					NewMessage.Show (Loc.Instance.GetString ("Please LOAD a layout before activating this feature."));
 					returnvalue = null;
 				}
 				break;
 
 			case (int)GetInformationADDINS.GET_CURRENT_LAYOUT_PANEL:
-				if (LayoutDetails.Instance.CurrentLayout != null)
-				{
-					return LayoutDetails.Instance.CurrentLayout;
+				if (LayoutDetails.Instance.CurrentLayout != null) {
+					returnvalue = LayoutDetails.Instance.CurrentLayout;
 				}
 				break;
+			}
+			if (null == returnvalue) {
+				NewMessage.Show (Loc.Instance.GetString("You may not be on the right interface element to activate this AddIn's functionality."));
 			}
 			return returnvalue;
 		}

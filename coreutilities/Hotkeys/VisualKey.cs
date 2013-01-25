@@ -2,7 +2,7 @@ using System;
 using System.Windows.Forms;
 using System.Drawing;
 using CoreUtilities;
-namespace appframe
+namespace HotKeys
 {
 	public class VisualKey : Panel
 	{
