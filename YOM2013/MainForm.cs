@@ -365,7 +365,7 @@ namespace YOM2013
 			
 
 			this.Load += HandleFormLoad;
-			
+			this.FormClosing+= HandleFormClosing;
 			this.FormClosed += HandleFormClosed;
 			this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
 			//KEY HANDLERS
@@ -480,6 +480,11 @@ namespace YOM2013
 		
 		
 
+		}
+
+		void HandleFormClosing (object sender, FormClosingEventArgs e)
+		{
+			lg.Instance.Dispose();
 		}
 		public override void BuildAndProcessHotKeys (string Storage)
 		{
@@ -1018,7 +1023,7 @@ public void Test(bool b)
 
 		void HandleFormClosed (object sender, FormClosedEventArgs e)
 		{
-			lg.Instance.Dispose();
+		
 
 			if (false == LayoutDetails.Instance.ForceShutdown) {
 				TestAndSaveIfNecessary ();

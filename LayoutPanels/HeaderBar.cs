@@ -528,8 +528,13 @@ namespace LayoutPanels
 		}
 		void GetInfo()
 		{
-			string messagestring = String.Format ("DateCreated={0}, DateEdited={1}, Hits={2}", Notes.DateCreated,Notes.DateEdited,Notes.Hits);
-			NewMessage.Show (messagestring);
+			string messagestring = String.Format ("DateCreated={0}, DateEdited={1}, Hits={2}, Guid={3}", Notes.DateCreated,Notes.DateEdited,Notes.Hits, Layout.GUID);
+			info_form info = new info_form(messagestring, Layout.GUID);
+			info.ShowDialog();
+
+
+
+
 		}
 		void HandleInfoClick (object sender, EventArgs e)
 		{

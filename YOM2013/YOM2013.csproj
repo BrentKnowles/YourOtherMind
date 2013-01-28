@@ -70,6 +70,7 @@
     <Reference Include="AppLimit.NetSparkle">
       <HintPath>..\..\..\librariesused\netsparklautoupdater\AppLimit.NetSparkle.dll</HintPath>
     </Reference>
+    <Reference Include="System.Data" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MainForm.cs" />

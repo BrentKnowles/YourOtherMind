@@ -32,6 +32,8 @@ namespace Layout
 
 		// I did not want to do this but because panels are implemented "further down the chain" I need these two functions here
 		bool IsPanel{get;} 
+		// if true means a NoteLink can link to this
+		bool IsLinkable {get;}
 		bool IsSystemNote{get;}
 		System.Collections.ArrayList   GetChildNotes();
 		#endregion
@@ -64,6 +66,9 @@ namespace Layout
 		/// Updates the location, called when location is set outside actual movement.
 		/// </summary>
 		void UpdateLocation ();
+
+
+
 
 		#endregion;
 	}

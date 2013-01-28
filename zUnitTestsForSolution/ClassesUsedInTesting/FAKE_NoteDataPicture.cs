@@ -8,6 +8,10 @@ namespace Testing
 		public FAKE_NoteDataPicture ()
 		{
 		}
+		public FAKE_NoteDataPicture(int _height, int _width	): base(_height, _width)
+		{
+		}
+
 		protected override string GetLink ()
 		{
 			return base.GetLink ();

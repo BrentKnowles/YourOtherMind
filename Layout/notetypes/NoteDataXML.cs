@@ -40,7 +40,7 @@ namespace Layout
 		public virtual bool IsSystemNote{
 			get {return false;}
 		}
-		private void CommonConstructorBehavior ()
+		protected virtual void CommonConstructorBehavior ()
 		{
 			Caption = Loc.Instance.Cat.GetString("Blank Note");
 			GuidForNote = System.Guid.NewGuid().ToString();
@@ -98,14 +98,14 @@ namespace Layout
 		}
 
 
-		private bool readOnly=false;
+		protected bool readOnly=false;
 		/// <summary>
 		/// Gets or sets a value indicating whether this <see cref="Layout.NoteDataXML"/> read only.
 		/// </summary>
 		/// <value>
 		/// <c>true</c> if read only; otherwise, <c>false</c>.
 		/// </value>
-		public bool ReadOnly {
+		public virtual bool ReadOnly {
 			get {
 				return readOnly;
 			}
@@ -123,7 +123,7 @@ namespace Layout
 			set { dock = value;}
 		}
 
-		private string _GuidForNote;
+		private string _GuidForNote=Constants.BLANK;
 		/// <summary>
 		/// Unique identifier specifying this particular note within a layout.
 		/// </summary>
@@ -174,25 +174,29 @@ namespace Layout
 	
 		#endregion
 		#region variables_new
-		/// <summary>
-		/// THIS works but is bad design. The interface is not useful if we add too many custom, public methods
-		/// </summary>
-		/// <value>
-		/// The just XMLONLY test.
-		/// </value>
-		public string JustXMLONLYTest {
-			get { return "boo";}
-		}
+//		/// <summary>
+//		/// THIS works but is bad design. The interface is not useful if we add too many custom, public methods
+//		/// </summary>
+//		/// <value>
+//		/// The just XMLONLY test.
+//		/// </value>
+//		public string JustXMLONLYTest {
+//			get { return "boo";}
+//		}
 		#endregion;
 
 		#region control_panel_settings
 		public virtual bool IsPanel {
 			get { return false;}
 		}
+		public virtual bool IsLinkable { get { return false; }}
 #endregion;
 
 		#region methods
-
+		public override string ToString ()
+		{
+			return string.Format ("[NoteDataXML: defaultHeight={0}, defaultWidth={1}, IsSystemNote={2}, Visible={3}, ParentNotePanel={4}, ReadOnly={5}, Dock={6}, GuidForNote={7}, Caption={8}, Height={9}, Width={10}, Location={11}, Data1={12}, JustXMLONLYTest={13}, IsPanel={14}, IsLinkable={15}, SetSaveRequired={16}]", defaultHeight, defaultWidth, IsSystemNote, Visible, ParentNotePanel, ReadOnly, Dock, GuidForNote, Caption, Height, Width, Location, Data1, IsPanel, IsLinkable, SetSaveRequired);
+		}
 		public virtual System.Collections.ArrayList GetChildNotes()
 		{
 			return null;

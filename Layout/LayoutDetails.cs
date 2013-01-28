@@ -109,6 +109,7 @@ namespace Layout
 			AddToList(typeof(NoteDataXML_RichText),new NoteDataXML_RichText().RegisterType ());
 			AddToList (typeof(NoteDataXML_NoteList),new NoteDataXML_NoteList().RegisterType());
 			AddToList (typeof(NoteDataXML_Table),new NoteDataXML_Table().RegisterType());
+			AddToList(typeof(NoteDataXML_LinkNote), new NoteDataXML_LinkNote().RegisterType());
 		//	AddToList (typeof(NoteDataXML_SystemOnly),new NoteDataXML_SystemOnly().RegisterType());
 
 
@@ -251,6 +252,26 @@ namespace Layout
 		{
 			return new LayoutDatabase(GUID);
 		}
+
+		string layoutlink = Constants.BLANK;
+		public void PushLink(string identifier)
+		{
+			layoutlink = identifier;
+		}
+
+		/// <summary>
+		/// Grabs the existing link from the list and clears it
+		/// </summary>
+		/// <returns>
+		/// The link.
+		/// </returns>
+		public string PopLink()
+		{
+			string result = layoutlink;
+			layoutlink = Constants.BLANK;
+			return result;
+		}
+
 	}
 }
 

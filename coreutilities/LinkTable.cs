@@ -26,7 +26,10 @@ namespace CoreUtilities.Links
 		public const int FILEEXISTS = 7;
 		public const int EXTRA = 8;
 		public const int EXTRA2 = 9;
-		
+
+
+
+
 		/// <summary>
 		/// returns a table with default columns put in
 		/// </summary>
@@ -196,17 +199,25 @@ namespace CoreUtilities.Links
 		/// </summary>
 		/// <param name="row"></param>
 		/// <returns></returns>
-		private LinkTableRecord RowToRecord(DataRow row)
+		private LinkTableRecord RowToRecord (DataRow row)
 		{
-			LinkTableRecord record = new LinkTableRecord();
-			record.sKey = row[KEY].ToString();
-			record.sText = row[TITLE].ToString(); 
-			record.sFileName = row[LINKID].ToString();
-			record.sSource = row[IDFORTHIS].ToString();
-			record.nBookmarkKey = Int32.Parse(row[ISPICTURE].ToString());
-			record.sExtra = row[GROUP].ToString();
-			record.linkType = (LinkType)Enum.Parse(typeof(LinkType), row[LINKTYPE].ToString());
-			record.bStatus = (bool)row[FILEEXISTS];
+			LinkTableRecord record = new LinkTableRecord ();
+			try {
+			
+				record.sKey = row [KEY].ToString ();
+				record.sText = row [TITLE].ToString (); 
+				record.sFileName = row [LINKID].ToString ();
+				record.sSource = row [IDFORTHIS].ToString ();
+				int isPicture = 0;
+				Int32.TryParse (row [ISPICTURE].ToString (), out isPicture);
+
+				record.nBookmarkKey = isPicture;
+				record.sExtra = row [GROUP].ToString ();
+				record.linkType = (LinkType)Enum.Parse (typeof(LinkType), row [LINKTYPE].ToString ());
+				record.bStatus = (bool)row [FILEEXISTS];
+			} catch (Exception ex) {
+				NewMessage.Show (ex.ToString());
+			}
 			return record;
 		}
 		/// <summary>

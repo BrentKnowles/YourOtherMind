@@ -265,6 +265,36 @@ namespace Testing
 			}
 			return "<error>";
 		}
+
+		[Test]
+		public void CreateAllCoreNoteTypesViaActivator()
+		{
+
+			foreach (Type t in LayoutDetails.Instance.ListOfTypesToStoreInXML())
+			{
+				_w.output("creating " + t.ToString());
+			NoteDataInterface note = null;
+						
+				note = (NoteDataInterface)Activator.CreateInstance (t, -1, -1);
+				Assert.NotNull(note);
+			}
+		}
+		[Test]
+		public void CreateAllCoreNoteTypesWithAValidGUID()
+		{
+			
+			foreach (Type t in LayoutDetails.Instance.ListOfTypesToStoreInXML())
+			{
+
+				NoteDataInterface note = null;
+				
+				note = (NoteDataInterface)Activator.CreateInstance (t, -1, -1);
+				Assert.NotNull(note);
+				_w.output(String.Format ("creating {0} with GUID {1}", t.ToString(), note.GuidForNote));
+				Assert.AreNotEqual(CoreUtilities.Constants.BLANK, note.GuidForNote);
+
+			}
+		}
 		[Test]
 		public void TryMixedTypeSave()
 		{

@@ -95,7 +95,14 @@ namespace CoreUtilities
 			// *TODO: Change this text writing later
 			foreach (string log in LogLines) {
 				//Console.WriteLine (log);
+			try
+				{
 				logWriter.WriteLine(log);
+				}
+				catch (Exception)
+				{
+					NewMessage.Show ("Logwriter was closed while still writing the log");
+				}
 			}
 			LogLines = new List<string>();
 		}

@@ -809,14 +809,20 @@ namespace Layout
 		public void AddRow (object[] value)
 		{
 			if (dataSource != null &&  ((DataTable)dataSource).Columns.Count > 1) {
-				DataRow row = ((DataTable)dataSource).NewRow();
-				for (int i = 0 ; i < value.Length; i++)
-				{
-					row[i] = value[i].ToString ();
-				}
+//				DataRow row = ((DataTable)dataSource).NewRow();
+//				for (int i = 0 ; i < value.Length; i++)
+//				{
+//					if (value[i] == null)
+//					{
+//						row[i] = DBNull.Value;
+//					}
+//					else
+//						row[i] = value[i].ToString ();
+//				}
+//
+//				((DataTable)dataSource).Rows.Add(row);
 
-				((DataTable)dataSource).Rows.Add(row);
-
+				((DataTable)dataSource).Rows.Add(value);
 			}
 		}
 		public int RowCount ()
@@ -827,6 +833,27 @@ namespace Layout
 			}
 			return result;
 		}
+
+		/// <summary>
+		/// Gets the rows. This is used by the REciprocal link building in MasterOfLayouts
+		/// </summary>
+		/// <returns>
+		/// The rows.
+		/// </returns>
+		public List<DataRow> GetRows ()
+		{
+			List<DataRow> rows = new List<DataRow> ();
+			foreach (DataRow row in ((DataTable)dataSource).Rows) {
+				rows.Add (row);
+			}
+			return rows;
+		}
+
+//		public void AddRow(DataRow row)
+//		{
+//
+//			((DataTable)dataSource).ImportRow(row);
+//		}
 	}
 }
 

@@ -1246,8 +1246,9 @@ namespace Layout
 		}
 		public void Dispose ()
 		{
-			//TODO: Expensive, remove when done with
-			if (false) {
+			//TODO: Expensive debugging information, remove when done with
+			bool f = false;
+			if (f == true) {
 				System.Diagnostics.StackFrame frame = new System.Diagnostics.StackFrame (1);
 				System.Diagnostics.StackFrame frame2 = new System.Diagnostics.StackFrame (2);
 				System.Diagnostics.StackFrame frame3 = new System.Diagnostics.StackFrame (3);

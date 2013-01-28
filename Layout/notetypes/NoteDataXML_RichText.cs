@@ -7,16 +7,22 @@ namespace Layout
 	public class NoteDataXML_RichText : NoteDataXML
 	{
 		#region formcontrols
-		RichTextBox richBox ;
+		protected RichTextBox richBox ;
 		#endregion
+		public override bool IsLinkable { get { return true; }}
+		protected override void CommonConstructorBehavior ()
+		{
 
+			base.CommonConstructorBehavior ();
+			Caption = Loc.Instance.Cat.GetString("Text Note");
+		}
 		public NoteDataXML_RichText () : base()
 		{
-			Caption = Loc.Instance.Cat.GetString("Text Note");
+
 		}
 		public NoteDataXML_RichText(int height, int width) : base(height, width)
 		{
-			Caption = Loc.Instance.Cat.GetString("Text Note");
+			//Caption = Loc.Instance.Cat.GetString("Text Note");
 		}
 
 		public override void Save ()
@@ -141,7 +147,15 @@ namespace Layout
 			richBox.SelectionFont = new System.Drawing.Font(richBox.SelectionFont.FontFamily, richBox.SelectionFont.Size, System.Drawing.FontStyle.Bold);
 
 		}
-
+		public override string ToString ()
+		{
+			return this.Data1;
+//			if (richBox != null) {
+//				return richBox.Text;
+//			} else {
+//				return "no rich text box load";
+//			}
+		}
 	}
 }
 

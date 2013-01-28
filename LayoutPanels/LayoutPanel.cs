@@ -676,13 +676,23 @@ namespace Layout
 				
 
 
-					NoteDataInterface note = (NoteDataInterface)Activator.CreateInstance (TypeTest, -1, -1);
+					NoteDataInterface note = null;
+
+					try
+					{
+					note = (NoteDataInterface)Activator.CreateInstance (TypeTest, -1, -1);
+						Notes.Add (note);
+						
+						note.CreateParent (this);
+						note.BringToFrontAndShow();
+						UpdateListOfNotes ();
+					}
+					catch (Exception ex)
+					{
+						NewMessage.Show (ex.ToString());
+					}
 			
-					Notes.Add (note);
-			
-					note.CreateParent (this);
-					note.BringToFrontAndShow();
-					UpdateListOfNotes ();
+
 					SetSaveRequired (true); // TODO: Also need to go through and hook delegates/callbacks for when a note itself changes.
 				} else {
 					lg.Instance.Line ("LayoutPanel.HandleAddNoteClick", ProblemType.ERROR, String.Format ("{0} Type not found", TypeTest.ToString ()));

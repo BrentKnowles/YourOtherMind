@@ -36,6 +36,7 @@
     <Compile Include="NoteDataXML_Panel.cs" />
     <Compile Include="HeaderBar.cs" />
     <Compile Include="GetInformationADDINS.cs" />
+    <Compile Include="info_form.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Layout\Layout.csproj">

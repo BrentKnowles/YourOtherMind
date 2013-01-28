@@ -18,7 +18,7 @@ namespace Layout
 		// the properties button on header
 		protected ToolStripDropDownButton properties; 
 		protected ToolStripLabel captionLabel;
-
+		protected ToolStripButton ReadOnlyButton;
 		#endregion
 
 	
@@ -161,12 +161,12 @@ namespace Layout
 			properties.DropDownItems.Add (new ToolStripSeparator ());
 
 			if (false == IsSystemNote) {
-				ToolStripButton ReadOnly = new ToolStripButton ();
-				ReadOnly.CheckOnClick = true;
-				ReadOnly.Checked = this.ReadOnly;
-				ReadOnly.Text = Loc.Instance.Cat.GetString ("Read Only");
-				ReadOnly.Click += HandleReadOnlyClick;
-				properties.DropDownItems.Add (ReadOnly);
+				ReadOnlyButton = new ToolStripButton ();
+				ReadOnlyButton.CheckOnClick = true;
+				ReadOnlyButton.Checked = this.ReadOnly;
+				ReadOnlyButton.Text = Loc.Instance.Cat.GetString ("Read Only");
+				ReadOnlyButton.Click += HandleReadOnlyClick;
+				properties.DropDownItems.Add (ReadOnlyButton);
 			}
 
 			if (false == IsSystemNote) {
@@ -175,24 +175,32 @@ namespace Layout
 				properties.DropDownItems.Add (menuFolder);
 				// just here to make sure that there's a dropdown singal before populating
 				menuFolder.DropDownItems.Add ("");
-				menuFolder.DropDownOpening+= HandleFolderDropDownOpening;
-			//	menuFolder.MouseEnter += HandleMenuFolderMouseEnter;
+				menuFolder.DropDownOpening += HandleFolderDropDownOpening;
+				//	menuFolder.MouseEnter += HandleMenuFolderMouseEnter;
 			}
 
 			if (false == IsSystemNote) {
 				ToolStripButton deleteNote = new ToolStripButton ();
-				deleteNote.Text = Loc.Instance.Cat.GetString ("Delete This Note");
+				deleteNote.Text = Loc.Instance.GetString ("Delete This Note");
 				properties.DropDownItems.Add (deleteNote);
 				deleteNote.Click += HandleDeleteNoteClick;
 			} else
 				if (true == IsSystemNote) {
 				// add a way to DELETE a Layout?
 				ToolStripButton deleteNote = new ToolStripButton ();
-				deleteNote.Text = Loc.Instance.Cat.GetString ("Delete This Layout");
+				deleteNote.Text = Loc.Instance.GetString ("Delete This Layout");
 				properties.DropDownItems.Add (deleteNote);
-				deleteNote.Click += HandleDeleteLayoutClick;;
+				deleteNote.Click += HandleDeleteLayoutClick;
+
 			}
 		
+			if (true == IsLinkable) {
+				ToolStripButton linkNote = new ToolStripButton();
+				linkNote.Text  = Loc.Instance.GetString("Create a Link To This Note");
+				properties.DropDownItems.Add (linkNote);
+				linkNote.Click+= HandleLinkNoteClick;
+
+			}
 
 			properties.DropDownItems.Add (new ToolStripSeparator());
 			ToolStripButton menuProperties = new ToolStripButton();
@@ -246,6 +254,11 @@ namespace Layout
 
 		}
 
+		void HandleLinkNoteClick (object sender, EventArgs e)
+		{
+			LayoutDetails.Instance.PushLink(String.Format (CoreUtilities.Links.LinkTableRecord.PageLinkFormatString, Layout.GUID, GuidForNote));
+		}
+
 
 
 		/// <summary>
@@ -255,7 +268,7 @@ namespace Layout
 		{
 		}
 
-		void HandleReadOnlyClick (object sender, EventArgs e)
+		protected virtual void  HandleReadOnlyClick (object sender, EventArgs e)
 		{
 
 			this.ReadOnly = !this.ReadOnly;

@@ -5,10 +5,11 @@ using System.ComponentModel;
 namespace CoreUtilities.Links
 {
 	public enum LinkType { PAGE, FILE, WEB, POPUP, DELETED };
-	
+
 	[XmlRootAttribute("LinkTableRecord", Namespace = "", IsNullable = false)]
 	public class LinkTableRecord
 	{
+		public const string PageLinkFormatString = "{0}.{1}";
 		public string sText;
 		public string sFileName; // this has been CHANGED to GUID
 		public LinkType linkType;
