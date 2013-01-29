@@ -128,6 +128,43 @@ namespace Layout
 		public abstract CoreUtilities.Links.LinkTable GetLinkTable ();
 		public abstract int CountNotes();
 	//	public abstract void SystemNoteHasClosedDown (bool closed);
+
+		/// <summary>
+		/// Gets the absolute parent (the LayoutPanel that contains me or the subpanels I am inside)
+		/// </summary>
+		/// <returns>
+		/// The absolute parent.
+		/// </returns>
+		public LayoutPanelBase GetAbsoluteParent()
+		{
+			LayoutPanelBase layoutParent = null;
+			
+			if (this.Parent != null) {
+				//	NewMessage.Show (this.Parent.Name);
+				
+				Control looker = this.Parent;
+				while (layoutParent == null || layoutParent.GetIsChild == true)
+				{
+					if (looker is LayoutPanelBase)
+					{
+						layoutParent= (looker as LayoutPanelBase);
+
+						//NewMessage.Show ("Setting Absolute to " + layoutParent.GUID);
+					}
+					else
+					{
+
+					}
+					// because we want to go all the way to the top we keep looking
+					looker = looker.Parent;
+				}
+				
+			} else {
+				NewMessage.Show (Loc.Instance.GetStringFmt("No parent for this layout {0} with ParentGUID = {1}", GUID, this.ParentGUID));
+			}
+			return layoutParent;
+			
+		}
 	}
 }
 

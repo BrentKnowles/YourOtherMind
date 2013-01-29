@@ -67,7 +67,8 @@ namespace Layout
 		/// </summary>
 		void UpdateLocation ();
 
-
+		// returns the GUID of the master containing object for this form
+		string GetAbsoluteParent();
 
 
 		#endregion;

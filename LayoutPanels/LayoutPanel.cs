@@ -55,7 +55,7 @@ namespace Layout
 		{
 			//Notes=null;
 			//this will cause TestMovingNotes to fail because a panel is removed? 
-			lg.Instance.Line("LayoutPanel->Dispose", ProblemType.MESSAGE, "Called from " + new System.Diagnostics.StackFrame(1).GetMethod().Module.Name);
+			//lg.Instance.Line("LayoutPanel->Dispose", ProblemType.MESSAGE, "Called from " + new System.Diagnostics.StackFrame(1).GetMethod().Module.Name);
 			Notes.Dispose(); 
 			base.Dispose (disposing);
 		
@@ -1263,6 +1263,8 @@ namespace Layout
 			}
 		}
 
+
+
 		/// <summary>
 		/// Gets the link table.
 		/// 
@@ -1274,31 +1276,41 @@ namespace Layout
 		public override CoreUtilities.Links.LinkTable GetLinkTable ()
 		{
 			if (GetIsChild == false) {
-				return Notes.GetLinkTable();
+				return Notes.GetLinkTable ();
 
 	
 			}
 
-			// if I am a child, get my parents LinkTable, please
-			if (this.Parent != null) {
-			//	NewMessage.Show (this.Parent.Name);
-				LayoutPanel layoutParent = null;
-				Control looker = this.Parent;
-				while (layoutParent == null)
-				{
-					if (looker is LayoutPanel)
-					{
-						layoutParent= (looker as LayoutPanel);
-					}
-					else
-					{
-						looker = looker.Parent;
-					}
-				}
-				return layoutParent.GetLinkTable ();
-			} else {
-				NewMessage.Show (Loc.Instance.GetStringFmt("No parent for this layout {0} with ParentGUID = {1}", this.Notes.Name, this.ParentGUID));
+
+			LayoutPanel absoluteParent = (LayoutPanel)GetAbsoluteParent ();
+			if (absoluteParent != null) {
+				return absoluteParent.GetLinkTable ();
 			}
+
+//			// if I am a child, get my parents LinkTable, please
+//			if (this.Parent != null) {
+//			//	NewMessage.Show (this.Parent.Name);
+//				LayoutPanel layoutParent = null;
+//				Control looker = this.Parent;
+//				while (layoutParent == null)
+//				{
+//					if (looker is LayoutPanel)
+//					{
+//						layoutParent= (looker as LayoutPanel);
+//					}
+//					else
+//					{
+//						looker = looker.Parent;
+//					}
+//				}
+//				return layoutParent.GetLinkTable ();
+//			} else {
+//				NewMessage.Show (Loc.Instance.GetStringFmt("No parent for this layout {0} with ParentGUID = {1}", this.Notes.Name, this.ParentGUID));
+//			}
+
+
+
+
 			return null;
 		}
 

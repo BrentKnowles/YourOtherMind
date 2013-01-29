@@ -219,6 +219,152 @@ namespace Testing
 
 			
 		}
+		[Test]
+		public void AddLinkToSubpanel()
+		{
+			// get the link into a subpanel and make the counts are as expected
+			_TestSingleTon.Instance._SetupForLayoutPanelTests();
+			//	_SetupForLayoutPanelTests ();
+			
+			FAKE_LayoutPanel panel = new FAKE_LayoutPanel(CoreUtilities.Constants.BLANK, false);
+			
+			//NOTE: For now remember that htis ADDS 1 Extra notes
+			panel.NewLayout("mynewpanel", true, null);
+			
+			NoteDataXML basicNote = new NoteDataXML();
+			basicNote.GuidForNote = "thisguid1";
+			basicNote.Caption = "note1";
+			
+			panel.AddNote(basicNote);
+			basicNote.CreateParent(panel);
+			panel.SaveLayout();
+
+
+			FAKE_NoteDataXML_Panel panelA = new FAKE_NoteDataXML_Panel ();
+			panelA.Caption = "PanelA";
+			panel.AddNote(panelA);
+			panelA.CreateParent(panel);
+
+			panel.SaveLayout();
+			System.Collections.Generic.List<string> linkstome = MasterOfLayouts.ReciprocalLinks("mynewpanel");
+			Assert.AreEqual(0, linkstome.Count);
+
+
+			NoteDataXML_LinkNote link = new NoteDataXML_LinkNote();
+
+			panelA.AddNote (link);
+			link.CreateParent(panelA.GetPanelsLayout());
+			link.SetLink("mynewpanel.thisguid1");
+			panel.SaveLayout();
+	
+
+			linkstome = MasterOfLayouts.ReciprocalLinks("mynewpanel");
+			Assert.AreEqual(1, linkstome.Count);
+
+		}
+
+		[Test]
+		public void AddAndThenEditLinks()
+		{
+			// add a couple links, take count
+			// then edit one of the early links a few times
+			// get the link into a subpanel and make the counts are as expected
+			_TestSingleTon.Instance._SetupForLayoutPanelTests();
+			//	_SetupForLayoutPanelTests ();
+			
+			FAKE_LayoutPanel panel = new FAKE_LayoutPanel(CoreUtilities.Constants.BLANK, false);
+			
+			//NOTE: For now remember that htis ADDS 1 Extra notes
+			panel.NewLayout("mynewpanel", true, null);
+			
+			NoteDataXML basicNote = new NoteDataXML();
+			basicNote.GuidForNote = "thisguid1";
+			basicNote.Caption = "note1";
+			
+			panel.AddNote(basicNote);
+			basicNote.CreateParent(panel);
+			panel.SaveLayout();
+			
+			// in this test we don't use the subpanel but just have it here for fun
+			FAKE_NoteDataXML_Panel panelA = new FAKE_NoteDataXML_Panel ();
+			panelA.Caption = "PanelA";
+			panel.AddNote(panelA);
+			panelA.CreateParent(panel);
+			
+			panel.SaveLayout();
+			System.Collections.Generic.List<string> linkstome = MasterOfLayouts.ReciprocalLinks("mynewpanel");
+			Assert.AreEqual(0, linkstome.Count);
+			
+			
+			NoteDataXML_LinkNote link = new NoteDataXML_LinkNote();
+			
+			panel.AddNote (link);
+			link.CreateParent(panel);
+			link.SetLink("mynewpanel.thisguid1");
+			panel.SaveLayout();
+			
+			
+			linkstome = MasterOfLayouts.ReciprocalLinks("mynewpanel");
+			Assert.AreEqual(1, linkstome.Count);
+
+			// now edit the existing link
+			link.SetLink("mynewpanel.thisguid2");
+			panel.SaveLayout();
+			Assert.AreEqual(1, linkstome.Count);
+			// the counts should remain the same
+
+
+		}
+		[Test]
+		public void IdentifySubpanels ()
+		{
+		
+			// get the link into a subpanel and make the counts are as expected
+			_TestSingleTon.Instance._SetupForLayoutPanelTests ();
+			//	_SetupForLayoutPanelTests ();
+				
+			FAKE_LayoutPanel panel = new FAKE_LayoutPanel (CoreUtilities.Constants.BLANK, false);
+				
+			//NOTE: For now remember that htis ADDS 1 Extra notes
+			panel.NewLayout ("mynewpanel", true, null);
+				
+			NoteDataXML basicNote = new NoteDataXML ();
+			basicNote.GuidForNote = "thisguid1";
+			basicNote.Caption = "note1";
+				
+			panel.AddNote (basicNote);
+			basicNote.CreateParent (panel);
+			panel.SaveLayout ();
+				
+				
+			FAKE_NoteDataXML_Panel panelA = new FAKE_NoteDataXML_Panel ();
+			panelA.Caption = "PanelA";
+			panelA.GuidForNote = "panela";
+			panel.AddNote (panelA);
+			panelA.CreateParent (panel);
+				
+			panel.SaveLayout ();
+			System.Collections.Generic.List<string> linkstome = MasterOfLayouts.ReciprocalLinks ("mynewpanel");
+			Assert.AreEqual (0, linkstome.Count);
+				
+				
+			NoteDataXML_LinkNote link = new NoteDataXML_LinkNote ();
+				
+			panelA.AddNote (link);
+			link.CreateParent (panelA.GetPanelsLayout ());
+			link.SetLink ("mynewpanel.thisguid1");
+			panel.SaveLayout ();
+				
+				
+			linkstome = MasterOfLayouts.ReciprocalLinks ("mynewpanel");
+
+			Assert.AreEqual (true,MasterOfLayouts.ExistsByGUID("panela"),"1");
+			Assert.AreEqual (true,MasterOfLayouts.IsSubpanel("panela"),"2");
+			Assert.AreEqual (true,MasterOfLayouts.ExistsByGUID("mynewpanel"),"3");
+			Assert.AreEqual (false,MasterOfLayouts.IsSubpanel("mynewpanel"),"4");
+				
+
+		}
 	}
 }
 

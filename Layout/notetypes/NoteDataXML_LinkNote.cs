@@ -8,6 +8,21 @@ namespace Layout
 	public class NoteDataXML_LinkNote : NoteDataXML_RichText
 	{
 
+		#region variables
+		string childGuid = Constants.BLANK;
+		public string ChildGuid {
+			get { return childGuid;}
+			set { childGuid = value;}
+		}
+		
+		string layoutGuid = Constants.BLANK;
+		public string LayoutGuid {
+			get{ return layoutGuid;}
+			set { layoutGuid = value;}
+		}
+		#endregion
+
+
 		public override bool IsLinkable { get { return false; }}
 		public NoteDataXML_LinkNote () :base()
 		{
@@ -26,6 +41,8 @@ namespace Layout
 			Caption = Loc.Instance.Cat.GetString("Link Note");
 
 		}
+
+
 		public override void CreateParent (LayoutPanelBase Layout)
 		{
 			base.CreateParent (Layout);
@@ -46,6 +63,8 @@ namespace Layout
 			properties.DropDownItems.Add (RefreshLinkButton);
 
 
+
+
 			if (linkfile != Constants.BLANK) {
 				if (this.richBox.Text == Constants.BLANK)
 				{
@@ -53,8 +72,8 @@ namespace Layout
 				if (links.Length == 2)
 				{
 					// we have a valid link
-					string LayoutGuid = links[0];
-					string ChildGuid = links[1];
+						LayoutGuid = links[0];
+						ChildGuid = links[1];
 					if (LayoutGuid != Constants.BLANK && ChildGuid != Constants.BLANK)
 					{
 						// now retrieve parent
@@ -98,6 +117,26 @@ namespace Layout
 			{
 				this.richBox.Text = Loc.Instance.GetString ("Start a link by selecting the note you want to link to and select the Link option. Then return here to set the link up");
 			}
+
+			Button GoToLayout = new Button();
+			GoToLayout.Dock = DockStyle.Top;
+			GoToLayout.Text = Loc.Instance.GetString("Go To Link");
+			GoToLayout.Enabled = false;
+			GoToLayout.Click+= HandleGoToLayoutClick;
+			if (LayoutGuid != Constants.BLANK) GoToLayout.Enabled = true;
+
+			ParentNotePanel.Controls.Add (GoToLayout);
+			GoToLayout.BringToFront();
+			richBox.BringToFront();
+		}
+
+		void HandleGoToLayoutClick (object sender, EventArgs e)
+		{
+			if (LayoutGuid == Constants.BLANK) {
+				NewMessage.Show (Loc.Instance.GetString ("No link defined for this note."));
+				return;
+			}
+			LayoutDetails.Instance.LoadLayout(LayoutGuid, ChildGuid);
 		}
 
 		void HandleRefreshLinkClick (object sender, EventArgs e)

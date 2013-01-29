@@ -67,6 +67,53 @@ namespace Layout
 			MyDatabase.Dispose();
 			return result;
 		}
+		/// <summary>
+		/// Gets the subpanels parent. Assumes is a subpanel.
+		/// </summary>
+		/// <returns>
+		/// The subpanels parent.
+		/// </returns>
+		/// <param name='guidtoload'>
+		/// Guidtoload.
+		/// </param>
+		public static string GetSubpanelsParent (string guidtoload)
+		{
+			BaseDatabase MyDatabase = CreateDatabase ();
+			string sresult = Constants.BLANK;
+			
+			List<object[]> result = MyDatabase.GetValues(dbConstants.table_name, new string[1] {dbConstants.PARENT_GUID}, dbConstants.GUID, guidtoload);
+			if (result != null && result.Count > 0)
+			{
+				if (result[0][0] != null)
+				{
+					
+					sresult = ((result[0][0]).ToString());
+				}
+			}
+			MyDatabase.Dispose();
+			return sresult;
+		}
+
+		public static bool IsSubpanel (string guidtoload)
+		{
+		
+
+			BaseDatabase MyDatabase = CreateDatabase ();
+			bool IsSub = false;
+
+			List<object[]> result = MyDatabase.GetValues(dbConstants.table_name, new string[1] {dbConstants.SUBPANEL}, dbConstants.GUID, guidtoload);
+			if (result != null && result.Count > 0)
+			{
+				if (result[0][0] != null)
+				{
+
+					IsSub = bool.Parse ((result[0][0]).ToString());
+				}
+			}
+			MyDatabase.Dispose();
+			return IsSub;
+		}
+
 		public static string GetNameFromGuid (string guid)
 		{
 			BaseDatabase MyDatabase = CreateDatabase ();

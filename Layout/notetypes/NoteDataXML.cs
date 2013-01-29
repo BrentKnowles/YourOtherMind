@@ -316,6 +316,14 @@ namespace Layout
 				throw new Exception("Object is a NoteDataXML");
 			}
 		}
+
+		public string GetAbsoluteParent()
+		{
+			return Layout.GetAbsoluteParent().GUID;
+		}
+
+	
+
 #endregion;
 
 		

@@ -25,16 +25,19 @@ namespace Layout.data
 		static public ColumnConstant LINKTABLE = new ColumnConstant("linktable", 18, "LONGTEXT", 15);
 		static public ColumnConstant BACKGROUNDCOLOR = new ColumnConstant("backcolor", 19, "INTEGER", 16);
 		static public ColumnConstant BLURB = new ColumnConstant("blurb", 20,"TEXT", 17);
-		public const  int ColumnCount = 21;
+		static public ColumnConstant PARENT_GUID = new ColumnConstant("parentguid", 21, "TEXT", 18);
+
+
+		public const  int ColumnCount = 22;
 		// The number of columns in the array being stoed
-		public  const int LayoutCount = 18 ; // 11 - 3
+		public  const int LayoutCount = 19 ; // 11 - 3
 
 		static public string[] Columns = new string[ColumnCount]{"id",     "guid",        "xml",      "status", "name", SHOWTABS.Name, SUBPANEL.Name,
 			MAXIMIZETABS.Name, STARS.Name, HITS.Name, DATECREATED.Name, DATEEDITED.Name, NOTEBOOK.Name, SECTION.Name, TYPE.Name, SOURCE.Name, WORDS.Name, KEYWORDS.Name,
-		    LINKTABLE.Name, BACKGROUNDCOLOR.Name, BLURB.Name};
+			LINKTABLE.Name, BACKGROUNDCOLOR.Name, BLURB.Name, PARENT_GUID.Name};
 		static public string[] Types   = new string[ColumnCount]{"INTEGER","TEXT UNIQUE",	"LONGTEXT",	"TEXT",   "VARCHAR(50)", SHOWTABS.Type, SUBPANEL.Type,
 			MAXIMIZETABS.Type, STARS.Type, HITS.Type, DATECREATED.Type, DATEEDITED.Type, NOTEBOOK.Type, SECTION.Type, TYPE.Type, SOURCE.Type, WORDS.Type, KEYWORDS.Type,
-		    LINKTABLE.Type, BACKGROUNDCOLOR.Type, BLURB.Type};
+		    LINKTABLE.Type, BACKGROUNDCOLOR.Type, BLURB.Type, PARENT_GUID.Type};
 
 
 

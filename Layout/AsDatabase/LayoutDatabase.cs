@@ -133,6 +133,13 @@ namespace Layout
 			set {data[dbConstants.BLURB.LayoutIndex] = value;}
 		}
 
+		// if  achild we will have a parentguid that is set during SAVE but ONY IF blank (i.e., does not change, expensive op)
+		public string ParentGuid {
+			get { return data [dbConstants.PARENT_GUID.LayoutIndex].ToString ();}
+			set {data[dbConstants.PARENT_GUID.LayoutIndex] = value;}
+		}
+
+
 		// This is the GUID for the page. It comes from
 		//  
 		//  (a) When a New Layout is Created or  a Layout Loaded (in both cases constructor is called
@@ -168,6 +175,7 @@ namespace Layout
 			Keywords = Constants.BLANK;
 			BackgroundColor = DefaultBackColor;
 			Blurb = Constants.BLANK;
+			ParentGuid = Constants.BLANK;
 		}
 		/// <summary>
 		/// Gets the note by GUI.
@@ -681,6 +689,9 @@ namespace Layout
 								
 						Blurb = result[dbConstants.BLURB.Index].ToString ();
 
+							ParentGuid = result[dbConstants.PARENT_GUID.Index].ToString();
+
+
 
 
 						int words = 0;
@@ -831,6 +842,17 @@ namespace Layout
 					throw new Exception ("Unable to create database in SaveTo");
 				}
 
+				if (IsSubPanel == true && ParentGuid == Constants.BLANK)
+				{
+					if (dataForThisLayout.Count > 0)
+					{
+						// any note cointains a reference to layout
+
+						//NewMessage.Show (dataForThisLayout[0].Caption +  " I am a child. My parent is " + dataForThisLayout[0].GetAbsoluteParent());
+						ParentGuid = dataForThisLayout[0].GetAbsoluteParent();
+					}
+
+				}
 
 				// we are storing a LIST of NoteDataXML objects
 				//	CoreUtilities.General.Serialize(dataForThisLayout, CreateFileName());
@@ -1002,7 +1024,7 @@ namespace Layout
 				                      new object[dbConstants.ColumnCount]
 				                      {DBNull.Value,LayoutGUID, XMLAsString, Status,Name,ShowTabs, 
 							IsSubPanel, MaximizeTabs, Stars, Hits, DateCreated,DateEdited, Notebook, Section, Subtype, Source, Words, Keywords, LinkTableString,
-						BackgroundColor.ToArgb(), Blurb});
+						BackgroundColor.ToArgb(), Blurb, ParentGuid});
 
 					} else {
 						//TODO: Still need to save all the object properties out. And existing data.
@@ -1015,7 +1037,7 @@ namespace Layout
 							dbConstants.STARS,dbConstants.HITS,dbConstants.DATECREATED,
 						dbConstants.DATEEDITED, dbConstants.NOTEBOOK, dbConstants.SECTION,
 						dbConstants.TYPE, dbConstants.SOURCE, dbConstants.WORDS, dbConstants.KEYWORDS, dbConstants.LINKTABLE,
-							dbConstants.BACKGROUNDCOLOR, dbConstants.BLURB},
+							dbConstants.BACKGROUNDCOLOR, dbConstants.BLURB, dbConstants.PARENT_GUID},
 				                                    new object[dbConstants.ColumnCount - 1]
 				                                    {
 						LayoutGUID as string, 
@@ -1037,7 +1059,9 @@ namespace Layout
 						Keywords,
 						LinkTableString,
 						BackgroundColor.ToArgb(),
-						Blurb},
+						Blurb,
+						ParentGuid
+						},
 				dbConstants.GUID, LayoutGUID);
 					}
 

@@ -42,7 +42,7 @@ namespace Layout
 			}
 		}
 
-		public Action<string> LoadLayoutRef= null;
+		public Action<string, string> LoadLayoutRef= null;
 		public Action<string> UpdateTitle = null;
 
 		// in rare case of harddrive failure this variable can be set and checked when the application closes to prevent saving empty files (December 2012)
@@ -121,14 +121,26 @@ namespace Layout
 		/// <summary>
 		/// This is how we decide to load a new layout. This is a link set in the MainForm
 		/// that calls the main LoadLayout routine therein.
+		/// 
+		/// If opened already, it will 'bring it to front'
+		/// 
 		/// </summary>
 		/// <param name='guid'>
 		/// GUID.
 		/// </param>
-		public void LoadLayout (string guid)
+		public void LoadLayout (string guid, string childGuid)
 		{
 			if (null != LoadLayoutRef) {
-				LoadLayoutRef (guid);
+				LoadLayoutRef (guid, childGuid);
+			} else {
+				throw new Exception("A reference needs to be set in the MainForm to the method to use when loading a new method. That did not happen today.");
+			}
+		}
+		public void LoadLayout (string guid)
+		{
+			
+			if (null != LoadLayoutRef) {
+				LoadLayoutRef (guid, Constants.BLANK);
 			} else {
 				throw new Exception("A reference needs to be set in the MainForm to the method to use when loading a new method. That did not happen today.");
 			}

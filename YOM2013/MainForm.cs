@@ -667,7 +667,7 @@ public void Test(bool b)
 
 
 			// this is Causing Latest Crash
-			this.Save (false);
+			//this.Save (false);
 		}
 
 		void HandleMonitorOneScreenClick (object sender, EventArgs e)
@@ -726,7 +726,7 @@ public void Test(bool b)
 		/// <param name='ourGuid'>
 		/// Our GUID.
 		/// </param>
-		LayoutsInMemory LayoutPresent (string ourGuid)
+		LayoutsInMemory IsLayoutPresent (string ourGuid)
 		{
 			LayoutsInMemory existing = LayoutsOpen.Find (LayoutsInMemory => LayoutsInMemory.GUID == ourGuid);
 			return existing;
@@ -742,7 +742,7 @@ public void Test(bool b)
 
 				// find the Layout with this GUID, so we can reference the maximized state
 				lg.Instance.Line("TogguleCurrentNoteMaximized", ProblemType.TEMPORARY, String.Format ("Searching for GUID:<{0} >", ourGUID));
-				LayoutsInMemory existing = LayoutPresent(ourGUID);
+				LayoutsInMemory existing = IsLayoutPresent(ourGUID);
 
 				if (null != existing) {
 					Console.WriteLine ("ourGUID = {0} // FoundGUID = {1}", ourGUID, existing.GUID);
@@ -830,7 +830,7 @@ public void Test(bool b)
 		/// </param>
 		void AlertWhenClosed (LayoutPanelBase panel)
 		{
-			LayoutsInMemory existing = LayoutPresent (panel.GUID);
+			LayoutsInMemory existing = IsLayoutPresent (panel.GUID);
 
 			if (null != existing) {
 				LayoutsOpen.Remove (existing);
@@ -857,12 +857,17 @@ public void Test(bool b)
 		/// <param name='guidtoload'>
 		/// Guidtoload.
 		/// </param>
-		void LoadLayout (string guidtoload)
+		void LoadLayout (string guidtoload, string childGuid)
 		{
 			if (guidtoload == LayoutPanel.SYSTEM_LAYOUT) {
 				NewMessage.Show (Loc.Instance.GetString ("You are not permitted to load the SYSTEM layout directly but you can make edits to it as it is."));
 			} else {
 				if (MasterOfLayouts.ExistsByGUID (guidtoload) == true) {
+
+				
+
+
+
 					this.Cursor = Cursors.WaitCursor;
 					TimeSpan time;
 					time = CoreUtilities.TimerCore.Time (() => {
@@ -872,21 +877,48 @@ public void Test(bool b)
 
 
 			
+						if (MasterOfLayouts.IsSubpanel(guidtoload) == true)
+						{
+							guidtoload = MasterOfLayouts.GetSubpanelsParent(guidtoload);
+							
+							//								LayoutPanel newLayout = CreateLayoutContainer (guidtoload);
+							//								newLayout.LoadLayout (guidtoload, true, TextEditContextStrip);
+							//								LayoutPanel absoluteParent = (LayoutPanel)newLayout.GetAbsoluteParent();
+							//								if (absoluteParent == null || MasterOfLayouts.IsSubpanel(absoluteParent.GUID))
+							//								{
+							//									NewMessage.Show (Loc.Instance.GetStringFmt("Serious error. Cannot find the parent containing the child {0}", guidtoload));
+							//								}
+							//								else
+							//								{
+							//									NewMessage.Show ("Loading Parent " + absoluteParent.GUID);
+							//									// We call the LoadLayout again to esnure the 'existing' check is honored
+							//									LoadLayout (absoluteParent.GUID, Constants.BLANK);
+							//								}
+						}
 
 			
 						// if Layout NOT open already THEN open it
-						LayoutsInMemory existing = LayoutPresent (guidtoload);
+						LayoutsInMemory existing = IsLayoutPresent (guidtoload);
 						if (existing == null) {
-							LayoutPanel newLayout = CreateLayoutContainer (guidtoload);
-							newLayout.LoadLayout (guidtoload, false, TextEditContextStrip);
-							LayoutDetails.Instance.CurrentLayout = newLayout;
-							if (newLayout.GetIsChild)
-							{
-								NewMessage.Show ("RemoveMeEventually: Somehow you loaded a subpanel. That's wrong. Closing it.");
-								// if we have loaded this and it turns out that this is a Child Panel
-								// we are not allowed to stay open
-								AlertWhenClosed(newLayout);
-							}
+
+
+
+
+								LayoutPanel newLayout = CreateLayoutContainer (guidtoload);
+								newLayout.LoadLayout (guidtoload, false, TextEditContextStrip);
+								LayoutDetails.Instance.CurrentLayout = newLayout;
+
+
+
+
+							//this never would have fired because when we loaded we passed the 'false' paramenter to subchild
+//							if (LayoutDetails.Instance.CurrentLayout.GetIsChild)
+//							{
+//								NewMessage.Show ("RemoveMeEventually: Somehow you loaded a subpanel. That's wrong. Closing it.");
+//								// if we have loaded this and it turns out that this is a Child Panel
+//								// we are not allowed to stay open
+//								AlertWhenClosed(LayoutDetails.Instance.CurrentLayout);
+//							}
 					
 						} else {
 				
@@ -895,6 +927,14 @@ public void Test(bool b)
 
 					});
 
+					if (childGuid != Constants.BLANK)
+					{
+						NoteDataInterface note = LayoutDetails.Instance.CurrentLayout.FindNoteByGuid(childGuid);
+						if (note != null)
+						{
+							LayoutDetails.Instance.CurrentLayout.GoToNote(note);
+						}
+					}
 
 					UpdateFooter (FootMessageType.LOAD, Loc.Instance.GetStringFmt ("Loaded Layout: {0} in {1}", LayoutDetails.Instance.CurrentLayout.Caption, time));
 					UpdateFooter (FootMessageType.NOTES, Loc.Instance.GetStringFmt ("{0} Notes Loaded", LayoutDetails.Instance.CurrentLayout.CountNotes ()));
