@@ -356,7 +356,7 @@ namespace Layout
 			// 0 - GetValues (all linktable columns)  easy
 			List<object[]> results = MyDatabase.GetValues (dbConstants.table_name, new string[1]{dbConstants.LINKTABLE}, "any", "*");
 			string combinedResult = Constants.BLANK;
-			int record = 0;
+			//int record = 0;
 			//NoteDataXML_Table table = null;
 			
 			if (results != null && results.Count > 0) {

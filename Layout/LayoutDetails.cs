@@ -95,6 +95,16 @@ namespace Layout
 		}
 
 		#endregion;
+
+		/// <summary>
+		/// Clears the dragging of notes on A layout. If stuck in dragmode
+		/// </summary>
+		public void ClearDraggingOfNotesOnALayout ()
+		{
+			if (CurrentLayout != null) {
+				CurrentLayout.ClearDrag();
+			}
+		}
 		public LayoutDetails ()
 		{
 
@@ -110,6 +120,7 @@ namespace Layout
 			AddToList (typeof(NoteDataXML_NoteList),new NoteDataXML_NoteList().RegisterType());
 			AddToList (typeof(NoteDataXML_Table),new NoteDataXML_Table().RegisterType());
 			AddToList(typeof(NoteDataXML_LinkNote), new NoteDataXML_LinkNote().RegisterType());
+			AddToList(typeof(NoteDataXML_Timeline), new NoteDataXML_Timeline().RegisterType());
 		//	AddToList (typeof(NoteDataXML_SystemOnly),new NoteDataXML_SystemOnly().RegisterType());
 
 
@@ -210,15 +221,21 @@ namespace Layout
 	/// <param name='action'>
 	/// Action.
 	/// </param>
-		public static ToolStripMenuItem BuildMenuPropertyEdit (string Title, string ToolTip, KeyEventHandler action)
+		public static ToolStripMenuItem BuildMenuPropertyEdit (string Label, string Title, string ToolTip, KeyEventHandler action)
 		{
+
+		
+
 			ToolStripMenuItem TableCaptionLabel = new ToolStripMenuItem ();
-			TableCaptionLabel.Text = Title;
+			TableCaptionLabel.Text = String.Format (Label, Title);
 			TableCaptionLabel.ToolTipText = ToolTip;
 			ContextMenuStrip TableCaptionMenu = new ContextMenuStrip ();
 			ToolStripTextBox TableCaptionText = new ToolStripTextBox ();
+
+			TableCaptionLabel.Tag = Label; // this is the format label 	// label is a format string like "Field: {0}"
+
 			TableCaptionText.Tag = TableCaptionLabel;
-			TableCaptionText.Text = Title;
+			TableCaptionText.Text = Title; 
 			TableCaptionText.KeyDown += action;
 			TableCaptionMenu.Items.Add (TableCaptionText);
 			
@@ -232,7 +249,8 @@ namespace Layout
 				// the header is not updated unti enter pressed but the NAME is being updated
 				Caption = (sender as ToolStripTextBox).Text;
 				if ((sender as ToolStripTextBox).Tag != null && ((sender as ToolStripTextBox).Tag is ToolStripMenuItem)) {
-					((sender as ToolStripTextBox).Tag as ToolStripMenuItem).Text = Caption;
+					string formatstring = ((sender as ToolStripTextBox).Tag as ToolStripMenuItem).Tag.ToString();
+					((sender as ToolStripTextBox).Tag as ToolStripMenuItem).Text = String.Format (formatstring, Caption);
 				}
 				// silenece beep
 				e.SuppressKeyPress = true;

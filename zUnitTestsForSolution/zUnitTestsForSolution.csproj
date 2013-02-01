@@ -69,6 +69,7 @@
     <Compile Include="ClassesUsedInTesting\FAKE_NoteDataPicture.cs" />
     <Compile Include="HotkeysTest.cs" />
     <Compile Include="ClassesUsedInTesting\Fake_MasterOfLayouts.cs" />
+    <Compile Include="TimelineTest.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

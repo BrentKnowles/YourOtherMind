@@ -365,6 +365,16 @@ namespace Testing
 				
 
 		}
+		/// <summary>
+		/// Tests to string. Just in case I have messed up the string format
+		/// </summary>
+		[Test]
+		public void TestToString()
+		{
+			NoteDataXML note = new NoteDataXML();
+			note.Caption = "boo";
+			Assert.AreNotEqual(0, note.ToString().Length);
+		}
 	}
 }
 

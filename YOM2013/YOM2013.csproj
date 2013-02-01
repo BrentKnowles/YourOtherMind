@@ -34,10 +34,6 @@
   </PropertyGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
-    <ProjectReference Include="..\Layout\Layout.csproj">
-      <Project>{DA1AA77A-D94D-4F79-AC96-7BC9AF0AFB34}</Project>
-      <Name>Layout</Name>
-    </ProjectReference>
     <ProjectReference Include="..\coreutilities\coreutilities2013.csproj">
       <Project>{6EAA0B60-70E3-49FB-88E9-272D2719CECF}</Project>
       <Name>coreutilities2013</Name>
@@ -57,6 +53,10 @@
     <ProjectReference Include="..\database\database.csproj">
       <Project>{C08FDDB5-5C59-4611-98E7-76674F290896}</Project>
       <Name>database</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Layout\Layout.csproj">
+      <Project>{DA1AA77A-D94D-4F79-AC96-7BC9AF0AFB34}</Project>
+      <Name>Layout</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

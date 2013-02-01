@@ -81,7 +81,7 @@ namespace LayoutPanels
 			////////////////////////////
 
 
-			ToolStripMenuItem Blurb = LayoutDetails.BuildMenuPropertyEdit (Notes.Blurb,
+			ToolStripMenuItem Blurb = LayoutDetails.BuildMenuPropertyEdit (Loc.Instance.GetString ("Blurb: {0}"),Notes.Blurb,
 			                                     Loc.Instance.GetString ("A brief blurb discussing the purpose of this layout."),
 			                                     HandleBlurbEdit );
 

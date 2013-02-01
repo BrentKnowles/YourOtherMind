@@ -57,6 +57,12 @@
     <Compile Include="notetypes\NoteDataXML_Table.cs" />
     <Compile Include="AsDatabase\dbConstants.cs" />
     <Compile Include="notetypes\NoteDataXML_LinkNote.cs" />
+    <Compile Include="notetypes\NoteDataXML_Timeline.cs" />
+    <Compile Include="notetypes\timeline\Calendar.cs" />
+    <Compile Include="notetypes\timeline\Holiday.cs" />
+    <Compile Include="notetypes\timeline\TimelinePanel.cs" />
+    <Compile Include="notetypes\timeline\newGenericDate.cs" />
+    <Compile Include="notetypes\timeline\SmartPoint.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
@@ -65,6 +71,7 @@
     <Folder Include="AsDatabase\" />
     <Folder Include="notetypes\" />
     <Folder Include="icons\" />
+    <Folder Include="notetypes\timeline\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\coreutilities\coreutilities2013.csproj">
@@ -92,6 +99,42 @@
     </EmbeddedResource>
     <EmbeddedResource Include="icons\delete_x.png">
       <LogicalName>delete_x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\star.png">
+      <LogicalName>star.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\stop.png">
+      <LogicalName>stop.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\sport_golf.png">
+      <LogicalName>sport_golf.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\sport_8ball.png">
+      <LogicalName>sport_8ball.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\sport_basketball.png">
+      <LogicalName>sport_basketball.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\tag_blue.png">
+      <LogicalName>tag_blue.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\tag_green.png">
+      <LogicalName>tag_green.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\tag_orange.png">
+      <LogicalName>tag_orange.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\tag_red.png">
+      <LogicalName>tag_red.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\tag_yellow.png">
+      <LogicalName>tag_yellow.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\tick.png">
+      <LogicalName>tick.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\television.png">
+      <LogicalName>television.png</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
 </Project>

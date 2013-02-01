@@ -140,7 +140,16 @@ namespace Layout
 		{
 			CommonConstructor();
 		}
+		public NoteDataXML_Table (int height, int width, ColumnDetails[] ColumnOverride):base(height, width)
+		{
+			// creates this for use with NoteDatXML_Timeline to create default
+			// tables but was not able to do it the way I had done in DefaultLayouts
 
+			// this forces a column override and is WHY we do not call BuildDefaultColumns
+			Caption = Loc.Instance.Cat.GetString ("Table");
+			Columns= ColumnOverride;
+
+		}
 		/// <summary>
 		/// Builds the default columns.
 		/// 
@@ -205,13 +214,13 @@ namespace Layout
 
 
 			ToolStripMenuItem TableCaptionLabel = 
-				LayoutDetails.BuildMenuPropertyEdit (TableCaption,Loc.Instance.GetString ("When generating random data this caption will be used to present the results."),HandleTableCaptionKeyDown );
+				LayoutDetails.BuildMenuPropertyEdit (Loc.Instance.GetString("Table Caption: {0}"), TableCaption,Loc.Instance.GetString ("When generating random data this caption will be used to present the results."),HandleTableCaptionKeyDown );
 
 
 
 
 			ToolStripMenuItem NextTableLabel =
-				LayoutDetails.BuildMenuPropertyEdit (NextTable,Loc.Instance.GetString ("Set a value here and if the random results of this table resolve without finding a 'NextTable' in the table itself, it will proceed with randomization on the table specified here."),HandleNextTableKeyDown );
+				LayoutDetails.BuildMenuPropertyEdit (Loc.Instance.GetString("Next Table: {0}"), NextTable,Loc.Instance.GetString ("Set a value here and if the random results of this table resolve without finding a 'NextTable' in the table itself, it will proceed with randomization on the table specified here."),HandleNextTableKeyDown );
 
 
 
@@ -237,19 +246,25 @@ namespace Layout
 		}
 		void HandleNextTableKeyDown (object sender, KeyEventArgs e)
 		{
-			if (e.KeyData == Keys.Enter) {
-				// the header is not updated unti enter pressed but the NAME is being updated
-				NextTable = (sender as ToolStripTextBox).Text;
-				if ( (sender as ToolStripTextBox).Tag != null && ((sender as ToolStripTextBox).Tag is ToolStripMenuItem))
-				{
-					((sender as ToolStripTextBox).Tag as ToolStripMenuItem).Text = NextTable;
-				}
-				
-				// silenece beep
-				e.SuppressKeyPress = true;
-				SetSaveRequired(true);
-				
-			}
+
+			string nextTable = NextTable;
+			LayoutDetails.HandleMenuLabelEdit (sender, e, ref nextTable, SetSaveRequired);
+			NextTable = nextTable;
+
+
+//			if (e.KeyData == Keys.Enter) {
+//				// the header is not updated unti enter pressed but the NAME is being updated
+//				NextTable = (sender as ToolStripTextBox).Text;
+//				if ( (sender as ToolStripTextBox).Tag != null && ((sender as ToolStripTextBox).Tag is ToolStripMenuItem))
+//				{
+//					((sender as ToolStripTextBox).Tag as ToolStripMenuItem).Text = NextTable;
+//				}
+//				
+//				// silenece beep
+//				e.SuppressKeyPress = true;
+//				SetSaveRequired(true);
+//				
+//			}
 		}
 
 

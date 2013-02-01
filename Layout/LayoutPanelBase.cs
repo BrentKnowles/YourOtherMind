@@ -22,6 +22,30 @@ namespace Layout
 		private string _guid = CoreUtilities.Constants.BLANK;
 		protected bool _saverequired = false;
 		private string parentGUID = Constants.BLANK;
+
+		private bool isDraggingANote=false;
+		/// <summary>
+		/// Is set to true if occupied by dragging a note around
+		/// </summary>
+		/// <value>
+		/// <c>true</c> if this instance is dragging A note; otherwise, <c>false</c>.
+		/// </value>
+		public bool IsDraggingANote {
+			get {
+				return isDraggingANote;
+			}
+			set {
+				isDraggingANote = value;
+			}
+		}
+/// <summary>
+/// Clears the drag. Called from ESC is presed
+/// </summary>
+		public virtual void ClearDrag ()
+		{
+			IsDraggingANote = false;
+		}
+
 		/// <summary>
 		/// Gets or sets the parent GUI. (Will be set by NoteDataXML_Panel) and refers to the Layout that owns this layout. That value in turn is used in the MoveNote code
 		/// </summary>
@@ -89,6 +113,30 @@ namespace Layout
 		abstract public string Notebook { get; }
 
 		abstract public void SetParentFields (string section, string keywords, string subtype, string notebook);
+
+
+		private bool isLoaded=false;
+		/// <summary>
+		/// Gets or sets a value indicating whether this instance is loaded.
+		/// 
+		/// This is used when painting something expensive, or something that can't paint untl all the notes exist
+		/// 
+		/// re: Timeline
+		/// 
+		/// It is set to true in NewLayout and LoadLayout
+		/// </summary>
+		/// <value>
+		/// <c>true</c> if this instance is loaded; otherwise, <c>false</c>.
+		/// </value>
+		public bool IsLoaded {
+			get {
+				return isLoaded;
+			}
+			set {
+				isLoaded = value;
+			}
+		}
+
 #endregion
 
 		#region gui

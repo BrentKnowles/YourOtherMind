@@ -767,7 +767,11 @@ public void Test(bool b)
 		void HandleMainFormKeyDown (object sender, KeyEventArgs e)
 		{
 
-		
+			if (e.KeyCode == Keys.Escape) {
+				// do cancel operations if need
+				LayoutDetails.Instance.ClearDraggingOfNotesOnALayout();
+				
+			}
 		}
 
 
@@ -1098,7 +1102,7 @@ public void Test(bool b)
 				}
 				break;
 			}
-			if (null == returnvalue) {
+			if (null == returnvalue && getinfo > 0) {
 				NewMessage.Show (Loc.Instance.GetString("You may not be on the right interface element to activate this AddIn's functionality."));
 			}
 			return returnvalue;

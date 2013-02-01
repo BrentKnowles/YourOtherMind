@@ -800,6 +800,7 @@ namespace Layout
 
 			UpdateLayoutToolbar();
 			this.BackColor = Notes.BackgroundColor;
+			IsLoaded = true;
 		}
 
 		private void UpdateLayoutToolbar()
@@ -961,6 +962,7 @@ namespace Layout
 				this.BackColor = Notes.BackgroundColor;
 			}
 			NoteCanvas.AutoScroll = true;
+			IsLoaded = true;
 		}
 		public void SetName(string newName)
 		{
@@ -1251,7 +1253,7 @@ namespace Layout
 
 			
 			}
-
+				
 
 			if (note.ParentNotePanel != null) {
 				// if we ever go to a note we make it visisble
@@ -1350,6 +1352,16 @@ namespace Layout
 				Notes.Subtype = subtype;
 				Notes.Notebook = notebook;
 			}
+		}
+		public override void ClearDrag ()
+		{
+
+
+			// not turn off drag on every note
+			foreach (NoteDataInterface note in Notes.GetAllNotes()) {
+				note.EndDrag();
+			}
+			base.ClearDrag ();
 		}
 	}
 }

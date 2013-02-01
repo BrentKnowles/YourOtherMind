@@ -87,10 +87,10 @@ namespace Layout
 			captionLabel = new ToolStripLabel (this.Caption);
 			captionLabel.ToolTipText = "TIP: Doubleclick this to set the note to its regular size";
 
-			//captionLabel.MouseDown += HandleMouseDown;
-			//captionLabel.MouseUp += HandleMouseUp;
-			////captionLabel.MouseLeave += HandleMouseLeave;
-			//captionLabel.MouseMove += HandleMouseMove;
+			captionLabel.MouseDown += HandleMouseDown;
+			captionLabel.MouseUp += HandleMouseUp;
+			//captionLabel.MouseLeave += HandleMouseLeave;
+			captionLabel.MouseMove += HandleMouseMove;
 
 
 
@@ -527,60 +527,132 @@ namespace Layout
 
 
 		}
-		
+
+		// set to true if I am the note being dragged
+		bool IAmDragging = false;
+		Point PanelMouseDownLocation ;
+		Color lastColor;
 		void HandleMouseMove (object sender, MouseEventArgs e)
 		{
+			CaptionLabel.Cursor = Cursors.Hand;
 			if (this.Dock == DockStyle.None) {
 				if (e.Button == MouseButtons.Left) {
 
+					if (false == Layout.IsDraggingANote) {
+						// start drag mode
+						Layout.IsDraggingANote = true;
+						IAmDragging = true;
+						BringToFrontAndShow ();
 
-					int X = this.location.X + e.X - PanelMouseDownLocation.X;
-					int Y = this.location.Y += e.Y - PanelMouseDownLocation.Y;
-					// do not allow to drag off screen into non-scrollable terrain
-					if (X < 0) {
-						X = 0;
+						lastColor = CaptionLabel.BackColor;
+						CaptionLabel.BackColor = Color.Red;
+
+						PanelMouseDownLocation = e.Location;
+					
 
 					}
-					if (Y < 0) {
-						Y = 0;
-
+					if (true == Layout.IsDraggingANote && true == IAmDragging) {
+						int X = this.location.X + e.X - PanelMouseDownLocation.X;
+						int Y = this.location.Y += e.Y - PanelMouseDownLocation.Y;
+						// do not allow to drag off screen into non-scrollable terrain
+						if (X < 0) {
+							X = 0;
+							
+						}
+						if (Y < 0) {
+							Y = 0;
+							
+						}
+						this.Location = new Point (X, Y);
+						//this.location.X += e.X - PanelMouseDownLocation.X;
+						
+						//this.location.Y += e.Y - PanelMouseDownLocation.Y;
+						UpdateLocation ();
 					}
-					this.Location = new Point (X, Y);
-					//this.location.X += e.X - PanelMouseDownLocation.X;
 				
-					//this.location.Y += e.Y - PanelMouseDownLocation.Y;
-					UpdateLocation ();
+					
+
+				
+						
+							
+							
+							
+				
+
+
+				
 				}
+			} else {
+				EndDrag();
 			}
 		}
-		
+
+		public void EndDrag ()
+		{
+
+			if (null != Layout) {
+				if (Layout.IsDraggingANote && IAmDragging) {
+					CaptionLabel.BackColor = lastColor;
+
+					Layout.IsDraggingANote = false;
+					IAmDragging = false;
+				}
+			} else {
+
+
+				//TODO: UPDATE: We can't actually clear this because we do not have a reference to it!
+
+				// Not a big deal. When we clear the drag state we don't actually load the 
+				// child notes (not fully).
+				// Therefore they do not have layouts
+				// so in this case we just clear backcolor and person dragging
+				//NewMessage.Show (this.Caption + " has a null Layout? How?");
+				//if (IAmDragging)
+				//{
+				// force the removal since IamDragging is not a stored flag
+				// we do not actually know
+				//	CaptionLabel.BackColor = lastColor;
+				//	IAmDragging = false;
+				//}
+			}
+		}
+
 		void HandleMouseLeave (object sender, EventArgs e)
 		{
-			if (this.Dock == DockStyle.None) {
-				//TODO: Needs to be the default apeparance color
-				CaptionLabel.BackColor = Color.Green;
-			}
+			CaptionLabel.Cursor = Cursors.Default;
+			// suppressing this so that you only stop dragging by lifting mouse up
+//			if (this.Dock == DockStyle.None) {
+//				EndDrag();
+//			}
 		}
 		
 		void HandleMouseUp (object sender, MouseEventArgs e)
 		{
 
 			if (this.Dock == DockStyle.None) {
-				//TODO: Needs to be the default apeparance color
-				CaptionLabel.BackColor = Color.Green;
+			
+				EndDrag();
 			}
 		}
-		Point PanelMouseDownLocation ;
+	
 		void HandleMouseDown (object sender, MouseEventArgs e)
 		{
-			BringToFrontAndShow();
-			if (this.Dock == DockStyle.None) {
-				if (e.Button == MouseButtons.Left) {
-					// start moving
-					CaptionLabel.BackColor = Color.Red;
-					PanelMouseDownLocation = e.Location;
-				}
-			}
+			// going to try moving Dragging from here, so there's
+			// no 'jerk' when clicking on a note
+			// you have to be dragging for a bit to kick into dragmode
+
+		
+//			if (this.Dock == DockStyle.None) {
+//				if (e.Button == MouseButtons.Left ) {
+//					// start moving
+//					Layout.IsDraggingANote = true;
+//					lastColor = CaptionLabel.BackColor;
+//					CaptionLabel.BackColor = Color.Red;
+//					
+//					PanelMouseDownLocation = e.Location;
+//					CaptionLabel.Cursor = Cursors.Hand;
+//				}
+//			}
 			
 		}
 

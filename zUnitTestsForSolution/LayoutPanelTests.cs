@@ -606,6 +606,82 @@ namespace Testing
 			Assert.AreEqual ("thebestsub", panelB.GetParent_Subtype());
 
 		}
+
+		[Test]
+		public void MoveNoteOutOfParent_SaveShouldHappenAutomatically()
+		{
+
+				_w.output ("START");
+				System.Windows.Forms .Form form = new System.Windows.Forms.Form ();
+				_TestSingleTon.Instance._SetupForLayoutPanelTests ();
+				
+				FAKE_LayoutPanel panel = new FAKE_LayoutPanel (CoreUtilities.Constants.BLANK, false);
+				form.Controls.Add (panel);
+				form.Show ();
+				
+				//NOTE: For now remember that htis ADDS 1 Extra notes
+				panel.NewLayout ("mynewpanel", true, null);
+				NoteDataXML basicNote = new NoteDataXML ();
+				basicNote.Caption = "note1";
+				
+				panel.AddNote (basicNote);
+				//basicNote.CreateParent(panel);
+				
+				
+				
+				
+				//panel.MoveNote(
+				// create four panels A and B at root level. C inside A. D inside C
+				FAKE_NoteDataXML_Panel panelA = new FAKE_NoteDataXML_Panel ();
+				panelA.Caption = "PanelA";
+				panelA.GuidForNote = "panela";
+				FAKE_NoteDataXML_Panel panelB = new FAKE_NoteDataXML_Panel ();
+				panelB.Caption = "PanelB";
+				panelB.GuidForNote = "panelb";
+				FAKE_NoteDataXML_Panel panelC = new FAKE_NoteDataXML_Panel ();
+				panelC.Caption = "PanelC";
+				panelC.GuidForNote = "panelc";
+				
+				
+				_w.output ("panels made");
+				
+				
+				panel.AddNote (panelA);  // 1
+				panel.AddNote (panelB);  // 2
+				//panelA.CreateParent(panel); should not need to call this when doing LayoutPanel.AddNote because it calls CreateParent insid eof it
+				
+				basicNote = new NoteDataXML ();
+				basicNote.Caption = "note2";
+				
+				
+				
+				panelA.AddNote (basicNote);  // Panel A has 1 note
+				basicNote.CreateParent (panelA.myLayoutPanel ());  // DO need to call it when adding notes like this (to a subpanel, I think)
+				panel.SaveLayout ();
+				Assert.AreEqual (1, panelA.CountNotes (), "Panel A holds one note");  // So this counts as  + 2
+				
+				// so we have (1 + 1 note on it)panel A + (1)panelB + basicNote +DefaultNote = 5  + (NEW) LinkTable = 6
+				_w.output ("STARTCOUNT");
+				Assert.AreEqual (6, panel.CountNotes (), "Total notes SHOULD BE 6 :  (1 + 1 note on it)panel A + (1)panelB + basicNote +DefaultNote = 5  + (NEW) LinkTable = 6");
+				
+				_w.output ("ENDCOUNT");
+
+
+				// now we move basicNote out
+				// WITOUT calling save  ****
+				// it should still ahve saved
+
+			panelA.myLayoutPanel ().MoveNote(basicNote.GuidForNote, "up");
+			Assert.AreEqual (0, panelA.CountNotes (), "Panel A holds one note");
+			Assert.AreEqual (6, panel.CountNotes (), "Total notes SHOULD BE 6 :  (1 + 1 note on it)panel A + (1)panelB + basicNote +DefaultNote = 5  + (NEW) LinkTable = 6");
+			panel = null;
+			panel = new FAKE_LayoutPanel (CoreUtilities.Constants.BLANK, false);
+			panel.LoadLayout("mynewpanel", false, null);
+			//Assert.AreEqual (0, panelA.CountNotes (), "Panel A holds one note");
+			Assert.AreEqual (6, panel.CountNotes (), "Total notes SHOULD BE 6 :  (1 + 1 note on it)panel A + (1)panelB + basicNote +DefaultNote = 5  + (NEW) LinkTable = 6");
+
+		}
+
 		[TearDown] public void Cleanup()
 		{ 
 			lg.Instance.WriteLog();
