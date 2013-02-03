@@ -45,7 +45,7 @@ namespace appframe
 		static BaseDatabase CreateDatabase (string DatabaseName)
 		{
 			BaseDatabase db = new SqlLiteDatabase (DatabaseName);
-			
+			//BaseDatabase db = Layout.MasterOfLayouts.GetDatabaseType(DatabaseName);
 			
 			
 			

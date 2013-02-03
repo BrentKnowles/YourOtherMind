@@ -40,7 +40,7 @@ namespace Layout
 		/// </summary>
 		public static BaseDatabase CreateDatabase ()
 		{
-			SqlLiteDatabase db = new SqlLiteDatabase (LayoutDetails.Instance.YOM_DATABASE);
+			BaseDatabase db = GetDatabaseType(LayoutDetails.Instance.YOM_DATABASE);//new SqlLiteDatabase (LayoutDetails.Instance.YOM_DATABASE);
 			db.CreateTableIfDoesNotExist (dbConstants.table_name, 
 		                              dbConstants.Columns, 
 		                              dbConstants.Types, String.Format ("{0}", dbConstants.ID)
@@ -48,7 +48,10 @@ namespace Layout
 			return db;
 		}
 
-
+		public static BaseDatabase GetDatabaseType(string DatabaseName)
+		{
+			return new SqlLiteDatabase(DatabaseName);
+		}
 
 		public void Dispose()
 		{
@@ -163,7 +166,7 @@ namespace Layout
 		}
 		public string Backup ()
 		{
-			SqlLiteDatabase db = new SqlLiteDatabase (LayoutDetails.Instance.YOM_DATABASE);
+			BaseDatabase db = CreateDatabase();//new SlLiteDatabase (LayoutDetails.Instance.YOM_DATABASE);
 			string result = db.BackupDatabase();
 			db.Dispose();
 			return result;

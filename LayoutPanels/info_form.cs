@@ -10,6 +10,9 @@ namespace Layout
 	{
 		TableLayoutPanel layPanel;
 		string GUID= Constants.BLANK;
+
+		ListBox ListOfEvents = null;
+
 		public info_form (string infoText, string _GUID)
 		{
 
@@ -30,15 +33,30 @@ namespace Layout
 			layPanel = new TableLayoutPanel();
 			layPanel.Dock = DockStyle.Fill;
 
+
+			ListOfEvents = new ListBox();
+			ListOfEvents.Dock = DockStyle.Bottom;
+
+
 			this.Controls.Add (layPanel);
 			this.Controls.Add(refresh);
 			this.Controls.Add(infohead);
+			this.Controls.Add (ListOfEvents);
 
 
+
+			// Draw in Event Details
+
+			List<Transactions.TransactionReturnNote> LayoutEvents = LayoutDetails.Instance.EventsList.GetEventsForLayoutGuid (GUID);
+			if (LayoutEvents != null) {
+				ListOfEvents.DataSource = LayoutEvents;
+				ListOfEvents.DisplayMember = "Display";
+			}
 		}
 
 		void HandleRefreshClick (object sender, EventArgs e)
 		{
+
 			this.Cursor = Cursors.WaitCursor;
 			List<string> connections = MasterOfLayouts.ReciprocalLinks (GUID);
 
@@ -47,17 +65,20 @@ namespace Layout
 
 			foreach (string s in connections) {
 				string[] data = s.Split (new char[1]{'.'});
-				if (data != null && data.Length == 2)
-				{
-					LinkLabel link = new LinkLabel();
-					link.Tag = data[1];
-					link.Text = data[0];
+				if (data != null && data.Length == 2) {
+					LinkLabel link = new LinkLabel ();
+					link.Tag = data [1];
+					link.Text = data [0];
 				
-				link.LinkBehavior = LinkBehavior.AlwaysUnderline;
-				link.LinkClicked+= HandleLinkClicked;
-				layPanel.Controls.Add (link);
+					link.LinkBehavior = LinkBehavior.AlwaysUnderline;
+					link.LinkClicked += HandleLinkClicked;
+					layPanel.Controls.Add (link);
 				}
 			}
+
+
+
+		
 			this.Cursor = Cursors.Default;
 		}
 

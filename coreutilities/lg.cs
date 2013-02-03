@@ -32,7 +32,7 @@ namespace CoreUtilities
 		private Loud _Loudness = Loud.BDEFAULT;// We show default and louder but not Trivial
 		public Loud Loudness { get { return _Loudness; } set { _Loudness = value; }}
 #endregion;
-
+		public bool OutputToConstoleToo=false;
 		public lg ()
 		{
 			logWriter = File.AppendText(LOG_FILE);
@@ -143,6 +143,7 @@ namespace CoreUtilities
 				if (null == LogLines) LogLines = new List<string>();
 
 				LogLines.Add (log);
+				if (OutputToConstoleToo) Console.WriteLine(log);
 
 				if (LogLines.Count >= BUFFER_LINES) {
 					WriteLog ();

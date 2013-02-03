@@ -897,11 +897,18 @@ namespace Layout
 				noteCanvas.Controls.Clear ();
 				//
 				Notes = new LayoutDatabase (GUID);
+				string newGUID = ((LayoutDatabase)Notes).LoadFromOld (File, this, bulk);
+				LayoutDetails.Instance.EventsList.AddEvent(new Transactions.TransactionImportLayout(DateTime.Now, newGUID,Notes.Name));
 
-				((LayoutDatabase)Notes).LoadFromOld (File, this, bulk);
+				System.Collections.ObjectModel.ReadOnlyCollection<NoteDataInterface> thenotes =  Notes.GetNotes();
 
-				foreach (NoteDataInterface note in Notes.GetNotes())
+				foreach (NoteDataInterface note in thenotes)
 				{
+					if (note is NoteDataXML_Timeline)
+					{
+						// we do not create the timeline table because they *should* be comign with
+						((NoteDataXML_Timeline)note).TableCreated = true;
+					}
 					note.CreateParent(this);
 				}
 				if (!GetIsChild) {

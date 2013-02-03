@@ -10,12 +10,14 @@ namespace Layout
 
 		#region variables
 		string childGuid = Constants.BLANK;
+		// temporary variable, that is restored if Link needs to be reset. Does not need conversion
 		public string ChildGuid {
 			get { return childGuid;}
 			set { childGuid = value;}
 		}
 		
 		string layoutGuid = Constants.BLANK;
+		// temporary variable, that is restored if Link needs to be reset. Does not need conversion
 		public string LayoutGuid {
 			get{ return layoutGuid;}
 			set { layoutGuid = value;}

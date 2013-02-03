@@ -70,6 +70,7 @@
     <Compile Include="HotkeysTest.cs" />
     <Compile Include="ClassesUsedInTesting\Fake_MasterOfLayouts.cs" />
     <Compile Include="TimelineTest.cs" />
+    <Compile Include="EventTableTests.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
@@ -100,6 +101,10 @@
     <ProjectReference Include="..\..\Addins\Addin_NoteDataXML_Picture\Addin_NoteDataXML_Picture.csproj">
       <Project>{3F04C173-401B-4719-83DF-A36B79A01EFE}</Project>
       <Name>Addin_NoteDataXML_Picture</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\EventTable\TransactionSystem.csproj">
+      <Project>{015AC0C9-2F05-45BE-AD21-5A475AACA2D7}</Project>
+      <Name>TransactionSystem</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

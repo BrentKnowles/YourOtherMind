@@ -317,9 +317,13 @@ namespace Layout
 			}
 		}
 
-		public string GetAbsoluteParent()
+		public string GetAbsoluteParent ()
 		{
-			return Layout.GetAbsoluteParent().GUID;
+			string result = Constants.BLANK;
+			if (Layout != null) {
+				result = Layout.GetAbsoluteParent().GUID;
+			}
+			return result;
 		}
 
 	

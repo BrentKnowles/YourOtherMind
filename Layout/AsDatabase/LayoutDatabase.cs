@@ -318,11 +318,11 @@ namespace Layout
 		/// <param name='sFile'>
 		/// S file.
 		/// </param>
-		public bool LoadFromOld (string sFile, LayoutPanelBase layoutPanel, string OVERRIDEGUIDFORBULKTESTING)
+		public string LoadFromOld (string sFile, LayoutPanelBase layoutPanel, string OVERRIDEGUIDFORBULKTESTING)
 		{
 
 
-		
+			string returnvalue = Constants.BLANK;
 			System.IO.FileInfo fi = new System.IO.FileInfo (sFile);
 
 			Name = sFile;
@@ -380,7 +380,7 @@ namespace Layout
 
 							tempLayoutDatabaseForSubPanel.IsSubPanel = true;
 
-							if (tempLayoutDatabaseForSubPanel.LoadFromOld (subpanel, null, Constants.BLANK)) {
+							if (tempLayoutDatabaseForSubPanel.LoadFromOld (subpanel, null, Constants.BLANK)!= Constants.BLANK) {
 								tempLayoutDatabaseForSubPanel.SaveTo ();
 							} else {
 								NewMessage.Show (String.Format ("{0} subpanel failed to load", subpanel));
@@ -422,6 +422,7 @@ namespace Layout
 						this.Notebook = LayoutElements [i];
 						break; //directory
 					case 3:
+
 						this.LayoutGUID = LayoutElements [i];
 						break;
 					case 4:
@@ -460,8 +461,8 @@ namespace Layout
 				this.LayoutGUID = OVERRIDEGUIDFORBULKTESTING;
 			}
 			dataForThisLayout.Remove (feeder);
-
-			return true;
+			returnvalue = this.LayoutGUID;
+			return returnvalue;
 		}
 
 

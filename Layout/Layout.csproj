@@ -86,6 +86,10 @@
       <Project>{1C8CC9F9-FD0A-4DDF-B227-61E8135DFCE5}</Project>
       <Name>ApplicationFramework</Name>
     </ProjectReference>
+    <ProjectReference Include="..\EventTable\TransactionSystem.csproj">
+      <Project>{015AC0C9-2F05-45BE-AD21-5A475AACA2D7}</Project>
+      <Name>TransactionSystem</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="icons\application_form_edit.png">

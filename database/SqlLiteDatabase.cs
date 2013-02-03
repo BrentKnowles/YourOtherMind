@@ -683,8 +683,8 @@ namespace database
 						command .ExecuteNonQuery ();
 				
 				}
-			} catch (System.Data.SQLite.SQLiteException) {
-				throw new Exception("Trying to add a value that is already present in the unqiue colum");
+			} catch (System.Data.SQLite.SQLiteException sx) {
+				throw new Exception("Trying to add a value that is already present in the unqiue colum " +sx.ToString() );
 			}
 		}
 
@@ -938,6 +938,19 @@ ORDER BY name;
 			sqliteCon.Close();
 
 
+		}
+		public override int Count(string tablename)
+		{
+
+			SQLiteConnection sqliteCon = new SQLiteConnection (Connection_String);
+			
+			sqliteCon.Open();
+			SQLiteCommand comm = new SQLiteCommand(String.Format ("SELECT COUNT(*) FROM {0}", tablename), sqliteCon);
+			object o = comm.ExecuteScalar();
+			lg.Instance.Line("SqlLiteDatabase->Count", ProblemType.MESSAGE, String.Format ("Count : {0}", o.ToString()));
+			                 int count = Int32.Parse (o.ToString());
+			sqliteCon.Close ();
+			return count;
 		}
 	}
 }

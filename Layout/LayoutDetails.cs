@@ -2,6 +2,8 @@ using System;
 using System.Collections;
 using CoreUtilities;
 using System.Windows.Forms;
+using Transactions;
+
 namespace Layout
 {
 	/// <summary>
@@ -41,6 +43,8 @@ namespace Layout
 				}
 			}
 		}
+
+
 
 		public Action<string, string> LoadLayoutRef= null;
 		public Action<string> UpdateTitle = null;
@@ -302,6 +306,24 @@ namespace Layout
 			return result;
 		}
 
+
+		public TransactionsTable eventsList=null;
+
+		/// <summary>
+		/// Access to the event table
+		/// </summary>
+		/// <value>
+		/// The events list.
+		/// </value>
+		public TransactionsTable EventsList {
+			get {
+				if (eventsList == null) throw new Exception ("Event list has not been setup.");
+				return eventsList;
+			}
+			set {
+				eventsList = value;
+			}
+		}
 	}
 }
 

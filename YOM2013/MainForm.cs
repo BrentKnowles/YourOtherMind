@@ -13,6 +13,8 @@ using System.ComponentModel.Composition.Hosting;
 using appframe;
 using LayoutPanels;
 using HotKeys;
+using Transactions;
+
 namespace YOM2013
 {
 	public class MainForm : appframe.MainFormBase 
@@ -42,7 +44,7 @@ namespace YOM2013
 		#region variables
 		private Sparkle _sparkle; 
 		private Options Settings ;
-	
+		private TransactionsTable Transaction;
 		#endregion
 		#region delegates
 
@@ -477,8 +479,8 @@ namespace YOM2013
 		
 			BuildFooter();
 
-		
-		
+			Transaction = new TransactionsTable(MasterOfLayouts.GetDatabaseType(LayoutDetails.Instance.YOM_DATABASE));
+			LayoutDetails.Instance.EventsList = Transaction;
 
 		}
 
@@ -691,6 +693,7 @@ public void Test(bool b)
 				newLayout.NewLayoutFromOldFile (guid, open.FileName, bulkmode > 1);
 					if (1 == bulkmode)
 					{
+
 						NewMessage.Show ("We close the note after the import to avoid errors");
 					}
 					else
@@ -1011,6 +1014,8 @@ public void Test(bool b)
 			LayoutPanel newLayout = CreateLayoutContainer(guid);
 			newLayout.NewLayout (guid, true, TextEditContextStrip);
 			LayoutDetails.Instance.CurrentLayout = newLayout;
+
+			Transaction.AddEvent(new TransactionNewLayout(DateTime.Now, newLayout.GUID));
 		}
 
 		void HandleBackupClick (object sender, EventArgs e)

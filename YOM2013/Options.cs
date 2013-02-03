@@ -139,8 +139,8 @@ struct checkBoxOptions
 
 		private BaseDatabase CreateDatabase()
 		{
-			BaseDatabase db = new SqlLiteDatabase (DatabaseName);
-			
+			//BaseDatabase db = new SqlLiteDatabase (DatabaseName);
+			BaseDatabase db = Layout.MasterOfLayouts.GetDatabaseType(DatabaseName);
 			
 			
 

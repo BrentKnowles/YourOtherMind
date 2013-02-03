@@ -2,6 +2,7 @@ using System;
 using CoreUtilities;
 using CoreUtilities.Links;
 using System.Windows.Forms;
+using System.Xml.Serialization;
 using System.Collections.Generic;
 using Timeline;
 
@@ -65,6 +66,7 @@ namespace Layout
 
 		bool tableCreated = false;
 		// internal only. Tracks whether the table has been made yet (basically only the VERY first call to CreateParent, creates the associated table)
+		// I DO NOT know why I put this in place? It is important[XmlIgnore]
 		public bool TableCreated {
 			get {
 				return tableCreated;
@@ -87,17 +89,7 @@ namespace Layout
 			{
 				rowfilter = value;
 
-				//TODO: This invalidation needs to be moved to a GUI location, not here
-//				if (virtualDesktop != null)
-//				{
-//					try
-//					{
-//						virtualDesktop.Invalidate(true);
-//					}
-//					catch (Exception)
-//					{
-//					}
-//				}
+
 				
 			}
 

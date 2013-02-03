@@ -58,6 +58,10 @@
       <Project>{DA1AA77A-D94D-4F79-AC96-7BC9AF0AFB34}</Project>
       <Name>Layout</Name>
     </ProjectReference>
+    <ProjectReference Include="..\EventTable\TransactionSystem.csproj">
+      <Project>{015AC0C9-2F05-45BE-AD21-5A475AACA2D7}</Project>
+      <Name>TransactionSystem</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System.Windows.Forms" />
