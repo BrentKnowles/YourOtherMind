@@ -1,4 +1,5 @@
 using System;
+using CoreUtilities;
 
 namespace Transactions
 {
@@ -17,12 +18,28 @@ namespace Transactions
 //			RowData[TransactionsTable.DATA2.Index] ="0";
 //			RowData[TransactionsTable.DATA3.Index] =0; 
 //			RowData[TransactionsTable.DATA4.Index]  =0;
-}
+		}
+		public TransactionNewLayout ()
+		{
+		}
 
-public override string ToString ()
-{
-	return string.Format ("[EventRowNewNote]");
-}
+		public TransactionNewLayout(object[] items): base(items)
+		{
+			// all children need this form of the constructor
+		}
+	
+		public override string Display {
+			get {
+				return Loc.Instance.GetStringFmt("Layout Added on {0}", DateAsFriendlyString());
+			}
+		}
+
+
+
+	public override string ToString ()
+		{
+			return string.Format ("[EventRowNewNote]");
+		}
 //		public override int dbType {
 //			get {
 //				return EventTABLE.T_ADDED;
@@ -39,6 +56,6 @@ public override string ToString ()
 		 *********
 		 */
 
-}
+	}
 }
 

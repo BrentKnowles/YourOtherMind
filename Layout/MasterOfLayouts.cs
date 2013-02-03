@@ -223,6 +223,7 @@ namespace Layout
 			if (MyDatabase.Exists (dbConstants.table_name, dbConstants.GUID, guid) == true) {
 				if (MyDatabase.Delete(dbConstants.table_name, dbConstants.GUID, guid) == true)
 				{
+					LayoutDetails.Instance.TransactionsList.AddEvent (new Transactions.TransactionDeleteLayout(DateTime.Now, guid));
 				}
 				else
 				{

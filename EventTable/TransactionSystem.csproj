@@ -34,10 +34,10 @@
   <ItemGroup>
     <Compile Include="TransactionBase.cs" />
     <Compile Include="TransactionsTable.cs" />
-    <Compile Include="TransactionReturnNote.cs" />
     <Compile Include="TransactionNewLayout.cs" />
     <Compile Include="TransactionSubmission.cs" />
     <Compile Include="TransactionImportLayout.cs" />
+    <Compile Include="TransactionDeleteLayout.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\database\database.csproj">

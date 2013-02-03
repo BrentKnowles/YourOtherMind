@@ -1,4 +1,5 @@
 using System;
+using CoreUtilities;
 
 namespace Transactions
 {
@@ -11,6 +12,19 @@ namespace Transactions
 			RowData[TransactionsTable.DATA1_LAYOUTGUID.Index] = LayoutGuid;
 			RowData[TransactionsTable.DATA2.Index] = Caption;
 		}
+
+
+		public TransactionImportLayout(object[] items): base(items)
+		{
+			// all children need this form of the constructor
+		}
+
+		public override string Display {
+			get {
+				return Loc.Instance.GetStringFmt("Layout {0} Imported on {1}", RowData[TransactionsTable.DATA2.Index].ToString (),DateAsFriendlyString());
+			}
+		}
+
 	}
 }
 

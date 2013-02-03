@@ -47,7 +47,9 @@ namespace Layout
 
 			// Draw in Event Details
 
-			List<Transactions.TransactionReturnNote> LayoutEvents = LayoutDetails.Instance.EventsList.GetEventsForLayoutGuid (GUID);
+			List<Transactions.TransactionBase> LayoutEvents = LayoutDetails.Instance.TransactionsList.GetEventsForLayoutGuid (GUID);
+			LayoutEvents.Sort ();
+			LayoutEvents.Reverse();
 			if (LayoutEvents != null) {
 				ListOfEvents.DataSource = LayoutEvents;
 				ListOfEvents.DisplayMember = "Display";

@@ -137,6 +137,7 @@ namespace Layout
 		public override  void DeleteNote(NoteDataInterface NoteToDelete)
 		{
 			Notes.RemoveNote (NoteToDelete);
+		
 		}
 		/// <summary>
 		/// Returns the system panel for a system page.
@@ -898,7 +899,7 @@ namespace Layout
 				//
 				Notes = new LayoutDatabase (GUID);
 				string newGUID = ((LayoutDatabase)Notes).LoadFromOld (File, this, bulk);
-				LayoutDetails.Instance.EventsList.AddEvent(new Transactions.TransactionImportLayout(DateTime.Now, newGUID,Notes.Name));
+				LayoutDetails.Instance.TransactionsList.AddEvent(new Transactions.TransactionImportLayout(DateTime.Now, newGUID,Notes.Name));
 
 				System.Collections.ObjectModel.ReadOnlyCollection<NoteDataInterface> thenotes =  Notes.GetNotes();
 

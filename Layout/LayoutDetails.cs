@@ -307,7 +307,7 @@ namespace Layout
 		}
 
 
-		public TransactionsTable eventsList=null;
+		public TransactionsTable transactionsList=null;
 
 		/// <summary>
 		/// Access to the event table
@@ -315,13 +315,13 @@ namespace Layout
 		/// <value>
 		/// The events list.
 		/// </value>
-		public TransactionsTable EventsList {
+		public TransactionsTable TransactionsList {
 			get {
-				if (eventsList == null) throw new Exception ("Event list has not been setup.");
-				return eventsList;
+				if (transactionsList == null) throw new Exception ("Event list has not been setup.");
+				return transactionsList;
 			}
 			set {
-				eventsList = value;
+				transactionsList = value;
 			}
 		}
 	}

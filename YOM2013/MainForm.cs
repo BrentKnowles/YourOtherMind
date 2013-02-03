@@ -480,7 +480,7 @@ namespace YOM2013
 			BuildFooter();
 
 			Transaction = new TransactionsTable(MasterOfLayouts.GetDatabaseType(LayoutDetails.Instance.YOM_DATABASE));
-			LayoutDetails.Instance.EventsList = Transaction;
+			LayoutDetails.Instance.TransactionsList = Transaction;
 
 		}
 

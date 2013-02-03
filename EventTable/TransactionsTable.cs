@@ -12,7 +12,7 @@ namespace Transactions
 		public const int T_ADDED = 1;
 		public const int T_IMPORTED = 100;
 		//		public const int T_DELETED = 2;
-		//		public const int T_RETIRED = 3;
+				public const int T_RETIRED = 3;
 		//		public const int T_FINISHED = 4;
 		//		public const int T_USER = 5;
 		//		public const int T_ADDSUB = 6;
@@ -47,27 +47,9 @@ namespace Transactions
 		static public ColumnConstant DATA8 = new ColumnConstant("data8", 14, "TEXT", 14);
 		static public ColumnConstant DATA9 = new ColumnConstant("data9", 15, "TEXT", 15);
 
-		/* Mapping Musing - Submissions
-		 * 
-		 * date = date sent
-		 * 
-		 * data1 - Guid of Layout
-		 * data2 - Guid of Market
-		 * data3 - Priority
-		 * data4 - WILL NOT BE USED
-		 * Expenses     - Money1
-		 * Earned       - Money2
-		 * DateReplied  - Date2
-		 * Notes - Notes
-		 * 		 * Rights  - Data5
-		 * DraftVersionUsed - Data6
-		 * 
-		 * ReplyType - Data7
-		 * ReplyFeedback - Data8
-		 * 
-		 * 
-		 * SubmissionType - Data9
-		 */
+		static public ColumnConstant TYPE_OF_OBJECT = new ColumnConstant("typeofobject", 16, "TEXT", 16);
+
+
 
 
 //		static public string F_DATE = "Date"; 
@@ -77,12 +59,12 @@ namespace Transactions
 //		static public string F_DATA3 = "Data3";  // 
 //		static public string F_DATA4 = "Data4";  // 
 
-		public const int ColumnCount = 16;
+		public const int ColumnCount = 17;
 
 		static public string[] Columns = new string[ColumnCount] {ID, DATE, TYPE, DATA1_LAYOUTGUID, DATA2, DATA3, DATA4
-		,MONEY1,MONEY2, DATE2, NOTES, DATA5, DATA6, DATA7, DATA8, DATA9};
+		,MONEY1,MONEY2, DATE2, NOTES, DATA5, DATA6, DATA7, DATA8, DATA9, TYPE_OF_OBJECT};
 		static public string[] Types   = new string[ColumnCount]{ID.Type, DATE.Type, TYPE.Type, DATA1_LAYOUTGUID.Type, DATA2.Type, DATA3.Type, DATA4.Type,
-			MONEY1.Type, MONEY2.Type, DATE2.Type, NOTES.Type, DATA5.Type, DATA6.Type, DATA7.Type, DATA8.Type, DATA9.Type};
+			MONEY1.Type, MONEY2.Type, DATE2.Type, NOTES.Type, DATA5.Type, DATA6.Type, DATA7.Type, DATA8.Type, DATA9.Type, TYPE_OF_OBJECT.Type};
 
 		BaseDatabase ThisDatabase=null;
 
@@ -173,9 +155,9 @@ namespace Transactions
 		/// <param name='Values'>
 		/// Values.
 		/// </param>
-		public TransactionReturnNote GetExisting (ColumnConstant[] _Columns, string[] _Values)
+		public TransactionBase GetExisting (ColumnConstant[] _Columns, string[] _Values)
 		{
-			TransactionReturnNote returnValue = null;
+			TransactionBase returnValue = null;
 			// will grab everything that matches the first Column=Value pairing
 			// then we parse results
 			List<object[]> results = ThisDatabase.GetValues (table_name, Columns, _Columns [0], _Values [0]);
@@ -185,7 +167,14 @@ namespace Transactions
 					if (objArray [_Columns [1].Index].ToString() == _Values [1]) {
 						// we found the complete match
 						// now build a new row object
-						returnValue = new TransactionReturnNote(objArray);
+						//returnValue = new TransactionReturnNote(objArray);
+						///returnValue = (TransactionBase)Activator.CreateInstance ("TransactionSystem",objArray[TYPE_OF_OBJECT.Index].ToString());
+						/// 
+					
+						Type returnValueType = Type.GetType (objArray[TYPE_OF_OBJECT.Index].ToString());
+						returnValue = (TransactionBase)Activator.CreateInstance(returnValueType, objArray.Clone());
+
+						//Type TypeTest = Type.GetType (((Type)(sender as ToolStripButton).Tag).AssemblyQualifiedName);
 					}
 
 				}
@@ -209,14 +198,23 @@ namespace Transactions
 		/// <param name='Guid'>
 		/// GUID.
 		/// </param>
-		public List<TransactionReturnNote> GetEventsForLayoutGuid (string Guid)
+		public List<TransactionBase> GetEventsForLayoutGuid (string Guid)
 		{
-			List<TransactionReturnNote> returnValue = new List<TransactionReturnNote> ();
+			List<TransactionBase> returnValue = new List<TransactionBase> ();
 			List<object[]> results = ThisDatabase.GetValues (table_name, Columns, DATA1_LAYOUTGUID, Guid);
 			if (results != null) {
 				foreach(object[] objArray in results)
 				{
-					returnValue.Add (new TransactionReturnNote(objArray));
+					Type returnValueType = Type.GetType (objArray[TYPE_OF_OBJECT.Index].ToString());
+					if (null == returnValueType)
+					{
+
+						returnValueType = new TransactionBase().GetType();
+					}
+					TransactionBase transaction = (TransactionBase)Activator.CreateInstance(returnValueType, objArray.Clone());
+
+					// (TransactionBase)Activator.CreateInstance ("TransactionSystem",objArray[TYPE_OF_OBJECT.Index].ToString());
+					returnValue.Add (transaction);
 				}
 			}
 			
