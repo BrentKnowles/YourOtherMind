@@ -51,9 +51,11 @@ namespace Testing
 
 			LayoutDetails.Instance.AddToList(typeof(FAKE_NoteDataXML_Panel),"testingpanel");
 			LayoutDetails.Instance.AddToList(typeof(FAKE_NoteDataXML_Text),"testingtext");
-			
+
 			FakeLayoutDatabase layout = new FakeLayoutDatabase("testguid");
 			FAKE_SqlLiteDatabase db = new FAKE_SqlLiteDatabase(layout.GetDatabaseName ());
+
+			LayoutDetails.Instance.TransactionsList =new Transactions.TransactionsTable(MasterOfLayouts.GetDatabaseType(LayoutDetails.Instance.YOM_DATABASE));
 			db.DropTableIfExists(Layout.data.dbConstants.table_name);
 			_w.output ("dropping table " + Layout.data.dbConstants.table_name);
 		}

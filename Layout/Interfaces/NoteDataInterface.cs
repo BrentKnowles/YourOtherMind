@@ -36,6 +36,7 @@ namespace Layout
 		bool IsLinkable {get;}
 		bool IsSystemNote{get;}
 		System.Collections.ArrayList   GetChildNotes();
+		string GetStoryboardPreview{get;}
 		#endregion
 		#endregion
 

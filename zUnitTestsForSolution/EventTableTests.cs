@@ -67,6 +67,9 @@ namespace Testing
 			Add(new TransactionImportLayout(DateTime.Now, "roar","The Roar Caption"), eventTable);
 			Assert.AreEqual(4, eventTable.Count());
 
+			Add(new TransactionDeleteLayout(DateTime.Now, "roar"), eventTable);
+			Assert.AreEqual(5, eventTable.Count());
+
 		}
 
 		public void Add(TransactionBase eventRow, TransactionsTable eventTable)

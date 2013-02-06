@@ -7,10 +7,6 @@ using CoreUtilities;
 
 namespace Layout
 {
-	// TODO:
-	// We might consider using this as Layout.XML (and LayoutXML too would share this) to encourage me NOT to 
-	//   call any methods here directly.
-	// I need to be using the interface instead
 
 
 	/// <summary>
@@ -34,8 +30,20 @@ namespace Layout
 		#endregion
 
 		#region variables_frominterface
-		//TODO was trying to avoid storing a reference to actual Layout but the need to update the list (and handle the Property grid) made it so)
+		//FACT was trying to avoid storing a reference to actual Layout but the need to update the list (and handle the Property grid) made it so)
 		protected LayoutPanelBase Layout;
+
+
+		/// <summary>
+		/// Gets or sets the get storyboard preview. //this propery is able to be overridden in CHILD classes, so a PictureNote might return a filename
+		/// </summary>
+		/// <value>
+		/// The get storyboard preview.
+		/// </value>
+		public virtual string GetStoryboardPreview {
+			get { return Constants.BLANK;}
+
+		}
 
 		public virtual bool IsSystemNote{
 			get {return false;}
@@ -162,7 +170,7 @@ namespace Layout
 
 				location = value;
 
-			// TODO Can never have Interface actions here. They must occur elsewhere.
+			// REMINDER! Can never have Interface actions here. They must occur elsewhere.
 			}
 		}
 		private string rtf  = CoreUtilities.Constants.BLANK ;
@@ -237,7 +245,6 @@ namespace Layout
 
 		/// <summary>
 		/// Updates the location, called when location is set outside actual movement.
-		/// TODO: Generalize this to UpdateAppearance?
 		/// Also update sizea
 		/// </summary>
 		public void UpdateLocation ()

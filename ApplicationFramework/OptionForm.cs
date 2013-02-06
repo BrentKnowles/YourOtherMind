@@ -65,7 +65,7 @@ namespace appframe
 			if (container == null) {
 				throw new Exception("container object not defined in constructor!");
 			}
-			// TODO: Call save here?
+
 			container.Panel2.Controls.Clear ();
 			if ((sender as Button).Tag != null) {
 				iConfig panelInterface = (iConfig)(sender as Button).Tag;

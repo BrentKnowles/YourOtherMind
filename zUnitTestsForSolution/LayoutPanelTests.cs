@@ -30,7 +30,7 @@ namespace Testing
 		public void SpeedTest ()
 		{
 
-			// TODO: need to delete OLD table. THis is why speedtest fails when ran as part of a group
+
 
 
 			// this will be a benchmarking test that will create a complicated Layout

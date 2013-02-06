@@ -213,10 +213,8 @@ namespace CoreUtilities
 			{
 				form.TopMost = true;
 			}
-			form.SetupForButtons(buttons, buttonColor, bOkDefault);
-			form.SetupColors(formBackColor, captionColor, textColor, captionBackColor, textBackColor);
-			form.SetupFonts(captionFont, textFont);
-			form.SetupStrings(sCaption, sText);
+
+
 			if (sEditText != null)
 			{
 				form.userinput.Text = sEditText;
@@ -225,12 +223,19 @@ namespace CoreUtilities
 			if (bEdit == true)
 			{
 				form.userinput.Visible = true;
+				form.userinput.Dock = DockStyle.Top;
 				form.userinput.TabIndex = 0;
 				if (editsize > -1)
 				{
 					form.userinput.MaxLength = editsize;
 				}
 			}
+
+			form.SetupForButtons(buttons, buttonColor, bOkDefault);
+			form.SetupColors(formBackColor, captionColor, textColor, captionBackColor, textBackColor);
+			form.SetupFonts(captionFont, textFont);
+			form.SetupStrings(sCaption, sText);
+		
 			
 			// adjust image
 			if (image != null)

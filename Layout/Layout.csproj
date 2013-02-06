@@ -63,6 +63,15 @@
     <Compile Include="notetypes\timeline\TimelinePanel.cs" />
     <Compile Include="notetypes\timeline\newGenericDate.cs" />
     <Compile Include="notetypes\timeline\SmartPoint.cs" />
+    <Compile Include="FindBarStatusStrip.cs" />
+    <Compile Include="notetypes\groupems\groupem_scrollmaster.cs" />
+    <Compile Include="notetypes\groupems\ListViewColumnSorter.cs" />
+    <Compile Include="notetypes\NoteDataXML_GroupEm.cs" />
+    <Compile Include="c:\Users\BrentK\Documents\Projects\Utilities\yom2013B\Layout\notetypes\groupems\Storyboard.cs" />
+    <Compile Include="c:\Users\BrentK\Documents\Projects\Utilities\yom2013B\Layout\notetypes\groupems\Storyboard.Designer.cs" />
+    <Compile Include="RichText\RichTextExtended.cs" />
+    <Compile Include="RichText\iMarkupLanguage.cs" />
+    <Compile Include="RichText\MarkupLanguageNone.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
@@ -72,6 +81,8 @@
     <Folder Include="notetypes\" />
     <Folder Include="icons\" />
     <Folder Include="notetypes\timeline\" />
+    <Folder Include="notetypes\groupems\" />
+    <Folder Include="RichText\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\coreutilities\coreutilities2013.csproj">
@@ -139,6 +150,24 @@
     </EmbeddedResource>
     <EmbeddedResource Include="icons\television.png">
       <LogicalName>television.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\arrow_left.png">
+      <LogicalName>arrow_left.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\arrow_right.png">
+      <LogicalName>arrow_right.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\photo.png">
+      <LogicalName>photo.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\delete.png">
+      <LogicalName>delete.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\picture_go.png">
+      <LogicalName>picture_go.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\arrow_refresh.png">
+      <LogicalName>arrow_refresh.png</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
 </Project>

@@ -169,29 +169,7 @@ namespace Timeline
 			ZoomInPanelRules = new List<int>();
 			ZoomOutWidths = new List<int>();
 			ZoomOutDetails = new List<string>();
-			//
-			// TODO: Add constructor logic here
-			//
-			
-			// for now build a default calendar
-			/*	mZoomOutDetails = new string[]{"Jan", "Feb", "Mar", "Apr", "May", "June", "July", "Aug", "Sep", "Oct", "Nov", "Dec"};
-			mZoomInPanels = new int[]{31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
-			mZoomInPanelRules = new int[]{-1,29,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1};
-			mZoomOutWidths = new int[]{3,3,3,3,3,3,3,3,3,3,3,3};
-			nNumberOfZoomOutPanels = 12;
-			HasYears = true;
 
-			holidays = new holiday[2];
-
-			holidays[0].date = new NotePanelTimeline.newGenericDate(1, 11, 11);
-			holidays[0].nIcon = 1;
-			holidays[0].sText = "Remembrance Day";
-			holidays[0].sCaption = "Remembrance Day";
-
-			holidays[1].date = new NotePanelTimeline.newGenericDate(1, 12, 25);
-			holidays[1].nIcon = 1;
-			holidays[1].sText = "Christmas Day";
-			holidays[1].sCaption = "Christmas Day";*/
 			
 			
 		}

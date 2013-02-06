@@ -16,6 +16,8 @@ namespace Layout
 		public info_form (string infoText, string _GUID)
 		{
 
+			//this.Font = new Font(this.Font.FontFamily, 18.0f);
+
 			if (Constants.BLANK == _GUID) {
 				throw new Exception("GUID cannot be blank in info_form");
 			}

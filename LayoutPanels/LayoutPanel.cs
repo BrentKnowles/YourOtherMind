@@ -27,7 +27,7 @@ namespace Layout
 		public const string SYSTEM_STATUS = "list_status";
 		public const string SYSTEM_SUBTYPE = "list_subtypes";
 		public const string SYSTEM_KEYWORDS = "list_keywords";
-		public const string SYSTEM_LAYOUT ="system";
+	
 		#endregion
 		#region TEMPVARIABLES
 
@@ -56,7 +56,9 @@ namespace Layout
 			//Notes=null;
 			//this will cause TestMovingNotes to fail because a panel is removed? 
 			//lg.Instance.Line("LayoutPanel->Dispose", ProblemType.MESSAGE, "Called from " + new System.Diagnostics.StackFrame(1).GetMethod().Module.Name);
-			Notes.Dispose(); 
+			if (Notes != null) {
+				Notes.Dispose (); 
+			}
 			base.Dispose (disposing);
 		
 
@@ -694,7 +696,7 @@ namespace Layout
 					}
 			
 
-					SetSaveRequired (true); // TODO: Also need to go through and hook delegates/callbacks for when a note itself changes.
+					SetSaveRequired (true); 
 				} else {
 					lg.Instance.Line ("LayoutPanel.HandleAddNoteClick", ProblemType.ERROR, String.Format ("{0} Type not found", TypeTest.ToString ()));
 				}
@@ -874,7 +876,7 @@ namespace Layout
 
 
 		/// <summary>
-		/// HACK TEMP: Only for converting ol files
+		/// Only for converting ol files
 		/// </summary>
 		/// <param name='_GUID'>
 		/// _ GUI.
@@ -1285,6 +1287,9 @@ namespace Layout
 		/// </returns>
 		public override CoreUtilities.Links.LinkTable GetLinkTable ()
 		{
+
+
+
 			if (GetIsChild == false) {
 				return Notes.GetLinkTable ();
 

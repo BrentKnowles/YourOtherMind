@@ -125,6 +125,7 @@ namespace Layout
 			AddToList (typeof(NoteDataXML_Table),new NoteDataXML_Table().RegisterType());
 			AddToList(typeof(NoteDataXML_LinkNote), new NoteDataXML_LinkNote().RegisterType());
 			AddToList(typeof(NoteDataXML_Timeline), new NoteDataXML_Timeline().RegisterType());
+			AddToList(typeof(NoteDataXML_GroupEm), new NoteDataXML_GroupEm().RegisterType());
 		//	AddToList (typeof(NoteDataXML_SystemOnly),new NoteDataXML_SystemOnly().RegisterType());
 
 
@@ -324,6 +325,16 @@ namespace Layout
 				transactionsList = value;
 			}
 		}
+
+		/// <summary>
+		/// Focuses the on find bar. Ctrl +F
+		/// </summary>
+//		public void FocusOnFindBar ()
+//		{
+//			if (CurrentLayout != null) {
+//				CurrentLayout.FocusOnFindBar();
+//			}
+//		}
 	}
 }
 

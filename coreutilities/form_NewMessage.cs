@@ -431,7 +431,7 @@ namespace CoreUtilities
 			
 			// manually ensure that bOK is spaced far enough away from bCancel
 			bOk.Dock=DockStyle.Left;
-			//bOk.Left = bNo.Left - 5;// -(bOk.Width);
+			//bOk.Left = bNo.Left - 5;// -(bOk.Width); OK, Feb 2013 - we commented this out, using the Docking + Margin to accomplish spacing
 			bOk.Height = bNo.Height;
 			bOk.Top = bNo.Top;
 			
@@ -450,6 +450,7 @@ namespace CoreUtilities
 			bNo = setupButton(bNo, buttonColor, DockStyle.None);
 			
 			bOk.Text = "Yes";
+			bOk.Dock = DockStyle.Left;
 			bOk.DialogResult = DialogResult.Yes;
 			
 			bCancel.SendToBack(); // to make it align to the right
@@ -490,7 +491,7 @@ namespace CoreUtilities
 				break;
 			case MessageBoxButtons.OKCancel:
 			{
-				bOk = setupButton(bOk, buttonColor, DockStyle.None);
+				bOk = setupButton(bOk, buttonColor, DockStyle.Left);
 				bCancel = setupButton(bCancel, buttonColor, DockStyle.Right);
 				bCancel.SendToBack(); // to make it align to the right
 				

@@ -7,8 +7,34 @@ namespace Layout
 {
 	public abstract class LayoutPanelBase : Panel
 	{
+		public const string SYSTEM_LAYOUT ="system";
+
+
+		bool systemNote = false;
+
+		// set in NoteDataXML_SystemONy to true so I can use it to figure out if it deserves a findbar
+		public bool SystemNote {
+			get {
+				return systemNote;
+			}
+			set {
+				if (value == true)
+				{
+					//if (FindBar == null)
+					{
+						FindBar = new FindBarStatusStrip ();
+						FindBar.Dock = DockStyle.Bottom;
+						this.Controls.Add (FindBar);
+					}
+				}
+				systemNote = value;
+			}
+		}
+
 		public LayoutPanelBase ()
 		{
+		
+
 		}
 
 		#region delegates
@@ -16,6 +42,7 @@ namespace Layout
 		public Action<NoteDataXML_RichText> SetParentLayoutCurrentNote;
 		// set in NoteDataXML_Panel so that a child Layout will tell a higher level to save, if needed
 		public Action<bool> SetSubNoteSaveRequired = null;
+
 #endregion
 
 		#region variables
@@ -147,6 +174,9 @@ namespace Layout
 		{
 			return TextEditContextStrip;
 		}
+
+
+		protected FindBarStatusStrip FindBar=null;
 #endregion
 		public abstract void SaveLayout();
 		//public abstract  void LoadLayout(string GUID);
@@ -191,9 +221,9 @@ namespace Layout
 				//	NewMessage.Show (this.Parent.Name);
 				
 				Control looker = this.Parent;
-				while (layoutParent == null || layoutParent.GetIsChild == true)
+				while ( (layoutParent == null || layoutParent.GetIsChild == true) /*not sure&& (looker != null)*/)
 				{
-					if (looker is LayoutPanelBase)
+					if (looker is LayoutPanelBase )
 					{
 						layoutParent= (looker as LayoutPanelBase);
 
@@ -204,6 +234,8 @@ namespace Layout
 
 					}
 					// because we want to go all the way to the top we keep looking
+
+
 					looker = looker.Parent;
 				}
 				
@@ -212,6 +244,16 @@ namespace Layout
 			}
 			return layoutParent;
 			
+		}
+
+		/// <summary>
+		/// Focuses the on find bar.
+		/// </summary>
+		public void FocusOnFindBar ()
+		{
+			if (FindBar != null) {
+				FindBar.FocusOnSearchEdit();
+			}
 		}
 	}
 }

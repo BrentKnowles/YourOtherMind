@@ -33,7 +33,7 @@ namespace Layout
 		{
 			//Width = 500;
 			base.CreateParent (_Layout);
-
+		//	GetChildLayout().SystemNote = true;
 			CaptionLabel.Dock = System.Windows.Forms.DockStyle.Top;
 			//CaptionLabel.Visible = false;
 

@@ -56,11 +56,11 @@ namespace CoreUtilities.Links
 		}
 		
 		
-		
+
 		/// <summary>
 		/// Not a copy.
 		/// The real deal.
-		/// Linked to this from VirtualDesktop
+		/// Linked to this from LayoutDatabase CreateLinkTableIfNecessary
 		/// </summary>
 		/// <param name="table"></param>
 		public void SetTable(DataTable table)

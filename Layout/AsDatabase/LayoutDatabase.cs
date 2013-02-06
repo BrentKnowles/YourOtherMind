@@ -1028,7 +1028,7 @@ namespace Layout
 						BackgroundColor.ToArgb(), Blurb, ParentGuid});
 
 					} else {
-						//TODO: Still need to save all the object properties out. And existing data.
+
 
 						lg.Instance.Line ("LayoutDatabase.SaveTo", ProblemType.MESSAGE, "We are UPDATING existing Row." + LayoutGUID);
 						MyDatabase.UpdateSpecificColumnData (dbConstants.table_name, 
@@ -1271,7 +1271,7 @@ namespace Layout
 		}
 		public void Dispose ()
 		{
-			//TODO: Expensive debugging information, remove when done with
+			//NOTE: Expensive debugging information, remove when done with
 			bool f = false;
 			if (f == true) {
 				System.Diagnostics.StackFrame frame = new System.Diagnostics.StackFrame (1);
@@ -1290,7 +1290,9 @@ namespace Layout
 				                                                                                 LayoutGUID, this.dataForThisLayout.Count));
 			}
 			//NewMessage.Show (String.Format ("Dispose called for {0} with a list this long {1} ", LayoutGUID, this.dataForThisLayout.Count));
-			dataForThisLayout = null;
+			if (dataForThisLayout != null) {
+				dataForThisLayout = null;
+			}
 		}
 	}
 }

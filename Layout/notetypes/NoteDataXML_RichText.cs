@@ -7,7 +7,7 @@ namespace Layout
 	public class NoteDataXML_RichText : NoteDataXML
 	{
 		#region formcontrols
-		protected RichTextBox richBox ;
+		protected RichTextExtended richBox ;
 		#endregion
 		public override bool IsLinkable { get { return true; }}
 		protected override void CommonConstructorBehavior ()
@@ -75,7 +75,7 @@ namespace Layout
 		{
 			base.CreateParent (Layout);
 			CaptionLabel.Dock = DockStyle.Top;
-			richBox = new RichTextBox();
+			richBox = new RichTextExtended(new MarkupLanguageNone());
 			richBox.ContextMenuStrip = Layout.GetLayoutTextEditContextStrip();
 			richBox.Enter += HandleRichBoxEnter;
 			richBox.Parent = ParentNotePanel;
@@ -155,6 +155,12 @@ namespace Layout
 //			} else {
 //				return "no rich text box load";
 //			}
+		}
+		public override string GetStoryboardPreview {
+			get {
+				return this.Data1;
+			}
+
 		}
 	}
 }

@@ -276,7 +276,7 @@ namespace LayoutPanels
 				properties.DropDownOpening+= HandlePropertiesDropDownOpening;
 				
 				ToolStripButton Info = new ToolStripButton();
-				// TODO probalby temp, just debugging info for now
+
 				Info.Text = Loc.Instance.GetString ("Info"); 
 				Info.Click += HandleInfoClick;
 

@@ -306,7 +306,7 @@ namespace Layout
 		public string GetRandomTableResults ()
 		{
 
-			//TODO: figure out if new random table system will function like this
+			//
 			/*1. Called from own page
 			 *2. Called from other page
 			 *3. Called from the TablePanel itself, the 'preview function' [DONE]

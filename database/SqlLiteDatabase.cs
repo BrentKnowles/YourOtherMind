@@ -74,9 +74,7 @@ namespace database
 				string ColumnsAsText = ColumnArrayToColumnString_ForCreatingATable(Columns, Types);
 				// Define the SQL Create table statement
 				string createAppUserTableSQL = String.Format ("CREATE TABLE if not exists [{0}] ({1}, PRIMARY KEY ({2}))",Table, ColumnsAsText, PrimaryKeyField);
-/*			TODO: remove		"[name] TEXT NULL," +
-						"[username] TEXT  NULL" +
-						") "*/
+
 				lg.Instance.Line("SqLiteDatabase->CreateTableIfDoesNotExist", ProblemType.MESSAGE, createAppUserTableSQL);
 				
 				using (SQLiteTransaction sqlTransaction = sqliteCon.BeginTransaction())

@@ -223,8 +223,7 @@ namespace Layout
 			if ((sender as ComboBox).SelectedIndex == 1) {
 				// all notes
 				mode = Modes.LAYOUTS;
-				//TODO: The RIGHT way to do this woudl be subclasses.
-				// this is just a HACK to get up and running
+		
 				UpdateListOfLayouts ();
 
 

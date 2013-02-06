@@ -18,7 +18,7 @@ namespace CoreUtilities
 
 		#region const
 		// when to write out the log
-		// TODO: Log also needs to write when app closes
+
 		protected const int BUFFER_LINES=20; 
 		public const string LOG_FILE = "yom2013log.txt";
 		#endregion

@@ -105,7 +105,7 @@ namespace Layout
 
 			ToolStripButton MinimizeButton = new ToolStripButton ();
 			//MinimizeButton.Text = "--";
-			//TODO: Optimization: Should these images just be stored somewhere and retrieved?
+
 			MinimizeButton.Image = CoreUtilities.FileUtils.GetImage_ForDLL ("application_put.png");
 			MinimizeButton.ToolTipText = "Hides the note. Bring it back by using the List or a Tab";
 			MinimizeButton.Click += HandleMinimizeButtonClick;
@@ -210,16 +210,6 @@ namespace Layout
 
 
 
-			// Should be at the end
-//			ToolStripSeparator sep = new ToolStripSeparator ();
-//			sep.Width = 0;
-//			sep.BackColor = CaptionLabel.BackColor;
-//			sep.ForeColor = CaptionLabel.ForeColor;
-			//HACK for some reason labels inside of panels don't draw LAST toolstripitem on LOAD (on only on load!) 
-			// NOTE JAN 2013 this problem MAY have gone away
-			//CaptionLabel.Items.Add (sep);
-
-			//CaptionLabel.ContextMenuStrip = contextMenu;
 
 			PropertyPanel = new Panel();
 			PropertyPanel.Visible = false;
@@ -228,7 +218,6 @@ namespace Layout
 			PropertyPanel.Dock = DockStyle.Top;
 			PropertyPanel.AutoScroll = true;
 
-//			
 
 			Button CommitChanges = new Button();
 			CommitChanges.Text = Loc.Instance.Cat.GetString("Update Note");
@@ -419,12 +408,7 @@ namespace Layout
 			SetSaveRequired(true);
 		}
 
-		void HandlePropertyValueChanged (object s, PropertyValueChangedEventArgs e)
-		{
-	// TODO: Finish reomving this if I don't need it
 
-	
-		}
 
 		void HandlePropertiesClick (object sender, EventArgs e)
 		{
@@ -437,7 +421,7 @@ namespace Layout
 				propertyGrid = new PropertyGrid();
 				propertyGrid.SelectedObject = this;
 				
-				propertyGrid.PropertyValueChanged+= HandlePropertyValueChanged;
+			//	propertyGrid.PropertyValueChanged+= HandlePropertyValueChanged;
 				propertyGrid.Parent = PropertyPanel;
 				
 				propertyGrid.Dock = DockStyle.Fill;

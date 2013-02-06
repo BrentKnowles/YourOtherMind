@@ -96,6 +96,9 @@
     <EmbeddedResource Include="icons\yom.ico">
       <LogicalName>main.ico</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\bullet_black.png">
+      <LogicalName>bullet_black.png</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="icons\" />

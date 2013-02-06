@@ -68,7 +68,7 @@ namespace MefAddIns.Extensibility
 		Action<object, int> DelegateTargetForGetAfterRespondInformation{ get; set; }
 
 
-		// TODO: Remove me from this and PlugInBase -- ended up not being needed
+
 		// if QuickLink, then we set this to the ToolStriPButton we created
 		object QuickLinkMenuItem{ get; set; }
 		// any modifications or return values from the ADDIN, will be influneced by the TypeOfInformationSentBack field

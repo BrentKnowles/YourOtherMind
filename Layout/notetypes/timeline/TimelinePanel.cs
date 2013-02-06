@@ -123,7 +123,7 @@ namespace Timeline
 			startDate = new newGenericDate(MyTimeline.TimelineStartDate);
 			
 			//	defaultAppearance = Appearance.appearanceType.Classic;
-			// TODO: Add any initialization after the InitializeComponent call
+			// Add any initialization after the InitializeComponent call
 		}
 		
 		private Color zoomOutBackgroundColor;

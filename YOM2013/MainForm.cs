@@ -26,7 +26,7 @@ namespace YOM2013
 		#region gui
 		ToolStripMenuItem Windows;
 		ContextMenuStrip TextEditContextStrip;
-
+		Bitmap CurrentWindowIcon = CoreUtilities.FileUtils.GetImage_ForDLL("bullet_black.png");
 		#endregion
 		#region Layouts
 
@@ -349,6 +349,7 @@ namespace YOM2013
 /// </param>
 		public MainForm (string _path, Action<bool>ForceShutDownMethod, string storage, Icon mainIcon) : base (_path,ForceShutDownMethod,storage, mainIcon)
 		{
+			//this.Font = new Font(this.Font.FontFamily, 18.0f);
 
 			//Check for updates
 			string sparkupdatefile = "http://www.yourothermind.com/yomcast.xml";//update.applimit.com/netsparkle/versioninfo.xml
@@ -487,6 +488,15 @@ namespace YOM2013
 		void HandleFormClosing (object sender, FormClosingEventArgs e)
 		{
 			lg.Instance.Dispose();
+
+			if (false == LayoutDetails.Instance.ForceShutdown) {
+				TestAndSaveIfNecessary ();
+			} else {
+				// we DO NOT allow subforms to save in the situation where there might be corruption
+				NewMessage.Show ("Shutting down without saving due to file corruption");
+			;
+			}
+
 		}
 		public override void BuildAndProcessHotKeys (string Storage)
 		{
@@ -494,20 +504,36 @@ namespace YOM2013
 			Hotkeys.Add (new KeyData (Loc.Instance.GetString ("Save"), this.Save, Keys.Control, Keys.S, mainform, true, "saveguid"));
 			Hotkeys.Add (new KeyData(Loc.Instance.GetString ("Toggle View"), 	ToggleCurrentNoteMaximized, Keys.None,  Keys.F6,mainform, true, "toggleviewguid"));
 			Hotkeys.Add (new KeyData(Loc.Instance.GetString ("Bold"), 	Bold, Keys.Control,  Keys.B,mainform, true, "boldguid"));
-
+			Hotkeys.Add (new KeyData(Loc.Instance.GetString ("Find"), 	FindBarFocus, Keys.Control,  Keys.F,mainform, true, "findbarguid"));
 
 			// temporary to test the form thing
-			Hotkeys.Add (new KeyData(Loc.Instance.GetString ("test"),Test , Keys.Control, Keys.Q, "optionform", true, "testguid"));
+			//Hotkeys.Add (new KeyData(Loc.Instance.GetString ("test"),Test , Keys.Control, Keys.Q, "optionform", true, "testguid"));
 			base.BuildAndProcessHotKeys(Storage);
 		}
-public void Test(bool b)
-			             {
-				NewMessage.Show ("should only appear on optionform with Control Q");
-			}
 
-		//TODO: do properly, just got this in to test hotkeys acting on a textbox
+		void FindBarFocus (bool obj)
+		{
+			if (LayoutDetails.Instance.CurrentLayout != null) {
+				//LayoutDetails.Instance.FocusOnFindBar();
+				foreach (LayoutsInMemory memory in LayoutsOpen) {
+					if (memory.GUID == LayoutDetails.Instance.CurrentLayout.GUID) {
+						memory.Container.GetChildLayout().FocusOnFindBar();
+					}
+				}
+			}
+		}
+
+		public void Test(bool b)
+     	{
+			NewMessage.Show ("should only appear on optionform with Control Q");
+		}
+
+
 		public void Bold (bool b)
 		{
+
+			//TODO: do properly, just got this in to test hotkeys acting on a textbox
+			// WHEN: I do this, I want a FormatBar class or something
 			if (LayoutDetails.Instance.CurrentLayout != null) {
 				if (LayoutDetails.Instance.CurrentLayout.CurrentTextNote != null)
 				{
@@ -805,6 +831,7 @@ public void Test(bool b)
 			LayoutPanel newLayout =  new Layout.LayoutPanel (CoreUtilities.Constants.BLANK, false);
 			newLayout.BorderStyle = BorderStyle.Fixed3D;
 			newLayout.Parent = MDIHOST.ParentNotePanel;
+			newLayout.SystemNote = true;
 			newLayout.Visible = true;
 			newLayout.Dock = System.Windows.Forms.DockStyle.Fill;
 			// this is necessary else we lose one of the toolbars
@@ -963,6 +990,16 @@ public void Test(bool b)
 				button.Tag = layoutstruct;
 				button.Click+= HandleRefreshWindowsMenuClick;
 				Windows.DropDownItems.Add(button);
+
+				if (LayoutDetails.Instance.CurrentLayout == layoutstruct.LayoutPanel)
+				{
+					button.Image = CurrentWindowIcon;
+
+
+					button.DisplayStyle = ToolStripItemDisplayStyle.ImageAndText;
+					//button.ImageAlign = ContentAlignment.MiddleRight;
+					button.TextImageRelation = TextImageRelation.TextBeforeImage;
+				}
 			}
 			/*MainMenu.MaximumSize = new System.Drawing.Size(0,0);
 			MainMenu.Width = 200;
@@ -1073,14 +1110,8 @@ public void Test(bool b)
 		void HandleFormClosed (object sender, FormClosedEventArgs e)
 		{
 		
+		//	Application.Exit ();
 
-			if (false == LayoutDetails.Instance.ForceShutdown) {
-				TestAndSaveIfNecessary ();
-			} else {
-				// we DO NOT allow subforms to save in the situation where there might be corruption
-				NewMessage.Show ("Shutting down without saving due to file corruption");
-			}
-			Application.Exit ();
 		}
 		protected override object GetInformationForAddInBeforeRun (int getinfo)
 		{
