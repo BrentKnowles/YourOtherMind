@@ -71,6 +71,7 @@
     <Compile Include="ClassesUsedInTesting\Fake_MasterOfLayouts.cs" />
     <Compile Include="TimelineTest.cs" />
     <Compile Include="EventTableTests.cs" />
+    <Compile Include="StoryboardTesting.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

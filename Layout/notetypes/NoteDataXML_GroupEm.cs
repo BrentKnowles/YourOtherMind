@@ -9,9 +9,26 @@ namespace Layout
 	{
 		#region properties xml
 	
+		bool factmode = false;
+		/// <summary>
+		/// Gets or sets a value indicating whether this <see cref="Layout.NoteDataXML_GroupEm"/> is factmode.
+		/// 
+		/// This is used to hide some gui elements when using this Storyboard for Facts Or Search
+		/// </summary>
+		/// <value>
+		/// <c>true</c> if factmode; otherwise, <c>false</c>.
+		/// </value>
+		public bool Factmode {
+			get {
+				return factmode;
+			}
+			set {
+				factmode = value;
+			}
+		}
 
 		View viewStyle = View.SmallIcon;
-		View ViewStyle {
+		public View ViewStyle {
 			get{ return viewStyle;}
 			set{viewStyle = value;}
 		}
@@ -60,29 +77,12 @@ namespace Layout
 			StoryBoard.BringToFront();
 		
 
-			// may 16 2012
-//			if (appearance != null)
-//			{
-//				if (appearance.FactMode == true)
-//				{
-//					((NotePanelStoryboard)note).groupEms1.FactMode(true);
-//				}
-//			}
+		
+			StoryBoard.FactMode(this.Factmode);
 //			
-			//StoryBoard.linkTable = Links; Try not to use it, don't know if its essential no more
 //			//moved to end to handle refersh issues
 			StoryBoard.Source = this.GuidForNote;//((NotePanelStoryboard)note).groupEms1.Source = note.appearance.GUID;
-//			
-//			//Januar 2012
-//			if (true == NEW_LINKS_TMP)
-//			{
-//				if (false == bFormLoad)
-//				{
-			//Storyboard.StickyTable = ;//((NotePanelStoryboard)note).groupEms1.StickyTable = new GroupEm.StickyLinkTable();
-//					
-//					((NotePanelStoryboard)note).groupEms1.StickyTable.SetTable(_table);
-//				}
-//			}
+
 			// We do not need to call the SetTable function because this is handled when a table isc reated
 			StoryBoard.StickyTable = this.Layout.GetLinkTable();
 			StoryBoard.NeedSave += HandleNeedSave;
@@ -101,41 +101,92 @@ namespace Layout
 			StoryBoard.GetNoteForGroupEmPreview += HandleGetNoteForGroupEmPreview;
 
 			StoryBoard.ShowToolbar = true;
-
+			StoryBoard.AddItemFromMenu += HandleAddItemFromMenu;
+			StoryBoard.ClickItem += HandleStoryBoardClickItem;
 			StoryBoard.InitializeGroupEmFromExternal();
-//			((NotePanelStoryboard)note).groupEms1.ClickItem += new GroupEm.groupEms.CustomEventHandler(groupEms1_ClickItem);
-//			((NotePanelStoryboard)note).groupEms1.AddItemFromMenu += new GroupEm.groupEms.CustomEventHandler(groupEms1_AddItemFromMenu);
-//			((NotePanelStoryboard)note).groupEms1.PrintSelected += new GroupEm.groupEms.CustomEventHandler(groupEms1_PrintSelected); REMOVE
 
-//			((NotePanelStoryboard)note).groupEms1.ExportSelected += new GroupEm.groupEms.CustomEventHandler(groupEms1_ExportSelected);
+			// will not add these unless I NEED them (I'm assuming some of this is for selecting things?
 //			((NotePanelStoryboard)note).groupEms1.DragNote += new GroupEm.groupEms.CustomEventHandler2(groupEms1_DragNote);
-//			
-//			
-//			
 //			((NotePanelStoryboard)note).groupEms1.listView.MouseDown += new MouseEventHandler(listView_MouseDown);
 //			((NotePanelStoryboard)note).groupEms1.listView.onScroll += new ScrollEventHandler(listView_onScroll);
+//     ((NotePanelStoryboard)note).groupEms1.listView.MouseDown += findBar_MouseDown;
 //			
-//			//     ((NotePanelStoryboard)note).groupEms1.listView.MouseDown += findBar_MouseDown;
-//			
-//			// load settings
-//			
-//		}
-//		
-//		
-//		
-//		
-//		
-//		SetTooltip(note.appearance);
-//		
-//		// only add to the index if NOT a system panel
-//		if (note.Tag.ToString() != IGNORE_ME_TAG && false == bFormLoad)
-//		{
-//			string sCaption2 = note.appearance.CaptionGenerated;
-//			if (sCaption2 == "") sCaption2 = "Note";
-//			
-//			notes.AddNoteToList(sCaption2, note.appearance.GUID, note.appearance.ShapeType.ToString());
-//			UpdateTabs();
 
+		}
+		/// <summary>
+		/// Handles the story board click item. Goes to the note
+		/// </summary>
+		/// <param name='sender'>
+		/// Sender.
+		/// </param>
+		string HandleStoryBoardClickItem (object sender)
+		{
+			CoreUtilities.Links.LinkTableRecord record = (CoreUtilities.Links.LinkTableRecord)sender;
+			if (record != null) {
+
+				//LayoutDetails.Instance.LoadLayout(Layout.GUID, record.sFileName);
+//				NoteDataInterface note = Layout.FindNoteByGuid(record.sFileName);
+//				if (note != null)
+//				{
+//					Layout.GoToNote(note);
+//				}
+				Layout.GetNoteOnSameLayout(record.sFileName, true);
+			}
+			return "";
+		}
+
+		string HandleAddItemFromMenu (object sender)
+		{
+
+			// Feb 2013 - Difference between this and old version will be that
+			// instead of storing the data in different ways for different types
+			// we keep it simple.
+
+			// We store only the GUIDs.
+			// The Display and Open Note (DoubleClick) functions, will have to handle the logic of figuring
+			//  out what to do with the GUID -- i.e., showing a picture instead of text
+			// CORRECTION: I stuck with the original way of storing the data to not invalidate old data
+
+			// so simply we need to extract a CAPTION and GUID and we are off
+			System.Collections.Generic.List<NoteDataInterface> ListOfNotes = new System.Collections.Generic.List<NoteDataInterface>();
+
+			ListOfNotes.AddRange(Layout.GetAllNotes().ToArray (typeof(NoteDataInterface)) as NoteDataInterface[]);
+			ListOfNotes.Sort ();
+			LinkPickerForm linkpicker = new LinkPickerForm (LayoutDetails.Instance.MainFormIcon ,ListOfNotes);
+
+								
+
+			DialogResult result = linkpicker.ShowDialog ();
+			if (result == DialogResult.OK) {
+				
+			
+				if (linkpicker.GetNote != null)
+				{
+
+					string sCaption = Constants.BLANK;
+					string sValue = Constants.BLANK;
+					int type = 0;
+					linkpicker.GetNote.GetStoryboardData(out sCaption, out sValue, out type);
+				
+					StoryBoard.AddItem (sCaption, sValue, type);
+				StoryBoard.InitializeGroupEmFromExternal();
+				}
+
+//				if (tempPanel != null) {
+//					// testing if a picture
+//					if (tempPanel.appearance.ShapeType == Appearance.shapetype.Picture) {
+//						string sFile = tempPanel.appearance.File;
+//						(sender as GroupEm.groupEms).AddItem (sText, sFile, 1);
+//					} else {
+//						// may 2010 -- tring to get the normal name not the fancy caption
+//						
+//						// add as link
+//						(sender as GroupEm.groupEms).AddItem (tempPanel.appearance.Caption, sValue, 0);
+//					}
+//					
+//				}
+			}
+			return "";
 		}
 
 		/// <summary>
@@ -154,14 +205,15 @@ namespace Layout
 				LayoutPanelBase SuperParent = null;
 				if (Layout.GetIsChild == true) SuperParent = Layout.GetAbsoluteParent (); else SuperParent = Layout;
 
-				NoteDataInterface note = SuperParent.FindNoteByGuid(sGUID);
-
+				NoteDataInterface note = SuperParent.GetNoteOnSameLayout(sGUID, false);
+				//NoteDataInterface note = SuperParent.FindNoteByGuid(sGUID);
 
 				if (note != null)
 				{
 					if (note is NoteDataXML_LinkNote)
 					{
-						sResult = "setup link stuff";
+						// because the text is stored this should just work
+						sResult =note.GetStoryboardPreview;
 //						if (File.Exists(panel.appearance.File) == true)
 //						{
 //							

@@ -139,6 +139,11 @@ namespace LayoutPanels
 			lg.Instance.Line("NoteDataXML_Panel->FindSubpanelNote", ProblemType.MESSAGE, String.Format ("Searching {0} for subnotes", this.Caption),Loud.CTRIVIAL); 
 			return panelLayout.FindSubpanelNote(note);
 		}
+
+		public void ClearDrag()
+		{
+			panelLayout.ClearDrag();
+		}
 	}
 }
 

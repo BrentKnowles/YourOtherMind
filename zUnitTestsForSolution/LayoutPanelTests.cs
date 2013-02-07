@@ -371,6 +371,12 @@ namespace Testing
 			panel.SaveLayout();
 
 
+			FAKE_NoteDataXML_Panel DiversionPanel = new FAKE_NoteDataXML_Panel();
+			DiversionPanel.Caption ="WeAdd this to make the FindFail later by having an empty layout that sends buggy searches down the wrong corridor";
+			panel.AddNote(DiversionPanel);
+			DiversionPanel.CreateParent(panel);
+
+
 			FAKE_NoteDataXML_Panel panelA = new FAKE_NoteDataXML_Panel();
 			panelA.Caption = "PanelA";
 			panel.AddNote(panelA);
@@ -387,20 +393,29 @@ namespace Testing
 
 			NoteDataInterface finder = null;
 			finder = panel.FindNoteByGuid("thisguid1");
-			Assert.NotNull(finder);
+			Assert.NotNull(finder.ParentNotePanel);
 			_w.output("C: " +finder.Caption);
 			Assert.AreEqual(finder.Caption, "note1");
-
+			Assert.NotNull (finder.ParentNotePanel );
 			finder = null;
+
+			// this note is on a subpanel
 			finder = panel.FindNoteByGuid("thisguid2");
 
 			Assert.NotNull(finder);
 			Assert.AreEqual (finder.Caption,"note2");
 
-			panel.GoToNote(finder);
-
+			finder= panel.GoToNote(finder);
+			// added this February 2013 because this code stopped finding notes within subpanels for some reason
+			Assert.NotNull(finder.ParentNotePanel);
 			// find notes inside of notes with the GUI code and such
 		
+			// now test the fast search function
+			NoteDataInterface foundNote2 = panel.GetNoteOnSameLayout(finder.GuidForNote, false);
+			Assert.NotNull (foundNote2);
+
+			Assert.AreEqual (finder.GuidForNote, foundNote2.GuidForNote);
+			Assert.NotNull (foundNote2.ParentNotePanel);
 		}
 		[Test]
 		public void SetCurrentTextNoteAndDetectThisInParentLayouts()

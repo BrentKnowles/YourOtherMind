@@ -201,6 +201,18 @@ namespace Layout
 #endregion;
 
 		#region methods
+
+		public virtual void GetStoryboardData (out string sCaption, out string sValue, out int type)
+		{
+			sCaption = Caption;
+			sValue = this.GuidForNote;
+			type = 0;
+		}
+		// For link notes
+		public virtual string GetLinkData ()
+		{
+			return Constants.BLANK;
+		}
 		public override string ToString ()
 		{
 			return string.Format ("[NoteDataXML: defaultHeight={0}, defaultWidth={1}, IsSystemNote={2}, Visible={3}, ParentNotePanel={4}, ReadOnly={5}, Dock={6}, GuidForNote={7}, Caption={8}, Height={9}, Width={10}, Location={11}, Data1={12}, IsPanel={13}, IsLinkable={14}, SetSaveRequired={15}]", defaultHeight, defaultWidth, IsSystemNote, Visible, ParentNotePanel, ReadOnly, Dock, GuidForNote, Caption, Height, Width, Location, Data1, IsPanel, IsLinkable, SetSaveRequired);

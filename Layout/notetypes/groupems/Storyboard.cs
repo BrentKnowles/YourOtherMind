@@ -875,13 +875,13 @@ namespace Storyboards
       /// </summary>
       /// <param name="sender"></param>
       /// <param name="e"></param>
-        private void listView_Click(object sender, EventArgs e)
-        {
-            if (listView.SelectedItems.Count > 0 && listView.SelectedItems[0] != null)
-            {
-                OnSingleClickItem((LinkTableRecord)listView.SelectedItems[0].Tag);
-            }
-        }
+//        private void listView_Click(object sender, EventArgs e)
+//        {
+//            if (listView.SelectedItems.Count > 0 && listView.SelectedItems[0] != null)
+//            {
+//                OnSingleClickItem((LinkTableRecord)listView.SelectedItems[0].Tag);
+//            }
+//        }
 
         /// <summary>
         ///  on double click we will generaly open the item
@@ -1341,7 +1341,7 @@ namespace Storyboards
 
         // custom events
         public virtual event CustomEventHandler ClickItem;
-        public virtual event CustomEventHandler SingleClickItem;
+      //  public virtual event CustomEventHandler SingleClickItem;
         public virtual event CustomEventHandler NeedSave;
         public virtual event CustomEventHandler AddItemFromMenu;
         public virtual event CustomEventHandler PrintSelected;
@@ -1387,15 +1387,15 @@ namespace Storyboards
         /// </summary>
         /// <param name="oSender"></param>
         /// <returns></returns>
-        public string OnSingleClickItem(object oSender)
-        {
-            if (SingleClickItem != null)
-            {
-                return SingleClickItem(oSender);
-            }
-
-            return null;
-        }
+//        public string OnSingleClickItem(object oSender)
+//        {
+//            if (SingleClickItem != null)
+//            {
+//                return SingleClickItem(oSender);
+//            }
+//
+//            return null;
+//        }
 
         /// <summary>
         /// Clean up the interface after the delete

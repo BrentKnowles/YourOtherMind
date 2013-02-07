@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using CoreUtilities;
 using System.Windows.Forms;
+using System.Drawing;
 using Transactions;
 
 namespace Layout
@@ -14,6 +15,9 @@ namespace Layout
 		#region variables
 		protected static volatile LayoutDetails instance;
 		protected static object syncRoot = new Object();
+
+		// set in main constructor
+		public Icon MainFormIcon = null;
 
 		// used when needing random numbers
 		public Random RandomNumbers;

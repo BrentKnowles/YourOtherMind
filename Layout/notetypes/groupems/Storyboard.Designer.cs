@@ -33,8 +33,8 @@ namespace Storyboards
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.addItemToListToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.editCaptionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.printSelectedToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.exportSelectedToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+     //       this.printSelectedToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+     //       this.exportSelectedToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.deleteItemToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.stretchToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -68,8 +68,8 @@ namespace Storyboards
             this.contextMenuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.addItemToListToolStripMenuItem,
             this.editCaptionToolStripMenuItem,
-            this.printSelectedToolStripMenuItem,
-            this.exportSelectedToolStripMenuItem,
+         //   this.printSelectedToolStripMenuItem,
+         //   this.exportSelectedToolStripMenuItem,
             this.deleteItemToolStripMenuItem,
             this.toolStripSeparator3,
             this.stretchToolStripMenuItem,
@@ -96,17 +96,17 @@ namespace Storyboards
             // 
             // printSelectedToolStripMenuItem
             // 
-            this.printSelectedToolStripMenuItem.Name = "printSelectedToolStripMenuItem";
-            this.printSelectedToolStripMenuItem.Size = new System.Drawing.Size(170, 22);
-            this.printSelectedToolStripMenuItem.Text = "Print Selected";
-            this.printSelectedToolStripMenuItem.Click += new System.EventHandler(this.printSelectedToolStripMenuItem_Click);
-            // 
-            // exportSelectedToolStripMenuItem
-            // 
-            this.exportSelectedToolStripMenuItem.Name = "exportSelectedToolStripMenuItem";
-            this.exportSelectedToolStripMenuItem.Size = new System.Drawing.Size(170, 22);
-            this.exportSelectedToolStripMenuItem.Text = "Export Selected";
-            this.exportSelectedToolStripMenuItem.Click += new System.EventHandler(this.exportSelectedToolStripMenuItem_Click);
+//            this.printSelectedToolStripMenuItem.Name = "printSelectedToolStripMenuItem";
+//            this.printSelectedToolStripMenuItem.Size = new System.Drawing.Size(170, 22);
+//            this.printSelectedToolStripMenuItem.Text = "Print Selected";
+//            this.printSelectedToolStripMenuItem.Click += new System.EventHandler(this.printSelectedToolStripMenuItem_Click);
+//            // 
+//            // exportSelectedToolStripMenuItem
+//            // 
+//            this.exportSelectedToolStripMenuItem.Name = "exportSelectedToolStripMenuItem";
+//            this.exportSelectedToolStripMenuItem.Size = new System.Drawing.Size(170, 22);
+//            this.exportSelectedToolStripMenuItem.Text = "Export Selected";
+//            this.exportSelectedToolStripMenuItem.Click += new System.EventHandler(this.exportSelectedToolStripMenuItem_Click);
             // 
             // deleteItemToolStripMenuItem
             // 
@@ -141,13 +141,17 @@ namespace Storyboards
             // 
             // imageListLarge FEB 2013 - As part of convesrion process I do not actually Think we need these default imagelists setup.
             // 
+
+			this.imageListLarge.Images.Add (CoreUtilities.FileUtils.GetImage_ForDLL ("photo.png"));
+			this.imageListLarge.Images.SetKeyName(0, "photo.png");
 //            this.imageListLarge.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("imageListLarge.ImageStream")));
 //            this.imageListLarge.TransparentColor = System.Drawing.Color.Transparent;
 //            this.imageListLarge.Images.SetKeyName(0, "text_align_center.png");
 //            // 
 //            // imageList
 //            // 
-//            this.imageList.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("imageList.ImageStream")));
+			this.imageList.Images.Add(CoreUtilities.FileUtils.GetImage_ForDLL ("photo.png"));
+			this.imageList.Images.SetKeyName(0,"photo.png");
 //            this.imageList.TransparentColor = System.Drawing.Color.Transparent;
 //            this.imageList.Images.SetKeyName(0, "text_align_center.png");
             // 
@@ -286,7 +290,7 @@ namespace Storyboards
             // 
             // listView
             // 
-            this.listView.AllowDrop = true;
+            this.listView.AllowDrop = false;
             this.listView.ContextMenuStrip = this.contextMenuStrip1;
             this.listView.Dock = System.Windows.Forms.DockStyle.Fill;
             this.listView.FullRowSelect = true;
@@ -310,7 +314,7 @@ namespace Storyboards
             this.listView.ColumnClick += new System.Windows.Forms.ColumnClickEventHandler(this.listView_ColumnClick);
             this.listView.DragEnter += new System.Windows.Forms.DragEventHandler(this.listView_DragEnter);
             this.listView.onScroll += new System.Windows.Forms.ScrollEventHandler(this.listView_onScroll);
-            this.listView.Click += new System.EventHandler(this.listView_Click);
+         //   this.listView.Click += new System.EventHandler(this.listView_Click);
             // 
             // groupEms
             // 
@@ -353,8 +357,8 @@ namespace Storyboards
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
         private System.Windows.Forms.ToolStripMenuItem editCaptionToolStripMenuItem;
         private System.Windows.Forms.ToolStripButton bDeleteItem;
-        private System.Windows.Forms.ToolStripMenuItem printSelectedToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem exportSelectedToolStripMenuItem;
+      //  private System.Windows.Forms.ToolStripMenuItem printSelectedToolStripMenuItem;
+       // private System.Windows.Forms.ToolStripMenuItem exportSelectedToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem addItemToListToolStripMenuItem;
         private System.Windows.Forms.ToolStripButton bRefresh;
         private System.Windows.Forms.ToolStripMenuItem deleteItemToolStripMenuItem;

@@ -2,6 +2,8 @@ using System;
 using CoreUtilities;
 using CoreUtilities.Links;
 using System.Windows.Forms;
+using System.Drawing;
+using System.IO;
 
 namespace Layout
 {
@@ -23,7 +25,9 @@ namespace Layout
 			set { layoutGuid = value;}
 		}
 		#endregion
-
+		#region gui
+		PictureBox Pic = null;
+		#endregion
 
 		public override bool IsLinkable { get { return false; }}
 		public NoteDataXML_LinkNote () :base()
@@ -84,7 +88,8 @@ namespace Layout
 						{
 							if (true == note.IsLinkable)
 							{
-								this.richBox.Rtf = note.ToString();
+									SetData (note);
+								
 							}
 						}
 						else
@@ -131,6 +136,66 @@ namespace Layout
 			GoToLayout.BringToFront();
 			richBox.BringToFront();
 		}
+		public override void GetStoryboardData (out string sCaption, out string sValue, out int type)
+		{
+			base.GetStoryboardData (out sCaption, out sValue, out type);
+			
+			// the base is great for text notes BUT we have to modify this if we have an image happening
+			if (Pic != null) {
+				if (Pic.Image != null && Pic.Image.Tag != null)
+				{
+					sValue = Pic.Image.Tag.ToString ();
+					type = 1;
+				}
+			}
+		}
+		/// <summary>
+		/// Sets the data. Called from CreateParent
+		/// </summary>
+		/// <param name='note'>
+		/// Note.
+		/// </param>
+		private void SetData(NoteDataInterface note)
+		{
+			string link = note.GetLinkData();
+			if (General.IsGraphicFile(link))
+			{
+				// A linknote will not benefit from the smart file finding that a NotePicture might do in tracking down a missing file
+				if (File.Exists (link) == true)
+				{
+				
+				if (null == Pic)
+				{
+					Pic = new PictureBox();
+						ParentNotePanel.Controls.Add (Pic);
+						Pic.SizeMode = PictureBoxSizeMode.StretchImage;
+					
+				}
+					Pic.Dock = DockStyle.Fill;
+					Pic.Visible = true;
+					richBox.Visible = false;
+
+					Pic.Image = Image.FromFile (link);
+					// we store this for use when a storyboard wants to link to a linked iamge
+					Pic.Image.Tag = link;
+				}
+				else
+				{
+					this.richBox.Text= Loc.Instance.GetStringFmt("The file {0} does not exist. If the original note displays correctly it might be that the file is not actually in the location set. Doublecheck.", link);
+				}
+			}
+			else
+			{
+				if (Pic != null)
+				{
+					Pic.Visible = false;
+					Pic.Image.Tag = null;
+					Pic.Image.Dispose();
+					richBox.Visible = true;
+				}
+				this.richBox.Rtf = link;
+			}
+		}
 
 		void HandleGoToLayoutClick (object sender, EventArgs e)
 		{
@@ -159,6 +224,9 @@ namespace Layout
 				SetLink(link);
 			}
 		}
+
+
+
 		// sFile comes in the format of parent.child
 		public virtual void SetLink (string file)
 		{
@@ -187,7 +255,10 @@ namespace Layout
 			// force a save else table might not be made correctly
 			Layout.SaveLayout();
 			Update(Layout);
+			BringToFrontAndShow();
 		}
+
+	
 		/// <summary>
 		/// Gets the link. Returns it in the format 
 		/// ParentLayout.ChildNote

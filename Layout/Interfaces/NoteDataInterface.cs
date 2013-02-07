@@ -8,6 +8,7 @@ namespace Layout
 	public interface NoteDataInterface
 	{
 		#region variables
+#endregion
 		#region UserSet
 		string Caption {get; set;}
 		Point Location {get; set;}
@@ -38,7 +39,10 @@ namespace Layout
 		System.Collections.ArrayList   GetChildNotes();
 		string GetStoryboardPreview{get;}
 		#endregion
-		#endregion
+
+		void GetStoryboardData (out string sCaption, out string sValue, out int type);
+
+		string GetLinkData ();
 
 
 

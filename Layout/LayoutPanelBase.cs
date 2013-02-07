@@ -196,7 +196,8 @@ namespace Layout
 		public abstract System.Collections.ArrayList GetAllNotes();
 		public abstract NoteDataInterface FindNoteByName(string name);
 		public abstract NoteDataInterface FindNoteByGuid (string guid);
-		public abstract void GoToNote(NoteDataInterface note);
+		public abstract NoteDataInterface GoToNote(NoteDataInterface note);
+		public abstract  NoteDataInterface GetNoteOnSameLayout(string GUID, bool GoTo);
 		public abstract NoteDataInterface FindSubpanelNote (NoteDataInterface note);
 		public abstract void SetCurrentTextNote (NoteDataXML_RichText note);
 		public abstract List<string> GetListOfStringsFromSystemTable (string tableName, int Column, string filter);

@@ -350,7 +350,7 @@ namespace YOM2013
 		public MainForm (string _path, Action<bool>ForceShutDownMethod, string storage, Icon mainIcon) : base (_path,ForceShutDownMethod,storage, mainIcon)
 		{
 			//this.Font = new Font(this.Font.FontFamily, 18.0f);
-
+			LayoutDetails.Instance.MainFormIcon = mainIcon;
 			//Check for updates
 			string sparkupdatefile = "http://www.yourothermind.com/yomcast.xml";//update.applimit.com/netsparkle/versioninfo.xml
 			try {
@@ -576,8 +576,10 @@ namespace YOM2013
 		/// </param>
 		void HandleMessagesOnFooterDoubleClick (object sender, EventArgs e)
 		{
+			lg.Instance.WriteLog();
 			string logfile = System.IO.Path.Combine (Environment.CurrentDirectory, lg.LOG_FILE);
 			if (File.Exists (logfile)) {
+
 				CoreUtilities.General.OpenDocument(logfile,"");
 			}
 		}

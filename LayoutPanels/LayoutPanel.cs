@@ -1214,6 +1214,8 @@ namespace Layout
 		/// This is called after a FindByGuid or FindByName when we want the actual
 		/// note with its interface (which those do not return).
 		/// 
+		/// NOTE (Feb 2013) - This will be called by a couple different routes. A combination of FindNoteBy and the more explicit GoToNoteOnSameLayout
+		/// 
 		/// This will call down the panel chain, looking for the note
 		/// </summary>
 		/// <param name='note'>
@@ -1236,7 +1238,14 @@ namespace Layout
 					if (foundNote is NoteDataXML_Panel) {
 						// do this search inside this
 						note = (foundNote as NoteDataXML_Panel).FindSubpanelNote (note);
+						// february 2013 - error is that we are returning early, and not 'finding' a note
+						// the entire point of this to return a Note with a GUI (for in-layout operations)
+						// so we test to make sure we actually have found something valid before returning!
+						// i.e., going down the 'wrong panel' early, aborts the actual search prematurely
+						if (note.ParentNotePanel != null)
+						{
 						return note;
+						}
 
 					}
 				}
@@ -1244,27 +1253,8 @@ namespace Layout
 
 			return note;
 		}
-
-		/// <summary>
-		/// Will BRINGTOFRONT the indicated note and make it flash
-		/// </summary>
-		/// <param name='note'>
-		/// Note.
-		/// </param>
-		public override void GoToNote (NoteDataInterface note)
+		private void ShowAndFlash(NoteDataInterface note)
 		{
-
-
-			// at this point if the note does not have a parent (because it is a subnote and this is not instantiated when 
-			// searching
-			// then we need to search for it, to find it
-			if (note.ParentNotePanel == null && this.Controls != null && this.Controls.Count > 0) {
-				note = FindSubpanelNote(note);
-
-			
-			}
-				
-
 			if (note.ParentNotePanel != null) {
 				// if we ever go to a note we make it visisble
 				note.Visible = true;
@@ -1275,7 +1265,72 @@ namespace Layout
 			}
 		}
 
+		/// <summary>
+		/// Will BRINGTOFRONT the indicated note and make it flash.
+		/// 
+		/// We return the note mostly for testing purposes
+		/// </summary>
+		/// <param name='note'>
+		/// Note.
+		/// </param>
+		public override NoteDataInterface GoToNote (NoteDataInterface note)
+		{
+			note = GetNote (note);
+			ShowAndFlash(note);
+			return note;
+//			// at this point if the note does not have a parent (because it is a subnote and this is not instantiated when 
+//			// searching
+//			// then we need to search for it, to find it
+//			if (note.ParentNotePanel == null && this.Controls != null && this.Controls.Count > 0) {
+//				note = FindSubpanelNote(note);
+//
+//			
+//			}
+//				
+//
+//			if (note.ParentNotePanel != null) {
+//				// if we ever go to a note we make it visisble
+//				note.Visible = true;
+//				note.BringToFrontAndShow ();
+//				note.Flash ();
+//			} else {
+//				lg.Instance.Line("LayoutPanel->GoToNote", ProblemType.MESSAGE, "Even with advanced search we did not find note");
+//			}
+//			return note;
+		}
 
+		private NoteDataInterface GetNote (NoteDataInterface note)
+		{
+			// at this point if the note does not have a parent (because it is a subnote and this is not instantiated when 
+			// searching
+			// then we need to search for it, to find it
+			if (note.ParentNotePanel == null && this.Controls != null && this.Controls.Count > 0) {
+				note = FindSubpanelNote(note);
+				
+				
+			}
+			
+			
+
+			return note;
+		}
+
+
+		/// <summary>
+		/// Similiar to GoToNote but faster, skipping the FindNoteByGUID, and doing it as part of this search
+		/// </summary>
+		/// <param name='GUID'>
+		/// GUI.
+		/// </param>
+		public override NoteDataInterface GetNoteOnSameLayout(string GUID, bool GoTo)
+		{
+			// we make a fake note, knowing we'll find the real deal
+			NoteDataInterface fakeNote = new NoteDataXML();
+			fakeNote.GuidForNote = GUID;
+			fakeNote = GetNote (fakeNote);
+			if (GoTo) ShowAndFlash(fakeNote);
+			return fakeNote;
+		}
 
 		/// <summary>
 		/// Gets the link table.
@@ -1371,6 +1426,18 @@ namespace Layout
 
 
 			// not turn off drag on every note
+
+			foreach (Control control in noteCanvas.Controls) {
+				if (control is NotePanel)
+				{
+					((NotePanel)control).GetChild().EndDrag();
+					if (((NotePanel)control).GetChild() is NoteDataXML_Panel)
+					{
+						((NoteDataXML_Panel)((NotePanel)control).GetChild()).ClearDrag();
+					}
+				}
+			}
+
 			foreach (NoteDataInterface note in Notes.GetAllNotes()) {
 				note.EndDrag();
 			}

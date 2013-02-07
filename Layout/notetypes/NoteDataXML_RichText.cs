@@ -162,6 +162,11 @@ namespace Layout
 			}
 
 		}
+		// For link notes
+		public override string GetLinkData ()
+		{
+			return this.Data1;
+		}
 	}
 }
 
