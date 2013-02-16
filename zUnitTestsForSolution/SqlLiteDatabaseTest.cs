@@ -8,9 +8,9 @@ using CoreUtilities;
 namespace Testing
 {
 	[TestFixture()]
-	public class UnitTest_SqlLiteDatabase 
+	public class SqlLiteDatabaseTest 
 	{
-		public  UnitTest_SqlLiteDatabase()
+		public  SqlLiteDatabaseTest()
 		{
 		}
 

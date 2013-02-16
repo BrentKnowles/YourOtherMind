@@ -108,7 +108,8 @@ namespace Layout
 		public void DoCloseNote (bool save)
 		{
 			if (true == save) {
-				NewMessage.Show ("saving when note closes not implemented yet");
+				//NewMessage.Show ("saving when note closes not implemented yet");
+				Save ();
 			}
 
 			if (AlertWhenClosed != null) {

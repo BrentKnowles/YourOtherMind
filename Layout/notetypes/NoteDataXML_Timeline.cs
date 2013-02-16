@@ -36,6 +36,20 @@ namespace Layout
 			}
 		}
 
+
+
+		bool hideZoomOutPanel=false;
+		[Description("Hides the 'month' panel.")]
+		[DisplayName("Hide Zoomed Out Panel?")]
+		public bool HideZoomOutPanel {
+			get {
+				return hideZoomOutPanel;
+			}
+			set {
+				hideZoomOutPanel = value;
+			}
+		}
+
 		private int iconsPerColumn=3;
 
 		/// <summary>
@@ -268,7 +282,29 @@ namespace Layout
 			properties.DropDownItems.Add (RowFilterStrip);
 			properties.DropDownItems.Add (dateToolStrip);
 
+			//
+			//
+			// Hide ZOom Panel
+			//
+			//
+			ToolStripButton HideMonths = new ToolStripButton();
+			HideMonths.Text = Loc.Instance.GetString("Hide Months Panel");
+			HideMonths.CheckOnClick = true;
+			HideMonths.Checked = this.HideZoomOutPanel;
+			HideMonths.Click+= HandleHideMonthsClick;
 
+			properties.DropDownItems.Add (HideMonths);
+			// Adjust panel as needed; also add this to the menu too
+			Timeline.HideZoomPanel(this.HideZoomOutPanel);
+
+
+		}
+
+		void HandleHideMonthsClick (object sender, EventArgs e)
+		{
+			this.HideZoomOutPanel = (sender as ToolStripButton).Checked;
+			Timeline.HideZoomPanel(this.HideZoomOutPanel);
+			Timeline.Refresh();
 		}
 
 		void HandleRowFilterChange (object sender, KeyEventArgs e)

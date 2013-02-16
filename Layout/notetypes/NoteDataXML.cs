@@ -4,6 +4,7 @@ using System.Xml.Serialization;
 using System.Drawing;
 using System.Windows.Forms;
 using CoreUtilities;
+using System.ComponentModel;
 
 namespace Layout
 {
@@ -125,6 +126,48 @@ namespace Layout
 		#endregion
 
 		#region xml_save
+
+		private bool lockstate = false;
+		// if true note cannot be moved
+		public bool LockState {
+			get {
+				return lockstate;
+			}
+			set {
+				lockstate = value;
+			}
+		}
+
+
+
+		// 1.0 was the start of YOM 2013
+		private string mVersion="1.0";
+		/// <summary>
+		/// The version of the object, in case its important
+		/// </summary>
+		[Browsable(false)]
+		public string Version
+		{
+			get {return mVersion;}
+			set {mVersion = value;}
+		}
+
+
+		// February 16 2103
+		// I cut this feature. It does not seem necessary.
+//		private int mPositionInTextBox=0;
+//		/// <summary>
+//		/// this value is set when focus leaves the controls
+//		/// </summary>
+//		[Browsable(false)]
+//		public int PositionInTextBox
+//		{
+//			get {return mPositionInTextBox;}
+//			set 
+//			{
+//				mPositionInTextBox = value;
+//			}
+//		}
 		private DockStyle dock = DockStyle.None;
 		public DockStyle Dock {
 			get { return dock;}

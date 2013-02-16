@@ -1198,7 +1198,32 @@ namespace CoreUtilities
 			
 		} //TextToImageAPpearance
 		
-		
+		/// <summary>
+		/// Generates an appropriate point based on the specified dockstyle. Used when drawing custom RICHTEXT controls
+		/// </summary>
+		/// <param name="pos"></param>
+		/// <param name="dockStyle"></param>
+		public static Point BuildLocationForOverlayText(Point pos, DockStyle dockStyle, string Text)
+		{
+			switch (dockStyle)
+			{
+			case DockStyle.Fill: 
+				// basicallY ONTOP of the text
+				return new Point(pos.X, pos.Y + 10);
+
+			case DockStyle.Right:
+				return new Point(pos.X + (Text.Length * 15), pos.Y + 10);
+
+			case DockStyle.Bottom:
+				return new Point(pos.X, pos.Y + 25);
+
+			case DockStyle.Top:
+				return new Point(pos.X, pos.Y - 15);
+
+				
+			}
+			return new Point(0, 0);
+		}
 	} //  - generalimages
 	
 	

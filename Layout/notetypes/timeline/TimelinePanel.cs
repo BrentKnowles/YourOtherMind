@@ -68,6 +68,23 @@ namespace Timeline
 
 		}
 
+		public bool mHideZoomOutPanel = false;
+
+		public void HideZoomPanel (bool hideZoomOutPanel)
+		{
+			// HIDE TIMELINE
+			if (hideZoomOutPanel == true && mHideZoomOutPanel == false) {
+				Height = Height / 2;
+			}
+					// new value false old value true
+					else 
+				if (hideZoomOutPanel == false && mHideZoomOutPanel == true) {
+				Height = Height * 2;
+			}
+			panelZoomOut.Visible = !hideZoomOutPanel;
+
+		}
+	
 		/// <summary>
 		/// called when changing calendar types.
 		/// </summary>

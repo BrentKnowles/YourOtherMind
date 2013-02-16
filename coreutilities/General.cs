@@ -1,7 +1,8 @@
 using System;
 using System.Diagnostics;
 using System.IO;
-
+using System.Windows.Forms;
+using System.Drawing;
 namespace CoreUtilities
 {
 	public partial class General
@@ -73,6 +74,43 @@ namespace CoreUtilities
 			}
 			return false;
 		}
+		
+		/// <summary>
+		/// had to add null check because sometimes the selection font would come
+		/// in null
+		/// </summary>
+		/// <param name="rich"></param>
+		/// <param name="fs"></param>
+		public static void FormatRichText(RichTextBox rich, FontStyle fs)
+		{
+			if (rich != null)
+			{
+				if (rich.SelectionFont != null)
+				{
+					rich.SelectionFont = new Font(rich.SelectionFont,
+					                              rich.SelectionFont.Style ^ fs);
+				}
+			}
+			
+		}
+		/// <summary>
+		/// returns sSource = enough spaces to make final string nLenght (nLength-Length.Source)
+		/// For formating text reports
+		/// </summary>
+		/// <param name="sSource"></param>
+		/// <param name="nLength"></param>
+		/// <returns></returns>
+		public static string properspaces(string sSource, int nLength)
+		{
+			int nSpaces = nLength - sSource.Length;
+			for (int i = 1; i <= nSpaces; i++)
+			{
+				sSource = sSource + " ";
+			}
+			return sSource;
+			
+		}
+
 	}
 }
 

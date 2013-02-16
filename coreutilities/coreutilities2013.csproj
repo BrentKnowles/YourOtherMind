@@ -61,6 +61,7 @@
     <Compile Include="Hotkeys\VisualKey.cs" />
     <Compile Include="Hotkeys\KeyEditForm.cs" />
     <Compile Include="Listitem.cs" />
+    <Compile Include="FormUtils.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using CoreUtilities;
 using System.Windows.Forms;
 using System.Drawing;
@@ -12,12 +13,26 @@ namespace Layout
 	/// </summary>
 	public class LayoutDetails
 	{
+		#region constants
+		public const string SYSTEM_RANDOM_TABLES = "list_randomtables";
+		public const string SYSTEM_NOTEBOOKS = "list_notebooks";
+		public const string SYSTEM_STATUS = "list_status";
+		public const string SYSTEM_SUBTYPE = "list_subtypes";
+		public const string SYSTEM_KEYWORDS = "list_keywords";
+		
+		public const string SYSTEM_WORKLOGCATEGORY="list_worklogcategory";
+#endregion
 		#region variables
 		protected static volatile LayoutDetails instance;
 		protected static object syncRoot = new Object();
 
+		// Used when forms have an OK and Cancel button; this the height of the panel
+		public const int ButtonHeight = 50;
+	
+
 		// set in main constructor
 		public Icon MainFormIcon = null;
+		public FormUtils.FontSize MainFormFontSize = FormUtils.FontSize.Normal;
 
 		// used when needing random numbers
 		public Random RandomNumbers;
@@ -132,7 +147,8 @@ namespace Layout
 			AddToList(typeof(NoteDataXML_GroupEm), new NoteDataXML_GroupEm().RegisterType());
 		//	AddToList (typeof(NoteDataXML_SystemOnly),new NoteDataXML_SystemOnly().RegisterType());
 
-
+			Markups = new List<iMarkupLanguage> ();
+			Markups.Add (new MarkupLanguageNone ());
 		}
 		public void DoForceShutDown(bool ShutDown)
 		{
@@ -278,6 +294,7 @@ namespace Layout
 						if (null == instance)
 						{
 							instance = new LayoutDetails();
+						
 						}
 					}
 				}
@@ -339,6 +356,89 @@ namespace Layout
 //				CurrentLayout.FocusOnFindBar();
 //			}
 //		}
+
+		#region markup
+		// List of available markup languages
+		List<iMarkupLanguage> Markups=null;
+		iMarkupLanguage CurrentMarkup=null;
+		public void AddMarkupToList (iMarkupLanguage newMarkup)
+		{
+		
+			Markups.Add (newMarkup);
+		}
+		
+		/// <summary>
+		/// Gets the markup match. Used in the Interfact options panel
+		/// to figure out which type was saved as the default
+		/// the value is the type stored in the database
+		/// </summary>
+		/// <param name='value'>
+		/// Value.
+		/// </param>
+		public iMarkupLanguage GetMarkupMatch (string value)
+		{
+			foreach (iMarkupLanguage mark in Markups) {
+				if (mark.GetType().AssemblyQualifiedName == value)
+				{
+					return mark;
+				}
+			}
+			return null;
+		}
+		
+		public void RemoveMarkupFromList (Type markup)
+		{
+			iMarkupLanguage removeMe = null;
+			foreach (iMarkupLanguage Mark in Markups) {
+				if (Mark.GetType () == markup) {
+					removeMe = Mark;
+				}
+			}
+			if (null != removeMe) {
+				Markups.Remove(removeMe);
+			}
+		}
+		
+		public iMarkupLanguage GetCurrentMarkup ()
+		{
+			if (null == CurrentMarkup) {
+				CurrentMarkup = new MarkupLanguageNone();
+			}
+			return CurrentMarkup;
+		}
+		public void SetCurrentMarkup (iMarkupLanguage newMarkup)
+		{
+			// set when options menu closes and when MainForm opens
+			if (null != newMarkup) {
+				CurrentMarkup = newMarkup;
+			}
+		}
+		public void BuildMarkupComboBox (ComboBox markupCombo)
+		{
+	
+			foreach (iMarkupLanguage language in Markups) {
+				markupCombo.Items.Add (language);
+			}
+		}
+		public void BuildMarkupComboBox (ToolStripComboBox markupCombo)
+		{
+			
+			foreach (iMarkupLanguage language in Markups) {
+				markupCombo.Items.Add (language);
+			}
+		}
+
+		/// <summary>
+		/// Returns a simple text form to use for Building Reports
+		/// </summary>
+		/// <returns>
+		/// The text form to use.
+		/// </returns>
+		public GenericTextForm GetTextFormToUse()
+		{
+			return new GenericTextForm();
+		}
+		#endregion
 	}
 }
 

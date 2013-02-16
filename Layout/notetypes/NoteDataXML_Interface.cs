@@ -169,6 +169,56 @@ namespace Layout
 				properties.DropDownItems.Add (ReadOnlyButton);
 			}
 
+			//
+			//
+			// DOCK STYLE
+			//
+			//
+
+			ToolStripComboBox DockPicker = new ToolStripComboBox ();
+			DockPicker.DropDownStyle = ComboBoxStyle.DropDownList;
+			//DockPicker.DropDown+= HandleDockDropDown;
+
+
+
+
+		
+
+			(DockPicker).Items.Clear ();
+			int found = -1;
+			int count = -1;
+			foreach (string s in Enum.GetNames(typeof(DockStyle))) {
+				count++;
+				(DockPicker).Items.Add (s);
+				if (s == this.Dock.ToString ())
+				{
+					found = count;
+				}
+			}
+			if (found > -1)
+				DockPicker.SelectedIndex = found;
+			DockPicker.SelectedIndexChanged += HandleDockStyleSelectedIndexChanged;
+			properties.DropDownItems.Add (DockPicker);
+
+
+			//
+			//
+			// LOCK
+			//
+			//
+			ToolStripButton LockState = new ToolStripButton();
+			LockState.Text = Loc.Instance.GetString ("Lock");
+			LockState.Checked = this.LockState;
+			LockState.CheckOnClick = true;
+			LockState.Click+= HandleLockStateClick;
+			properties.DropDownItems.Add (LockState);
+
+
+			//
+			//
+			// FOLDER
+			//
+			//
 			if (false == IsSystemNote) {
 				ToolStripMenuItem menuFolder = new ToolStripMenuItem ();
 				menuFolder.Text = Loc.Instance.Cat.GetString ("Folder");
@@ -242,6 +292,30 @@ namespace Layout
 			Layout = _Layout;
 
 		}
+
+		void HandleLockStateClick (object sender, EventArgs e)
+		{
+			this.LockState = (sender as ToolStripButton).Checked;
+			SetSaveRequired(true);
+		}
+
+		void HandleDockStyleSelectedIndexChanged (object sender, EventArgs e)
+		{
+			string value = (sender as ToolStripComboBox).SelectedItem.ToString ();
+			this.Dock = (DockStyle)Enum.Parse (typeof(DockStyle), value);
+			ParentNotePanel.Dock = this.Dock;
+			SetSaveRequired(true);
+		}
+
+//		void HandleDockDropDown (object sender, EventArgs e)
+//		{
+//			// fill the Dock Style Drop Down
+//			(sender as ToolStripComboBox).Items.Clear();
+//			foreach (string s in Enum.GetNames(typeof(DockStyle))){
+//				(sender as ToolStripComboBox).Items.Add (s);
+//			}
+//
+//		}
 
 		void HandleLinkNoteClick (object sender, EventArgs e)
 		{
@@ -522,18 +596,21 @@ namespace Layout
 			if (this.Dock == DockStyle.None) {
 				if (e.Button == MouseButtons.Left) {
 
-					if (false == Layout.IsDraggingANote) {
+					if (false == Layout.IsDraggingANote ) {
+						BringToFrontAndShow ();
+						if (false == this.LockState)
+						{
 						// start drag mode
 						Layout.IsDraggingANote = true;
 						IAmDragging = true;
-						BringToFrontAndShow ();
+						
 
 						lastColor = CaptionLabel.BackColor;
 						CaptionLabel.BackColor = Color.Red;
 
 						PanelMouseDownLocation = e.Location;
 					
-
+						}
 					}
 					if (true == Layout.IsDraggingANote && true == IAmDragging) {
 						int X = this.location.X + e.X - PanelMouseDownLocation.X;

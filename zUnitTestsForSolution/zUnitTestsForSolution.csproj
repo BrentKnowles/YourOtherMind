@@ -41,7 +41,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
-    <Compile Include="UnitTest_SqlLiteDatabase.cs" />
     <Compile Include="LayoutDatabaseTest.cs" />
     <Compile Include="Log_Test.cs" />
     <Compile Include="ClassesUsedInTesting\FakeLayoutDatabase.cs" />
@@ -70,8 +69,9 @@
     <Compile Include="HotkeysTest.cs" />
     <Compile Include="ClassesUsedInTesting\Fake_MasterOfLayouts.cs" />
     <Compile Include="TimelineTest.cs" />
-    <Compile Include="EventTableTests.cs" />
     <Compile Include="StoryboardTesting.cs" />
+    <Compile Include="TransactionTableTests.cs" />
+    <Compile Include="SqlLiteDatabaseTest.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

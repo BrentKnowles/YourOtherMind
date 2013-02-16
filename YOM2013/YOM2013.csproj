@@ -75,6 +75,7 @@
       <HintPath>..\..\..\librariesused\netsparklautoupdater\AppLimit.NetSparkle.dll</HintPath>
     </Reference>
     <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MainForm.cs" />
@@ -84,6 +85,7 @@
     <Compile Include="Options.cs" />
     <Compile Include="Options_InterfaceElements.cs" />
     <Compile Include="DefaultLayouts.cs" />
+    <Compile Include="tempconversion\EventTable.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="yomcast.xml" />
@@ -102,5 +104,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="icons\" />
+    <Folder Include="tempconversion\" />
   </ItemGroup>
 </Project>

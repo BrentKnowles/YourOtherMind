@@ -14,10 +14,11 @@ using appframe;
 using LayoutPanels;
 using HotKeys;
 using Transactions;
+using MEF_Interfaces;
 
 namespace YOM2013
 {
-	public class MainForm : appframe.MainFormBase 
+	public class MainForm : appframe.MainFormBase
 	{
 		// the types of footer messages, influences the control that is updated
 		enum FootMessageType  {LOAD, NOTES, SAVE, SWITCHWINDOWS};
@@ -44,20 +45,15 @@ namespace YOM2013
 		#region variables
 		private Sparkle _sparkle; 
 		private Options Settings ;
+		private Options_InterfaceElements SettingsInterfaceOptions;
 		private TransactionsTable Transaction;
+	
+
 		#endregion
 		#region delegates
 
 		#endregion
-		/// <summary>
-		/// A series of true/false and similiar settings that should be double checked before deployments as some of them
-		/// are for debugging
-		/// 
-		/// </summary>
-		private void Switches()
-		{
-
-		}
+	
 	
 		private void UpdateTitle(string newTitle)
 		{
@@ -331,7 +327,7 @@ namespace YOM2013
 
 		void HandleTestClick (object sender, EventArgs e)
 		{
-			NewMessage.Show (MasterOfLayouts.GetRandomNoteBy("notebook", "Writing"));
+			NewMessage.Show ("RANDOM NOTE: " + MasterOfLayouts.GetRandomNoteBy("notebook", "Writing"));
 		}
 
 /// <summary>
@@ -349,7 +345,7 @@ namespace YOM2013
 /// </param>
 		public MainForm (string _path, Action<bool>ForceShutDownMethod, string storage, Icon mainIcon) : base (_path,ForceShutDownMethod,storage, mainIcon)
 		{
-			//this.Font = new Font(this.Font.FontFamily, 18.0f);
+
 			LayoutDetails.Instance.MainFormIcon = mainIcon;
 			//Check for updates
 			string sparkupdatefile = "http://www.yourothermind.com/yomcast.xml";//update.applimit.com/netsparkle/versioninfo.xml
@@ -380,7 +376,7 @@ namespace YOM2013
 			SetupMessageBox ();
 			LayoutsOpen = new List<LayoutsInMemory> ();
 
-			Switches ();
+
 
 
 			LayoutDetails.Instance.LoadLayoutRef = LoadLayout;
@@ -427,6 +423,10 @@ namespace YOM2013
 				ToolStripMenuItem Backup = new ToolStripMenuItem (Loc.Instance.Cat.GetString ("Backup"));
 				Backup.Click += HandleBackupClick;
 				file.DropDownItems.Add (Backup);
+
+				ToolStripMenuItem Exit = new ToolStripMenuItem(Loc.Instance.GetString ("Exit"));
+				Exit.Click+= HandleExitClick;
+				file.DropDownItems.Add (Exit);
 			}
 
 			ToolStripSeparator sep = new ToolStripSeparator ();
@@ -447,7 +447,7 @@ namespace YOM2013
 			Windows.DropDownOpening += HandleWindowsMenuDropDownOpening;
 
 
-
+		
 
 
 			// Adding in right order to Main Menu
@@ -458,6 +458,11 @@ namespace YOM2013
 			ToolStripButton import = new ToolStripButton ("Import");
 			import.Click += HandleImportOldFilesClick;
 			MainMenu.Items.Add (import);
+
+			ToolStripButton importEvents = new ToolStripButton("import events");
+			importEvents.Click+= HandleImportEventClick;
+				MainMenu.Items.Add (importEvents);
+
 			// DELEGATES
 			LayoutDetails.Instance.UpdateTitle = UpdateTitle;
 
@@ -470,14 +475,16 @@ namespace YOM2013
 
 			// Add option panels to options menu
 			Settings = new Options(LayoutDetails.Instance.YOM_DATABASE);
-			Options_InterfaceElements SettingsInterfaceOptions = new Options_InterfaceElements(LayoutDetails.Instance.YOM_DATABASE);
-	
+			SettingsInterfaceOptions = new Options_InterfaceElements(LayoutDetails.Instance.YOM_DATABASE);
+			LayoutDetails.Instance.SetCurrentMarkup(SettingsInterfaceOptions.SelectedMarkup);
+
 		    optionPanels.Add(Settings);
 			optionPanels.Add (SettingsInterfaceOptions);
 
 
+			FontSizeChanged ();
 
-		
+
 			BuildFooter();
 
 			Transaction = new TransactionsTable(MasterOfLayouts.GetDatabaseType(LayoutDetails.Instance.YOM_DATABASE));
@@ -485,9 +492,43 @@ namespace YOM2013
 
 		}
 
+		void HandleExitClick (object sender, EventArgs e)
+		{
+
+			this.Close ();
+		}
+
+		void FontSizeChanged()
+		{
+			this.FontSizeForForm = SettingsInterfaceOptions.FontSizeForForm;
+			FormUtils.SizeFormsForAccessibility(this, this.FontSizeForForm);
+			LayoutDetails.Instance.MainFormFontSize = this.FontSizeForForm;
+
+		}
+
+		void HandleImportEventClick (object sender, EventArgs e)
+		{
+			if (MasterOfLayouts.ExistsByGUID ("example") == false) {
+				NewMessage.Show("You must create a page with GUID and name = example for the oprhans before importing events");
+			}
+			else
+			// temp code to import events
+			Incentives.EventTable.ConvertToYom2013_FromYom2013(Transaction);
+
+		}
+		protected override void OptionsClosed ()
+		{
+			base.OptionsClosed ();
+
+			FontSizeChanged ();
+
+
+			LayoutDetails.Instance.SetCurrentMarkup(SettingsInterfaceOptions.SelectedMarkup);
+
+		}
 		void HandleFormClosing (object sender, FormClosingEventArgs e)
 		{
-			lg.Instance.Dispose();
+
 
 			if (false == LayoutDetails.Instance.ForceShutdown) {
 				TestAndSaveIfNecessary ();
@@ -496,7 +537,7 @@ namespace YOM2013
 				NewMessage.Show ("Shutting down without saving due to file corruption");
 			;
 			}
-
+			lg.Instance.Dispose();
 		}
 		public override void BuildAndProcessHotKeys (string Storage)
 		{
@@ -731,7 +772,12 @@ namespace YOM2013
 				//newLayout.Dispose();
 				newLayout.SaveLayout();
 				MDIHOST.DoCloseNote(false);
-					LayoutDetails.Instance.CurrentLayout = newLayout;
+
+					// not sure why this was set. We closeit, why would we have a pointer to it??
+					// Feb 2013 - THis line (once I added automatic saving) actually caused a blank version 
+					// of the Layout to be saved (presumably because it was CLOSED and then a save happened that 
+					// blanked the XML portions! [TODO: Can I replicate this to create a catch for this happening for real?]
+					//LayoutDetails.Instance.CurrentLayout = newLayout;
 				}
 
 
@@ -895,6 +941,9 @@ namespace YOM2013
 		/// </param>
 		void LoadLayout (string guidtoload, string childGuid)
 		{
+			// force a save before opening or reloading a note
+			Save (true);
+
 			if (guidtoload == LayoutPanel.SYSTEM_LAYOUT) {
 				NewMessage.Show (Loc.Instance.GetString ("You are not permitted to load the SYSTEM layout directly but you can make edits to it as it is."));
 			} else {
@@ -1031,7 +1080,7 @@ namespace YOM2013
 
 		void GotoExistingLayout (NoteDataXML_SystemOnly panel, LayoutPanel layoutPanel)
 		{
-
+			Save(true);
 				// in case minimized we make it visible
 				panel.ParentNotePanel.Visible = true;
 				panel.ParentNotePanel.BringToFront ();
@@ -1104,7 +1153,8 @@ namespace YOM2013
 		{
 			if (CurrentLayout != null) {
 				if (true == CurrentLayout.GetSaveRequired) {
-					NewMessage.Show ("Should have saved says Layout=" + CurrentLayout.Caption);
+					//NewMessage.Show ("Should have saved says Layout=" + CurrentLayout.Caption);
+					Save (true);
 				}
 			}
 		}
@@ -1165,6 +1215,7 @@ namespace YOM2013
 				break;
 			}
 		}
+
 	}
 }
 

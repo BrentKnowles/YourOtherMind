@@ -10,7 +10,7 @@ using HotKeys;
 
 namespace appframe
 {
-	public class MainFormBase :  System.Windows.Forms.Form
+	public class MainFormBase :  System.Windows.Forms.Form, MEF_Interfaces.iAccess
 	{
 		#region variables
 		string _Storage = Constants.BLANK;
@@ -34,6 +34,25 @@ namespace appframe
 		protected List<iConfig> optionPanels;
 		protected List<ContextMenuStrip> ContextMenus;
 		protected List<NoteTextAction> NoteTextActions;
+
+
+		FormUtils.FontSize fontSizeForForm = FormUtils.FontSize.Normal;
+		/// <summary>
+		/// Gets or sets the font size for form. [Options controls this value]
+		/// Is it used to resize forms
+		//
+		/// </summary>
+		/// <value>
+		/// The font size for form.
+		/// </value>
+		public virtual FormUtils.FontSize FontSizeForForm {
+			get {
+				return fontSizeForForm;
+			}
+			set {
+				fontSizeForForm = value;
+			}
+		}
 		#endregion
 
 		#region gui
@@ -358,6 +377,7 @@ namespace appframe
 
 				// Remove installed plugins
 				if (addIns.Count > 0) {
+					bool MustExit = false;
 					// We exist but we are not on the AddMe list.
 					// This means we need to be removed
 					for (int i = AddInsLoaded.Count-1; i >= 0; i--) {
@@ -373,13 +393,19 @@ namespace appframe
 							}
 							if (addin.DeregisterType() == true)
 							{
-								NewMessage.Show (Loc.Instance.GetString("Because a NoteType was removed, we must shut down now, because any Layout open will not be able to be edited until this NoteType is added again."));
-								Application.Exit ();
+								NewMessage.Show (Loc.Instance.GetString("Because a NoteType (or other advanced AddIn) was removed, we must shut down now, because any Layout open will not be able to be edited until this NoteType is added again."));
+								MustExit = true;
+							
 							}
 						
 
 							AddInsLoaded.Remove (addin);
 						}
+
+					}
+					if (true == MustExit)
+					{
+						Application.Exit ();
 					}
 				} // count > 0
 			}
@@ -405,7 +431,7 @@ namespace appframe
 			{
 				thisAddIn.SetBeforeRespondInformation(NeededInfo);
 				thisAddIn.path_filelocation = path;
-				thisAddIn.RespondToCallToAction();
+				thisAddIn.RespondToCallToAction(this);
 				// this routine sends the needed info to the callback which was setup at Initialization 
 				// we don't call this externally, it is called internally
 				//thisAddIn.GetAfterRespondInformation();
@@ -474,7 +500,9 @@ namespace appframe
 				(((sender as ToolStripButton).Tag as MefAddIns.Extensibility.mef_IBase).ActiveForm() as Form).BringToFront();
 			}
 		}
-
+		protected virtual void OptionsClosed()
+		{
+		}
 		/// <summary>
 		/// Handles the options button click.
 		/// </summary>
@@ -486,7 +514,7 @@ namespace appframe
 		/// </param>
 		void HandleOptionsButtonClick (object sender, EventArgs e)
 		{
-			OptionForm options = new OptionForm (optionPanels);
+			OptionForm options = new OptionForm (optionPanels, this);
 			options.KeyDown+=HandleFormKeyDown;
 			if (options.ShowDialog () == DialogResult.OK) {
 				foreach (iConfig addIn in optionPanels)
@@ -495,7 +523,7 @@ namespace appframe
 				}
 				StartAndStopPlugIns();
 
-
+				OptionsClosed();
 			}
 
 			//regardless of OK or cancel we need to ensure Hotkeys are not contamianted

@@ -308,7 +308,7 @@ namespace Testing
 			string imagedir = Path.Combine(new string[3]{Environment.CurrentDirectory, "files","captures"});
 			Directory.Delete (imagedir);
 			Assert.False (Directory.Exists (imagedir),"directory not there at start");
-			fCapture capture = new fCapture(imagedir, "capture", true);
+			fCapture capture = new fCapture(imagedir, "capture", true, new System.Windows.Forms.Form().Icon, CoreUtilities.FormUtils.FontSize.Normal);
 			Assert.True (Directory.Exists (imagedir), "directory now there");
 			// now remove the directory
 		}

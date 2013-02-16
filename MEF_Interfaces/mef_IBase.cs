@@ -24,7 +24,8 @@ namespace MefAddIns.Extensibility
 		// Where this plugin should appear
 		PlugInAction CalledFrom { get; }
 		// What happens when the menu is clicked or a hotkey called
-		void RespondToCallToAction();
+		// using generci types http://stackoverflow.com/questions/772053/is-it-possible-to-make-a-parameter-implement-two-interfaces
+		void RespondToCallToAction<T>(T form) where T: System.Windows.Forms.Form, MEF_Interfaces.iAccess ;
 		// called by utlities such as SendTextAway
 		void ActionWithParam(object param);
 		// if any files need to be generated (such as with SendTextAway, then define this). Empty version created in base class

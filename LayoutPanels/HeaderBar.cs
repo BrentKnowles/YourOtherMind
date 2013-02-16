@@ -382,7 +382,7 @@ namespace LayoutPanels
 
 		void HandleKeywordsClick (object sender, EventArgs e)
 		{
-			List<string> allitems = LayoutDetails.Instance.TableLayout.GetListOfStringsFromSystemTable(LayoutPanel.SYSTEM_KEYWORDS,1);
+			List<string> allitems = LayoutDetails.Instance.TableLayout.GetListOfStringsFromSystemTable(LayoutDetails.SYSTEM_KEYWORDS,1);
 
 
 			List<string> checkeditems = new List<string> ();
@@ -431,7 +431,7 @@ namespace LayoutPanels
 			// 
 			Notebook.Items.Clear ();
 
-			foreach (string s in LayoutDetails.Instance.TableLayout.GetListOfStringsFromSystemTable(LayoutPanel.SYSTEM_NOTEBOOKS,1)) {
+			foreach (string s in LayoutDetails.Instance.TableLayout.GetListOfStringsFromSystemTable(LayoutDetails.SYSTEM_NOTEBOOKS,1)) {
 
 				ToolStripItem item = Notebook.Items.Add (s);
 				//NewMessage.Show (Notebook.OwnerItem.ToString ());
@@ -443,7 +443,7 @@ namespace LayoutPanels
 			}
 
 			Sections.Items.Clear ();
-			System.Collections.Generic.List<string> basestrings = LayoutDetails.Instance.TableLayout.GetListOfStringsFromSystemTable (LayoutPanel.SYSTEM_NOTEBOOKS, 2, 
+			System.Collections.Generic.List<string> basestrings = LayoutDetails.Instance.TableLayout.GetListOfStringsFromSystemTable (LayoutDetails.SYSTEM_NOTEBOOKS, 2, 
 			                                                                                                                           String.Format ("1|{0}",Notes.Notebook));
 			System.Collections.Generic.List<string> truelist = new System.Collections.Generic.List<string>();
 
@@ -465,7 +465,7 @@ namespace LayoutPanels
 
 			Subtypes.Items.Clear();
 
-			foreach (string s in LayoutDetails.Instance.TableLayout.GetListOfStringsFromSystemTable(LayoutPanel.SYSTEM_SUBTYPE,1)) {
+			foreach (string s in LayoutDetails.Instance.TableLayout.GetListOfStringsFromSystemTable(LayoutDetails.SYSTEM_SUBTYPE,1)) {
 
 					ToolStripItem item = Subtypes.Items.Add (s);
 					item.Click+= HandleSubtypeClick;
@@ -473,7 +473,7 @@ namespace LayoutPanels
 
 			Status.Items.Clear ();
 			
-			foreach (string s in LayoutDetails.Instance.TableLayout.GetListOfStringsFromSystemTable(LayoutPanel.SYSTEM_STATUS,1)) {
+			foreach (string s in LayoutDetails.Instance.TableLayout.GetListOfStringsFromSystemTable(LayoutDetails.SYSTEM_STATUS,1)) {
 				
 				ToolStripItem item = Status.Items.Add (s);
 				//NewMessage.Show (Notebook.OwnerItem.ToString ());
@@ -490,6 +490,12 @@ namespace LayoutPanels
 		{
 			Notes.Status = (sender as ToolStripItem).Text;
 			StatusItem.Text = Notes.Status;
+			if (Notes.Status.IndexOf (Loc.Instance.GetString ("Retired")) > -1) {
+				LayoutDetails.Instance.TransactionsList.AddEvent(new Transactions.TransactionRetired(DateTime.Now, this.Layout.GUID));
+			}
+			if (Notes.Status.IndexOf (Loc.Instance.GetString ("Complete")) > -1) {
+				LayoutDetails.Instance.TransactionsList.AddEvent(new Transactions.TransactionFinishedLayout(DateTime.Now, this.Layout.GUID));
+			}
 			Layout.SetSaveRequired(true);
 		}
 

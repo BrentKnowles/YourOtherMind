@@ -73,6 +73,7 @@
     <Compile Include="RichText\iMarkupLanguage.cs" />
     <Compile Include="RichText\MarkupLanguageNone.cs" />
     <Compile Include="notetypes\groupems\LinkPickerForm.cs" />
+    <Compile Include="GenericTextForm.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

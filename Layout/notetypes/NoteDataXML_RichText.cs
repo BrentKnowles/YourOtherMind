@@ -6,9 +6,30 @@ namespace Layout
 {
 	public class NoteDataXML_RichText : NoteDataXML
 	{
+		// if this is the value set on the dropdown then we use the defined default in OPTIONS
+		const string defaultmarkup = "Default"; 
+		#region XML
+		string markuplanguage="Default";
+
+		public string Markuplanguage {
+			get {
+				return markuplanguage;
+			}
+			set {
+				markuplanguage = value;
+			}
+		}
+
+		#endregion
+
 		#region formcontrols
 		protected RichTextExtended richBox ;
+		protected ToolStripComboBox MarkupCombo;
 		#endregion
+
+		// mutex to prevent markup list from calling update when loading
+		private bool loadingcombo = false;
+
 		public override bool IsLinkable { get { return true; }}
 		protected override void CommonConstructorBehavior ()
 		{
@@ -20,9 +41,45 @@ namespace Layout
 		{
 
 		}
+
+		private iMarkupLanguage SelectedMarkup {
+			get {
+				iMarkupLanguage returnvalue = null;
+				if (Markuplanguage != defaultmarkup) {
+					// we need to create this once but LayoutDetails will store it inot until it changes again so 
+					// this won't be a slow operatin, just done on load and if changed
+					
+					
+					returnvalue = LayoutDetails.Instance.GetMarkupMatch (Markuplanguage);
+					
+					
+				} else {
+					// we revert to none if plugin has been removed and we store this value too
+					returnvalue = new MarkupLanguageNone ();
+				
+
+				}
+				return returnvalue;
+			}
+		}
+
 		public NoteDataXML_RichText(int height, int width) : base(height, width)
 		{
 			//Caption = Loc.Instance.Cat.GetString("Text Note");
+		}
+		private void UpdateMarkupSelection ()
+		{
+
+			if (MarkupCombo.SelectedItem != null ){
+				if (MarkupCombo.Text == defaultmarkup) 
+					Markuplanguage = defaultmarkup;
+				else
+				{
+
+					Markuplanguage = MarkupCombo.SelectedItem.GetType ().AssemblyQualifiedName.ToString ();
+					richBox.MarkupOverride = (iMarkupLanguage)MarkupCombo.SelectedItem;
+				}
+			}
 		}
 
 		public override void Save ()
@@ -33,6 +90,13 @@ namespace Layout
 			if (richBox != null) {
 				this.Data1 = richBox.Rtf;
 			}
+
+			//MarkupTag is used to determine whether user has changed the data or not to avoid unnecessary slowness in save
+			if (((bool)(MarkupCombo.Tag)) == true)
+			{
+			UpdateMarkupSelection();
+			}
+
 		}
 		/// <summary>
 		/// returns the text as text
@@ -75,15 +139,75 @@ namespace Layout
 		{
 			base.CreateParent (Layout);
 			CaptionLabel.Dock = DockStyle.Top;
-			richBox = new RichTextExtended(new MarkupLanguageNone());
-			richBox.ContextMenuStrip = Layout.GetLayoutTextEditContextStrip();
+			richBox = new RichTextExtended ();
+			richBox.ContextMenuStrip = Layout.GetLayoutTextEditContextStrip ();
 			richBox.Enter += HandleRichBoxEnter;
 			richBox.Parent = ParentNotePanel;
 			richBox.Dock = DockStyle.Fill;
-			richBox.BringToFront();
+			richBox.BringToFront ();
 			richBox.Rtf = this.Data1;
-			richBox.TextChanged+= HandleTextChanged;
+			richBox.TextChanged += HandleTextChanged;
 			richBox.ReadOnly = this.ReadOnly;
+
+
+			MarkupCombo = new ToolStripComboBox ();
+			MarkupCombo.ToolTipText = Loc.Instance.GetString ("AddIns allow text notes to format text. A global option controls the default markup to use on notes but this may be overridden here.");
+		//	LayoutDetails.Instance.BuildMarkupComboBox (MarkupCombo);
+
+			BuildDropDownList();
+
+			properties.DropDownItems.Add (MarkupCombo);
+			MarkupCombo.SelectedIndexChanged += HandleSelectedIndexChanged;
+			MarkupCombo.DropDownStyle = ComboBoxStyle.DropDownList;
+			MarkupCombo.DropDown += HandleDropDown;
+			loadingcombo = true;
+			// just show default if we have not overridden this
+			if (Markuplanguage == defaultmarkup) {
+				MarkupCombo.Text = defaultmarkup;
+			}
+			else
+			if (SelectedMarkup != null) {
+				for (int i = 0; i < MarkupCombo.Items.Count; i++) {
+					if (MarkupCombo.Items [i].GetType () == SelectedMarkup.GetType ()) {
+						MarkupCombo.SelectedIndex = i;
+						break;
+					}
+				}
+				richBox.MarkupOverride = (iMarkupLanguage)MarkupCombo.SelectedItem;
+			}
+
+			// we use markup tag to indicate whether the data on the markup combo has changed to avoid slowness in save
+			MarkupCombo.Tag = false;
+			loadingcombo = false;
+		}
+
+		void HandleSelectedIndexChanged (object sender, EventArgs e)
+		{
+			if (false == loadingcombo) {
+				// if we ever have the default then we nerf the override
+				richBox.MarkupOverride = null;
+
+				// made a change. Need to save.
+				MarkupCombo.Tag = true;
+				UpdateMarkupSelection ();
+				richBox.Invalidate();
+
+
+			}
+		}
+
+		void BuildDropDownList()
+		{
+			// always rebuild lsit if expanded in case AddIn added new
+			MarkupCombo.Items.Clear ();
+			LayoutDetails.Instance.BuildMarkupComboBox (MarkupCombo);
+			// we add default as an option
+			MarkupCombo.Items.Add(defaultmarkup);
+		}
+		void HandleDropDown (object sender, EventArgs e)
+		{
+			BuildDropDownList();
+
 		}
 
 		protected void SetThisTextNoteAsActive()

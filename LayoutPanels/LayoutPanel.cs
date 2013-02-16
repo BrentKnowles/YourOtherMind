@@ -21,14 +21,7 @@ namespace Layout
 {
 	public class LayoutPanel : LayoutPanelBase
 	{
-		#region constants
-		public const string SYSTEM_RANDOM_TABLES = "list_randomtables";
-		public const string SYSTEM_NOTEBOOKS = "list_notebooks";
-		public const string SYSTEM_STATUS = "list_status";
-		public const string SYSTEM_SUBTYPE = "list_subtypes";
-		public const string SYSTEM_KEYWORDS = "list_keywords";
-	
-		#endregion
+
 		#region TEMPVARIABLES
 
 	
@@ -297,7 +290,7 @@ namespace Layout
 			//(sender as ToolStripDropDownItem).DropDownItems.Clear ();
 
 			// get the tables from the System Note
-			List<string> tablenames = LayoutDetails.Instance.TableLayout.GetListOfStringsFromSystemTable(SYSTEM_RANDOM_TABLES,1);
+			List<string> tablenames = LayoutDetails.Instance.TableLayout.GetListOfStringsFromSystemTable(LayoutDetails.SYSTEM_RANDOM_TABLES,1);
 
 
 			//string[] tablenames = new string[2]{"charactermaker", "charactermaker|villains"};

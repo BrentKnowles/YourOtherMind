@@ -25,6 +25,10 @@ namespace database
 
 		public abstract void Dispose();
 
+		public abstract System.Data.DataTable AsDataTable (string tablename);
+
+		public abstract string ExecuteCommand (string select, DateTime start, DateTime end, bool IgnoreDate);
+
 
 
 		/// <summary>
@@ -153,7 +157,8 @@ namespace database
 		public abstract void DropTableIfExists(string Table);
 		public abstract bool Exists(string Table, string Column, string ColumnValue);
 
-		public abstract  List<object[]> GetValues (string tableName, string[] columnToReturn, string columnToTest, object Test, string Sorting);
+		public abstract  List<object[]> GetValues (string tableName, string[] columnToReturn, string columnToTest, object Test ,string Sorting,string ExtraWhere);
+		public abstract List<object[]> GetValues (string tableName, string[] columnToReturn, string columnToTest, object Test,string Sorting);
 		public abstract List<object[]> GetValues (string tableName, string[] columnToReturn, string columnToTest, object Test);
 		/// <summary>
 		/// Inserts the data.

@@ -6,9 +6,9 @@ using CoreUtilities;
 namespace Testing
 {
 	[TestFixture]
-	public class EventTableTests
+	public class TransactionTableTests
 	{
-		public EventTableTests ()
+		public TransactionTableTests ()
 		{
 		}
 
@@ -131,6 +131,53 @@ namespace Testing
 			Assert.NotNull(foundNote);
 			
 		
+		}
+
+		[Test]
+		public void QueryTests()
+		{
+			TransactionsTable eventTable = SetupForEventTests();
+			Assert.NotNull(eventTable);
+
+			// Add a Really Old Task (20 days ago)
+			Add (new TransactionWorkLog(DateTime.Now.AddDays(-20),"BOOM", "", 1000, 2000, "Writing"), eventTable);
+
+
+			Add (new TransactionWorkLog(DateTime.Now,"BOOM", "", 100, 200, "Writing"), eventTable);
+			string value = eventTable.GetWeekStats(DateTime.Now);
+			Assert.True (value.IndexOf("100") > -1, "Found Words");
+			Assert.True (value.IndexOf ("200")> -1, "Found Minutes");
+
+			// add a task for another entity
+
+			Add (new TransactionWorkLog(DateTime.Now,"BOOM2", "", 50, 50, "Writing"), eventTable);
+			value = eventTable.GetWeekStats(DateTime.Now);
+			Assert.True (value.IndexOf("150") > -1, "Found Words2");
+			Assert.True (value.IndexOf ("250")> -1, "Found Minutes2");
+			// now look 'a week ago' should find none
+			value = eventTable.GetWeekStats(DateTime.Now.AddDays(-10));
+			Assert.False (value.IndexOf("100") > -1, "Found Words3");
+			Assert.False (value.IndexOf ("200")> -1, "Found Minutes3");
+			Assert.False (value.IndexOf("150") > -1, "Found Words3");
+			Assert.False (value.IndexOf ("250")> -1, "Found Minutes3");
+
+
+			// Now Layout Specific Tests
+
+			value = eventTable.GetWorkStats_SpecificLayout(DateTime.Now, "BOOM2");
+			Assert.True (value.IndexOf("50") > -1, "Found Words2");
+			Assert.False (value.IndexOf ("250")> -1, "Found Minutes2");
+
+			value = eventTable.GetWorkStats_SpecificLayout(DateTime.Now, "BOOM");
+			Assert.True (value.IndexOf("100") > -1, "Found WordsBOOMSPECIFIC");
+			Assert.True (value.IndexOf ("200")> -1, "Found MinutesBOOMSPECIFIC");
+			Assert.False (value.IndexOf ("250")> -1, "Found Minutes2");
+
+			_w.output(value);
+			// Now do Test 'ALL TIME' bylooking at the value we already grabbed because SpecificLayout also includes a Global Count
+			Assert.True (value.IndexOf("1100") > -1, "Found WordsBOOMSPECIFIC _ALLTIME");
+			Assert.True (value.IndexOf("2200") > -1, "Found MinutesBOOMSPECIFIC _ALLTIME");
+
 		}
 
 	}

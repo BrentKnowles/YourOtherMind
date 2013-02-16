@@ -25,6 +25,7 @@ namespace YOM2013
 		
 
 			NoteDataXML_Panel sidedockpanel = new NoteDataXML_Panel(800,300);
+			sidedockpanel.GuidForNote = "system_sidedock";
 			SystemLayout.AddNote(sidedockpanel);
 			sidedockpanel.CreateParent(SystemLayout);
 
@@ -58,7 +59,7 @@ namespace YOM2013
 		
 
 			NoteDataXML_Table randomTables = new NoteDataXML_Table();
-			randomTables.Caption = LayoutPanel.SYSTEM_RANDOM_TABLES;
+			randomTables.Caption = LayoutDetails.SYSTEM_RANDOM_TABLES;
 			randomTables.Columns = new appframe.ColumnDetails[2]{new appframe.ColumnDetails("id",100), new appframe.ColumnDetails("tables",100)};
 		
 
@@ -72,7 +73,7 @@ namespace YOM2013
 			SystemLayout.SaveLayout ();
 
 			randomTables = new NoteDataXML_Table();
-			randomTables.Caption = LayoutPanel.SYSTEM_NOTEBOOKS;
+			randomTables.Caption = LayoutDetails.SYSTEM_NOTEBOOKS;
 			randomTables.Columns = new appframe.ColumnDetails[3]{new appframe.ColumnDetails("id",100), 
 				new appframe.ColumnDetails("notebooks",100),
 				new appframe.ColumnDetails("sections",200)};
@@ -89,7 +90,7 @@ namespace YOM2013
 			/// -- STATUS
 			/// 
 			randomTables = new NoteDataXML_Table();
-			randomTables.Caption = LayoutPanel.SYSTEM_STATUS;
+			randomTables.Caption = LayoutDetails.SYSTEM_STATUS;
 			randomTables.Columns = new appframe.ColumnDetails[2]{new appframe.ColumnDetails("id",100), 
 				new appframe.ColumnDetails("status",100)};
 
@@ -105,8 +106,10 @@ namespace YOM2013
 			randomTables.AddRow(new object[2]{"7", Loc.Instance.GetString("6 Published")});
 			randomTables.AddRow(new object[2]{"8", Loc.Instance.GetString("7 Republished on personal site")});
 			randomTables.AddRow(new object[2]{"9", Loc.Instance.GetString("8 Selfpublished")});
+		//	NewMessage.Show (randomTables.RowCount().ToString ());
+			randomTables.AddRow(new object[2]{"10", Loc.Instance.GetString("9 Retired")});
 
-
+		//	NewMessage.Show (randomTables.RowCount().ToString ());
 
 
 			///
@@ -115,7 +118,7 @@ namespace YOM2013
 			/// 
 			/// 
 			randomTables = new NoteDataXML_Table();
-			randomTables.Caption = LayoutPanel.SYSTEM_SUBTYPE;
+			randomTables.Caption = LayoutDetails.SYSTEM_SUBTYPE;
 			randomTables.Columns = new appframe.ColumnDetails[2]{new appframe.ColumnDetails("id",100), 
 				new appframe.ColumnDetails("subtype",100)};
 			subpanel.AddNote(randomTables);
@@ -133,7 +136,7 @@ namespace YOM2013
 			/// 
 			/// 
 			randomTables = new NoteDataXML_Table();
-			randomTables.Caption = LayoutPanel.SYSTEM_KEYWORDS;
+			randomTables.Caption = LayoutDetails.SYSTEM_KEYWORDS;
 			randomTables.Columns = new appframe.ColumnDetails[2]{new appframe.ColumnDetails("id",100), 
 				new appframe.ColumnDetails("keyword",100)};
 			subpanel.AddNote(randomTables);
@@ -145,8 +148,25 @@ namespace YOM2013
 			randomTables.AddRow(new object[2]{"4", Loc.Instance.GetString("SciFi")});
 			randomTables.AddRow(new object[2]{"5", Loc.Instance.GetString("WhatIf?")});
 
+			///
+			/// -- WORKLOG
+			/// 
+			/// 
+			/// 
+			randomTables = new NoteDataXML_Table();
+			randomTables.Caption = LayoutDetails.SYSTEM_WORKLOGCATEGORY;
+			randomTables.Columns = new appframe.ColumnDetails[2]{new appframe.ColumnDetails("id",100), 
+				new appframe.ColumnDetails("category",100)};
+			subpanel.AddNote(randomTables);
+			randomTables.CreateParent(subpanel.GetPanelsLayout ());
+			
+			randomTables.AddRow(new object[2]{"1", Loc.Instance.GetString("Writing")});
+			randomTables.AddRow(new object[2]{"2", Loc.Instance.GetString("Editing")});
+			randomTables.AddRow(new object[2]{"3", Loc.Instance.GetString("Planning")});
 
-		
+
+
+
 			SystemLayout.SaveLayout ();
 			list.Refresh();
 			SystemLayout.Dispose ();

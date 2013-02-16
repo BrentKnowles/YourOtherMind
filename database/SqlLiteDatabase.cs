@@ -105,7 +105,11 @@ namespace database
 		}
 		public override List<object[]> GetValues (string tableName, string[] columnToReturn, string columnToTest, object Test)
 		{
-			return GetValues (tableName, columnToReturn, columnToTest, Test, Constants.BLANK);
+			return GetValues (tableName, columnToReturn, columnToTest, Test, Constants.BLANK, Constants.BLANK);
+		}
+		public override List<object[]> GetValues (string tableName, string[] columnToReturn, string columnToTest, object Test, string Sorting)
+		{
+			return GetValues (tableName, columnToReturn, columnToTest, Test, Sorting,Constants.BLANK);
 		}
 		/// <summary>
 		/// Gets the values. Returns a list with an object array. The list is in the form:
@@ -128,7 +132,8 @@ namespace database
 		/// <param name='Test'>
 		/// Test.
 		/// </param>
-		public override List<object[]> GetValues (string tableName, string[] columnToReturn, string columnToTest, object Test, string Sorting)
+		/// <param name="ExtraWhere">For providing additional where clauses, like testing a second field</param>
+		public override List<object[]> GetValues (string tableName, string[] columnToReturn, string columnToTest, object Test, string Sorting, string ExtraWhere)
 		{
 
 			if (CoreUtilities.Constants.BLANK == tableName) {
@@ -185,8 +190,8 @@ namespace database
 			
 				// Execute query on database
 				//string selectSQL = "SELECT name, username FROM AppUser";
-				string selectSQL = String.Format ("SELECT {0} FROM {1} where {2} = {3} {4}", 
-				                                  ColumnsToReturnForQuery, tableName, columnToTest, Test, Sorting);
+				string selectSQL = String.Format ("SELECT {0} FROM {1} where {2} = {3} {4} {5}", 
+				                                  ColumnsToReturnForQuery, tableName, columnToTest, Test, ExtraWhere, Sorting);
 				lg.Instance.Line("SqlLiteDatabase.GetValues", ProblemType.WARNING, selectSQL, Loud.CTRIVIAL);
 				//string selectSQL = String.Format ("SELECT {0} FROM {1} LIMIT 1", columnToReturn, tableName, columnToTest, Test);
 				SQLiteCommand selectCommand = new SQLiteCommand (selectSQL, sqliteCon);
@@ -553,6 +558,7 @@ namespace database
 			int val = command.ExecuteNonQuery();
 			lg.Instance.Line("SqlLiteDatabse->Delete", ProblemType.MESSAGE, String.Format ("ExecuteNonQuery value {0}", val));
 			if (val > 0 || val == -1) result = true;
+			else lg.Instance.Line ("SqlLiteDatabase->Delete", ProblemType.WARNING, "Delete did not work");
 
 		
 
@@ -949,6 +955,70 @@ ORDER BY name;
 			                 int count = Int32.Parse (o.ToString());
 			sqliteCon.Close ();
 			return count;
+		}
+		/// <summary>
+		///  the data table.
+		/// February 2013
+		/// Tried using this with porting the Day Logger code
+		/// but I never got the calculations to work (this operation itself seemed to work) though the TYPES of
+		/// the columns seemedto have changed.
+		///
+		/// </summary>
+		/// <returns>
+		/// The data table.
+		/// </returns>
+		/// <param name='tablename'>
+		/// Tablename.
+		/// </param>
+		public override System.Data.DataTable AsDataTable (string tablename)
+		{
+			SQLiteConnection sqliteCon = new SQLiteConnection (Connection_String);
+			sqliteCon.Open ();
+			SQLiteCommand dbCommand = new SQLiteCommand(sqliteCon);
+			dbCommand.CommandText = "SELECT * FROM " + tablename;
+			SQLiteDataReader executeReader = dbCommand.ExecuteReader(System.Data.CommandBehavior.SingleResult);
+			System.Data.DataTable dt = new System.Data.DataTable();
+			dt.Load(executeReader);
+			executeReader.Close ();
+			sqliteCon.Close ();
+			return dt;
+		}
+		/// <summary>
+		/// Executes the command. Uses for getting Count and Sum queires out of the data
+		/// </summary>
+		/// <returns>
+		/// The command.
+		/// </returns>
+		/// <param name='tablename'>
+		/// Tablename.
+		/// </param>
+		/// <param name='select'>
+		/// Select.
+		/// </param>
+		public override string ExecuteCommand (string select, DateTime start, DateTime end, bool IgnoreDate)
+		{
+			SQLiteConnection sqliteCon = new SQLiteConnection (Connection_String);
+			sqliteCon.Open ();
+			SQLiteCommand dbCommand = new SQLiteCommand (sqliteCon);
+			dbCommand.CommandText = select;
+
+			//SQLiteParameter sinceDateTimeParam = new SQLiteParameter("@DateStart",SQLiteParameter.);
+			if (false == IgnoreDate) {
+				dbCommand.Parameters.Add (new SQLiteParameter ("@DateStart", start));
+				dbCommand.Parameters.Add (new SQLiteParameter ("@DateEnd", end));
+			}
+
+
+			lg.Instance.Line("SqlLiteDatabase->ExecuteCommand", ProblemType.MESSAGE, select);
+			string value = "";
+			SQLiteDataReader executeReader = dbCommand.ExecuteReader (System.Data.CommandBehavior.SingleResult);
+			while (executeReader.Read ()) {
+				value = executeReader[0].ToString ();
+			}
+
+			executeReader.Close ();
+			sqliteCon.Close ();
+			return value;
 		}
 	}
 }

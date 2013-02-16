@@ -16,6 +16,11 @@ namespace Layout
 		public info_form (string infoText, string _GUID)
 		{
 
+			this.Width = 400;
+			this.Height = 500;
+			this.Icon = LayoutDetails.Instance.MainFormIcon;
+			FormUtils.SizeFormsForAccessibility(this, LayoutDetails.Instance.MainFormFontSize);
+
 			//this.Font = new Font(this.Font.FontFamily, 18.0f);
 
 			if (Constants.BLANK == _GUID) {
@@ -37,6 +42,7 @@ namespace Layout
 
 
 			ListOfEvents = new ListBox();
+			ListOfEvents.Height = 300;
 			ListOfEvents.Dock = DockStyle.Bottom;
 
 
@@ -57,7 +63,15 @@ namespace Layout
 				ListOfEvents.DisplayMember = "Display";
 			}
 		}
-
+		/// <summary>
+		/// Handles the refresh click for REDRAWING RECIPROCAL LINKS
+		/// </summary>
+		/// <param name='sender'>
+		/// Sender.
+		/// </param>
+		/// <param name='e'>
+		/// E.
+		/// </param>
 		void HandleRefreshClick (object sender, EventArgs e)
 		{
 

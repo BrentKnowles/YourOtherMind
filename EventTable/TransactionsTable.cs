@@ -2,7 +2,10 @@ using System;
 using database;
 using System.Collections.Generic;
 using CoreUtilities;
+using System.Data;
+using System.Collections;
 namespace Transactions
+
 {
 	public class TransactionsTable
 	{
@@ -11,10 +14,18 @@ namespace Transactions
 		// an int. Values MEAN:
 		public const int T_ADDED = 1;
 		public const int T_IMPORTED = 100;
-		//		public const int T_DELETED = 2;
+
+
+
+				public const int T_DELETED = 2;
 				public const int T_RETIRED = 3;
-		//		public const int T_FINISHED = 4;
-		//		public const int T_USER = 5;
+				public const int T_FINISHED = 4; // definitely at least one in there
+
+				public const int T_NAGSTARTED = 13;
+				public const int T_NAGINTERRUPTED = 14;
+
+				public const int T_USER = 5;
+
 		//		public const int T_ADDSUB = 6;
 		//		public const int T_REGISTER = 7;
 		//		public const int T_WEB = 8;
@@ -22,8 +33,9 @@ namespace Transactions
 		//		public const int T_TENWINDOWS = 10;
 		//		public const int T_BRAIN = 11;
 		//		public const int T_WORDCOUNT = 12;
-		//		public const int T_NAGSTARTED = 13;
-		//		public const int T_NAGINTERRUPTED = 14;
+
+
+		public const int T_SUBMISSION = 1001;
 
 		static public ColumnConstant ID = new ColumnConstant("id", 0, "INTEGER", 0);
 		static public ColumnConstant DATE = new ColumnConstant("date",1,"datetime",1);
@@ -189,6 +201,10 @@ namespace Transactions
 			}
 			return returnvalue;
 		}
+		public List<TransactionBase> GetEventsForLayoutGuid (string Guid)
+		{
+			return GetEventsForLayoutGuid (Guid, Constants.BLANK);
+		}
 		/// <summary>
 		/// Gets the events for layout GUID.
 		/// </summary>
@@ -198,10 +214,10 @@ namespace Transactions
 		/// <param name='Guid'>
 		/// GUID.
 		/// </param>
-		public List<TransactionBase> GetEventsForLayoutGuid (string Guid)
+		public List<TransactionBase> GetEventsForLayoutGuid (string Guid, string ExtraWhere)
 		{
 			List<TransactionBase> returnValue = new List<TransactionBase> ();
-			List<object[]> results = ThisDatabase.GetValues (table_name, Columns, DATA1_LAYOUTGUID, Guid);
+			List<object[]> results = ThisDatabase.GetValues (table_name, Columns, DATA1_LAYOUTGUID, Guid,Constants.BLANK, ExtraWhere);
 			if (results != null) {
 				foreach(object[] objArray in results)
 				{
@@ -221,14 +237,503 @@ namespace Transactions
 			return returnValue;
 		}
 
-	}
+		//
+		// QUERIES
+		//
 
-	/// <summary>
-	/// Event row_ return note. This is just for returnign from the GetExisting Function in the EventTable (to avoid confusion)
-	/// </summary>
 
-//	public class EventRowSubmission : EventRowBase
-//	{
-//		// obviouslly addedin ADDIN
-//	}
+
+
+		/// <summary>
+		/// January 8 2010
+		/// Breaking apart QueryMonthInYear so the date look up is a bit moduldar
+		/// </summary>
+		/// <param name="sSumColumn"></param>
+		/// <param name="sExtraFilter"></param>
+		/// <param name="newDateStart"></param>
+		/// <param name="newDateEnd"></param>
+		/// <param name="nTypeOfQuery">0 - Normal, 1 - Max</param>
+		/// <param name="IgnoteDate">If true searches 'all time'</para>
+		/// <returns></returns>
+		public string QueryValueForTimePeriod (string sSumColumn, string sExtraFilter, DateTime newDateStart, DateTime newDateEnd, int nTypeOfQuery, bool IgnoreDates)
+		{
+
+			/* HUGE ISSUE
+              * ew DateTime(2008,10,12) works because it is encoding it as YEAR/DAY/MONTH which is what the database wants
+              * I need a way to force the database to work with the same date system
+              * as the core*/
+
+
+			string sValue = "error";
+
+			string sCalcString1 = "";
+			/// if not an integer column do a count instead
+			if (1 == nTypeOfQuery) {
+				//sCalcString1 = String.Format ("MAX(convert(int,{0}))", sSumColumn); DID NOT FIx problems (returns error)
+				sCalcString1 = String.Format ("MAX( Cast({0} as int))", sSumColumn);
+			} else
+				if (sSumColumn == DATA1_LAYOUTGUID) {
+				// changed this to do direct count of ID, because it won't be blank (and I'm not sure if that was messing with 
+				//sCalcString1 = String.Format ("COUNT({0})", sSumColumn);
+				sCalcString1 = String.Format ("COUNT(id)", sSumColumn);
+			} else {
+				sCalcString1 = String.Format ("SUM({0})", sSumColumn);
+			}
+			//sCalcString1 = String.Format("SUM(Convert('{0}', 'System.Int32'))", sSumColumn);
+			//sCalcString1 = String.Format("SUM(Convert({0}, 'INTEGER'))", sSumColumn);
+			
+
+
+			/*/PROPER:*/
+			string sCalcString2 = "";//String.Format("({0} >= #{1}#) AND ({0} <#{2}#)", DATE, newDateStart.ToString("u"), newDateEnd.ToString("u"));// String.Format("({0} >= #{1}#) AND ({0} < #{2}#)", F_DATE, newDateStart, newDateEnd);
+
+
+			string DateComparer = String.Format ("({0} >= @DateStart) AND ({0} < @DateEnd)", DATE);
+
+			if (true == IgnoreDates) {
+				DateComparer = "";
+			}
+
+			//string sCalcString2 = String.Format("({0} >= #{1}#) AND ({0} < #{2}#)", DATE, newDateStart.ToString (), newDateEnd.ToString ());
+			if (sExtraFilter != "")
+			{
+				// add an extra query to query
+				sCalcString2 = sCalcString2 + String.Format(" ({0}) ", sExtraFilter);
+
+				if (DateComparer != "")
+				{
+					sCalcString2 = sCalcString2 + " AND ";
+				}
+			}
+
+			sValue =  ThisDatabase.ExecuteCommand(String.Format ("Select {0} from {1} where {2} {3}", sCalcString1, table_name, sCalcString2,
+			                                                     			                                                     DateComparer), newDateStart, newDateEnd, IgnoreDates);
+			lg.Instance.Line("TransactionsTable->QueryValueForTimePeriod", ProblemType.MESSAGE, sValue);
+			return sValue;
+		}
+
+		public DataTable AsDataTable ()
+		{
+			return ThisDatabase.AsDataTable(table_name);
+		}
+
+		/// <summary>
+		/// Takes current date.
+		/// Finds most recent monday.
+		/// Then tabulates up until this date.
+		/// 
+		/// So, basically ifyou did this on a Tuesday you wuld get the Monday and the Tuesday result.
+		/// </summary>
+		/// <param name="sSumColumn"></param>
+		/// <param name="?"></param>
+		/// <param name="sExtraFilter"></param>
+		/// <returns></returns>
+		public string QueryLastWeek(DateTime daytouse, string sSumColumn, string sExtraFilter, bool IgnoreDates)
+		{
+			string sValue = Constants.BLANK;
+			try
+			{
+
+
+				
+				
+				
+				
+				DateTime newDateEnd = daytouse.Date; // was DateTime.Today.Date
+				int nDays = 0; // how many days to compare
+				
+				
+				
+				DayOfWeek dayofweek = newDateEnd.DayOfWeek;
+				switch (dayofweek)
+				{
+				case DayOfWeek.Monday: nDays = 0; break;
+				case DayOfWeek.Tuesday: nDays = 1; break;
+				case DayOfWeek.Wednesday: nDays = 2; break;
+				case DayOfWeek.Thursday: nDays = 3; break;
+				case DayOfWeek.Friday: nDays = 4; break;
+				case DayOfWeek.Saturday: nDays = 5; break;
+				case DayOfWeek.Sunday : nDays = 6; break;
+				}
+				
+				// we have to add 1 to dateend
+				newDateEnd = newDateEnd.AddDays(1).Date;
+				DateTime newDateStart = daytouse.AddDays(-1 * nDays).Date;
+				
+				//newDate
+				
+
+				// Goign to attempt to write my own for YOM 2013
+
+				 sValue = QueryValueForTimePeriod( sSumColumn, sExtraFilter, newDateStart, newDateEnd, 0,IgnoreDates);
+//				sValue =  ThisDatabase.ExecuteCommand(String.Format ("Select Sum({0}) from {1} where type='5' AND ({2} >= {3}) AND ({2} < {4})", sSumColumn, table_name,
+//				                                                     DATE, newDateStart.), newDateEnd.ToUniversalTime()));
+
+
+				// This works but now I try to generalize
+//				sValue =  ThisDatabase.ExecuteCommand(String.Format ("Select Sum({0}) from {1} where type='5' AND ({2} >= @DateStart) AND ({2} < @DateEnd)", sSumColumn, table_name,
+//				                                                     DATE), newDateStart, newDateEnd);
+			}
+			catch (Exception ex)
+			{
+				lg.Instance.Line ("TransactionsTable->QueryLastWeek", ProblemType.EXCEPTION, ex.ToString ());
+			//	NewMessage.Show(ex.ToString());
+			}
+			return sValue;
+		}
+		/// <summary>
+		///  get week states for current week
+		/// </summary>
+		/// <param name="daytouse">Will build the week based off of this date</param>
+		/// <returns></returns>
+		public  string GetWeekStats(DateTime daytouse)
+		{
+			//DateTime todaysDate = DateTime.Today();
+			
+			string nMinutes = QueryLastWeek(daytouse, DATA3, String.Format("{0}='{1}'", TYPE, T_USER),false);
+			
+			int minutes = 0;
+			int hours = 0;
+			GetHoursAndMinutes(nMinutes, out minutes, out hours);
+			nMinutes = Loc.Instance.GetStringFmt("{0} (~{1} hours)", minutes.ToString(), hours.ToString());
+			
+			string Words = QueryLastWeek(daytouse, DATA4, String.Format("{0}='{1}'", TYPE, T_USER),false);
+			if (Words.IndexOf("null") > -1) Words = "0"; // sometimes they show null compute
+			
+			string sResult = Loc.Instance.GetStringFmt("WORKLOG - ALL LAYOUTS (THIS WEEK){1}Minutes Worked: {0} {1}Words Written: {2}", nMinutes, Environment.NewLine, Words);
+			return sResult;
+			
+		}
+		private void GetHoursAndMinutes(string Minutes, out int minutes, out int hours)
+		{
+			Int32.TryParse(Minutes, out minutes);
+			hours = (int)(minutes / 60);
+		}
+		// These are specific to a GUID, but still time-limited
+		public  string GetWorkStats_SpecificLayout(DateTime daytouse, string GUID)
+		{
+			//DateTime todaysDate = DateTime.Today();
+
+
+			string ExtraFilter =  String.Format("{0}='{1}' and {2}='{3}'", TYPE, T_USER, DATA1_LAYOUTGUID, GUID);
+
+			string nMinutes = QueryLastWeek(daytouse, DATA3, ExtraFilter,false);
+			
+			int minutes = 0;
+			int hours = 0;
+			GetHoursAndMinutes(nMinutes, out minutes, out hours);
+			nMinutes = Loc.Instance.GetStringFmt("{0} (~{1} hours)", minutes.ToString(), hours.ToString());
+			
+			string Words = QueryLastWeek(daytouse, DATA4, ExtraFilter,false);
+			if (Words.IndexOf("null") > -1) Words = "0"; // sometimes they show null compute
+
+
+
+
+			string sResult = Loc.Instance.GetStringFmt("WORKLOG - THIS LAYOUT (THIS WEEK){1}Minutes Worked: {0} {1}Words Written: {2}", nMinutes, Environment.NewLine, Words);
+
+
+			// Now Get 'All Time Stats' for this layout
+			nMinutes = QueryLastWeek(daytouse, DATA3, ExtraFilter, true);
+			GetHoursAndMinutes(nMinutes, out minutes, out hours);
+			nMinutes = Loc.Instance.GetStringFmt("{0} (~{1} hours)", minutes.ToString(), hours.ToString());
+			Words = QueryLastWeek(daytouse, DATA4, ExtraFilter,true);
+			if (Words.IndexOf("null") > -1) Words = "0"; // sometimes they show null compute
+
+			sResult = String.Format ("{0}{1}THIS LAYOUT (ALL TIME){1}Minutes Worked: {2} {1}Words Written: {3}", sResult, Environment.NewLine, nMinutes, Words);
+
+
+			return sResult;
+			
+		}
+
+
+		/// </summary>
+		/// <param name="sSumColumn"></param>
+		/// <param name="nYear"></param>
+		/// <param name="sExtraFilter"></param>
+		/// <param name="nMonth"></param>
+		/// <returns></returns>
+		 public string QueryMonthInYear(string sSumColumn, int nYear, string sExtraFilter, int nMonth, int nTypeOfQuery)
+		{
+			string sValue = "error";
+			try
+			{
+
+				
+				
+				int nNumberOfDaysInMonth = DateTime.DaysInMonth(nYear, nMonth);
+				
+				
+				DateTime newDateStart = new DateTime(nYear, nMonth, 1).Date;
+				DateTime newDateEnd = new DateTime(nYear, nMonth, nNumberOfDaysInMonth).Date;
+				
+				//newDate
+				
+				
+				sValue = QueryValueForTimePeriod(sSumColumn, sExtraFilter, newDateStart, newDateEnd, nTypeOfQuery,false);
+				
+				
+			}
+			catch (Exception ex)
+			{
+				lg.Instance.Line("TransactionTable->QueryMonthInYear",ProblemType.EXCEPTION, ex.ToString ());
+				//NewMessage.Show(ex.ToString());
+			}
+			return sValue;
+			
+		}
+		
+		/// <summary>
+		/// returns a month by month breakdown of progress
+		/// 
+		/// will include both Hours, Words, FInished and retired, formatted like
+		/// 
+		///   January 2008
+		///     Minutes: 203  (F_DATA3)
+		///     Words: 1200 (F_DATA4)
+		///     Finished: 0
+		///     Retired: 1
+		///  
+		/// Example usage
+		/// </summary>
+		/// <param name="nYear"></param>
+		/// <returns></returns>
+		 public string QueryMonthsInYearReport(int nYear, int nMonth)
+		{
+			//
+			string nMinutes = QueryMonthInYear(DATA3, nYear, String.Format("{0}='{1}'", TYPE, T_USER), nMonth,0);
+			string Words = "0";
+			string Added = "0";
+			string AddedSub = "0";
+			string Finished = "0";
+			string Retired = "0";
+			string Nag = "0";
+			string MaxWords = "0";
+			int minutes = 0;
+			int hours = 0;
+			
+			try
+			{
+				minutes = Int32.Parse(nMinutes);
+				hours = (int)(minutes / 60);
+				nMinutes = String.Format("{0} (~{1} hours)", nMinutes, hours.ToString());
+				
+				
+				
+				Words = QueryMonthInYear(DATA4, nYear, String.Format("{0}='{1}'", TYPE, T_USER), nMonth,0);
+				Added = QueryMonthInYear(DATA1_LAYOUTGUID, nYear, String.Format("{0}={1}", TYPE, T_ADDED), nMonth,0);
+				
+				AddedSub = QueryMonthInYear(DATA1_LAYOUTGUID, nYear, String.Format("{0}={1}", TYPE, T_SUBMISSION), nMonth,0);
+				
+				Finished = QueryMonthInYear(DATA1_LAYOUTGUID, nYear, String.Format("{0}={1}", TYPE, T_FINISHED), nMonth,0);
+				
+				Retired = QueryMonthInYear(DATA1_LAYOUTGUID, nYear, String.Format("{0}={1}", TYPE, T_RETIRED), nMonth,0);
+				Nag = QueryMonthInYear(DATA1_LAYOUTGUID, nYear, String.Format("{0}={1}", TYPE, T_NAGINTERRUPTED), nMonth,0);
+				MaxWords = QueryMonthInYear(DATA4, nYear, String.Format("{0}={1}", TYPE, T_USER), nMonth, 1);
+			}
+			catch (Exception)
+			{
+				minutes = 0;
+				hours = 0;
+				nMinutes = "0";
+			}
+			
+			
+			DateTime date = new DateTime(nYear, nMonth, 1);
+			
+			
+			string sValue =
+				String.Format("{0}\r\nMinutes: {1} \r\nWords: {2}\r\nFinished: {3}\r\nRetired: {4}\r\nAdded: {5} \r\nSubmissions: {6} \r\nMax Words in One Day: {7} \r\nDistracted: {8}",
+				              date.ToString("MMMM"), nMinutes, Words, Finished, Retired, Added, AddedSub, MaxWords, Nag);
+			return sValue;
+			
+		}
+		
+		/// <summary>
+		/// returns an array of the year in which subs happened
+		/// </summary>
+		/// <returns></returns>
+		public int[] GetWorkHistoryYears()
+		{
+
+			ArrayList newList = new ArrayList();
+			List<object[]> results = ThisDatabase.GetValues(table_name,new string[1]{DATE},"any","*"); 
+
+			foreach (object[] r in results)
+			{
+			//	System.Globalization.CultureInfo provider = System.Globalization.CultureInfo.InvariantCulture;
+				DateTime date = DateTime.Parse(r[0].ToString ());//(DateTime.ParseExact(r[0].ToString(),"MM/DD/YYYY",provider));
+				
+				// 1950 was used as a code year for Brainstorm counting
+				if (date.Year != 1950 && date.Year != 1)
+				{
+					if (newList.IndexOf(date.Year) == -1)
+					{
+						// year does not exist, add it
+						newList.Add(date.Year);
+					}
+				}
+
+			}
+			newList.Sort();
+			
+			int[] list = new int[newList.Count];
+			newList.CopyTo(list);
+			return list;
+			
+			
+		}
+		/// <summary>
+		/// retrieves a  SUM value based on criteria
+		///  
+		/// HOURS is 3
+		/// 
+		/// Example usage
+		/// </summary>
+		/// <param name="nYear"></param>
+		/// <returns></returns>
+		public string Query(string sSumColumn, int nYear, string sExtraFilter)
+		{
+			string sValue = "error";
+			try
+			{
+
+				
+				string sCalcString1 = String.Format("SUM({0})", sSumColumn);
+				DateTime newDateStart = new DateTime(nYear, 1, 1).Date;
+				DateTime newDateEnd = new DateTime(nYear + 1, 1, 1).Date;
+
+
+
+				//newDate
+//				string sCalcString2 = String.Format("({0} >= #{1}#) AND ({0} < #{2}#)", DATE, newDateStart, newDateEnd);
+//				if (sExtraFilter != "")
+//				{
+//					// add an extra query to query
+//					sCalcString2 = sCalcString2 + String.Format(" AND ({0})", sExtraFilter);
+//				}
+				//  Messa geBox.Show(String.Format("{0} -- {1}", sCalcString1, sCalcString2));
+				sValue =QueryValueForTimePeriod(sSumColumn, sExtraFilter, newDateStart, newDateEnd, 0,false);
+
+				//sValue = ((Int64)(table.Compute(sCalcString1, sCalcString2))).ToString();
+			}
+			catch (Exception ex)
+			{
+				lg.Instance.Line("TransactionsTable->Query", ProblemType.EXCEPTION, ex.ToString());
+			//	NewMessage.Show(ex.ToString());
+			}
+			return sValue;
+			
+		}
+		/// <summary>
+		/// counts the number of occurences of a type
+		/// </summary>
+		/// <param name="nYear"></param>
+		/// <param name="sExtraFilter"></param>
+		/// <returns>-1 if no event table found</returns>
+		 public string QueryCount(int nYear, string sExtraFilter, bool bAllYears)
+		{
+			string sValue = "error";
+			try
+			{
+
+//				DataSet ds = _LoadTable();
+//				if (ds == null)
+//				{
+//					return "-1";
+//				}
+//				DataTable table = ds.Tables[0];
+//				
+//				string sCalcString1 = String.Format("Count({0})", F_DATA);
+//				
+//				//newDate
+//				string sCalcString2 = "";
+				DateTime newDateStart=DateTime.Now;
+				DateTime newDateEnd=DateTime.Now;
+				if (bAllYears == false)
+				{
+					 newDateStart = new DateTime(nYear, 1, 1).Date;
+					 newDateEnd = new DateTime(nYear + 1, 1, 1).Date;
+					
+				//	sCalcString2 = String.Format("({0} >= #{1}#) AND ({0} < #{2}#)", F_DATE, newDateStart, newDateEnd);
+				}
+				sValue = QueryValueForTimePeriod(DATA1_LAYOUTGUID, sExtraFilter, newDateStart, newDateEnd, 0,bAllYears);
+//				else if (bAllYears == true)
+//				{
+//					sCalcString2 = sExtraFilter;
+//					sExtraFilter = "";
+//				}
+//				
+//				if (sExtraFilter != "")
+//				{
+//					// add an extra query to query
+//					sCalcString2 = sCalcString2 + String.Format(" AND ({0})", sExtraFilter);
+//				} 
+//				//  Messa geBox.Show(String.Format("{0} -- {1}", sCalcString1, sCalcString2));
+//				//Messa geBox.Show(table.Compute(sCalcString1, sCalcString2).GetType().ToString());
+//				sValue = ((int)(table.Compute(sCalcString1, sCalcString2))).ToString();
+			}
+			catch (Exception ex)
+			{
+				lg.Instance.Line("TransactionsTable->QueryCount", ProblemType.EXCEPTION, ex.ToString());
+			}
+			return sValue;
+			
+		}
+		/// <summary>
+		/// counts the number of occurences of a type
+		/// </summary>
+		/// <param name="nYear"></param>
+		/// <param name="sExtraFilter"></param>
+		/// <returns>-1 if no event table found</returns>
+		public string QueryMax(int nYear, string sExtraFilter, bool bAllYears, string maxcol)
+		{
+			string sValue = "error";
+			try
+			{
+
+				
+				//string sCalcString1 = String.Format("Max({0})", maxcol);
+				DateTime newDateStart=DateTime.Now;
+				DateTime newDateEnd=DateTime.Now;
+				//newDate
+//				string sCalcString2 = "";
+				if (bAllYears == false)
+				{
+					 newDateStart = new DateTime(nYear, 1, 1).Date;
+					 newDateEnd = new DateTime(nYear + 1, 1, 1).Date;
+					
+					//sCalcString2 = String.Format("({0} >= #{1}#) AND ({0} < #{2}#)", DATE, newDateStart, newDateEnd);
+				}
+//				else if (bAllYears == true)
+//				{
+//					sCalcString2 = sExtraFilter;
+//					sExtraFilter = "";
+//				}
+				
+//				if (sExtraFilter != "")
+//				{
+//					// add an extra query to query
+//					sCalcString2 = sCalcString2 + String.Format(" AND ({0})", sExtraFilter);
+//				}
+				//  Messa geBox.Show(String.Format("{0} -- {1}", sCalcString1, sCalcString2));
+				//Messa geBox.Show(table.Compute(sCalcString1, sCalcString2).GetType().ToString());
+				//sValue = ((int)(table.Compute(sCalcString1, sCalcString2))).ToString();
+				sValue = QueryValueForTimePeriod(maxcol, sExtraFilter, newDateStart, newDateEnd, 1,bAllYears);
+			}
+			catch (Exception ex)
+			{
+				lg.Instance.Line("TransactionsTable->QueryMax", ProblemType.EXCEPTION, ex.ToString());
+			}
+			return sValue;
+			
+		}
+
+		
+
+
+	} // class
+
+
 }
