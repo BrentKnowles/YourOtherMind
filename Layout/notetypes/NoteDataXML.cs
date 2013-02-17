@@ -106,6 +106,16 @@ namespace Layout
 			set{ parent = value;}
 		}
 
+		private string appearance = "classic";
+		// Sets the visual appearance
+		public string Appearance {
+			get {
+				return appearance;
+			}
+			set {
+				appearance = value;
+			}
+		}
 
 		protected bool readOnly=false;
 		/// <summary>

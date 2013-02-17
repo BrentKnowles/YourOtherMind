@@ -43,8 +43,46 @@ namespace Layout
 		protected delegate void delegate_UpdateListOfNotes();
 
 
+		protected void UpdateAppearance ()
+		{
+
+
+			// takes the current appearance and adjusts it.
+
+
+			Appearance app = LayoutDetails.Instance.GetAppearanceByName(this.Appearance);
+
+			CaptionLabel.Font = app.captionFont;   //1
+			this.CaptionLabel.Height = app.nHeaderHeight; //2
+
+
+			ParentNotePanel.BorderStyle = app.mainPanelBorderStyle; //3
+
+			this.CaptionLabel.BackColor = app.captionBackground; //4
+			this.CaptionLabel.ForeColor = app.captionForeground; //5
+
+			DoChildAppearance(app);
+
+			// NOT BEING USED YET
+			//this.CaptionLabel.Bord = app.HeaderBorderStyle;  //6
+			// TODO: RichEdit would use the Mainbackground on the TExt box (i.e., fantasy looks like a  single note, caption and text the same. //7 
+
+			//mmainBackground = -984833;
+			//UseBackgroundColor = true;
+
+			// Children can override this to tweak parameters.
+
+			// remember caching trcik from previous version
+		}
+		 
+		// this is overrideen by children to updat their own controls colors
+		protected virtual void DoChildAppearance (Layout.Appearance app)
+		{
+
+		}
+
 		//delegate_UpdateListOfNotes UpdateListOfNotes;
-		public virtual void CreateParent (LayoutPanelBase _Layout)
+		public void CreateParent (LayoutPanelBase _Layout)
 		{
 
 
@@ -69,6 +107,8 @@ namespace Layout
 			
 			
 			CaptionLabel = new ToolStrip ();
+			// must be false for height to matter
+			CaptionLabel.AutoSize = false;
 			CaptionLabel.SuspendLayout ();
 			CaptionLabel.DoubleClick += HandleCaptionLabelDoubleClick;
 			CaptionLabel.MouseDown += HandleMouseDown;
@@ -171,11 +211,30 @@ namespace Layout
 
 			//
 			//
+			// APPEARANCE
+			//
+			//
+			ToolStripMenuItem AppearanceSet = new ToolStripMenuItem();
+
+			AppearanceSet.Text = Loc.Instance.GetStringFmt("Appearance: {0}",this.Appearance);
+						
+			
+			ContextMenuStrip AppearanceMenu = new ContextMenuStrip();
+
+			ToolStripLabel empty = new ToolStripLabel("BB");
+			AppearanceMenu.Items.Add (empty);
+
+			AppearanceSet.DropDown = AppearanceMenu;
+			AppearanceMenu.Opening+= HandleAppearanceMenuOpening;
+			properties.DropDownItems.Add (AppearanceSet);
+			//
+			//
 			// DOCK STYLE
 			//
 			//
 
 			ToolStripComboBox DockPicker = new ToolStripComboBox ();
+			DockPicker.ToolTipText = Loc.Instance.GetString ("Set Docking Behavior For Note");
 			DockPicker.DropDownStyle = ComboBoxStyle.DropDownList;
 			//DockPicker.DropDown+= HandleDockDropDown;
 
@@ -291,6 +350,40 @@ namespace Layout
 			DeleteNote = _Layout.DeleteNote;
 			Layout = _Layout;
 
+
+
+			// February 17 2013 - needed to ensure that children build their controls before Updateappearance is called
+			DoBuildChildren(_Layout);
+
+			UpdateAppearance ();
+
+		}
+		protected virtual void DoBuildChildren(LayoutPanelBase _Layout)
+		{
+			// children ned to modify this (basically it is their version of CreatePraent)
+		}
+		void HandleAppearanceMenuOpening (object sender, System.ComponentModel.CancelEventArgs e)
+		{
+
+			(sender as ContextMenuStrip).Items.Clear ();
+			// build list from list of appearances in database
+			System.Collections.Generic.List<string> list = LayoutDetails.Instance.GetListOfAppearances ();
+			foreach (string s in list) {
+				ToolStripButton button = new ToolStripButton();
+				button.CheckOnClick=true;
+				button.Text = s;
+				if (s == this.Appearance)
+					button.Checked= true;
+				button.Click+= HandleChooseNewAppearanceClick;
+				(sender as ContextMenuStrip).Items.Add (button);
+			}
+
+		}
+
+		void HandleChooseNewAppearanceClick (object sender, EventArgs e)
+		{
+			this.Appearance = (sender as ToolStripButton).Text;
+			UpdateAppearance();
 		}
 
 		void HandleLockStateClick (object sender, EventArgs e)

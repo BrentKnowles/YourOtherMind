@@ -15,8 +15,8 @@ namespace appframe
 			FormUtils.SizeFormsForAccessibility(this, access.FontSizeForForm);
 			this.KeyPreview = true;
 			this.Icon = MainFormBase.MainFormIcon;
-			this.Width = 400;
-			this.Height = 400;
+			this.Width = 700;
+			this.Height = 600;
 			this.Name = "optionform";
 
 			Panel bottom = new Panel();

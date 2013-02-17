@@ -118,6 +118,12 @@ namespace Layout
 		}
 
 		#endregion;
+		#region callbacks
+		public delegate Appearance GetAppearanceFromStorageTYPE(string Key);
+		public GetAppearanceFromStorageTYPE GetAppearanceFromStorage;
+
+		public Func<System.Collections.Generic.List<string>> GetListOfAppearancesDelegate=null;
+		#endregion
 
 		/// <summary>
 		/// Clears the dragging of notes on A layout. If stuck in dragmode
@@ -437,6 +443,80 @@ namespace Layout
 		public GenericTextForm GetTextFormToUse()
 		{
 			return new GenericTextForm();
+		}
+
+
+
+		public System.Collections.Generic.List<string> GetListOfAppearances ()
+		{
+			if (GetListOfAppearancesDelegate != null) {
+				return GetListOfAppearancesDelegate();
+			}
+			return null;
+		}
+
+		public void PurgeAppearanceCache ()
+		{
+			AppearanceCache = new Hashtable();
+		}
+		Hashtable  AppearanceCache = new Hashtable();
+	//	System.Collections.SortedList  AppearanceCache = new SortedList();
+		//List<Appearance> AppearanceCache = new List<Appearance>();
+		public Appearance GetAppearanceByName (string classic)
+		{
+			if (null == GetAppearanceFromStorage) {
+				throw new Exception("A callback to GetAppearanceFromStorage needs to be defined when application initalizes");
+			}
+
+
+			//Hashtable attempt 6.7 seconds to 6.4 on second attempt
+
+			Appearance app = (Appearance)AppearanceCache [classic];
+			if (app != null) {
+			} else {
+
+
+				app = GetAppearanceFromStorage(classic);
+				//app = new Appearance();
+				//app.SetAsClassic();
+				
+				AppearanceCache.Add (classic, app);
+			}
+
+			//6.4 seconds to 6.9
+//			Appearance app = (Appearance)AppearanceCache [classic];
+//			if (app != null) {
+//			} else {
+//				NewMessage.Show ("Hack : 'grabbing app from database. Should see this only once a session");
+//							app = new Appearance();
+//							app.SetAsClassic();
+//				
+//								AppearanceCache.Add (classic, app);
+//			}
+//
+
+
+
+
+			// 1. Look to see if it already exist. If so, retrieve it. about 6.6 seconds on zombie
+			//    IF NOT, load from database
+
+			/* This seemed faster than Sorted list
+
+			Appearance app = AppearanceCache.Find (Appearance => Appearance.Name == classic);
+			if (app != null) {
+
+			}
+			else
+			{
+				NewMessage.Show ("Hack : 'grabbing app from database. Should see this only once a session");
+			app = new Appearance();
+			app.SetAsClassic();
+
+				AppearanceCache.Add (app);
+			}
+*/
+			return app;
 		}
 		#endregion
 	}

@@ -6,7 +6,8 @@ namespace database
 	/// Base database.
 	/// </summary>
 	abstract public class BaseDatabase : IDisposable
-	{
+	{public const string GetValues_ANY="any";
+		public const string GetValues_WILDCARD="*";
 		public BaseDatabase (string database)
 		{
 		}

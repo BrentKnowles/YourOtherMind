@@ -135,9 +135,18 @@ namespace Layout
 			}
 			return false;
 		}
-		public override void CreateParent (LayoutPanelBase Layout)
+
+		protected override void DoChildAppearance (Appearance app)
 		{
-			base.CreateParent (Layout);
+			base.DoChildAppearance(app);
+
+
+			richBox.BackColor = app.mainBackground;
+
+		}
+		protected override void DoBuildChildren (LayoutPanelBase Layout)
+		{
+			base.DoBuildChildren (Layout);
 			CaptionLabel.Dock = DockStyle.Top;
 			richBox = new RichTextExtended ();
 			richBox.ContextMenuStrip = Layout.GetLayoutTextEditContextStrip ();

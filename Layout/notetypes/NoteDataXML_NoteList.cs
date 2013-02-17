@@ -57,9 +57,9 @@ namespace Layout
 			mode = Modes.NOTES;
 		}
 
-		public override void CreateParent (LayoutPanelBase Layout)
+		protected override void DoBuildChildren (LayoutPanelBase Layout)
 		{
-			base.CreateParent (Layout);
+			base.DoBuildChildren (Layout);
 			CaptionLabel.Dock = DockStyle.Top;
 
 			ComboBox mode = new ComboBox ();

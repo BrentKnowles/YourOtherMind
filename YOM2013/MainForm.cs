@@ -476,8 +476,10 @@ namespace YOM2013
 			// Add option panels to options menu
 			Settings = new Options(LayoutDetails.Instance.YOM_DATABASE);
 			SettingsInterfaceOptions = new Options_InterfaceElements(LayoutDetails.Instance.YOM_DATABASE);
+			SettingsInterfaceOptions.BuildDefaultNoteAppearanceIfNeeded();
+			LayoutDetails.Instance.GetAppearanceFromStorage+= GetAppearanceFromStorage;
 			LayoutDetails.Instance.SetCurrentMarkup(SettingsInterfaceOptions.SelectedMarkup);
-
+			LayoutDetails.Instance.GetListOfAppearancesDelegate+=SettingsInterfaceOptions.GetListOfAppearances;
 		    optionPanels.Add(Settings);
 			optionPanels.Add (SettingsInterfaceOptions);
 
@@ -492,6 +494,20 @@ namespace YOM2013
 
 		}
 
+	
+		/// <summary>
+		/// Gets the appearance from storage. This is a callback from LayoutDetails
+		/// </summary>
+		/// <returns>
+		/// The appearance from storage.
+		/// </returns>
+		/// <param name='Key'>
+		/// Key.
+		/// </param>
+		Layout.Appearance GetAppearanceFromStorage (string Key)
+		{
+			return SettingsInterfaceOptions.GetAppearanceByKey(Key);
+		}
 		void HandleExitClick (object sender, EventArgs e)
 		{
 

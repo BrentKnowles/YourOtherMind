@@ -74,6 +74,9 @@
     <Compile Include="RichText\MarkupLanguageNone.cs" />
     <Compile Include="notetypes\groupems\LinkPickerForm.cs" />
     <Compile Include="GenericTextForm.cs" />
+    <Compile Include="notetypes\Appearance.cs" />
+    <Compile Include="AppearancePanel.cs" />
+    <Compile Include="AppearancePanelForm.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

@@ -94,6 +94,27 @@ namespace CoreUtilities
 			
 		}
 		/// <summary>
+		/// takes the specified string and converts it to the font
+		/// if blank will default to Times 12
+		/// </summary>
+		/// <param name="sString"></param>
+		/// <returns></returns>
+		static public Font StringToFont(string sString)
+		{
+			if (sString == null || sString == "")
+			{
+				throw new Exception("StringToFont sString not defined");
+			}
+			FontConverter fc = new FontConverter();
+			string sFontToUse = sString;
+			if (sFontToUse == null || sFontToUse == "")
+			{
+				return new Font("Times New Roman", 12);
+			}
+			return (Font)fc.ConvertFromString(sFontToUse);
+			
+		}
+		/// <summary>
 		/// returns sSource = enough spaces to make final string nLenght (nLength-Length.Source)
 		/// For formating text reports
 		/// </summary>

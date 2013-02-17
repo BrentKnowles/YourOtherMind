@@ -29,10 +29,10 @@ namespace Layout
 		public override bool IsSystemNote{
 			get {return true;}
 		}
-		public override void CreateParent (LayoutPanelBase _Layout)
+		protected override void DoBuildChildren (LayoutPanelBase Layout)
 		{
 			//Width = 500;
-			base.CreateParent (_Layout);
+			base.DoBuildChildren (Layout);
 		//	GetChildLayout().SystemNote = true;
 			CaptionLabel.Dock = System.Windows.Forms.DockStyle.Top;
 			//CaptionLabel.Visible = false;

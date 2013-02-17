@@ -4,7 +4,7 @@ using appframe;
 using Layout;
 using System.Windows.Forms;
 using database;
-
+using System.Xml.Serialization;
 namespace YOM2013
 {
 	public class Options_InterfaceElements : iConfig, IDisposable
@@ -20,6 +20,7 @@ namespace YOM2013
 		const string columnID="id";
 		const string columnKey="key";
 		const string columnValue="value";
+		const string columnType="type"; // 0 = normal, 1 = appearance
 		const string TableName = "interfacesettings";
 
 		const string KEY_formsize="formsize";
@@ -31,6 +32,7 @@ namespace YOM2013
 		#region gui
 		ComboBox TextSizeCombo ;
 		ComboBox MarkupCombo;
+		GroupBox AppearanceGroup ;
 		#endregion
 		
 		// if true on save we know it is safe to try to save (because interface exists)
@@ -73,7 +75,7 @@ namespace YOM2013
 				{
 					// we revert to none if plugin has been removed and we store this value too
 					returnvalue = new MarkupLanguageNone();
-					Store (db, KEY_markup, returnvalue.GetType ().AssemblyQualifiedName.ToString ());
+					Store (db, KEY_markup, returnvalue.GetType ().AssemblyQualifiedName.ToString (),0);
 				}
 				db.Dispose();
 
@@ -95,6 +97,119 @@ namespace YOM2013
 				db.Dispose();
 				return value_as;}
 		}
+		/// <summary>
+		/// Builds the default note appearance if needed.
+		/// </summary>
+		public void BuildDefaultNoteAppearanceIfNeeded ()
+		{
+			BaseDatabase db = CreateDatabase ();
+			// if appearance 1  does not exist, create and call SaveAppearance
+			if (!db.Exists (TableName, columnKey, "classic")) {
+				Layout.Appearance default1 = new Layout.Appearance ();
+				default1.SetAsClassic ();
+				SaveAppearance (default1);
+			}
+			
+			// if appearance 2 does not exist, create and call SaveAppearance
+			if (!db.Exists (TableName, columnKey, "fantasy")) {
+				Layout.Appearance default1 = new Layout.Appearance ();
+				default1.SetAsFantasy ();
+				SaveAppearance (default1);
+			}
+			
+			db.Dispose();
+		}
+		/// <summary>
+		/// Gets the appearance by key. Called from the main form in respond to a callback from LayoutDetails. Will also be used internall
+		/// </summary>
+		/// <returns>
+		/// The appearance by key.
+		/// </returns>
+		/// <param name='Key'>
+		/// Key.
+		/// </param>
+		public Layout.Appearance GetAppearanceByKey(string Key)
+		{
+			Layout.Appearance app = null;
+			BaseDatabase db = CreateDatabase();
+			if (db.Exists (TableName, columnKey, Key))
+			{
+				// put from database
+				System.Collections.Generic.List<object[]> values = db.GetValues (TableName, new string[1] {columnValue}, columnKey,Key);
+				if (values != null && values.Count > 0) {
+					if (values[0] != null && values[0].Length > 0)
+					{
+						string xml = values[0][0].ToString ();
+
+						// now deserialize the object
+
+						XmlSerializer serializer = new XmlSerializer (typeof(Layout.Appearance));
+						
+						System.IO.StringReader reader = new System.IO.StringReader(xml);
+						app = (Layout.Appearance)serializer.Deserialize (reader);
+
+
+
+					}
+				}
+
+			}
+			
+			return app;
+		}
+		/// <summary>
+		/// Saves the appearance. Triggered from callback in AppearancePanel itself, passing itself back to be stored in the database.
+		/// </summary>
+		/// <param name='obj'>
+		/// Object.
+		/// </param>
+		void SaveAppearance (Layout.Appearance obj)
+		{
+			if (null == obj) throw new Exception("A null appearance was passed into save routine.");
+			if (obj.Name == Constants.BLANK) throw new Exception ("A name must be assigned to any new Appearance that is created!");
+			BaseDatabase db = CreateDatabase ();
+			
+			Store (db, obj.Name, obj.GetAppearanceXML(),1);
+			db.Dispose();
+
+			// the moment we save an appearance I think we need to PURGE the Cahce in LayoutDetails
+			// so that the NEXT time a page is loaded, it benefits from the new appearnces (likewise if a new note is created).
+			LayoutDetails.Instance.PurgeAppearanceCache();
+
+		}
+		void BuildAppearanceListBox (ListBox appearances)
+		{
+			BaseDatabase db = CreateDatabase ();
+			//System.Collections.Generic.List<object[]> values = db.GetValues (TableName, new string[1] {columnKey}, BaseDatabase.GetValues_ANY, BaseDatabase.GetValues_WILDCARD);
+			System.Collections.Generic.List<object[]> values = db.GetValues (TableName, new string[1] {columnKey}, columnType, 1);
+			if (values != null) {
+				foreach (object[] o in values) {
+					if (o != null && o.Length > 0)
+					if (o [0].ToString () != Constants.BLANK) {
+						appearances.Items.Add (o [0].ToString ());
+					}
+				}
+			}
+			db.Dispose ();
+		}
+
+		public System.Collections.Generic.List<string> GetListOfAppearances ()
+		{
+			System.Collections.Generic.List<string>  list = new System.Collections.Generic.List<string>();
+			BaseDatabase db = CreateDatabase ();
+			//System.Collections.Generic.List<object[]> values = db.GetValues (TableName, new string[1] {columnKey}, BaseDatabase.GetValues_ANY, BaseDatabase.GetValues_WILDCARD);
+			System.Collections.Generic.List<object[]> values = db.GetValues (TableName, new string[1] {columnKey}, columnType, 1);
+			if (values != null) {
+				foreach (object[] o in values) {
+					if (o != null && o.Length > 0)
+					if (o [0].ToString () != Constants.BLANK) {
+						list.Add (o [0].ToString ());
+					}
+				}
+			}
+			db.Dispose ();
+			return list;
+		}
 
 		public Panel GetConfigPanel ()
 		{
@@ -107,9 +222,7 @@ namespace YOM2013
 			configPanel = new Panel ();
 
 			
-			Label label = new Label ();
-			label.AutoSize = true;
-			label.Text = "Should maybe inherit some methods from Options.cs. Will have option to Reset System Layout";
+		
 
 			Button buttonResetSystem = new Button ();
 			buttonResetSystem.Text = Loc.Instance.GetString ("Reset System Layout");
@@ -182,13 +295,38 @@ namespace YOM2013
 					}
 				}
 			}
-			configPanel.Controls.Add (label);
+
+			//
+			//
+			// Appearance Group
+			//
+			//
+
+			AppearanceGroup = new GroupBox();
+			AppearanceGroup.Height = 150;
+			AppearanceGroup.Text = Loc.Instance.GetString ("Note Appearances");
+			AppearanceGroup.Dock = DockStyle.Top;
+			ListBox Appearances = new ListBox();
+			Appearances.Dock = DockStyle.Left;
+
+
+			// get values from list and put into db
+			BuildAppearanceListBox(Appearances);
+			Appearances.SelectedIndexChanged+= HandleAppearanceSelectedIndexChanged;
+			
+
+
+			AppearanceGroup.Controls.Add (Appearances);
+
+
+
+
 			configPanel.Controls.Add (buttonResetSystem);
 			configPanel.Controls.Add (TextSizePanel);
 			configPanel.Controls.Add (MarkupPanel);
+			configPanel.Controls.Add (AppearanceGroup);
 
 
-			label.Dock = DockStyle.Top;
 
 			
 			
@@ -196,6 +334,28 @@ namespace YOM2013
 			return configPanel;
 			
 		}
+		AppearancePanel lastAppPanel = null;
+		void HandleAppearanceSelectedIndexChanged (object sender, EventArgs e)
+		{
+			if ((sender as ListBox).SelectedItem != null) {
+				//GetRidOfMe should be picked from the list we fill instead
+				Layout.Appearance App = GetAppearanceByKey ((sender as ListBox).SelectedItem.ToString ());
+				if (App != null) {
+					if (null != lastAppPanel) {
+						AppearanceGroup.Controls.Remove (lastAppPanel);
+					}
+					AppearancePanel appPanel = new AppearancePanel (true, App, SaveAppearance, null);
+
+					appPanel.Dock = DockStyle.Fill;
+					AppearanceGroup.Controls.Add (appPanel);
+					appPanel.BringToFront ();
+
+					// store this so we can delete it next time
+					lastAppPanel = appPanel;
+				}
+			}
+		}
+
 
 		void HandleDropDown (object sender, EventArgs e)
 		{
@@ -230,24 +390,29 @@ namespace YOM2013
 			BaseDatabase db = Layout.MasterOfLayouts.GetDatabaseType(DatabaseName);
 			
 			
-			
-			db.CreateTableIfDoesNotExist (TableName, new string[3] 
-			                              {columnID, columnKey, columnValue}, 
-			new string[3] {
+
+			// stores generic stuff. Appearances will also be stored here, each as a row with columnKey = appearanceName and columnValue = the XML
+			db.CreateTableIfDoesNotExist (TableName, new string[4] 
+			                              {columnID, columnKey, columnValue,columnType}, 
+			new string[4] {
 				"INTEGER",
 				"TEXT",
-				"TEXT"
+				"TEXT",
+				"INTEGER"
 					
 			}, "id"
 			);
 			return db;
 		}
 
-		void Store (BaseDatabase db, string key, string text)
+		void Store (BaseDatabase db, string key, string text, int type)
 		{
+		
+
 			if (!db.Exists (TableName, columnKey, key)) {
-				db.InsertData (TableName, new string[2]{columnKey, columnValue}, new object[2] {key, text});
+				db.InsertData (TableName, new string[3]{columnKey, columnValue, columnType}, new object[3] {key, text, type});
 			} else {
+				// we do not obther updating TYPE
 				db.UpdateSpecificColumnData(TableName, new string[2]{columnKey, columnValue}, new object[2] {key, text}, columnKey, key);
 			}
 		}
@@ -265,9 +430,9 @@ namespace YOM2013
 			
 			BaseDatabase db = CreateDatabase ();
 
-			Store (db, KEY_formsize, TextSizeCombo.Text);
+			Store (db, KEY_formsize, TextSizeCombo.Text, 0);
 			if (MarkupCombo.SelectedItem != null) {
-				Store (db, KEY_markup, MarkupCombo.SelectedItem.GetType ().AssemblyQualifiedName.ToString ());
+				Store (db, KEY_markup, MarkupCombo.SelectedItem.GetType ().AssemblyQualifiedName.ToString (),0);
 			}
 
 

@@ -163,9 +163,9 @@ namespace Layout
 			Caption = Loc.Instance.Cat.GetString("Timeline");
 			
 		}
-		public override void CreateParent (LayoutPanelBase _Layout)
+		protected override void DoBuildChildren (LayoutPanelBase Layout)
 		{
-			base.CreateParent (_Layout);
+			base.DoBuildChildren (Layout);
 			CaptionLabel.Dock = DockStyle.Top;
 
 

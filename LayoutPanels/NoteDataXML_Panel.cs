@@ -89,9 +89,9 @@ namespace LayoutPanels
 			panelLayout.SaveLayout ();
 		}
 		
-		public override void CreateParent (LayoutPanelBase Layout)
+		protected override void DoBuildChildren (LayoutPanelBase Layout)
 		{
-			base.CreateParent (Layout);
+			base.DoBuildChildren (Layout);
 			ParentNotePanel.BorderStyle = BorderStyle.Fixed3D;
 		CaptionLabel.Dock = DockStyle.Top;
 

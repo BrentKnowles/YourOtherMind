@@ -64,9 +64,9 @@ namespace Layout
 		public NoteDataXML_GroupEm (int _height, int _width): base(_height, _width)
 		{
 		}
-		public override void CreateParent (LayoutPanelBase _Layout)
+		protected override void DoBuildChildren (LayoutPanelBase Layout)
 		{
-			base.CreateParent (_Layout);
+			base.DoBuildChildren (Layout);
 			CaptionLabel.Dock = DockStyle.Top;
 
 			StoryBoard = new Storyboard();

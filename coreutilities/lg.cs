@@ -99,9 +99,10 @@ namespace CoreUtilities
 				{
 				logWriter.WriteLine(log);
 				}
-				catch (Exception)
+				catch (Exception ex)
 				{
-					NewMessage.Show ("Logwriter was closed while still writing the log");
+					throw new Exception(ex.ToString ());
+					//NewMessage.Show ("Logwriter was closed while still writing the log");
 				}
 			}
 			LogLines = new List<string>();

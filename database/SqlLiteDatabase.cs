@@ -10,6 +10,9 @@ namespace database
 	/// </summary>
 	public class SqlLiteDatabase : BaseDatabase
 	{
+
+
+
 		public SqlLiteDatabase (string database):base(database)
 		{
 			if ("" == database) {
