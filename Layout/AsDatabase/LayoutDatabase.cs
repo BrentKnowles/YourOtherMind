@@ -1271,6 +1271,10 @@ namespace Layout
 		}
 		public void Dispose ()
 		{
+
+			// February 2013 - We cannot call the log during dispose because we do not know if the Log is still acgtive
+
+
 			//NOTE: Expensive debugging information, remove when done with
 			bool f = false;
 			if (f == true) {
@@ -1282,12 +1286,12 @@ namespace Layout
 				string callingfunc2 = String.Format ("[{0}.{1}]", frame2.GetFileLineNumber (), frame2.GetMethod ().Name);
 				string callingfunc3 = String.Format ("[{0}.{1}]", frame2.GetFileLineNumber (), frame2.GetMethod ().Name);
 
-				lg.Instance.Line ("LayoutDatabase->Dispose", ProblemType.MESSAGE, 
-			                 String.Format ("Dispose called for {0} with a list this long {1} called by {2} and {3} and {4} ", 
-			               LayoutGUID, this.dataForThisLayout.Count, callingfunc, callingfunc2, callingfunc3));
+//				lg.Instance.Line ("LayoutDatabase->Dispose", ProblemType.MESSAGE, 
+//			                 String.Format ("Dispose called for {0} with a list this long {1} called by {2} and {3} and {4} ", 
+//			               LayoutGUID, this.dataForThisLayout.Count, callingfunc, callingfunc2, callingfunc3));
 			} else {
-				lg.Instance.Line ("LayoutDatabase->Dispose", ProblemType.MESSAGE, String.Format ("SHORT DEBUG MESSAGE: Dispose called for {0} with a list this long {1}",
-				                                                                                 LayoutGUID, this.dataForThisLayout.Count));
+				//lg.Instance.Line ("LayoutDatabase->Dispose", ProblemType.MESSAGE, String.Format ("SHORT DEBUG MESSAGE: Dispose called for {0} with a list this long {1}",
+				//                                                                                 LayoutGUID, this.dataForThisLayout.Count));
 			}
 			//NewMessage.Show (String.Format ("Dispose called for {0} with a list this long {1} ", LayoutGUID, this.dataForThisLayout.Count));
 			if (dataForThisLayout != null) {

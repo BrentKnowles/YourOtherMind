@@ -55,7 +55,10 @@ namespace CoreUtilities.Links
 			
 		}
 		
-		
+		public int Count()
+		{
+			return Table.Rows.Count;
+		}
 
 		/// <summary>
 		/// Not a copy.
@@ -189,6 +192,7 @@ namespace CoreUtilities.Links
 			row[GROUP] = record.sExtra;
 			row[LINKTYPE] = record.linkType.ToString();
 			row[FILEEXISTS] = record.bStatus;
+			row [EXTRA] = record.ExtraField;
 			return row;
 			
 			
@@ -215,6 +219,7 @@ namespace CoreUtilities.Links
 				record.sExtra = row [GROUP].ToString ();
 				record.linkType = (LinkType)Enum.Parse (typeof(LinkType), row [LINKTYPE].ToString ());
 				record.bStatus = (bool)row [FILEEXISTS];
+				record.ExtraField = row[EXTRA].ToString();
 			} catch (Exception ex) {
 				NewMessage.Show (ex.ToString());
 			}

@@ -33,6 +33,7 @@ namespace YOM2013
 		ComboBox TextSizeCombo ;
 		ComboBox MarkupCombo;
 		GroupBox AppearanceGroup ;
+		ListBox Appearances;
 		#endregion
 		
 		// if true on save we know it is safe to try to save (because interface exists)
@@ -97,25 +98,44 @@ namespace YOM2013
 				db.Dispose();
 				return value_as;}
 		}
+		private void TestExistence (BaseDatabase db, string key, Func<Layout.Appearance> Setup)
+		{
+			if (!db.Exists (TableName, columnKey, key)) {
+				Layout.Appearance default1 = Setup();
+				//Setup();
+				SaveAppearance (default1);
+			}
+		}
 		/// <summary>
 		/// Builds the default note appearance if needed.
 		/// </summary>
 		public void BuildDefaultNoteAppearanceIfNeeded ()
 		{
 			BaseDatabase db = CreateDatabase ();
-			// if appearance 1  does not exist, create and call SaveAppearance
-			if (!db.Exists (TableName, columnKey, "classic")) {
-				Layout.Appearance default1 = new Layout.Appearance ();
-				default1.SetAsClassic ();
-				SaveAppearance (default1);
-			}
+
+			TestExistence (db, "classic", Layout.Appearance.SetAsClassic);
+			TestExistence (db, "fantasy", Layout.Appearance.SetAsFantasy);
+			TestExistence (db, "scifi", Layout.Appearance.SetAsSciFI);
+			TestExistence (db, "research", Layout.Appearance.SetAsResearch);
+
+			TestExistence (db, "blue", Layout.Appearance.SetAsBlue);
+			TestExistence (db, "modern", Layout.Appearance.SetAsModern);
+			TestExistence (db, "note", Layout.Appearance.SetAsNote);
+			TestExistence (db, "programmer", Layout.Appearance.SetAsProgrammer);
+
+//			// if appearance 1  does not exist, create and call SaveAppearance
+//			if (!db.Exists (TableName, columnKey, "classic")) {
+//				Layout.Appearance default1 = new Layout.Appearance ();
+//				default1.SetAsClassic ();
+//				SaveAppearance (default1);
+//			}
 			
 			// if appearance 2 does not exist, create and call SaveAppearance
-			if (!db.Exists (TableName, columnKey, "fantasy")) {
-				Layout.Appearance default1 = new Layout.Appearance ();
-				default1.SetAsFantasy ();
-				SaveAppearance (default1);
-			}
+//			if (!db.Exists (TableName, columnKey, "fantasy")) {
+//				Layout.Appearance default1 = new Layout.Appearance ();
+//				default1.SetAsFantasy ();
+//				SaveAppearance (default1);
+//			}
 			
 			db.Dispose();
 		}
@@ -165,20 +185,30 @@ namespace YOM2013
 		/// </param>
 		void SaveAppearance (Layout.Appearance obj)
 		{
-			if (null == obj) throw new Exception("A null appearance was passed into save routine.");
-			if (obj.Name == Constants.BLANK) throw new Exception ("A name must be assigned to any new Appearance that is created!");
+			if (null == obj)
+				throw new Exception ("A null appearance was passed into save routine.");
+			if (obj.Name == Constants.BLANK)
+				throw new Exception ("A name must be assigned to any new Appearance that is created!");
 			BaseDatabase db = CreateDatabase ();
 			
-			Store (db, obj.Name, obj.GetAppearanceXML(),1);
-			db.Dispose();
+			Store (db, obj.Name, obj.GetAppearanceXML (), 1);
+			db.Dispose ();
 
 			// the moment we save an appearance I think we need to PURGE the Cahce in LayoutDetails
 			// so that the NEXT time a page is loaded, it benefits from the new appearnces (likewise if a new note is created).
-			LayoutDetails.Instance.PurgeAppearanceCache();
+			LayoutDetails.Instance.PurgeAppearanceCache ();
+			if (null != Appearances) {
+				// deselect on the list
+				Appearances.SelectedIndex = -1;
+
+				// we rebuild the list in case we added a new one
+				BuildAppearanceListBox (Appearances);
+			}
 
 		}
 		void BuildAppearanceListBox (ListBox appearances)
 		{
+			appearances.Items.Clear ();
 			BaseDatabase db = CreateDatabase ();
 			//System.Collections.Generic.List<object[]> values = db.GetValues (TableName, new string[1] {columnKey}, BaseDatabase.GetValues_ANY, BaseDatabase.GetValues_WILDCARD);
 			System.Collections.Generic.List<object[]> values = db.GetValues (TableName, new string[1] {columnKey}, columnType, 1);
@@ -306,7 +336,7 @@ namespace YOM2013
 			AppearanceGroup.Height = 150;
 			AppearanceGroup.Text = Loc.Instance.GetString ("Note Appearances");
 			AppearanceGroup.Dock = DockStyle.Top;
-			ListBox Appearances = new ListBox();
+			 Appearances = new ListBox();
 			Appearances.Dock = DockStyle.Left;
 
 
@@ -337,14 +367,18 @@ namespace YOM2013
 		AppearancePanel lastAppPanel = null;
 		void HandleAppearanceSelectedIndexChanged (object sender, EventArgs e)
 		{
+			// we always get rid of the control, when deselecting the list item too.
+
+			if (null != lastAppPanel) {
+				AppearanceGroup.Controls.Remove (lastAppPanel);
+			}
+
 			if ((sender as ListBox).SelectedItem != null) {
 				//GetRidOfMe should be picked from the list we fill instead
 				Layout.Appearance App = GetAppearanceByKey ((sender as ListBox).SelectedItem.ToString ());
 				if (App != null) {
-					if (null != lastAppPanel) {
-						AppearanceGroup.Controls.Remove (lastAppPanel);
-					}
-					AppearancePanel appPanel = new AppearancePanel (true, App, SaveAppearance, null);
+				
+					AppearancePanel appPanel = new AppearancePanel (true, App, SaveAppearance, null, false);
 
 					appPanel.Dock = DockStyle.Fill;
 					AppearanceGroup.Controls.Add (appPanel);

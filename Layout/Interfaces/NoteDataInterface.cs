@@ -40,7 +40,7 @@ namespace Layout
 		string GetStoryboardPreview{get;}
 		#endregion
 
-		void GetStoryboardData (out string sCaption, out string sValue, out int type);
+		void GetStoryboardData (out string sCaption, out string sValue, out int type, out string extraField);
 
 		string GetLinkData ();
 

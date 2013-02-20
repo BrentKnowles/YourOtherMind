@@ -2,12 +2,61 @@ using System;
 using System.IO;
 using System.Drawing;
 using System.Windows.Forms;
+using System.Xml.Serialization;
 
 namespace CoreUtilities
 {
 	public static class FileUtils
 	{
-
+		
+		/// <summary>
+		/// Deserialize any object from xml. 
+		/// </summary>
+		/// <param name="sName">File name</param>
+		/// <param name="t">Object type (i.e. GetType(o))</param>
+		/// <returns>Deserialized object. Cast back to type before using</returns>
+		public static object DeSerialize(string sName, System.Type t)
+		{
+			FileInfo f = new FileInfo(sName);
+			
+			/*February 2009
+             * I had originally prevent any non xml files from entering here
+             * but that was just a bandaid.
+             * 
+             * I needed to pass bst (brainstorm) files into this and to do that I needed this to be open
+             */
+			
+			
+			// if (f.Extension.ToLower() == ".xml")
+			{
+				
+				
+				TextReader r = null;
+				try
+				{
+					XmlSerializer s = new XmlSerializer(t);
+					object oRet;
+					r = new StreamReader(@sName);
+					oRet = s.Deserialize(r);
+					r.Close();
+					
+					return oRet;
+				}
+				catch (Exception ex)
+				{
+					if (r != null)
+						r.Close();
+					// MessgeBox.Show(sName + " " + ex.ToString());
+					throw (new Exception(sName.ToUpper() + " " + ex.ToString()));
+				}
+			}
+			/*   else
+            {
+                MessgeBox.Show(String.Format("For some reason an invalid file ({0}) was passed into the xml deserializer. Skipping.", sName));
+                return null;
+            }*/
+			// return null;
+		}
 		/// <summary>
 		/// Doeses the this file have errors.
 		/// 

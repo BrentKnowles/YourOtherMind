@@ -255,11 +255,12 @@ namespace Layout
 
 		#region methods
 
-		public virtual void GetStoryboardData (out string sCaption, out string sValue, out int type)
+		public virtual void GetStoryboardData (out string sCaption, out string sValue, out int type, out string extraField)
 		{
 			sCaption = Caption;
 			sValue = this.GuidForNote;
 			type = 0;
+			extraField = this.GuidForNote;
 		}
 		// For link notes
 		public virtual string GetLinkData ()

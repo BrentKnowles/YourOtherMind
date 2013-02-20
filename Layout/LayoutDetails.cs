@@ -477,6 +477,14 @@ namespace Layout
 
 
 				app = GetAppearanceFromStorage(classic);
+
+				if (app == null)
+				{
+					NewMessage.Show (Loc.Instance.GetStringFmt("The appearance {0} no longer exists, reverting to default.", classic));
+					// somehow we have lost an appearance then we just use clasic
+					app = Appearance.SetAsClassic();
+
+				}
 				//app = new Appearance();
 				//app.SetAsClassic();
 				

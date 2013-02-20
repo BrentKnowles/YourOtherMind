@@ -49,7 +49,6 @@ namespace Layout
 		private string _guid = CoreUtilities.Constants.BLANK;
 		protected bool _saverequired = false;
 		private string parentGUID = Constants.BLANK;
-
 		private bool isDraggingANote=false;
 		/// <summary>
 		/// Is set to true if occupied by dragging a note around
@@ -206,6 +205,8 @@ namespace Layout
 		public abstract void NewLayout (string _GUID, bool AddDefaultNote, ContextMenuStrip textEditorContextStrip);
 		public abstract CoreUtilities.Links.LinkTable GetLinkTable ();
 		public abstract int CountNotes();
+		public abstract string[] GetListOfGroupEmNameMatching (string sStoryboardName, string sGroupMatch);
+		
 	//	public abstract void SystemNoteHasClosedDown (bool closed);
 
 		/// <summary>

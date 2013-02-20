@@ -136,9 +136,9 @@ namespace Layout
 			GoToLayout.BringToFront();
 			richBox.BringToFront();
 		}
-		public override void GetStoryboardData (out string sCaption, out string sValue, out int type)
+		public override void GetStoryboardData (out string sCaption, out string sValue, out int type, out string extraField)
 		{
-			base.GetStoryboardData (out sCaption, out sValue, out type);
+			base.GetStoryboardData (out sCaption, out sValue, out type, out extraField);
 			
 			// the base is great for text notes BUT we have to modify this if we have an image happening
 			if (Pic != null) {

@@ -289,35 +289,74 @@ namespace Layout
 		}
 		
 		
-		public void SetAsFantasy ()
+		public static Appearance SetAsFantasy ()
 		{
-			Name="fantasy";
-			mcaptionFont = "Georgia, 12pt";   //1
+			Appearance newApp = new Appearance();
+			newApp.Name="fantasy";
+			newApp.mcaptionFont = "Georgia, 12pt";   //1
 			
-			mnHeaderHeight = 28; //2
-			HeaderBorderStyle = BorderStyle.FixedSingle; //3
-			mainPanelBorderStyle = BorderStyle.None; //4
-			mcaptionBackground =-663885; //5
-			mcaptionForeground = -16777216; //6
-			mmainBackground = Color.Gray.ToArgb(); //7
+			newApp.mnHeaderHeight = 28; //2
+			newApp.HeaderBorderStyle = BorderStyle.FixedSingle; //3
+			newApp.mainPanelBorderStyle = BorderStyle.None; //4
+			newApp.mcaptionBackground =-663885; //5
+			newApp.mcaptionForeground = -16777216; //6
+			newApp.mmainBackground = Color.Gray.ToArgb(); //7
 			// TODO: What is this for?
-			UseBackgroundColor = true;
+			newApp.UseBackgroundColor = true;
+			return newApp;
 		}
-		public void SetAsClassic()
+
+		public static Appearance SetAsSciFI ()
 		{
-			Name = "classic";
+			
+			Appearance newApp = new Appearance();
+			newApp.Name = "scifi";
 			// doing this inside the class to have access to private members to set them to numbers
-			mcaptionFont = "Times New Roman, 10pt, style=Bold";
-
-			mnHeaderHeight = 16;
-			HeaderBorderStyle = BorderStyle.FixedSingle;
-			mainPanelBorderStyle = BorderStyle.FixedSingle;
-			mcaptionBackground = -2987746;
-			mcaptionForeground = -16777216;
-			mmainBackground = Color.Gray.ToArgb();
+			newApp.mcaptionFont = "Verdana, 18pt, style=Bold";
+			
+			newApp.mnHeaderHeight = 28;
+			newApp.HeaderBorderStyle = BorderStyle.None;
+			newApp.mainPanelBorderStyle = BorderStyle.None;
+			newApp.mcaptionBackground = -12156236;
+			newApp.mcaptionForeground = -2894893;
+			newApp.mmainBackground = -2894893;
 			// TODO: What is this for?
-			UseBackgroundColor = true;
+			newApp.UseBackgroundColor = true;
+			return newApp;
+		}
+		public static Appearance SetAsResearch()
+		{
+			Appearance newApp = new Appearance();
+			newApp.Name = "research";
+			// doing this inside the class to have access to private members to set them to numbers
+			newApp.mcaptionFont = "Times New Roman, 10pt, style=Bold";
+			
+			newApp.mnHeaderHeight = 20;
+			newApp.HeaderBorderStyle = BorderStyle.FixedSingle;
+			newApp.mainPanelBorderStyle = BorderStyle.FixedSingle;
+			newApp.mcaptionBackground = -12490271;
+			newApp.mcaptionForeground = -16777216;
+			newApp.mmainBackground =-984833;
+			// TODO: What is this for?
+			newApp.UseBackgroundColor = true;
+			return newApp;
+		}
+		public static Appearance SetAsClassic()
+		{
+			Appearance newApp = new Appearance();
+			newApp.Name = "classic";
+			// doing this inside the class to have access to private members to set them to numbers
+			newApp.mcaptionFont = "Times New Roman, 10pt, style=Bold";
 
+			newApp.mnHeaderHeight = 20;
+			newApp.HeaderBorderStyle = BorderStyle.FixedSingle;
+			newApp.mainPanelBorderStyle = BorderStyle.FixedSingle;
+			newApp.mcaptionBackground = -2987746;
+			newApp.mcaptionForeground = -16777216;
+			newApp.mmainBackground = Color.Gray.ToArgb();
+			// TODO: What is this for?
+			newApp.UseBackgroundColor = true;
+			return newApp;
 
 			// February 2013
 
@@ -334,6 +373,75 @@ namespace Layout
 		
 
 
+		}
+
+		public static Appearance SetAsProgrammer()
+		{
+			Appearance newApp = new Appearance();
+			newApp.Name = "programmer";
+			// doing this inside the class to have access to private members to set them to numbers
+			newApp.mcaptionFont = "Verdana, 12pt, style=Bold";
+			
+			newApp.mnHeaderHeight = 20;
+			newApp.HeaderBorderStyle = BorderStyle.FixedSingle;
+			newApp.mainPanelBorderStyle = BorderStyle.FixedSingle;
+newApp.mcaptionBackground =-16777216;
+			newApp.mcaptionForeground = -256;
+			newApp.mmainBackground =-16777216;
+			// TODO: What is this for?
+			newApp.UseBackgroundColor = true;
+			return newApp;
+		}
+		public static Appearance SetAsNote()
+		{
+			Appearance newApp = new Appearance();
+			newApp.Name = "note";
+			// doing this inside the class to have access to private members to set them to numbers
+			newApp.mcaptionFont = "Verdana, 10pt, style=Bold";
+			
+			newApp.mnHeaderHeight = 20;
+			newApp.HeaderBorderStyle = BorderStyle.None;
+			newApp.mainPanelBorderStyle = BorderStyle.None;
+			newApp.mcaptionBackground =-128;
+			newApp.mcaptionForeground = -16777216;
+			newApp.mmainBackground =-128;
+			// TODO: What is this for?
+			newApp.UseBackgroundColor = true;
+			return newApp;
+		}
+		public static Appearance SetAsModern()
+		{
+			Appearance newApp = new Appearance();
+			newApp.Name = "modern";
+			// doing this inside the class to have access to private members to set them to numbers
+			newApp.mcaptionFont = "Arial Black, 12pt, style=Bold";
+			
+			newApp.mnHeaderHeight = 28;
+			newApp.HeaderBorderStyle = BorderStyle.None;
+			newApp.mainPanelBorderStyle = BorderStyle.None;
+			newApp.mcaptionBackground =-6972;
+			newApp.mcaptionForeground = -16777216;
+			newApp.mmainBackground =-1468806;
+			// TODO: What is this for?
+			newApp.UseBackgroundColor = true;
+			return newApp;
+		}
+		public static Appearance SetAsBlue()
+		{
+			Appearance newApp = new Appearance();
+			newApp.Name = "blue";
+			// doing this inside the class to have access to private members to set them to numbers
+			newApp.mcaptionFont = "Verdana, 12pt, style=Bold";
+			
+			newApp.mnHeaderHeight = 26;
+			newApp.HeaderBorderStyle = BorderStyle.None;
+			newApp.mainPanelBorderStyle = BorderStyle.None;
+			newApp.mcaptionBackground =-12490271;
+			newApp.mcaptionForeground = -657931;
+			newApp.mmainBackground =-12490271;
+			// TODO: What is this for?
+			newApp.UseBackgroundColor = true;
+			return newApp;
 		}
 	}
 }

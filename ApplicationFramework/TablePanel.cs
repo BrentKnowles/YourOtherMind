@@ -463,6 +463,9 @@ namespace appframe
 		/// <param name="e"></param>
 		private void toolStripButton1_Click(object sender, EventArgs e)
 		{
+
+			// FEB 2013 -- This is just old code. Not used. Table save/load does work.
+
 			// temp: create and save a new classPageTable (this will include save the .xtt file
 			// that is the table
 //			panelTable = new classPageTable();
@@ -588,7 +591,7 @@ namespace appframe
 
 				ColumnDetails[] columns = new ColumnDetails[dataGrid1.Columns.Count];
 
-				if (0 == dataGrid1.Columns.Count) NewMessage.Show("This table has no columns! This usually happens if loading the Table without the Layout it contains being on a form! And form has to call its Show method");
+				if (0 == dataGrid1.Columns.Count) NewMessage.Show(Loc.Instance.GetStringFmt("This table {0} has no columns! This usually happens if loading the Table without the Layout it contains being on a form! And form has to call its Show method",this.TableName));
 				for (int i = 0; i <  dataGrid1.Columns.Count; i++) {
 					columns [i] = new ColumnDetails (dataGrid1.Columns[i].Name, dataGrid1.Columns[i].Width);
 				}

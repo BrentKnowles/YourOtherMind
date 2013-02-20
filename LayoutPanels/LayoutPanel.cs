@@ -1436,6 +1436,84 @@ namespace Layout
 			}
 			base.ClearDrag ();
 		}
+
+
+		/// <summary>
+		///  // [[Group,Storyboard,Chapter*,words]]
+		// Look for storyboard nameed 'Storyboard'
+		// Go through the groups with names matching Chapter*
+		// Get list of page names from within those groups
+		//   Excluding those that start with -- 
+		// October 2012 - if you pass ALLONSTICKIT into then it gets all of them in the entire notebook
+		/// </summary>
+		/// <returns>an array of matching names for this storyboard panel</returns>
+		public override string[] GetListOfGroupEmNameMatching (string sStoryboardName, string sGroupMatch)
+		{
+			// 1. Get the storyboard
+
+
+			NoteDataInterface note = FindNoteByName (sStoryboardName);
+			if (note == null) {
+				NewMessage.Show (Loc.Instance.GetStringFmt("The storyboard {0} was not found", sStoryboardName));
+				return null;
+			}
+
+
+			NoteDataXML_GroupEm StoryBoardNote = (NoteDataXML_GroupEm) GoToNote(note);
+			ArrayList items = new ArrayList();
+			
+			if (StoryBoardNote != null)
+			{
+				
+				
+				
+				{
+					
+					sGroupMatch = sGroupMatch.Replace("*", "").Trim();
+					// 2. Have that storyboard return the list of names
+					//  NewMessage.Show(panel.groupEms1.Groups[0].ToString());
+					foreach (ListViewGroup group in StoryBoardNote.GetGroups())
+					{
+						if (group.Name.IndexOf(sGroupMatch) > -1)
+						{
+							// we have a name match
+							// grab all qualifying pages
+							foreach (ListViewItem item in group.Items)
+							{
+								// only add us if we are not excluded
+								if (item.Text.IndexOf("--") == -1)
+								{
+									items.Add(item.Text);
+								}
+							}
+						}
+					}
+				}
+			}
+			else
+			{
+				
+				if ("ALLONSTICKIT" == sStoryboardName)
+				{
+					ArrayList arrayObjects = Notes.GetAllNotes();
+					
+					bool AllNull = true;
+					foreach (NoteDataInterface app in arrayObjects)
+					{
+						if (null != app && null != app.Caption && Constants.BLANK != app.Caption)
+						{
+							items.Add(app.Caption);
+						}
+					}
+					arrayObjects = null;
+				}
+			}
+			
+			
+			
+			return (string[])items.ToArray(typeof(string));
+		}
+
 	}
 }
 

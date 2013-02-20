@@ -10,6 +10,8 @@ namespace Layout
 		Button ok = null;
 		public AppearancePanelForm (Appearance app)
 		{
+		
+
 			this.Icon = LayoutDetails.Instance.MainFormIcon;
 			FormUtils.SizeFormsForAccessibility(this, LayoutDetails.Instance.MainFormFontSize);
 
@@ -18,8 +20,7 @@ namespace Layout
 			bottom.Height = LayoutDetails.ButtonHeight;
 			 ok = new Button();
 
-			//TODO:  set this to FALSE in ADD mode but assume valid in Edit Mode
-			ok.Enabled = true;
+		
 
 
 
@@ -37,7 +38,18 @@ namespace Layout
 			bottom.Controls.Add(Cancel);
 
 
-			appearancePanel = new AppearancePanel(false, app, null, ValidData);
+			if (app == null) {
+				// we are in build mode. So we create a classic note
+				app = Appearance.SetAsClassic();
+
+				app.Name = "Choose A Unique Name For Your New Appearance";
+				ok.Enabled = false;
+
+			}
+
+
+
+			appearancePanel = new AppearancePanel(false, app, null, ValidData, true);
 
 			appearancePanel.Dock = DockStyle.Fill		;
 				this.Controls.Add(bottom);

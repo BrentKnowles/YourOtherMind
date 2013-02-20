@@ -75,7 +75,40 @@ namespace Testing
 			layout.Add (null);
 			Assert.AreEqual(1, layout.GetNotes().Count);
 		}
-
+		[Test]
+		[ExpectedException]
+		public void SaveAndLoadTest_FailsIfNoAppearanceDefined ()
+		{
+			// without appearances setup notes will fail, this is intentional
+			// 
+			_TestSingleTon.Instance._SetupForLayoutPanelTests(true);
+			
+			int linktable = 1;
+			int extranodeadded = 1;
+			int count = 25;
+			///FakeLayoutDatabase layout = new FakeLayoutDatabase ("testguid");
+			LayoutPanel layoutPanel = new LayoutPanel(CoreUtilities.Constants.BLANK, false);
+			layoutPanel.NewLayout("testguid", true, null);
+			//layout.LoadFrom(layoutPanel);
+			NoteDataXML note = new NoteDataXML ();
+			for (int i = 0; i < count; i++) {
+				note.Caption = "boo" + i.ToString();
+				layoutPanel.AddNote (note);
+			}
+			
+			layoutPanel.SaveLayout();
+			_w.output("save worked");
+			//layout = new FakeLayoutDatabase ("testguid");
+			layoutPanel = new LayoutPanel(CoreUtilities.Constants.BLANK, false);
+			layoutPanel.LoadLayout("testguid", false, null);
+			//layout.LoadFrom(layoutPanel);
+			
+			//	_w.output (layout.Backup ());
+			//_w.output(layout.GetNotes().Count.ToString());
+			Assert.AreEqual(count+linktable +extranodeadded, layoutPanel.GetAllNotes().Count);
+			
+			
+		}
 		[Test]
 		public void SaveAndLoadTest_Works ()
 		{

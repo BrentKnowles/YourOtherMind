@@ -64,6 +64,12 @@ namespace Layout
 		public NoteDataXML_GroupEm (int _height, int _width): base(_height, _width)
 		{
 		}
+
+		public ListViewGroupCollection GetGroups ()
+		{
+			return StoryBoard.Groups;
+		}
+
 		protected override void DoBuildChildren (LayoutPanelBase Layout)
 		{
 			base.DoBuildChildren (Layout);
@@ -130,6 +136,12 @@ namespace Layout
 //				{
 //					Layout.GoToNote(note);
 //				}
+				if (General.IsGraphicFile(record.sFileName))
+				{
+					//NewMessage.Show ("image");
+					Layout.GetNoteOnSameLayout(record.ExtraField, true);
+				}
+				else
 				Layout.GetNoteOnSameLayout(record.sFileName, true);
 			}
 			return "";
@@ -165,10 +177,11 @@ namespace Layout
 
 					string sCaption = Constants.BLANK;
 					string sValue = Constants.BLANK;
+					string extraField = Constants.BLANK;
 					int type = 0;
-					linkpicker.GetNote.GetStoryboardData(out sCaption, out sValue, out type);
+					linkpicker.GetNote.GetStoryboardData(out sCaption, out sValue, out type, out extraField);
 				
-					StoryBoard.AddItem (sCaption, sValue, type);
+					StoryBoard.AddItem (sCaption, sValue, type, extraField);
 				StoryBoard.InitializeGroupEmFromExternal();
 				}
 
@@ -276,6 +289,36 @@ namespace Layout
 		{
 			base.CommonConstructorBehavior ();
 			Caption = Loc.Instance.Cat.GetString("Storyboard");
+		}
+
+		public int CountStoryBoardItems()
+		{
+			return StoryBoard.Items.Count;
+		}
+		// so far only being used by test routine
+		public void Refresh()
+		{
+			StoryBoard.InitializeGroupEmFromExternal();
+		}
+
+		public void DeleteRecordsForStoryboard ()
+		{
+			StoryBoard.DeleteRecordsForStoryboard();
+		}
+
+		public void SetFactMode ()
+		{
+			Factmode = true;
+		}
+
+		public void RefreshGroupEm ()
+		{
+			StoryBoard.InitializeGroupEmFromExternal();
+		}
+
+		public void AddRecordDirectly (string sTitle,string sLinkUrl, string sGroup )
+		{
+			StoryBoard.AddItemAndToGroup(sTitle, sLinkUrl, 0, sGroup);
 		}
 	}
 }

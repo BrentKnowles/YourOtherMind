@@ -21,6 +21,8 @@ namespace CoreUtilities.Links
 		public string sExtra; // Added February 20 2009, needed an extra field for listview
 		
 		private bool Status; // if true, then file is still found, otherwises its location has changed
+
+		public string ExtraField; // Feb 2013 for links to Pictures
 		public LinkTableRecord()
 		{
 			bStatus = true;

@@ -19,7 +19,7 @@ namespace Layout
 
 		// This panel is used in read-only mode to show what a particular appearance looks like
 		// It can also be used in edit mode
-		public AppearancePanel (bool ShowEditButton, Appearance app, Action<Appearance> _SaveAppearance, Action<bool>validDataToSave)
+		public AppearancePanel (bool ShowEditButton, Appearance app, Action<Appearance> _SaveAppearance, Action<bool>validDataToSave, bool AllowNameEdit)
 		{
 			if (app == null)
 				throw new Exception ("An invalid appearance was passed into AppearancePanel");
@@ -40,7 +40,7 @@ namespace Layout
 			NameField.Text = app.Name;
 			NameField.TextChanged += HandleTextChanged;
 			NameField.Dock = DockStyle.Top;
-			NameField.ReadOnly = true;
+			NameField.ReadOnly = !AllowNameEdit;
 
 			this.Controls.Add (NameField);
 			this.Controls.Add (CaptionBar);
@@ -57,12 +57,14 @@ namespace Layout
 			CaptionBar.Font = app.captionFont; //[x]
 			CaptionBar.Height = app.nHeaderHeight; //[x]
 			//this.CaptionLabel.Bord = app.HeaderBorderStyle;
-			this.BorderStyle = app.mainPanelBorderStyle;
+			this.BorderStyle = app.mainPanelBorderStyle; //[x]
 			
 			CaptionBar.BackColor = app.captionBackground; //[x]
 			CaptionBar.ForeColor = app.captionForeground; //[x]
+			NameField.ForeColor = app.captionForeground;
 			try {
 				NameField.BackColor = app.mainBackground; //[x]
+
 			} catch (Exception) {
 
 
@@ -77,6 +79,13 @@ namespace Layout
 				EditBut.Click += HandleClick;
 				this.Controls.Add (EditBut);
 				EditBut.Dock = DockStyle.Bottom;
+
+				Button AddBut = new Button();
+				AddBut.Text= Loc.Instance.GetString ("New");
+				AddBut.Click += HandleAddAppearanceClick1;
+				AddBut.Dock = DockStyle.Bottom;
+				this.Controls.Add (AddBut);
+
 
 			} else {
 
@@ -102,6 +111,21 @@ namespace Layout
 				OtherBackColor.Click+= HandleSecondaryBackColorClick1;;
 
 				ToolStripComboBox BorderStyleSet = new ToolStripComboBox();
+				BorderStyleSet.DropDownStyle = ComboBoxStyle.DropDownList;
+				int count = 0;
+				int match = 0;
+				foreach (string s in Enum.GetNames (typeof(BorderStyle)))
+				{
+					BorderStyleSet.Items.Add (s);
+					string name = Enum.GetName (typeof(BorderStyle),app.mainPanelBorderStyle);
+					if (s == name)
+					{
+						match = count;
+					}
+					count++;
+				}
+				BorderStyleSet.SelectedIndex = match;
+				BorderStyleSet.SelectedIndexChanged+= HandleMainBorderSelectedIndexChanged;
 
 				NumericUpDown numbers = new NumericUpDown ();
 				
@@ -120,7 +144,15 @@ namespace Layout
 				CaptionBar.Items.Add (BorderStyleSet);
 				CaptionBar.Items.Add (numbersHost);
 
+
 			}
+		}
+
+
+
+		void HandleMainBorderSelectedIndexChanged (object sender, EventArgs e)
+		{
+			this.BorderStyle = (BorderStyle)Enum.Parse (typeof(BorderStyle), (sender as ToolStripComboBox).Text);
 		}
 
 		void HandleIconsPerColumnValueChanged (object sender, EventArgs e)
@@ -153,7 +185,7 @@ namespace Layout
 			colorPick.Color = CaptionBar.BackColor;
 			if (colorPick.ShowDialog() == DialogResult.OK)
 			{
-				CaptionBar.BackColor = colorPick.Color;;
+				CaptionBar.BackColor = colorPick.Color;
 			}
 		}
 
@@ -163,7 +195,8 @@ namespace Layout
 			colorPick.Color = CaptionBar.ForeColor;
 			if (colorPick.ShowDialog() == DialogResult.OK)
 			{
-				CaptionBar.ForeColor = colorPick.Color;;
+				CaptionBar.ForeColor = colorPick.Color;
+				NameField.ForeColor =  colorPick.Color;
 			}
 		}
 		void HandleTextChanged (object sender, EventArgs e)
@@ -209,6 +242,23 @@ namespace Layout
 				Appearance ThisAppearance = form.GetAppearance();
 
 
+				SaveAppearance (ThisAppearance);
+			}
+		}
+		void HandleAddAppearanceClick1 (object sender, EventArgs e)
+		{
+			if (null == SaveAppearance) {
+				throw new Exception ("No proper save method for appearances has been initalized");
+			}
+
+			// Add options
+			// We build off the selected Appearance Type but will rename it [No. We do not. Don't want to mess up an existing object]
+		
+			AppearancePanelForm form = new AppearancePanelForm (null);
+			if (DialogResult.OK ==form.ShowDialog() ) {
+				Appearance ThisAppearance = form.GetAppearance();
+				
+				
 				SaveAppearance (ThisAppearance);
 			}
 		}

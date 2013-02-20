@@ -44,17 +44,22 @@ namespace Testing
 		}
 		Layout.Appearance GetAppearanceFromStorage (string Key)
 		{
-			Layout.Appearance fake = new Layout.Appearance();
-			fake.SetAsClassic();
+			Layout.Appearance fake = Appearance.SetAsClassic();
+			//fake.SetAsClassic();
 			return fake;
 		}
 		public void _SetupForLayoutPanelTests ()
+		{
+			_SetupForLayoutPanelTests(false);
+		}
+		public void _SetupForLayoutPanelTests (bool BreakAppearanceOnPurpose)
 		{
 			SetupForAnyTest();
 			LayoutDetails.Instance.YOM_DATABASE = TESTDATABASE;
 			LayoutDetails.Instance.OverridePath = Environment.CurrentDirectory;
 
-			LayoutDetails.Instance.GetAppearanceFromStorage = GetAppearanceFromStorage;
+			if (false == BreakAppearanceOnPurpose) LayoutDetails.Instance.GetAppearanceFromStorage = GetAppearanceFromStorage;
+				else LayoutDetails.Instance.GetAppearanceFromStorage = null;
 
 
 			LayoutDetails.Instance.AddToList(typeof(FAKE_NoteDataXML_Panel),"testingpanel");

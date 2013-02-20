@@ -406,8 +406,9 @@ namespace Storyboards
         /// but could also be called in response to a button press.
         /// <param name="sTitle">Title will be displayed in list</param>
         /// <param name="sLinkURL">Link will be used to retrieve contents.</param>
+		/// <param name="AlternativeLink">Some things, like images, supply the image in sLinkURL and the GUID in AlternativeLInk, which is stored in ExtraField</param>
         /// </summary>
-        public ListViewItem AddItem(string sTitle, string sLinkURL, int nType)
+        public ListViewItem AddItem(string sTitle, string sLinkURL, int nType, string AlternativeLink)
         {
             _Ready();
             if (sTitle == null || sLinkURL == null)
@@ -421,7 +422,7 @@ namespace Storyboards
             record.sFileName = sLinkURL;
             record.sSource = sSource;
         
-
+			record.ExtraField = AlternativeLink;
             
 
             record.nBookmarkKey = nType;
@@ -701,15 +702,15 @@ namespace Storyboards
 
 
         /// <summary>
-        /// Adds the item then finds it and assigns it to a group
+        /// Adds the item then finds it and assigns it to a group [So far this seems used only when adding Facts and SearchItems through Addin_yourOthermindmarkup
         /// </summary>
         /// <param name="sTitle"></param>
         /// <param name="sLinkURL"></param>
         /// <param name="nType"></param>
         /// <param name="sGroup"></param>
         public void AddItemAndToGroup(string sTitle, string sLinkURL, int nType, string sGroup)
-        {
-            ListViewItem item = AddItem(sTitle, sLinkURL, nType);
+       {
+            ListViewItem item = AddItem(sTitle, sLinkURL, nType,"");
             
             // Potential issue, might not find the one you just added
             // if things have the same name
@@ -1194,7 +1195,7 @@ namespace Storyboards
                         {
 
                             // add the picture to the groupem
-                            AddItem(new FileInfo(file).Name, file, 1);
+                            AddItem(new FileInfo(file).Name, file, 1,"");
 
 
 
@@ -1202,7 +1203,7 @@ namespace Storyboards
                         else
                         {
                             // add text files too
-                            AddItem(new FileInfo(file).Name, file, 0);
+                            AddItem(new FileInfo(file).Name, file, 0,"");
                         }
                     }
                     this.Cursor = Cursors.Default;
@@ -1229,7 +1230,7 @@ namespace Storyboards
                     Listitem App = (Listitem)e.Data.GetData("CoreUtilities.General+Listitem");
                     if (App != null)
                     {
-                        AddItem(App.FancyCaption, App.sTag, 0);
+                        AddItem(App.FancyCaption, App.sTag, 0,"");
                     }
                 }
         }

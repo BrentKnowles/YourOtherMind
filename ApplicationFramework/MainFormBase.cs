@@ -302,7 +302,8 @@ namespace appframe
 							if (AddIn.CalledFrom.IsNoteAction == true) {
 								NoteTextActions.Add (new NoteTextAction (AddIn.ActionWithParam, AddIn.BuildFileName, AddIn.CalledFrom.MyMenuName, AddIn.CalledFrom.ToolTip));
 							}
-							else
+							// February 2013 - removed the else. NoteActions and things with menus do not need exclusivity
+
 								if (AddIn.CalledFrom.IsOnAMenu == true) {
 									string myMenuName = AddIn.CalledFrom.MyMenuName;
 									if (Constants.BLANK != myMenuName) {

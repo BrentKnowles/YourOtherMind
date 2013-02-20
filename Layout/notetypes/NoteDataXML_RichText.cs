@@ -142,7 +142,7 @@ namespace Layout
 
 
 			richBox.BackColor = app.mainBackground;
-
+			richBox.ForeColor = app.captionForeground;
 		}
 		protected override void DoBuildChildren (LayoutPanelBase Layout)
 		{
@@ -299,6 +299,11 @@ namespace Layout
 		public override string GetLinkData ()
 		{
 			return this.Data1;
+		}
+
+		public void SaveAsExternalFile (string sFile)
+		{
+			richBox.SaveFile (sFile, RichTextBoxStreamType.RichText);
 		}
 	}
 }
