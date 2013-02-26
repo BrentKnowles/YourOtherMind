@@ -1043,7 +1043,60 @@ namespace Incentives
 						NewMessage.Show ("A submission did not have right length");
 					}
 					break;
-
+				case 1005: 
+					Added++;
+					if (asparam.Length == 13)
+					{
+						//	string dataToAdd = String.Format("{0};{1};{2};{3};{4};{5};{6};{7};{8};{9};{10};{11};{12}", date, GuidOfLayout, GuidOfMarket, Priority, 
+						//	                                 Expenses, Earned, dataReplied, notes, rights, draftversionused, replytype, replyfeedback, submissiontype);
+						
+						// we already have date. 
+						
+						// we override GUID
+						LayoutGUID = asparam[1];
+						
+						if ("" == asparam[1])
+						{
+							LayoutGUID = "example";
+						}
+						
+						DateTime DateSubbed;
+						DateTime.TryParse (asparam[0], out DateSubbed);
+						// new sub
+						string MarketGUID=  asparam[2];
+						int Priority = 0;
+						int.TryParse (asparam[3].ToString (), out Priority);
+						
+						float Money1 = 0.0f;
+						float.TryParse (asparam[4].ToString(), out  Money1);
+						
+						float Money2 = 0.0f;
+						float.TryParse (asparam[5].ToString (), out Money2);
+						DateTime DataReplied;
+						DateTime.TryParse (asparam[6], out DataReplied);
+						
+						string Notes =  asparam[7];
+						
+						string Rights= asparam[8];
+						string Version= asparam[9];
+						string ReplyType= asparam[10];
+						string ReplyFeedback=asparam[11]; 
+						string SubmissionType=asparam[12];
+						
+						// for this we do not USE the date
+						// we use the parsed date instead
+						
+						
+						TransactionT.AddEvent(new TransactionSubmissionDestination(DateSubbed, LayoutGUID, MarketGUID,  Priority,
+						                                                Money1,  Money2,  DataReplied,
+						                                                Notes,  Rights,  Version,
+						                                                ReplyType, ReplyFeedback,  SubmissionType));
+					}
+					else
+					{
+						NewMessage.Show ("A submission did not have right length");
+					}
+					break;
 				}
 
 			}

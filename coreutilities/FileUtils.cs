@@ -3,12 +3,78 @@ using System.IO;
 using System.Drawing;
 using System.Windows.Forms;
 using System.Xml.Serialization;
-
+using System.Reflection;
 namespace CoreUtilities
 {
 	public static class FileUtils
 	{
+		/// <summary>
+		/// Serialize any serializable C# object into an xml file.
+		/// </summary>
+		/// <param name="oObject">The object to serialize</param>
+		/// <param name="backup">backup directory</param>
+		/// <param name="sName">Path and name of the output file, i.e. myobject.xml</param>
 		
+		public static void Serialize(object oObject, string sName, string backup)
+		{
+			bool bDidBackup = false;
+			
+			
+			if (oObject == null || sName == null)
+			{
+				throw new Exception("Serialize null passed in for oObject or sName");
+			}
+			
+			// copy backup to safe place 
+			if (null != backup && "" != backup && File.Exists(sName))
+			{
+				try
+				{
+					FileInfo f = new FileInfo(sName);
+					backup = Path.Combine(backup,"backup");
+					File.Copy(sName, backup , true);
+					f = null;
+					bDidBackup = true;
+				}
+				catch (Exception)
+				{
+					
+				}
+			}
+			
+			try
+			{
+				System.Type t = oObject.GetType();
+				if (t != null)
+				{
+					XmlSerializer s = new XmlSerializer(t);
+					TextWriter w = new StreamWriter(@sName);
+					s.Serialize(w, oObject);
+					w.Close();
+					t = null;
+					w = null;
+					s = null;
+				}
+				
+			}
+			catch (Exception ex)
+			{
+				if (true == bDidBackup)
+				{
+					// copy the backed up file
+					if (File.Exists(backup) == true)
+					{
+						File.Copy(backup, sName, true);
+					}
+					
+				}
+				// February 2010 
+				// I lost part of Zombieworld and I figured maybe it might make sense to copy a backup 
+				// of the filee being saved AND RESTORE it if there is an exception
+				CoreUtilities.NewMessage.Show(sName + " did not save correctly. You should copy your data (copy/paste) shut down and retry. Your last saved version will still be valid." + ex.ToString());
+			}
+			
+		}
 		/// <summary>
 		/// Deserialize any object from xml. 
 		/// </summary>
@@ -214,7 +280,39 @@ namespace CoreUtilities
 			
 		}
 
-	
+		/// <summary>
+		/// pulls resource of resourceid
+		/// 
+		/// (Copies said file from embedded resources into the diretory said
+		/// called by PrepareDictionary
+		/// </summary>
+		/// <param name="sResourceID"></param>
+		public static void PreparePullResource(Assembly _assembly, string sResourceID, string sFile)
+		{
+			if (sResourceID == null || sFile == null)
+			{
+				throw new Exception("PreparePullResource - no file or resource specified");
+			}
+			StreamReader _imageStream;
+			_imageStream = new StreamReader(_assembly.GetManifestResourceStream(sResourceID));
+			if (_imageStream != null)
+			{
+				StreamWriter sw = new StreamWriter(sFile);
+				string s = _imageStream.ReadLine();
+				while (s != null)
+				{
+					sw.WriteLine(s);
+					s = _imageStream.ReadLine();
+				}
+				
+				_imageStream.Close();
+				sw.Close();
+				sw = null;
+				
+				_imageStream = null;
+				
+			}
+		}
 	
 	}
 }

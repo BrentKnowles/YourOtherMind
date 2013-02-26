@@ -173,7 +173,10 @@ namespace Layout
 		{
 			return TextEditContextStrip;
 		}
-
+		public FindBarStatusStrip GetFindbar ()
+		{
+			return FindBar;
+		}
 
 		protected FindBarStatusStrip FindBar=null;
 #endregion
@@ -197,6 +200,7 @@ namespace Layout
 		public abstract NoteDataInterface FindNoteByGuid (string guid);
 		public abstract NoteDataInterface GoToNote(NoteDataInterface note);
 		public abstract  NoteDataInterface GetNoteOnSameLayout(string GUID, bool GoTo);
+		public abstract NoteDataInterface GetNoteOnSameLayout (string GUID, bool GoTo, string TextToFindInRichEdit);
 		public abstract NoteDataInterface FindSubpanelNote (NoteDataInterface note);
 		public abstract void SetCurrentTextNote (NoteDataXML_RichText note);
 		public abstract List<string> GetListOfStringsFromSystemTable (string tableName, int Column, string filter);

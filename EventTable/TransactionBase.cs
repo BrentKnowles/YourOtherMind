@@ -72,7 +72,7 @@ namespace Transactions
 			get {
 
 				int type = Int32.Parse (RowData [TransactionsTable.TYPE.Index].ToString ());
-				string returnValue = "BaseNote.AfterDevShouldNeverSee**" + type.ToString ();
+				string returnValue = Loc.Instance.GetStringFmt("The ADDIN used to add this transaction has been removed. No data will be lost but this message won't display properly under it is restored. TYPE: {0}", type.ToString ());
 
 				return returnValue;
 			}
@@ -138,7 +138,11 @@ namespace Transactions
 		{
 			RowData[location] = newValue;
 		}
-		
+
+		public void UpdateDate(DateTime newDate)
+		{
+			RowData[TransactionsTable.DATE.Index] = newDate;
+		}
 		
 	}
 

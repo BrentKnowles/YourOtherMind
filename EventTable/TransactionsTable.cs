@@ -36,6 +36,9 @@ namespace Transactions
 
 
 		public const int T_SUBMISSION = 1001;
+		public const int T_SUBMISSION_DESTINATION= 1005;
+
+		public const int T_GENERIC_STATUS_UPDATE = 1200;
 
 		static public ColumnConstant ID = new ColumnConstant("id", 0, "INTEGER", 0);
 		static public ColumnConstant DATE = new ColumnConstant("date",1,"datetime",1);

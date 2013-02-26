@@ -86,6 +86,7 @@
     <Compile Include="Options_InterfaceElements.cs" />
     <Compile Include="DefaultLayouts.cs" />
     <Compile Include="tempconversion\EventTable.cs" />
+    <Compile Include="AboutForm.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="yomcast.xml" />

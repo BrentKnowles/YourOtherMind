@@ -43,6 +43,8 @@
     <Compile Include="TransactionFinishedLayout.cs" />
     <Compile Include="TransactionNagStarted.cs" />
     <Compile Include="TransactionNagInterrupted.cs" />
+    <Compile Include="TransactionSubmissionDestination.cs" />
+    <Compile Include="TransactionGenericStatus.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\database\database.csproj">

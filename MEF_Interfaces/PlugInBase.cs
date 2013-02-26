@@ -26,6 +26,8 @@ namespace MefAddIns
 			set { hookups = value;}
 			
 		}
+
+
 		protected string guid;
 		protected string GUID { 
 			get { return  guid; }
@@ -63,7 +65,7 @@ namespace MefAddIns
 		{
 			return false;
 		}
-		public virtual string BuildFileName()
+		public virtual string BuildFileNameForActionWithParam()
 		{
 			return "";
 		}

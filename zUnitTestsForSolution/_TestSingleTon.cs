@@ -42,9 +42,9 @@ namespace Testing
 			CoreUtilities.lg.Instance.OnlyTime= false;
 			CoreUtilities.lg.Instance.Loudness = CoreUtilities.Loud.CTRIVIAL;
 		}
-		Layout.Appearance GetAppearanceFromStorage (string Key)
+		Layout.AppearanceClass GetAppearanceFromStorage (string Key)
 		{
-			Layout.Appearance fake = Appearance.SetAsClassic();
+			Layout.AppearanceClass fake = AppearanceClass.SetAsClassic();
 			//fake.SetAsClassic();
 			return fake;
 		}

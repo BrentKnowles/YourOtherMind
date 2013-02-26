@@ -88,10 +88,28 @@ namespace Layout
 			}
 			set {
 				//currentTextNote = value;
-				SetCurrentTextNote(value);
+				if (value != null)
+				{
+				// remove changed handler from previous textnote
+				if (currentTextNote != null)
+				{
+						currentTextNote.GetRichTextBox().TextChanged-= HandleCurrentNoteTextChanged;
+				}
+					SetCurrentTextNote(value);
+				// add changed handler to textnote (so the FindBar can know if a Search has been interrupted and respond properly)
+				currentTextNote.GetRichTextBox().TextChanged+= HandleCurrentNoteTextChanged;
+
 				
+					if (FindBar != null)
+				FindBar.SetCurrentNoteText(value.Caption);
+				}
 				
 			}
+		}
+
+		void HandleCurrentNoteTextChanged (object sender, EventArgs e)
+		{
+			FindBar.UpdateSearchAfterEditingInterruption();
 		}
 		
 		public override void SetCurrentTextNote (NoteDataXML_RichText note)
@@ -1307,6 +1325,10 @@ namespace Layout
 
 			return note;
 		}
+		public override NoteDataInterface GetNoteOnSameLayout (string GUID, bool GoTo)
+		{
+			return GetNoteOnSameLayout(GUID, GoTo, Constants.BLANK);
+		}
 
 
 		/// <summary>
@@ -1315,13 +1337,28 @@ namespace Layout
 		/// <param name='GUID'>
 		/// GUI.
 		/// </param>
-		public override NoteDataInterface GetNoteOnSameLayout(string GUID, bool GoTo)
+		public override NoteDataInterface GetNoteOnSameLayout (string GUID, bool GoTo, string TextToFindInRichEdit)
 		{
 			// we make a fake note, knowing we'll find the real deal
-			NoteDataInterface fakeNote = new NoteDataXML();
+			NoteDataInterface fakeNote = new NoteDataXML ();
 			fakeNote.GuidForNote = GUID;
 			fakeNote = GetNote (fakeNote);
-			if (GoTo) ShowAndFlash(fakeNote);
+			if (null != fakeNote) {
+				if (GoTo) {
+					ShowAndFlash (fakeNote);
+
+				
+					if (Constants.BLANK != TextToFindInRichEdit) {
+						if (fakeNote is NoteDataXML_RichText) {
+							CurrentTextNote = (NoteDataXML_RichText)fakeNote;
+							FindBar.DoFind (TextToFindInRichEdit, false, CurrentTextNote.GetRichTextBox (),0);
+						}
+					}
+
+				}
+			} else {
+				throw new Exception(GUID + " was an invalid note in GetNoteOnSameLayout");
+			}
 			return fakeNote;
 		}
 
@@ -1497,7 +1534,7 @@ namespace Layout
 				{
 					ArrayList arrayObjects = Notes.GetAllNotes();
 					
-					bool AllNull = true;
+					//bool AllNull = true;
 					foreach (NoteDataInterface app in arrayObjects)
 					{
 						if (null != app && null != app.Caption && Constants.BLANK != app.Caption)

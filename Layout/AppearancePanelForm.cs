@@ -8,7 +8,7 @@ namespace Layout
 	{
 		AppearancePanel appearancePanel = null;
 		Button ok = null;
-		public AppearancePanelForm (Appearance app)
+		public AppearancePanelForm (AppearanceClass app)
 		{
 		
 
@@ -40,7 +40,7 @@ namespace Layout
 
 			if (app == null) {
 				// we are in build mode. So we create a classic note
-				app = Appearance.SetAsClassic();
+				app = AppearanceClass.SetAsClassic();
 
 				app.Name = "Choose A Unique Name For Your New Appearance";
 				ok.Enabled = false;
@@ -68,7 +68,7 @@ namespace Layout
 		/// <returns>
 		/// The appearance.
 		/// </returns>
-		public Appearance GetAppearance ()
+		public AppearanceClass GetAppearance ()
 		{
 			return appearancePanel.GetAppearanceSelected();
 		}

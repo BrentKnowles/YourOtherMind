@@ -98,6 +98,13 @@ namespace Layout
 			}
 
 		}
+
+
+		public RichTextExtended GetRichTextBox ()
+		{
+			return richBox;
+		}
+
 		/// <summary>
 		/// returns the text as text
 		/// </summary>
@@ -136,7 +143,7 @@ namespace Layout
 			return false;
 		}
 
-		protected override void DoChildAppearance (Appearance app)
+		protected override void DoChildAppearance (AppearanceClass app)
 		{
 			base.DoChildAppearance(app);
 
@@ -155,9 +162,10 @@ namespace Layout
 			richBox.Dock = DockStyle.Fill;
 			richBox.BringToFront ();
 			richBox.Rtf = this.Data1;
+			richBox.SelectionChanged+= HandleRichTextSelectionChanged;
 			richBox.TextChanged += HandleTextChanged;
 			richBox.ReadOnly = this.ReadOnly;
-
+			richBox.HideSelection = false; // must be able to see focus form other controls
 
 			MarkupCombo = new ToolStripComboBox ();
 			MarkupCombo.ToolTipText = Loc.Instance.GetString ("AddIns allow text notes to format text. A global option controls the default markup to use on notes but this may be overridden here.");
@@ -188,6 +196,11 @@ namespace Layout
 			// we use markup tag to indicate whether the data on the markup combo has changed to avoid slowness in save
 			MarkupCombo.Tag = false;
 			loadingcombo = false;
+		}
+
+		void HandleRichTextSelectionChanged (object sender, EventArgs e)
+		{
+			Layout.GetFindbar().UpdateSelection(richBox.SelectedText, false);
 		}
 
 		void HandleSelectedIndexChanged (object sender, EventArgs e)

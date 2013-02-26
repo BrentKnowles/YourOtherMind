@@ -1,5 +1,5 @@
 using System;
-
+using CoreUtilities;
 namespace MefAddIns.Extensibility
 {
 	public struct PlugInAction
@@ -29,6 +29,9 @@ namespace MefAddIns.Extensibility
 
 		public string ToolTip;
 		public string GUID;
+
+		// if blank NoteActions use the standard menu label otherwise they use this
+		public string NoteActionMenuOverride;
 
 	
 

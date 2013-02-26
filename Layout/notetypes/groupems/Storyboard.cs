@@ -1653,6 +1653,7 @@ namespace Storyboards
 			if (StickyTable != null)
 			{
 				this.Cursor = Cursors.WaitCursor;
+
 				listView.Groups.Clear();
 				listView.Items.Clear();
 				

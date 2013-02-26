@@ -9,9 +9,9 @@ namespace Layout
 {
 	// This class is serialized into a column in the Database. Users may add/edit and then select them to modify the appearance of notes
 	[XmlRootAttribute("Appearance", Namespace = "", IsNullable = false)]
-	public class Appearance
+	public class AppearanceClass
 	{
-		public Appearance ()
+		public AppearanceClass ()
 		{
 		}
 
@@ -279,7 +279,7 @@ namespace Layout
 			System.IO.StringWriter sw = null;
 			sw = new System.IO.StringWriter ();
 			//sw.Encoding = "";
-			x3 = new System.Xml.Serialization.XmlSerializer (typeof(Appearance)); 
+			x3 = new System.Xml.Serialization.XmlSerializer (typeof(AppearanceClass)); 
 			x3.Serialize (sw, this);
 			x3 = null;
 			//x3.Serialize (sw, ListAsDataObjectsOfType,ns, "utf-8");
@@ -289,9 +289,9 @@ namespace Layout
 		}
 		
 		
-		public static Appearance SetAsFantasy ()
+		public static AppearanceClass SetAsFantasy ()
 		{
-			Appearance newApp = new Appearance();
+			AppearanceClass newApp = new AppearanceClass();
 			newApp.Name="fantasy";
 			newApp.mcaptionFont = "Georgia, 12pt";   //1
 			
@@ -300,16 +300,16 @@ namespace Layout
 			newApp.mainPanelBorderStyle = BorderStyle.None; //4
 			newApp.mcaptionBackground =-663885; //5
 			newApp.mcaptionForeground = -16777216; //6
-			newApp.mmainBackground = Color.Gray.ToArgb(); //7
+			newApp.mmainBackground =-663885;  //7
 			// TODO: What is this for?
 			newApp.UseBackgroundColor = true;
 			return newApp;
 		}
 
-		public static Appearance SetAsSciFI ()
+		public static AppearanceClass SetAsSciFI ()
 		{
 			
-			Appearance newApp = new Appearance();
+			AppearanceClass newApp = new AppearanceClass();
 			newApp.Name = "scifi";
 			// doing this inside the class to have access to private members to set them to numbers
 			newApp.mcaptionFont = "Verdana, 18pt, style=Bold";
@@ -318,15 +318,16 @@ namespace Layout
 			newApp.HeaderBorderStyle = BorderStyle.None;
 			newApp.mainPanelBorderStyle = BorderStyle.None;
 			newApp.mcaptionBackground = -12156236;
-			newApp.mcaptionForeground = -2894893;
+			//newApp.mcaptionForeground = -2894893;
+			newApp.mcaptionForeground = Color.DarkGray.ToArgb();//-2894893;
 			newApp.mmainBackground = -2894893;
 			// TODO: What is this for?
 			newApp.UseBackgroundColor = true;
 			return newApp;
 		}
-		public static Appearance SetAsResearch()
+		public static AppearanceClass SetAsResearch()
 		{
-			Appearance newApp = new Appearance();
+			AppearanceClass newApp = new AppearanceClass();
 			newApp.Name = "research";
 			// doing this inside the class to have access to private members to set them to numbers
 			newApp.mcaptionFont = "Times New Roman, 10pt, style=Bold";
@@ -341,9 +342,9 @@ namespace Layout
 			newApp.UseBackgroundColor = true;
 			return newApp;
 		}
-		public static Appearance SetAsClassic()
+		public static AppearanceClass SetAsClassic()
 		{
-			Appearance newApp = new Appearance();
+			AppearanceClass newApp = new AppearanceClass();
 			newApp.Name = "classic";
 			// doing this inside the class to have access to private members to set them to numbers
 			newApp.mcaptionFont = "Times New Roman, 10pt, style=Bold";
@@ -353,7 +354,7 @@ namespace Layout
 			newApp.mainPanelBorderStyle = BorderStyle.FixedSingle;
 			newApp.mcaptionBackground = -2987746;
 			newApp.mcaptionForeground = -16777216;
-			newApp.mmainBackground = Color.Gray.ToArgb();
+			newApp.mmainBackground = Color.White.ToArgb();
 			// TODO: What is this for?
 			newApp.UseBackgroundColor = true;
 			return newApp;
@@ -375,9 +376,9 @@ namespace Layout
 
 		}
 
-		public static Appearance SetAsProgrammer()
+		public static AppearanceClass SetAsProgrammer()
 		{
-			Appearance newApp = new Appearance();
+			AppearanceClass newApp = new AppearanceClass();
 			newApp.Name = "programmer";
 			// doing this inside the class to have access to private members to set them to numbers
 			newApp.mcaptionFont = "Verdana, 12pt, style=Bold";
@@ -392,9 +393,9 @@ newApp.mcaptionBackground =-16777216;
 			newApp.UseBackgroundColor = true;
 			return newApp;
 		}
-		public static Appearance SetAsNote()
+		public static AppearanceClass SetAsNote()
 		{
-			Appearance newApp = new Appearance();
+			AppearanceClass newApp = new AppearanceClass();
 			newApp.Name = "note";
 			// doing this inside the class to have access to private members to set them to numbers
 			newApp.mcaptionFont = "Verdana, 10pt, style=Bold";
@@ -409,9 +410,9 @@ newApp.mcaptionBackground =-16777216;
 			newApp.UseBackgroundColor = true;
 			return newApp;
 		}
-		public static Appearance SetAsModern()
+		public static AppearanceClass SetAsModern()
 		{
-			Appearance newApp = new Appearance();
+			AppearanceClass newApp = new AppearanceClass();
 			newApp.Name = "modern";
 			// doing this inside the class to have access to private members to set them to numbers
 			newApp.mcaptionFont = "Arial Black, 12pt, style=Bold";
@@ -426,9 +427,9 @@ newApp.mcaptionBackground =-16777216;
 			newApp.UseBackgroundColor = true;
 			return newApp;
 		}
-		public static Appearance SetAsBlue()
+		public static AppearanceClass SetAsBlue()
 		{
-			Appearance newApp = new Appearance();
+			AppearanceClass newApp = new AppearanceClass();
 			newApp.Name = "blue";
 			// doing this inside the class to have access to private members to set them to numbers
 			newApp.mcaptionFont = "Verdana, 12pt, style=Bold";

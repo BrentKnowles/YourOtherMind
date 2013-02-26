@@ -72,6 +72,8 @@
     <Compile Include="StoryboardTesting.cs" />
     <Compile Include="TransactionTableTests.cs" />
     <Compile Include="SqlLiteDatabaseTest.cs" />
+    <Compile Include="FindBarTest.cs" />
+    <Compile Include="ClassesUsedInTesting\FAKE_FindBar.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

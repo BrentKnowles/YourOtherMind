@@ -27,6 +27,12 @@ namespace Transactions
 		 * 
 		 * SubmissionType - Data9
 		 */
+
+		// using this so I can simply have destinations inherit TransactionSubmission
+		protected virtual void SetType()
+		{
+			RowData[TransactionsTable.TYPE.Index] = TransactionsTable.T_SUBMISSION.ToString ();
+		}
 	
 		public TransactionSubmission (DateTime dateSubmitted, string ProjectGUID, string MarketGUID, int Priority,
 		                             float Money1, float Money2, DateTime DataReplied,
@@ -34,7 +40,8 @@ namespace Transactions
 		                             string ReplyType, string ReplyFeedback, string SubmissionType) : base()
 		{
 		
-			RowData[TransactionsTable.TYPE.Index] = TransactionsTable.T_SUBMISSION.ToString ();
+			SetType ();
+		
 
 
 			RowData[TransactionsTable.DATE.Index] = dateSubmitted;

@@ -8,7 +8,7 @@ namespace appframe
 	/// *1* A holder for various actions to appear on the TextNote Context Menu 
 	/// *2* List is built in Main application form (supplied via AddIns and any default NoteActions, like "running as batch file"
 	/// </summary>
-	public class NoteTextAction
+	public class NoteTextAction : IDisposable
 	{
 		// A delegate holding the method defined when NoteTExtAction instantiated (i.e., performs the actual run as batch file action)
 		Action<string> PerformAction;
@@ -24,6 +24,20 @@ namespace appframe
 			ToolTip = tooltip;
 			BuildFileName = buildFileName;
 
+		}
+		public void Dispose ()
+		{
+			// made this a disposalbe object so that when an AddIn Adds an TextAction
+			// it adds it to its dispose list when it is removed as an AddIn
+			if (parent != null) {
+				parent.Remove(this);
+			}
+		}
+		// Feb 2013 -- adding this, so we now to remove ourselves from a collection if Disposes (an AddIn removed)
+		private System.Collections.Generic.List<NoteTextAction> parent = null;
+		public System.Collections.Generic.List<NoteTextAction> Parent {
+			get { return parent;}
+			set {parent =value;}
 		}
 
 		public string GetMenuTitle()

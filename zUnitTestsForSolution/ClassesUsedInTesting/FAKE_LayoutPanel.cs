@@ -18,6 +18,11 @@ namespace Testing
 			return (LayoutDatabase)Notes;
 		}
 
+		public void SetFindBar(FindBarStatusStrip newFindBar)
+		{
+			FindBar = newFindBar;
+		}
+
 	}
 }
 

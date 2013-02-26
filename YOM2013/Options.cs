@@ -14,7 +14,7 @@ namespace YOM2013
 
 		#region variables_private
 
-
+		Label WordSystem;
 		string DatabaseName;
 		Panel configPanel;
 		#endregion
@@ -99,8 +99,15 @@ struct checkBoxOptions
 
 		public Panel GetConfigPanel ()
 		{
+
+			// we need to revise this if plugins have been adding
+			if (null != WordSystem) {
+				UpdateCurrentWordSystem(WordSystem);
+			}
+
 			// if panel made then leave it alone
-			if (PanelWasMade == true) return configPanel;
+			if (PanelWasMade == true)
+				return configPanel;
 		
 			PanelWasMade = true;
 			
@@ -110,7 +117,7 @@ struct checkBoxOptions
 
 
 			foreach (checkBoxOptions option in booleanValues) {
-				lg.Instance.Line("Options.GetConfigPane", ProblemType.TEMPORARY, option.labelName);
+				lg.Instance.Line ("Options.GetConfigPane", ProblemType.TEMPORARY, option.labelName);
 				CheckBox autoSave = new CheckBox ();
 				autoSave.Name = option.columnKey;
 				autoSave.Text = option.labelName;
@@ -118,7 +125,7 @@ struct checkBoxOptions
 
 			
 
-				bool result = GetOption (option.columnKey,option.defaultValue);
+				bool result = GetOption (option.columnKey, option.defaultValue);
 
 
 				autoSave.Checked = result;
@@ -127,14 +134,33 @@ struct checkBoxOptions
 				autoSave.Dock = DockStyle.Top;
 			}
 
+			GroupBox Info = new GroupBox();
+			Info.Text = Loc.Instance.GetString ("Info");
+			//Info.Font = new System.Drawing.Font(Info.Font.FontFamily, Info.Font.Size, System.Drawing.FontStyle.Bold);
+			Info.Dock = DockStyle.Bottom;
+			WordSystem = new Label ();
+			WordSystem.AutoSize = false;
+			WordSystem.Height = 200;
 
+			UpdateCurrentWordSystem (WordSystem);
+			Info.Controls.Add (WordSystem);
 
-
-
-
+			WordSystem.Dock = DockStyle.Top;
+			configPanel.Controls.Add (Info);
 
 			return configPanel;
 
+		}
+
+		static void UpdateCurrentWordSystem (Label WordSystem)
+		{
+			if (Layout.LayoutDetails.Instance.WordSystemInUse == null) {
+				// when a plugin unloads it needs to set the layoutsystem to the default
+				WordSystem.Text = Loc.Instance.GetString ("No Word System Was Assigned. This is an error. Contact developer.");
+			}
+			else {
+				WordSystem.Text = Loc.Instance.GetStringFmt ("Using: {0}. (NOTE: AddIns can deploy new word systems).", Layout.LayoutDetails.Instance.WordSystemInUse.ToString ());
+			}
 		}
 
 		private BaseDatabase CreateDatabase()

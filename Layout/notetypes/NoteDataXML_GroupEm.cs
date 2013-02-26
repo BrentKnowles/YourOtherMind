@@ -127,22 +127,48 @@ namespace Layout
 		/// </param>
 		string HandleStoryBoardClickItem (object sender)
 		{
+			string TextToSearchFor = Constants.BLANK;
 			CoreUtilities.Links.LinkTableRecord record = (CoreUtilities.Links.LinkTableRecord)sender;
 			if (record != null) {
 
-				//LayoutDetails.Instance.LoadLayout(Layout.GUID, record.sFileName);
-//				NoteDataInterface note = Layout.FindNoteByGuid(record.sFileName);
-//				if (note != null)
-//				{
-//					Layout.GoToNote(note);
-//				}
+
+
+				TextToSearchFor = record.sText;
+				if (TextToSearchFor.IndexOf(";") > -1)
+				{
+					
+					
+					// clean up text
+					TextToSearchFor = TextToSearchFor.Replace("\t", "");
+					TextToSearchFor = TextToSearchFor.Replace("\n", "");
+					TextToSearchFor = TextToSearchFor.Replace("\r", "");
+					// just grab SECOND string of semicolon (first is the number
+					string[] found = TextToSearchFor.Split(new char[1] { ';' });
+					if (found != null)
+					{
+						TextToSearchFor = found[1];
+						if (TextToSearchFor == "" && found[0] != "")
+						{
+							TextToSearchFor = found[0];
+						}
+					}
+					TextToSearchFor = TextToSearchFor.Trim();
+				}
+				else
+				{
+					TextToSearchFor =Constants.BLANK;
+				}
+
+
+
+
 				if (General.IsGraphicFile(record.sFileName))
 				{
 					//NewMessage.Show ("image");
 					Layout.GetNoteOnSameLayout(record.ExtraField, true);
 				}
 				else
-				Layout.GetNoteOnSameLayout(record.sFileName, true);
+					Layout.GetNoteOnSameLayout(record.sFileName, true, TextToSearchFor);
 			}
 			return "";
 		}

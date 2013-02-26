@@ -98,10 +98,10 @@ namespace YOM2013
 				db.Dispose();
 				return value_as;}
 		}
-		private void TestExistence (BaseDatabase db, string key, Func<Layout.Appearance> Setup)
+		private void TestExistence (BaseDatabase db, string key, Func<Layout.AppearanceClass> Setup)
 		{
 			if (!db.Exists (TableName, columnKey, key)) {
-				Layout.Appearance default1 = Setup();
+				Layout.AppearanceClass default1 = Setup();
 				//Setup();
 				SaveAppearance (default1);
 			}
@@ -113,15 +113,15 @@ namespace YOM2013
 		{
 			BaseDatabase db = CreateDatabase ();
 
-			TestExistence (db, "classic", Layout.Appearance.SetAsClassic);
-			TestExistence (db, "fantasy", Layout.Appearance.SetAsFantasy);
-			TestExistence (db, "scifi", Layout.Appearance.SetAsSciFI);
-			TestExistence (db, "research", Layout.Appearance.SetAsResearch);
+			TestExistence (db, "classic", Layout.AppearanceClass.SetAsClassic);
+			TestExistence (db, "fantasy", Layout.AppearanceClass.SetAsFantasy);
+			TestExistence (db, "scifi", Layout.AppearanceClass.SetAsSciFI);
+			TestExistence (db, "research", Layout.AppearanceClass.SetAsResearch);
 
-			TestExistence (db, "blue", Layout.Appearance.SetAsBlue);
-			TestExistence (db, "modern", Layout.Appearance.SetAsModern);
-			TestExistence (db, "note", Layout.Appearance.SetAsNote);
-			TestExistence (db, "programmer", Layout.Appearance.SetAsProgrammer);
+			TestExistence (db, "blue", Layout.AppearanceClass.SetAsBlue);
+			TestExistence (db, "modern", Layout.AppearanceClass.SetAsModern);
+			TestExistence (db, "note", Layout.AppearanceClass.SetAsNote);
+			TestExistence (db, "programmer", Layout.AppearanceClass.SetAsProgrammer);
 
 //			// if appearance 1  does not exist, create and call SaveAppearance
 //			if (!db.Exists (TableName, columnKey, "classic")) {
@@ -148,9 +148,9 @@ namespace YOM2013
 		/// <param name='Key'>
 		/// Key.
 		/// </param>
-		public Layout.Appearance GetAppearanceByKey(string Key)
+		public Layout.AppearanceClass GetAppearanceByKey(string Key)
 		{
-			Layout.Appearance app = null;
+			Layout.AppearanceClass app = null;
 			BaseDatabase db = CreateDatabase();
 			if (db.Exists (TableName, columnKey, Key))
 			{
@@ -163,10 +163,10 @@ namespace YOM2013
 
 						// now deserialize the object
 
-						XmlSerializer serializer = new XmlSerializer (typeof(Layout.Appearance));
+						XmlSerializer serializer = new XmlSerializer (typeof(Layout.AppearanceClass));
 						
 						System.IO.StringReader reader = new System.IO.StringReader(xml);
-						app = (Layout.Appearance)serializer.Deserialize (reader);
+						app = (Layout.AppearanceClass)serializer.Deserialize (reader);
 
 
 
@@ -183,7 +183,7 @@ namespace YOM2013
 		/// <param name='obj'>
 		/// Object.
 		/// </param>
-		void SaveAppearance (Layout.Appearance obj)
+		void SaveAppearance (Layout.AppearanceClass obj)
 		{
 			if (null == obj)
 				throw new Exception ("A null appearance was passed into save routine.");
@@ -375,7 +375,7 @@ namespace YOM2013
 
 			if ((sender as ListBox).SelectedItem != null) {
 				//GetRidOfMe should be picked from the list we fill instead
-				Layout.Appearance App = GetAppearanceByKey ((sender as ListBox).SelectedItem.ToString ());
+				Layout.AppearanceClass App = GetAppearanceByKey ((sender as ListBox).SelectedItem.ToString ());
 				if (App != null) {
 				
 					AppearancePanel appPanel = new AppearancePanel (true, App, SaveAppearance, null, false);

@@ -300,7 +300,16 @@ namespace appframe
 							AddIn.RegisterType ();
 							AddIn.AssignHotkeys (ref Hotkeys, ref AddIn, RunAddInAction);
 							if (AddIn.CalledFrom.IsNoteAction == true) {
-								NoteTextActions.Add (new NoteTextAction (AddIn.ActionWithParam, AddIn.BuildFileName, AddIn.CalledFrom.MyMenuName, AddIn.CalledFrom.ToolTip));
+								// allow addins to override the noteaction menu name here if they are deploying with both a menu and note action
+								string menuNameToUse= AddIn.CalledFrom.MyMenuName;
+								if (AddIn.CalledFrom.NoteActionMenuOverride != Constants.BLANK)
+								{
+									menuNameToUse = AddIn.CalledFrom.NoteActionMenuOverride;
+								}
+								NoteTextAction tmp = new NoteTextAction (AddIn.ActionWithParamForNoteTextActions, AddIn.BuildFileNameForActionWithParam, menuNameToUse, AddIn.CalledFrom.ToolTip);
+								tmp.Parent = NoteTextActions;
+								NoteTextActions.Add (tmp);
+								AddIn.Hookups.Add (tmp);
 							}
 							// February 2013 - removed the else. NoteActions and things with menus do not need exclusivity
 
@@ -390,6 +399,7 @@ namespace appframe
 							NewMessage.Show ("Destroy : " + addin.CalledFrom.GUID);
 
 							foreach (IDisposable connection in addin.Hookups) {
+								NewMessage.Show ("Removing " + connection.ToString());
 								connection.Dispose ();
 							}
 							if (addin.DeregisterType() == true)
@@ -432,7 +442,7 @@ namespace appframe
 			{
 				thisAddIn.SetBeforeRespondInformation(NeededInfo);
 				thisAddIn.path_filelocation = path;
-				thisAddIn.RespondToCallToAction(this);
+				thisAddIn.RespondToMenuOrHotkey(this);
 				// this routine sends the needed info to the callback which was setup at Initialization 
 				// we don't call this externally, it is called internally
 				//thisAddIn.GetAfterRespondInformation();

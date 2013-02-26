@@ -25,11 +25,11 @@ namespace MefAddIns.Extensibility
 		PlugInAction CalledFrom { get; }
 		// What happens when the menu is clicked or a hotkey called
 		// using generci types http://stackoverflow.com/questions/772053/is-it-possible-to-make-a-parameter-implement-two-interfaces
-		void RespondToCallToAction<T>(T form) where T: System.Windows.Forms.Form, MEF_Interfaces.iAccess ;
+		void RespondToMenuOrHotkey<T>(T form) where T: System.Windows.Forms.Form, MEF_Interfaces.iAccess ;
 		// called by utlities such as SendTextAway
-		void ActionWithParam(object param);
+		void ActionWithParamForNoteTextActions(object param);
 		// if any files need to be generated (such as with SendTextAway, then define this). Empty version created in base class
-		string BuildFileName();
+		string BuildFileNameForActionWithParam();
 
 
 		// needed to modify the plugin in situation wherein we intentionally have a temporary copy

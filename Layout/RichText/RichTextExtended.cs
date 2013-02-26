@@ -3,7 +3,7 @@ using System.Windows.Forms;
 using System.Drawing;
 using System.Xml;
 using CoreUtilities;
-
+using System.Runtime.InteropServices;
 namespace Layout
 {
 	public class RichTextExtended : RichTextBox
@@ -25,6 +25,12 @@ namespace Layout
 //				markuplanguage = value;
 //			}
 //		}
+
+		// if we are spell checking a single word 
+		// we set this to know the reange we are checking
+		// it will be cleaered in the Mispelled Word function
+		public int _CurrentSpellSelectionStart = -1;
+		public int _CurrentSpellSelectionLength = -1;
 
 
 		private iMarkupLanguage markupOverride=null;
@@ -49,6 +55,7 @@ namespace Layout
 //				throw new Exception("A markup language is required");
 //			}
 //			Markuplanguage = _Markup;
+			this.MouseDown+= RichTextBoxEx_MouseDown;
 		}
 
 		private bool inhibitPaint = false;
@@ -95,7 +102,87 @@ namespace Layout
 				showPartsOfSpeechMode = value;
 			}
 		}
-
+		// for passing into GetNearestSpacer
+		//  delegate int IndexOf(char value, int pos); 
+		private int GetNearestSpacer(int Position, string text, bool LastLookup)
+		{
+			// look for nearest seperator
+			char[] seps = new char[10] { ' ', '.', ',', '!', '?', '-', ';', ':', '/', '\n' };
+			
+			int best = int.MaxValue;
+			int value = -1;
+			// looking for seperator closest to the position (less different between Position and sep.position)
+			foreach (char seperator in seps)
+			{
+				int current = 0;
+				if (false == LastLookup)
+				{
+					current = text.IndexOf(seperator, Position);
+				}
+				else
+				{
+					current = text.LastIndexOf(seperator, Position);
+				}
+				int diff = Math.Abs(current - Position);
+				if (diff < best)
+				{
+					best = diff;
+					value = current;
+				}
+			}
+			
+			
+			
+			return value;
+		}
+		
+		/// <summary>
+		/// tries to select a word from the psoition indicated
+		/// </summary>
+		/// <param name="fromPosition"></param>
+		public void SelectAsWord(int fromPosition)
+		{
+			//look for first non-alpha character to left and right?
+			int cursorPosition = fromPosition;
+			int nextSpace = GetNearestSpacer(cursorPosition, Text, false);//Text.IndexOf(' ', cursorPosition);
+			int selectionStart = 0;
+			string trimmedString = string.Empty;
+			// Strip everything after the next space...
+			if (nextSpace != -1)
+			{
+				trimmedString = Text.Substring(0, nextSpace);
+			}
+			else
+			{
+				trimmedString = Text;
+			}
+			
+			// determining the start
+			int lastspacer = GetNearestSpacer(trimmedString.Length - 1, trimmedString, true);
+			if (  /*trimmedString.LastIndexOf(' ', 0)*/ lastspacer != -1)
+			{
+				selectionStart = 1 + lastspacer;
+				trimmedString = trimmedString.Substring(1 + lastspacer);
+			}
+			
+			SelectionStart = selectionStart;
+			SelectionLength = trimmedString.Length;
+			
+		}
+		
+		/// <summary>
+		/// may 2010 - trying to select word on right-click
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		void RichTextBoxEx_MouseDown(object sender, MouseEventArgs e)
+		{
+			// may 16 - don't try selecting if we already ahve a selection
+			if (e.Button == MouseButtons.Right && SelectedText == "")
+			{
+				SelectAsWord(GetCharIndexFromPosition(new Point(e.X, e.Y)));
+			}
+		}
 		protected override void OnPaint (PaintEventArgs e)
 		{
 			base.OnPaint(e);
@@ -182,6 +269,42 @@ namespace Layout
 			}
 			else
 				LayoutDetails.Instance.GetCurrentMarkup().DoPaint(e, start, end, this);
+		}
+
+		[DllImport("user32.dll", CharSet = CharSet.Auto)]
+		private static extern IntPtr SendMessage(IntPtr hWnd, int msg, IntPtr wParam, IntPtr lParam);
+		/// <summary>
+		/// Flicker resistance
+		/// http://social.msdn.microsoft.com/Forums/en-US/winforms/thread/a6abf4e1-e502-4988-a239-a082afedf4a7
+		/// </summary>
+		public void BeginUpdate()
+		{
+			SendMessage(this.Handle, 0xb, (IntPtr)0, IntPtr.Zero);
+			
+		}
+		/// <summary>
+		/// Flicker resistance
+		/// http://social.msdn.microsoft.com/Forums/en-US/winforms/thread/a6abf4e1-e502-4988-a239-a082afedf4a7
+		/// </summary>
+		public void EndUpdate()
+		{
+			SendMessage(this.Handle, 0xb, (IntPtr)1, IntPtr.Zero);
+			this.Invalidate();
+			
+		}
+		
+		public bool bSuspendUpdateSelection = false;
+		/// <summary>
+		/// during certain bulk actions you don't want to be updated selections
+		/// </summary>
+		public void SuspendUpdateSelection()
+		{
+			bSuspendUpdateSelection = true;
+		}
+		
+		public void ResumeUpdateSelection()
+		{
+			bSuspendUpdateSelection = false;
 		}
 
 	}

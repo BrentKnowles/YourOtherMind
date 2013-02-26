@@ -10,6 +10,7 @@ namespace Layout
 	public partial class NoteDataXML 
 	{
 		#region UI
+		protected ToolStripMenuItem AppearanceSet=null;
 		protected ToolStrip CaptionLabel;
 		//protected ContextMenuStrip contextMenu;
 		// this holds the PropertyGrid
@@ -45,13 +46,14 @@ namespace Layout
 
 		protected void UpdateAppearance ()
 		{
-
+			// This is the slow operation - removing it gives us 3 seconds back
 
 			// takes the current appearance and adjusts it.
 
 
-			Appearance app = LayoutDetails.Instance.GetAppearanceByName(this.Appearance);
-
+			AppearanceClass app = LayoutDetails.Instance.GetAppearanceByName(this.Appearance);
+			//Layout.AppearanceClass app = AppearanceClass.SetAsProgrammer();
+			CaptionLabel.SuspendLayout(); //minor, fraction of a second savings
 			CaptionLabel.Font = app.captionFont;   //1
 			this.CaptionLabel.Height = app.nHeaderHeight; //2
 
@@ -62,7 +64,8 @@ namespace Layout
 			this.CaptionLabel.ForeColor = app.captionForeground; //5
 
 			DoChildAppearance(app);
-
+			CaptionLabel.ResumeLayout();
+			AppearanceSet.Text = Loc.Instance.GetStringFmt("Appearance: {0}",this.Appearance);
 			// NOT BEING USED YET
 			//this.CaptionLabel.Bord = app.HeaderBorderStyle;  //6
 			// TODO: RichEdit would use the Mainbackground on the TExt box (i.e., fantasy looks like a  single note, caption and text the same. //7 
@@ -76,7 +79,7 @@ namespace Layout
 		}
 		 
 		// this is overrideen by children to updat their own controls colors
-		protected virtual void DoChildAppearance (Layout.Appearance app)
+		protected virtual void DoChildAppearance (Layout.AppearanceClass app)
 		{
 
 		}
@@ -88,7 +91,8 @@ namespace Layout
 
 
 			ParentNotePanel = new NotePanel (this);
-			ParentNotePanel.SuspendLayout ();
+			//ParentNotePanel.Visible = false;
+		//	ParentNotePanel.SuspendLayout ();
 
 			
 			ParentNotePanel.Visible = true;
@@ -109,7 +113,8 @@ namespace Layout
 			CaptionLabel = new ToolStrip ();
 			// must be false for height to matter
 			CaptionLabel.AutoSize = false;
-			CaptionLabel.SuspendLayout ();
+	//		CaptionLabel.SuspendLayout ();
+			CaptionLabel.Click+= (object sender, EventArgs e) => BringToFrontAndShow();
 			CaptionLabel.DoubleClick += HandleCaptionLabelDoubleClick;
 			CaptionLabel.MouseDown += HandleMouseDown;
 			CaptionLabel.MouseUp += HandleMouseUp;
@@ -214,9 +219,9 @@ namespace Layout
 			// APPEARANCE
 			//
 			//
-			ToolStripMenuItem AppearanceSet = new ToolStripMenuItem();
+			 AppearanceSet = new ToolStripMenuItem();
 
-			AppearanceSet.Text = Loc.Instance.GetStringFmt("Appearance: {0}",this.Appearance);
+		
 						
 			
 			ContextMenuStrip AppearanceMenu = new ContextMenuStrip();
@@ -246,6 +251,8 @@ namespace Layout
 			(DockPicker).Items.Clear ();
 			int found = -1;
 			int count = -1;
+
+			// this loop does not affect performance
 			foreach (string s in Enum.GetNames(typeof(DockStyle))) {
 				count++;
 				(DockPicker).Items.Add (s);
@@ -338,8 +345,8 @@ namespace Layout
 
 
 			ParentNotePanel.Visible = this.Visible;
-			CaptionLabel.ResumeLayout();
-			ParentNotePanel.ResumeLayout();
+//			CaptionLabel.ResumeLayout(); this did not seem to help
+//			ParentNotePanel.ResumeLayout();
 
 
 			// Set up delegates

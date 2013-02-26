@@ -491,10 +491,13 @@ namespace LayoutPanels
 			Notes.Status = (sender as ToolStripItem).Text;
 			StatusItem.Text = Notes.Status;
 			if (Notes.Status.IndexOf (Loc.Instance.GetString ("Retired")) > -1) {
-				LayoutDetails.Instance.TransactionsList.AddEvent(new Transactions.TransactionRetired(DateTime.Now, this.Layout.GUID));
-			}
+				LayoutDetails.Instance.TransactionsList.AddEvent (new Transactions.TransactionRetired (DateTime.Now, this.Layout.GUID));
+			} else
 			if (Notes.Status.IndexOf (Loc.Instance.GetString ("Complete")) > -1) {
-				LayoutDetails.Instance.TransactionsList.AddEvent(new Transactions.TransactionFinishedLayout(DateTime.Now, this.Layout.GUID));
+				LayoutDetails.Instance.TransactionsList.AddEvent (new Transactions.TransactionFinishedLayout (DateTime.Now, this.Layout.GUID));
+			} else {
+				// if neither Retired or Complete then flag a generic transaction
+				LayoutDetails.Instance.TransactionsList.AddEvent (new Transactions.TransactionGenericStatus (DateTime.Now,this.Layout.GUID,Notes.Status));
 			}
 			Layout.SetSaveRequired(true);
 		}

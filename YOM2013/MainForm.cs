@@ -21,7 +21,7 @@ namespace YOM2013
 	public class MainForm : appframe.MainFormBase
 	{
 		// the types of footer messages, influences the control that is updated
-		enum FootMessageType  {LOAD, NOTES, SAVE, SWITCHWINDOWS};
+		enum FootMessageType  {LOAD, NOTES, SAVE, SWITCHWINDOWS, NEWSYSTEMNOTE};
 		// the position of the label that is used to display the FooterMessages
 		const int MAIN_MESSAGE_INDEX = 0;
 		#region gui
@@ -98,8 +98,9 @@ namespace YOM2013
 
 			NoteTextActions.Add (new NoteTextAction(RunAsBatchFile, BuildBatchFileName, Loc.Instance.GetString("Batch"), Loc.Instance.GetString ("Runs the text on this note as a batch file.")));
 
-
 		}
+
+
 		/// <summary>
 		/// called from SaveTextLineToFile
 		/// </summary>
@@ -138,56 +139,50 @@ namespace YOM2013
 		/// * Note: Choose not to let the groups handl
 		/// </summary>
 		/// <param name="sFile"></param>
-		public void SaveTextLineToFile(string[] LinesOfText,  string sFilepath)
+		public void SaveTextLineToFile (string[] LinesOfText, string sFilepath)
 		{
-				string sWordInformation = "";
-				int TotalWords = 0;
+			string sWordInformation = "";
+			int TotalWords = 0;
+				
+
+			// certain Addins like spellchecking won't both writing a file out
+			if (sFilepath != Constants.BLANK) {
 				
 				
-				
-				
-				try
-				{
-					StreamWriter writer = new StreamWriter(sFilepath);
-					if (LinesOfText[0].ToLower() == "[[index]]")
-					{
+				try {
+					StreamWriter writer = new StreamWriter (sFilepath);
+					if (LinesOfText [0].ToLower () == "[[index]]") {
 						// we are actually an index note
 						// which will instead list a bunch of other pages to use
 						// we now iterate through LinesOfText[1] to end and parse those instead
-						for (int i = 1; i < LinesOfText.Length; i++)
-						{
-							string sLine = LinesOfText[i];
+						for (int i = 1; i < LinesOfText.Length; i++) {
+							string sLine = LinesOfText [i];
 							bool bGetWords = false;
-							ArrayList ListOfParsePages = new ArrayList();
+							ArrayList ListOfParsePages = new ArrayList ();
 							
-						//TODO hook up to Custom Scripting Language system
-							if (sLine.IndexOf("[[words]]") > -1)
-							{
+							//TODO hook up to Custom Scripting Language system
+							if (sLine.IndexOf ("[[words]]") > -1) {
 								
 								// if we have the words keyword we know we want to display some word info at the end
-								sLine = sLine.Replace("[[words]]", "").Trim();
+								sLine = sLine.Replace ("[[words]]", "").Trim ();
 								
 								bGetWords = true;
 							}
-						//TODO hook up to Custom Scripting Language system
-							if (sLine.IndexOf("[[Group") > -1)
-							{
+							//TODO hook up to Custom Scripting Language system
+							if (sLine.IndexOf ("[[Group") > -1) {
 								//TODO Hook up again laterListOfParsePages = GetListOfPages(sLine, ref bGetWords);
-								
+								NewMessage.Show ("Can I hook this up now?");
 								// we have a group
 								
-							}
-							else
-							{
-								ListOfParsePages.Add(sLine);
+							} else {
+								ListOfParsePages.Add (sLine);
 							}
 							
 							// Now we go through the pages and write them into the text file
 							// feb 19 2010 - added because chapter notes were not coming out in alphaetical
-							ListOfParsePages.Sort();
+							ListOfParsePages.Sort ();
 							
-							foreach (string notetoopen in ListOfParsePages)
-							{
+							foreach (string notetoopen in ListOfParsePages) {
 //								DrawingTest.NotePanel panel = ((mdi)_CORE_GetActiveChild()).page_Visual.GetPanelByName(notetoopen);
 //								
 //								
@@ -218,28 +213,23 @@ namespace YOM2013
 							ListOfParsePages = null;
 							
 						}
-					}
-					else
-					{
+					} else {
 						
-					SaveTextLineByLine(writer, LinesOfText, "");
+						SaveTextLineByLine (writer, LinesOfText, "");
 					}
 					
-					writer.Close();
-					writer.Dispose();
-					if (sWordInformation != "")
-					{
-						string sResult = Loc.Instance.GetStringFmt("Total Words:{0}\n{1}", TotalWords.ToString(), sWordInformation);
-						Clipboard.SetText(sResult);
-						NewMessage.Show(Loc.Instance.GetString ("Your Text Has Been Sent! Press Ctrl + V to paste word count information into current note."));
+					writer.Close ();
+					writer.Dispose ();
+					if (sWordInformation != "") {
+						string sResult = Loc.Instance.GetStringFmt ("Total Words:{0}\n{1}", TotalWords.ToString (), sWordInformation);
+						Clipboard.SetText (sResult);
+						NewMessage.Show (Loc.Instance.GetString ("Your Text Has Been Sent! Press Ctrl + V to paste word count information into current note."));
 						//NewMessage.Show(sResult);
 					}
+				} catch (Exception) {
+					NewMessage.Show (Loc.Instance.GetStringFmt ("Unable to write to {0} please shut down and try again", sFilepath));
 				}
-				catch (Exception)
-				{
-					NewMessage.Show(Loc.Instance.GetStringFmt("Unable to write to {0} please shut down and try again", sFilepath));
-				}
-				
+			}
 				LinesOfText = null;
 
 				
@@ -283,6 +273,12 @@ namespace YOM2013
 				folder.Name = "actionfolder";
 				TextEditContextStrip.Items.Add (folder);
 			}
+
+
+
+		
+
+
 			ContextMenuStrip actionStrip = new ContextMenuStrip ();
 
 			foreach (NoteTextAction action in noteTextActions) {
@@ -293,10 +289,94 @@ namespace YOM2013
 				button.Click += HandleNoteTextActionClick;
 				actionStrip.Items.Add (button);
 			}
+
+
+		
+
 			// allow full width for last item dynamically added
 			actionStrip.Items.Remove (actionStrip.Items.Add ("hack"));
 			folder.DropDown = actionStrip;
 
+		}
+		/// <summary>
+		/// Replaces the text selected in the current richtext box with newText but in a smart way
+		/// (Capitols are preserve)
+		/// 
+		/// It also notices if the original had a space at the end of it and then makes sure the end had a space
+		/// </summary>
+		static public void SmartReplace(RichTextBox box, string newText)
+		{
+			bool bEndWithsSpace = false;
+			
+			if (char.IsSeparator(box.SelectedText, box.SelectedText.Length - 1) == true)
+			{
+				bEndWithsSpace = true;
+			}
+			
+			// if first letter upper case, match case for replacement word
+			if (char.IsUpper(box.SelectedText, 0))
+			{
+				newText = newText.Substring(0,1).ToUpper(System.Globalization.CultureInfo.CurrentUICulture) 
+					+ newText.Substring(1);
+				
+			}
+			if (true == bEndWithsSpace)
+			{
+				newText = newText + " ";
+			}
+			box.SelectedText = newText;
+			
+			
+			
+			
+		}
+
+
+
+
+
+		void newItem_Click (object sender, EventArgs e)
+		{
+			if (LayoutDetails.Instance.CurrentLayout != null && LayoutDetails.Instance.CurrentLayout.CurrentTextNote != null) {
+				SmartReplace (LayoutDetails.Instance.CurrentLayout.CurrentTextNote.GetRichTextBox(), (sender as ToolStripMenuItem).Text); 
+			}
+		}
+
+		void newItem2_Click (object sender, EventArgs e)
+		{
+			
+			if (LayoutDetails.Instance.CurrentLayout != null && LayoutDetails.Instance.CurrentLayout.CurrentTextNote != null) {
+				string newWord = (sender as ToolStripMenuItem).Tag.ToString();
+				LayoutDetails.Instance.WordSystemInUse.AddWordToDictionary(newWord, false);
+			}
+		}
+
+		void HandleOpeningSpellingContextMenu (object sender, System.ComponentModel.CancelEventArgs e)
+		{
+			(sender as ContextMenuStrip).Items.Clear ();
+			string sFoundWord = LayoutDetails.Instance.CurrentLayout.CurrentTextNote.GetRichTextBox ().SelectedText.Trim ();
+			string[] items = LayoutDetails.Instance.WordSystemInUse.SpellingSuggestions (sFoundWord);
+			if (items != null) {
+				foreach (string s in items) {
+					ToolStripMenuItem newItem = new ToolStripMenuItem ();
+					newItem.Text = s;
+					(sender as ContextMenuStrip).Items.Add (newItem);
+					newItem.Click += new EventHandler (newItem_Click);
+				}
+				if (items.Length > 0) {
+					ToolStripMenuItem newItem2 = new ToolStripMenuItem (Loc.Instance.GetString ("Add Word To Dictionary"));
+					(sender as ContextMenuStrip).Items.Add (newItem2);
+					newItem2.Click += new EventHandler (newItem2_Click);
+					newItem2.Tag = sFoundWord; // set tag to retreve it alater
+				}
+
+			}
+
+			if (items == null || items.Length == 0) {
+				//if (items.Length == 0) {
+					(sender as ContextMenuStrip).Items.Add (Loc.Instance.GetString ("Word Spelled Correctly"));
+				//}
+			}
 		}
 		/// <summary>
 		/// Handles the note text action click. (i.e., run as batch file)
@@ -455,6 +535,13 @@ namespace YOM2013
 			MainMenu.Items.Add (Windows);
 
 
+			ToolStripMenuItem Help = new ToolStripMenuItem(Loc.Instance.GetString ("Help"));
+			ToolStripMenuItem About = new ToolStripMenuItem(Loc.Instance.GetString ("About"));
+			About.Click+= HandleAboutClick;
+			Help.DropDownItems.Add (About);
+			MainMenu.Items.Add (Help);
+
+
 			ToolStripButton import = new ToolStripButton ("Import");
 			import.Click += HandleImportOldFilesClick;
 			MainMenu.Items.Add (import);
@@ -492,6 +579,13 @@ namespace YOM2013
 			Transaction = new TransactionsTable(MasterOfLayouts.GetDatabaseType(LayoutDetails.Instance.YOM_DATABASE));
 			LayoutDetails.Instance.TransactionsList = Transaction;
 
+
+		}
+
+		void HandleAboutClick (object sender, EventArgs e)
+		{
+			AboutForm about = new AboutForm();
+			about.ShowDialog();
 		}
 
 	
@@ -504,7 +598,7 @@ namespace YOM2013
 		/// <param name='Key'>
 		/// Key.
 		/// </param>
-		Layout.Appearance GetAppearanceFromStorage (string Key)
+		Layout.AppearanceClass GetAppearanceFromStorage (string Key)
 		{
 			return SettingsInterfaceOptions.GetAppearanceByKey(Key);
 		}
@@ -684,7 +778,20 @@ namespace YOM2013
 			TextEditContextStrip = new System.Windows.Forms.ContextMenuStrip();
 			TextEditContextStrip.Name = "TextEditContextStrip";
 
+
+			ContextMenuStrip SpellcheckContext = new System.Windows.Forms.ContextMenuStrip();
+			SpellcheckContext.Opening+= HandleOpeningSpellingContextMenu;
+			SpellcheckContext.Items.Add ("bbb");// empty, to allow arrow to show
+			// Add spellcheckmenu
+			ToolStripMenuItem Spellcheck = new ToolStripMenuItem();
+			
+			Spellcheck.Text = Loc.Instance.GetString ("Spelling");
+			Spellcheck.DropDown = SpellcheckContext;
+			TextEditContextStrip.Items.Add (Spellcheck);
+
+
 			ContextMenus.Add (TextEditContextStrip);
+
 
 
 			TextEditContextStrip.Opening+= HandleTextEditOpening;
@@ -718,7 +825,10 @@ namespace YOM2013
 			//SystemLayout.Visible = false;
 			Layout.LayoutPanel SystemLayout;
 			if (MasterOfLayouts.ExistsByGUID (LayoutPanel.SYSTEM_LAYOUT) == false || MasterOfLayouts.ExistsByGUID("tables") == false) {
-				NewMessage.Show (Loc.Instance.GetString("Recreating system note."));
+				//NewMessage.Show (Loc.Instance.GetString("Recreating system note."));
+
+				UpdateFooter(FootMessageType.NEWSYSTEMNOTE, Loc.Instance.GetString ("System Page Did Not Exist. Recreated."));
+
 				DefaultLayouts.CreateASystemLayout (this,TextEditContextStrip);
 				
 				//				LayoutDetails.Instance.SystemLayout = SystemLayout;

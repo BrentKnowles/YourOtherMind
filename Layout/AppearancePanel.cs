@@ -10,16 +10,16 @@ namespace Layout
 		TextBox NameField ;
 
 		// calls into options panel to store to actual database
-		Action<Appearance> SaveAppearance;
+		Action<AppearanceClass> SaveAppearance;
 		// used when editing text field to alert the AppearancePanelForm whether to enable/disable the OK button (invalid text stops saving)
 		Action<bool> ValidDataToSave;
 
-		Appearance App = null;
+		AppearanceClass App = null;
 	
 
 		// This panel is used in read-only mode to show what a particular appearance looks like
 		// It can also be used in edit mode
-		public AppearancePanel (bool ShowEditButton, Appearance app, Action<Appearance> _SaveAppearance, Action<bool>validDataToSave, bool AllowNameEdit)
+		public AppearancePanel (bool ShowEditButton, AppearanceClass app, Action<AppearanceClass> _SaveAppearance, Action<bool>validDataToSave, bool AllowNameEdit)
 		{
 			if (app == null)
 				throw new Exception ("An invalid appearance was passed into AppearancePanel");
@@ -208,10 +208,10 @@ namespace Layout
 				ValidDataToSave(false);
 		}
 
-		public Appearance GetAppearanceSelected ()
+		public AppearanceClass GetAppearanceSelected ()
 		{
 			// This is caused only from the FORM version of this control, see below, the HandleClick routine
-			Appearance ThisAppearance = new  Appearance();
+			AppearanceClass ThisAppearance = new  AppearanceClass();
 
 			// grab name from TextField (which will remain in readonly mode WHEN editing existing but is rightable
 			ThisAppearance.Name = NameField.Text;
@@ -239,7 +239,7 @@ namespace Layout
 			}
 			AppearancePanelForm form = new AppearancePanelForm (App);
 			if (DialogResult.OK ==form.ShowDialog() ) {
-				Appearance ThisAppearance = form.GetAppearance();
+				AppearanceClass ThisAppearance = form.GetAppearance();
 
 
 				SaveAppearance (ThisAppearance);
@@ -256,7 +256,7 @@ namespace Layout
 		
 			AppearancePanelForm form = new AppearancePanelForm (null);
 			if (DialogResult.OK ==form.ShowDialog() ) {
-				Appearance ThisAppearance = form.GetAppearance();
+				AppearanceClass ThisAppearance = form.GetAppearance();
 				
 				
 				SaveAppearance (ThisAppearance);

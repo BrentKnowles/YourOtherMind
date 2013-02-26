@@ -19,13 +19,13 @@ namespace Layout
 		public const string SYSTEM_STATUS = "list_status";
 		public const string SYSTEM_SUBTYPE = "list_subtypes";
 		public const string SYSTEM_KEYWORDS = "list_keywords";
-		
+
 		public const string SYSTEM_WORKLOGCATEGORY="list_worklogcategory";
 #endregion
 		#region variables
 		protected static volatile LayoutDetails instance;
 		protected static object syncRoot = new Object();
-
+	
 		// Used when forms have an OK and Cancel button; this the height of the panel
 		public const int ButtonHeight = 50;
 	
@@ -40,6 +40,24 @@ namespace Layout
 
 		public LayoutPanelBase SystemLayout = null;
 		public LayoutPanelBase TableLayout = null;
+		private WordsSystem wordSystemInUse = null;
+
+		public WordsSystem WordSystemInUse {
+			get {
+
+				if (null == wordSystemInUse)
+				{
+					// instead of setting in main form
+					// we just create a default if none was established
+					wordSystemInUse = new WordsSystem();
+				}
+
+				return wordSystemInUse;
+			}
+			set {
+				wordSystemInUse = value;
+			}
+		}
 
 		private LayoutPanelBase currentLayout;
 		public LayoutPanelBase CurrentLayout {
@@ -119,7 +137,7 @@ namespace Layout
 
 		#endregion;
 		#region callbacks
-		public delegate Appearance GetAppearanceFromStorageTYPE(string Key);
+		public delegate AppearanceClass GetAppearanceFromStorageTYPE(string Key);
 		public GetAppearanceFromStorageTYPE GetAppearanceFromStorage;
 
 		public Func<System.Collections.Generic.List<string>> GetListOfAppearancesDelegate=null;
@@ -462,7 +480,7 @@ namespace Layout
 		Hashtable  AppearanceCache = new Hashtable();
 	//	System.Collections.SortedList  AppearanceCache = new SortedList();
 		//List<Appearance> AppearanceCache = new List<Appearance>();
-		public Appearance GetAppearanceByName (string classic)
+		public AppearanceClass GetAppearanceByName (string classic)
 		{
 			if (null == GetAppearanceFromStorage) {
 				throw new Exception("A callback to GetAppearanceFromStorage needs to be defined when application initalizes");
@@ -471,7 +489,7 @@ namespace Layout
 
 			//Hashtable attempt 6.7 seconds to 6.4 on second attempt
 
-			Appearance app = (Appearance)AppearanceCache [classic];
+			AppearanceClass app = (AppearanceClass)AppearanceCache [classic];
 			if (app != null) {
 			} else {
 
@@ -482,7 +500,7 @@ namespace Layout
 				{
 					NewMessage.Show (Loc.Instance.GetStringFmt("The appearance {0} no longer exists, reverting to default.", classic));
 					// somehow we have lost an appearance then we just use clasic
-					app = Appearance.SetAsClassic();
+					app = AppearanceClass.SetAsClassic();
 
 				}
 				//app = new Appearance();
