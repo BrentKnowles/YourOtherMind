@@ -100,8 +100,9 @@ namespace Layout
 				currentTextNote.GetRichTextBox().TextChanged+= HandleCurrentNoteTextChanged;
 
 				
-					if (FindBar != null)
-				FindBar.SetCurrentNoteText(value.Caption);
+					FindBarStatusStrip tmpFindBar = GetFindbar();
+					if (tmpFindBar != null)
+						GetFindbar().SetCurrentNoteText(value.Caption);
 				}
 				
 			}
@@ -109,7 +110,9 @@ namespace Layout
 
 		void HandleCurrentNoteTextChanged (object sender, EventArgs e)
 		{
-			FindBar.UpdateSearchAfterEditingInterruption();
+			if (FindBar != null) {
+				FindBar.UpdateSearchAfterEditingInterruption ();
+			}
 		}
 		
 		public override void SetCurrentTextNote (NoteDataXML_RichText note)
@@ -132,8 +135,31 @@ namespace Layout
 			formatBar.Dock = DockStyle.Top;
 
 			ToolStripButton bold = new ToolStripButton();
-			bold.Text = "BOLD";
+			bold.Text = Loc.Instance.GetString ("BOLD");
+			bold.Click+= HandleBoldClick;
 			formatBar.Items.Add (bold);
+
+
+			ToolStripButton strike = new ToolStripButton();
+			strike.Text = Loc.Instance.GetString ("STRIKE");
+			strike.Click+= HandleStrikeClick;;
+			formatBar.Items.Add (strike);
+
+			ToolStripButton zoom = new ToolStripButton();
+			zoom.Text = Loc.Instance.GetString ("ZOOM");
+			zoom.Click+= (object sender, EventArgs e) => DoFormatOnText(NoteDataXML_RichText.FormatText.ZOOM);
+			formatBar.Items.Add (zoom);
+
+		}
+
+		void HandleStrikeClick (object sender, EventArgs e)
+		{
+			DoFormatOnText(NoteDataXML_RichText.FormatText.STRIKETHRU);
+		}
+
+		void HandleBoldClick (object sender, EventArgs e)
+		{
+			DoFormatOnText(NoteDataXML_RichText.FormatText.BOLD);
 		}
 
 

@@ -2,10 +2,12 @@ using System;
 using System.Windows.Forms;
 using CoreUtilities;
 using System.Xml.Serialization;
+using System.Drawing;
 namespace Layout
 {
 	public class NoteDataXML_RichText : NoteDataXML
 	{
+		public enum FormatText {BOLD, STRIKETHRU, ZOOM};
 		// if this is the value set on the dropdown then we use the defined default in OPTIONS
 		const string defaultmarkup = "Default"; 
 		#region XML
@@ -200,7 +202,9 @@ namespace Layout
 
 		void HandleRichTextSelectionChanged (object sender, EventArgs e)
 		{
-			Layout.GetFindbar().UpdateSelection(richBox.SelectedText, false);
+			if (Layout.GetFindbar () != null) {
+				Layout.GetFindbar ().UpdateSelection (richBox.SelectedText, false);
+			}
 		}
 
 		void HandleSelectedIndexChanged (object sender, EventArgs e)
@@ -249,6 +253,7 @@ namespace Layout
 		{
 			lg.Instance.Line("NoteDataXML_RichText", ProblemType.MESSAGE, String.Format ("{0} has been set as CurrentTextNote for Layout {1}", this.Caption, Layout.GUID));
 			SetThisTextNoteAsActive();
+			BringToFrontAndShow();
 		}
 
 		void HandleTextChanged (object sender, EventArgs e)
@@ -290,8 +295,42 @@ namespace Layout
 		}
 		public void Bold()
 		{
-			richBox.SelectionFont = new System.Drawing.Font(richBox.SelectionFont.FontFamily, richBox.SelectionFont.Size, System.Drawing.FontStyle.Bold);
+		//	richBox.SelectionFont = new System.Drawing.Font(richBox.SelectionFont.FontFamily, richBox.SelectionFont.Size, System.Drawing.FontStyle.Bold);
+			General.FormatRichText(richBox, FontStyle.Bold);
+		}
 
+		public void Strike()
+		{
+			General.FormatRichText(richBox, FontStyle.Strikeout);
+		}
+		/// <summary>
+		/// Will adjust the zoom of a richtext
+		/// </summary>
+		/// <param name="nCurrent"></param>
+		public void ZoomToggle()
+		{
+			float nCurrent = richBox.ZoomFactor;
+			
+			if (nCurrent == 1.0f)
+			{
+				richBox.ZoomFactor = 1.25f;
+			}
+			if (nCurrent == 1.25f)
+			{
+				richBox.ZoomFactor = 1.50f;
+			}
+			if (nCurrent == 1.50f)
+			{
+				richBox.ZoomFactor = 1.75f;
+			}
+			if (nCurrent == 1.75f)
+			{
+				richBox.ZoomFactor = 2.0f;
+			}
+			if (nCurrent == 2.0f)
+			{
+				richBox.ZoomFactor = 1.0f;
+			}
 		}
 		public override string ToString ()
 		{

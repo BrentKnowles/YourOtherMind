@@ -433,6 +433,36 @@ namespace appframe
 		{
 		}
 	
+
+		void SetupAQuickLink(MefAddIns.Extensibility.mef_IBase thisAddIn)
+		{
+			if (true == thisAddIn.CalledFrom.QuickLinkShows)
+			{
+				if (thisAddIn.ActiveForm() == null) lg.Instance.Line ("MainFormBase->HandleAddInClick", ProblemType.WARNING, "can't, no form active!");
+				
+				else
+				{
+					//if (thisAddIn.QuickLinkMenuItem is ToolStripButton)
+					{
+						ToolStripButton link = new ToolStripButton ();
+						link.Name = "quicklink";
+						link.Tag =thisAddIn;
+						link.Text = thisAddIn.CalledFrom.MyMenuName;
+						link.BackColor = Color.Yellow;
+						link.Click += HandleQuickLinkClick;
+						//thisAddIn.QuickLinkMenuItem = link;
+						thisAddIn.Hookups.Add (link);
+						
+						
+						
+						//FooterStatus.Items.Add ((ToolStripButton)thisAddIn.QuickLinkMenuItem);
+						FooterStatus.Items.Add (link);
+					}
+				}
+				
+			}
+		}
+
 		void RunAddInAction (MefAddIns.Extensibility.mef_IBase thisAddIn)
 		{
 			object NeededInfo = GetInformationForAddInBeforeRun(thisAddIn.TypeOfInformationNeeded);
@@ -448,32 +478,8 @@ namespace appframe
 				//thisAddIn.GetAfterRespondInformation();
 				//object InfoFromAddIn = thisAddIn.GetAfterRespondInformation();
 				//HandleRespondInformationFromAddin(InfoFromAddIn, thisAddIn.TypeOfInformationSentBack);
-				
-				if (true == thisAddIn.CalledFrom.QuickLinkShows)
-				{
-					if (thisAddIn.ActiveForm() == null) lg.Instance.Line ("MainFormBase->HandleAddInClick", ProblemType.WARNING, "can't, no form active!");
-					
-					else
-					{
-						//if (thisAddIn.QuickLinkMenuItem is ToolStripButton)
-						{
-							ToolStripButton link = new ToolStripButton ();
-							link.Name = "quicklink";
-							link.Tag =thisAddIn;
-							link.Text = thisAddIn.CalledFrom.MyMenuName;
-							link.BackColor = Color.Yellow;
-							link.Click += HandleQuickLinkClick;
-							//thisAddIn.QuickLinkMenuItem = link;
-							thisAddIn.Hookups.Add (link);
-							
-							
-							
-							//FooterStatus.Items.Add ((ToolStripButton)thisAddIn.QuickLinkMenuItem);
-							FooterStatus.Items.Add (link);
-						}
-					}
-					
-				}
+				SetupAQuickLink(thisAddIn);
+
 			}
 			else
 			{

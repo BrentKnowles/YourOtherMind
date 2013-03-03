@@ -86,5 +86,7 @@ namespace MefAddIns.Extensibility
 		// used for addins like the Picture one to know where to store captured files
 		string path_filelocation { get; set; }
 
+
+
 	}
 }

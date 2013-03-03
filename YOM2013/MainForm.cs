@@ -274,8 +274,9 @@ namespace YOM2013
 				TextEditContextStrip.Items.Add (folder);
 			}
 
+	
 
-
+		
 		
 
 
@@ -296,6 +297,30 @@ namespace YOM2013
 			// allow full width for last item dynamically added
 			actionStrip.Items.Remove (actionStrip.Items.Add ("hack"));
 			folder.DropDown = actionStrip;
+
+		}
+
+
+		List<Color> HighlightColorList = new List<Color>();
+		void HandleOpeningForHighlightColorMenu (object sender, System.ComponentModel.CancelEventArgs e)
+		{
+		
+			(sender as ContextMenuStrip).Items.Clear ();
+			foreach (Color c in HighlightColorList) {
+				ToolStripMenuItem item = new ToolStripMenuItem();
+				item.Text = c.ToString ();
+				item.BackColor = c;
+				item.Click+= HandleHighlightColorClick;
+				(sender as ContextMenuStrip).Items.Add (item);
+			}
+
+		}
+
+		void HandleHighlightColorClick (object sender, EventArgs e)
+		{
+			if (LayoutDetails.Instance.CurrentLayout != null && LayoutDetails.Instance.CurrentLayout.CurrentTextNote != null) {
+				LayoutDetails.Instance.CurrentLayout.CurrentTextNote.GetRichTextBox().SelectionBackColor = (sender as ToolStripItem).BackColor;
+			}
 
 		}
 		/// <summary>
@@ -353,30 +378,33 @@ namespace YOM2013
 
 		void HandleOpeningSpellingContextMenu (object sender, System.ComponentModel.CancelEventArgs e)
 		{
-			(sender as ContextMenuStrip).Items.Clear ();
-			string sFoundWord = LayoutDetails.Instance.CurrentLayout.CurrentTextNote.GetRichTextBox ().SelectedText.Trim ();
-			string[] items = LayoutDetails.Instance.WordSystemInUse.SpellingSuggestions (sFoundWord);
-			if (items != null) {
-				foreach (string s in items) {
-					ToolStripMenuItem newItem = new ToolStripMenuItem ();
-					newItem.Text = s;
-					(sender as ContextMenuStrip).Items.Add (newItem);
-					newItem.Click += new EventHandler (newItem_Click);
-				}
-				if (items.Length > 0) {
-					ToolStripMenuItem newItem2 = new ToolStripMenuItem (Loc.Instance.GetString ("Add Word To Dictionary"));
-					(sender as ContextMenuStrip).Items.Add (newItem2);
-					newItem2.Click += new EventHandler (newItem2_Click);
-					newItem2.Tag = sFoundWord; // set tag to retreve it alater
-				}
+			if (LayoutDetails.Instance.CurrentLayout.CurrentTextNote != null) {
+				(sender as ContextMenuStrip).Items.Clear ();
+				string sFoundWord = LayoutDetails.Instance.CurrentLayout.CurrentTextNote.GetRichTextBox ().SelectedText.Trim ();
+				string[] items = LayoutDetails.Instance.WordSystemInUse.SpellingSuggestions (sFoundWord);
+				if (items != null) {
+					foreach (string s in items) {
+						ToolStripMenuItem newItem = new ToolStripMenuItem ();
+						newItem.Text = s;
+						(sender as ContextMenuStrip).Items.Add (newItem);
+						newItem.Click += new EventHandler (newItem_Click);
+					}
+					if (items.Length > 0) {
+						ToolStripMenuItem newItem2 = new ToolStripMenuItem (Loc.Instance.GetString ("Add Word To Dictionary"));
+						(sender as ContextMenuStrip).Items.Add (newItem2);
+						newItem2.Click += new EventHandler (newItem2_Click);
+						newItem2.Tag = sFoundWord; // set tag to retreve it alater
+					}
 
-			}
-
-			if (items == null || items.Length == 0) {
-				//if (items.Length == 0) {
+				}
+				if (items == null || items.Length == 0) {
+					//if (items.Length == 0) {
 					(sender as ContextMenuStrip).Items.Add (Loc.Instance.GetString ("Word Spelled Correctly"));
-				//}
+					//}
+				}
 			}
+
+		
 		}
 		/// <summary>
 		/// Handles the note text action click. (i.e., run as batch file)
@@ -655,6 +683,7 @@ namespace YOM2013
 			Hotkeys.Add (new KeyData (Loc.Instance.GetString ("Save"), this.Save, Keys.Control, Keys.S, mainform, true, "saveguid"));
 			Hotkeys.Add (new KeyData(Loc.Instance.GetString ("Toggle View"), 	ToggleCurrentNoteMaximized, Keys.None,  Keys.F6,mainform, true, "toggleviewguid"));
 			Hotkeys.Add (new KeyData(Loc.Instance.GetString ("Bold"), 	Bold, Keys.Control,  Keys.B,mainform, true, "boldguid"));
+			Hotkeys.Add (new KeyData(Loc.Instance.GetString ("Strike"), 	Strike, Keys.Alt,  Keys.S,mainform, true, "strikeguid"));
 			Hotkeys.Add (new KeyData(Loc.Instance.GetString ("Find"), 	FindBarFocus, Keys.Control,  Keys.F,mainform, true, "findbarguid"));
 
 			// temporary to test the form thing
@@ -686,10 +715,18 @@ namespace YOM2013
 			//TODO: do properly, just got this in to test hotkeys acting on a textbox
 			// WHEN: I do this, I want a FormatBar class or something
 			if (LayoutDetails.Instance.CurrentLayout != null) {
-				if (LayoutDetails.Instance.CurrentLayout.CurrentTextNote != null)
-				{
-					LayoutDetails.Instance.CurrentLayout.CurrentTextNote.Bold();
-				}
+				LayoutDetails.Instance.CurrentLayout.DoFormatOnText(NoteDataXML_RichText.FormatText.BOLD);
+
+			}
+		}
+		public void Strike (bool b)
+		{
+			
+			//TODO: do properly, just got this in to test hotkeys acting on a textbox
+			// WHEN: I do this, I want a FormatBar class or something
+			if (LayoutDetails.Instance.CurrentLayout != null) {
+				LayoutDetails.Instance.CurrentLayout.DoFormatOnText(NoteDataXML_RichText.FormatText.STRIKETHRU);
+				
 			}
 		}
 
@@ -793,6 +830,22 @@ namespace YOM2013
 			ContextMenus.Add (TextEditContextStrip);
 
 
+
+			HighlightColorList.Add (Color.BurlyWood);
+			HighlightColorList.Add (Color.Red);
+			HighlightColorList.Add (Color.Green);
+			HighlightColorList.Add (Color.White);
+
+
+			ContextMenuStrip HighlightColors = new System.Windows.Forms.ContextMenuStrip();
+			HighlightColors.Opening += HandleOpeningForHighlightColorMenu;
+			HighlightColors.Items.Add ("bbb");
+			
+			
+			ToolStripMenuItem Highlight = new ToolStripMenuItem();
+			Highlight.Text = Loc.Instance.GetString ("Highlights");
+			Highlight.DropDown = HighlightColors;
+			TextEditContextStrip.Items.Add (Highlight);
 
 			TextEditContextStrip.Opening+= HandleTextEditOpening;
 		}

@@ -175,6 +175,13 @@ namespace Layout
 		}
 		public FindBarStatusStrip GetFindbar ()
 		{
+			if (GetIsChild) {
+				LayoutPanelBase absoluteParent = (LayoutPanelBase)GetAbsoluteParent ();
+				if (absoluteParent != null) {
+					return absoluteParent.GetFindbar () ;
+				}
+			}
+
 			return FindBar;
 		}
 
@@ -259,6 +266,26 @@ namespace Layout
 		{
 			if (FindBar != null) {
 				FindBar.FocusOnSearchEdit();
+			}
+		}
+
+	
+
+		public void DoFormatOnText (NoteDataXML_RichText.FormatText format)
+		{
+			if (CurrentTextNote != null) {
+
+				switch (format) {
+				case NoteDataXML_RichText.FormatText.BOLD:
+					CurrentTextNote.Bold();
+					break;
+				case NoteDataXML_RichText.FormatText.STRIKETHRU:
+					CurrentTextNote.Strike();
+					break;
+				case NoteDataXML_RichText.FormatText.ZOOM:
+					CurrentTextNote.ZoomToggle();
+					break;
+				}
 			}
 		}
 	}

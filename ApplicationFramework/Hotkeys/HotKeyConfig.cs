@@ -147,15 +147,17 @@ namespace appframe
 
 		void HandleResetClick (object sender, EventArgs e)
 		{
-			
-			BaseDatabase db = CreateDatabase (DatabaseName);
+			if (NewMessage.Show (Loc.Instance.GetString ("Reset Hotkeys?"), Loc.Instance.GetStringFmt ("If you do this you will lose any custom hotkey assignments."),
+			                 MessageBoxButtons.YesNo, null) == DialogResult.Yes) {
+				BaseDatabase db = CreateDatabase (DatabaseName);
 
-			db.DropTableIfExists(TableName);
+				db.DropTableIfExists (TableName);
 
-			db.Dispose();
+				db.Dispose ();
 
-			// okay to call Rebuild because we have wiped modification data
-			RebuildListOfKeys();
+				// okay to call Rebuild because we have wiped modification data
+				RebuildListOfKeys ();
+			}
 		}
 		public int Duplicates=0;
 

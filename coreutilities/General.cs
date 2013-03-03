@@ -131,7 +131,43 @@ namespace CoreUtilities
 			return sSource;
 			
 		}
-
+		/// <summary>
+		/// grabs the substring between two pairs such as 
+		/// 
+		/// string sSource = "Alias: Frank, Mary, Jane \\par"
+		/// 
+		/// SubStringBetween(sSource, "Alias: ", "\\par")
+		/// returns Frank, Mary, Jane
+		/// </summary>
+		/// <param name="sSource"></param>
+		/// <param name="sStart"></param>
+		/// <param name="sEnd"></param>
+		/// <returns></returns>
+		static public string SubStringBetween(string sSource, string sStart, string sEnd)
+		{
+			
+			string sPriority = "";
+			try
+			{
+				int nPriorityPos = sSource.IndexOf(sStart);
+				if (nPriorityPos > -1)
+				{
+					
+					int nLF = sSource.IndexOf(sEnd, nPriorityPos);
+					if (nLF > -1)
+					{
+						nPriorityPos = nPriorityPos + sStart.Length;
+						
+						sPriority = sSource.Substring(nPriorityPos, nLF - nPriorityPos);
+					}
+				}
+			}
+			catch (Exception ex)
+			{
+				throw new Exception(ex.ToString() + "\n " + sSource);
+			}
+			return sPriority.Trim();
+		}
 	}
 }
 

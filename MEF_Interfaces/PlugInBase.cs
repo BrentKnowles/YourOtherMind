@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using CoreUtilities;
 namespace MefAddIns
 {
 	// Does not Use the Interface! This is intentional.
@@ -124,6 +125,34 @@ namespace MefAddIns
 			}
 			set {
 				_path_filelocation = value	;
+			}
+		}
+		protected void RemoveQuickLinks ()
+		{
+			//NewMessage.Show ("hookups = " + Hookups.Count);
+			// remove any 'quicklink hookup';
+			IDisposable removeme = null;
+			foreach (IDisposable item in Hookups) {
+				if (item is System.Windows.Forms.ToolStripButton) {
+					//NewMessage.Show ("Found quicklinkA=" + (item as System.Windows.Forms.ToolStripButton).Name);
+					//if ( (item as System.Windows.Forms.ToolStripButton).Name != null)
+					{
+						if ("quicklink" == (item as System.Windows.Forms.ToolStripButton).Name) {
+							//NewMessage.Show ("Found quicklinkB");
+							// we had a quicklink, created, dispose of it
+							lg.Instance.Line ("mef_Addin_Lookup_Word", ProblemType.MESSAGE, "Will be removing Lookup from quicklinks");
+							removeme = item;
+							break;
+						}
+					}
+					
+					
+				}
+				
+			}
+			if (removeme != null) {
+				removeme.Dispose ();
+				Hookups.Remove (removeme);
 			}
 		}
 	}

@@ -148,6 +148,10 @@ namespace YOM2013
 			randomTables.AddRow(new object[2]{"4", Loc.Instance.GetString("SciFi")});
 			randomTables.AddRow(new object[2]{"5", Loc.Instance.GetString("WhatIf?")});
 
+
+			//HACK: Realistically these next tables are required by AddIns, and hence should be
+			//  be created by those AddIns.
+
 			///
 			/// -- WORKLOG
 			/// 
@@ -164,6 +168,29 @@ namespace YOM2013
 			randomTables.AddRow(new object[2]{"2", Loc.Instance.GetString("Editing")});
 			randomTables.AddRow(new object[2]{"3", Loc.Instance.GetString("Planning")});
 
+
+			///
+			/// -- Grammar
+			/// 
+			/// 
+			/// 
+			randomTables = new NoteDataXML_Table();
+			randomTables.Caption = LayoutDetails.SYSTEM_GRAMMAR;
+			randomTables.Columns = new appframe.ColumnDetails[4]{new appframe.ColumnDetails("id",100), 
+				new appframe.ColumnDetails("pattern",100), new appframe.ColumnDetails("advice",100), new appframe.ColumnDetails("overused",100)};
+			subpanel.AddNote(randomTables);
+			randomTables.CreateParent(subpanel.GetPanelsLayout ());
+
+			randomTables.AddRow(new object[4]{
+				"1", "1.0", @"The first row of this table is a version number. Feel free to edit it when major changes are made to this list. On each Layout you can record the last grammar version you have checked it against.", "0"}
+			);
+
+			randomTables.AddRow(new object[4]{
+				"2", "Among", @"When more than two things or persons are involved, among is usually called for.", "0"}
+			);
+			randomTables.AddRow(new object[4]{
+				"3", "As to whether", @"Whether is sufficient.", "1"}
+			);
 
 
 

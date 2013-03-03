@@ -86,9 +86,12 @@ namespace appframe
 		/// </returns>
 		public Panel GetConfigPanel ()
 		{
-			// if panel made then leave it alone
-			if (PanelWasMade == true)
-				return configPanel;
+			// if panel made then leave it alone\
+
+			//February 27 2013 -- I removed this because it would not notice addins added
+			// at runtime, which was one of the main points for this (i.e., once panel was open it never refreshed)
+		//	if (PanelWasMade == true)
+		//		return configPanel;
 
 	
 			PanelWasMade = true;
@@ -296,7 +299,7 @@ namespace appframe
 			if (CoreUtilities.Constants.BLANK == dataPath) {
 				throw new Exception ("No path defined for AddIns");
 			}
-			lg.Instance.Line("AddIns.BuildListOfAddIns", ProblemType.MESSAGE, String.Format ("Scanning {0} for addins", dataPath));
+			lg.Instance.Line ("AddIns.BuildListOfAddIns", ProblemType.MESSAGE, String.Format ("Scanning {0} for addins", dataPath));
 			
 			var bootStrapper = new MefAddIns.Terminal.Bootstrapper ();
 			//An aggregate catalog that combines multiple catalogs
@@ -312,19 +315,20 @@ namespace appframe
 			try {
 				_container.ComposeParts (bootStrapper);
 			} catch (CompositionException compositionException) {
-				CoreUtilities.lg.Instance.Line ("AddIns->BuildListOfAddIns", ProblemType.EXCEPTION, compositionException.ToString ());
-			}
-			catch (System.Reflection.ReflectionTypeLoadException)
-			{
+				//CoreUtilities.lg.Instance.Line ("AddIns->BuildListOfAddIns", ProblemType.EXCEPTION, compositionException.ToString ());
+				NewMessage.Show (compositionException.ToString ());
+			} catch (System.Reflection.ReflectionTypeLoadException) {
 				CoreUtilities.lg.Instance.Line ("AddIns->BuildListOfAddIns", ProblemType.EXCEPTION, "At least one AddIn does not implement the entirety of the needed Interface Contract");
-
+				NewMessage.Show ("At least one AddIn does not implement the entirety of the needed Interface Contract");
 			}
 			
 			//Prints all the languages that were found into the application directory
 			var i = 0;
 
-			AddInsList = new List<MefAddIns.Extensibility.mef_IBase>();
-
+			AddInsList = new List<MefAddIns.Extensibility.mef_IBase> ();
+//			foreach (var transaction in bootStrapper.Transactions) {
+//				NewMessage.Show (transaction.ToString());
+//			}
 
 
 			foreach (var language in bootStrapper.Base) {

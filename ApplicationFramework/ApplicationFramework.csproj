@@ -68,6 +68,10 @@
       <Project>{C08FDDB5-5C59-4611-98E7-76674F290896}</Project>
       <Name>database</Name>
     </ProjectReference>
+    <ProjectReference Include="..\EventTable\TransactionSystem.csproj">
+      <Project>{015AC0C9-2F05-45BE-AD21-5A475AACA2D7}</Project>
+      <Name>TransactionSystem</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="icons\" />

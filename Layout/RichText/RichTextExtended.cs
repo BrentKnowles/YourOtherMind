@@ -8,6 +8,90 @@ namespace Layout
 {
 	public class RichTextExtended : RichTextBox
 	{
+		public enum LineSpaceTypes { Single, OneAndHalf, Double };
+		#region PARAFORMAT MASK VALUES
+		// PARAFORMAT mask values
+		private const uint PFM_STARTINDENT = 0x00000001;
+		private const uint PFM_RIGHTINDENT = 0x00000002;
+		private const uint PFM_OFFSET = 0x00000004;
+		private const uint PFM_ALIGNMENT = 0x00000008;
+		private const uint PFM_TABSTOPS = 0x00000010;
+		private const uint PFM_NUMBERING = 0x00000020;
+		private const uint PFM_OFFSETINDENT = 0x80000000;
+		
+		// PARAFORMAT 2.0 masks and effects
+		private const uint PFM_SPACEBEFORE = 0x00000040;
+		private const uint PFM_SPACEAFTER = 0x00000080;
+		private const uint PFM_LINESPACING = 0x00000100;
+		private const uint PFM_STYLE = 0x00000400;
+		private const uint PFM_BORDER = 0x00000800; // (*)
+		private const uint PFM_SHADING = 0x00001000; // (*)
+		private const uint PFM_NUMBERINGSTYLE = 0x00002000; // RE 3.0
+		private const uint PFM_NUMBERINGTAB = 0x00004000; // RE 3.0
+		private const uint PFM_NUMBERINGSTART = 0x00008000; // RE 3.0
+		
+		private const uint PFM_RTLPARA = 0x00010000;
+		private const uint PFM_KEEP = 0x00020000; // (*)
+		private const uint PFM_KEEPNEXT = 0x00040000; // (*)
+		private const uint PFM_PAGEBREAKBEFORE = 0x00080000; // (*)
+		private const uint PFM_NOLINENUMBER = 0x00100000; // (*)
+		private const uint PFM_NOWIDOWCONTROL = 0x00200000; // (*)
+		private const uint PFM_DONOTHYPHEN = 0x00400000; // (*)
+		private const uint PFM_SIDEBYSIDE = 0x00800000; // (*)
+		private const uint PFM_TABLE = 0x40000000; // RE 3.0
+		private const uint PFM_TEXTWRAPPINGBREAK = 0x20000000; // RE 3.0
+		private const uint PFM_TABLEROWDELIMITER = 0x10000000; // RE 4.0
+		
+		// The following three properties are read only
+		private const uint PFM_COLLAPSED = 0x01000000; // RE 3.0
+		private const uint PFM_OUTLINELEVEL = 0x02000000; // RE 3.0
+		private const uint PFM_BOX = 0x04000000; // RE 3.0
+		private const uint PFM_RESERVED2 = 0x08000000; // RE 4.0
+#endregion
+		#region variables
+		
+		private const int WM_USER = 0x0400;
+		private const int EM_GETCHARFORMAT = WM_USER + 58;
+		private const int EM_SETCHARFORMAT = WM_USER + 68;
+		public const int EM_GETPARAFORMAT = WM_USER + 61;
+		public const int EM_SETPARAFORMAT = WM_USER + 71;// 0x447;
+
+		[StructLayout(LayoutKind.Sequential)]
+		public class PARAFORMAT2
+		{
+			public int cbSize;
+			public int dwMask;
+			public short wNumbering;
+			public short wReserved;
+			public int dxStartIndent;
+			public int dxRightIndent;
+			public int dxOffset;
+			public short wAlignment;
+			public short cTabCount;
+			[MarshalAs(UnmanagedType.ByValArray, SizeConst = 0x20)]
+			public int[] rgxTabs;
+			
+			public int dySpaceBefore; // Vertical spacing before para
+			public int dySpaceAfter; // Vertical spacing after para
+			public int dyLineSpacing; // Line spacing depending on Rule
+			public short sStyle; // Style handle
+			public byte bLineSpacingRule; // Rule for line spacing (see tom.doc)
+			public byte bOutlineLevel; // Outline Level
+			public short wShadingWeight; // Shading in hundredths of a per cent
+			public short wShadingStyle; // Byte 0: style, nib 2: cfpat, 3: cbpat
+			public short wNumberingStart; // Starting value for numbering
+			public short wNumberingStyle; // Alignment, Roman/Arabic, (), ), ., etc.
+			public short wNumberingTab; // Space bet 1st indent and 1st-line text
+			public short wBorderSpace; // Border-text spaces (nbl/bdr in pts)
+			public short wBorderWidth; // Pen widths (nbl/bdr in half twips)
+			public short wBorders; // Border styles (nibble/border)
+			
+			public PARAFORMAT2()
+			{
+				this.cbSize = Marshal.SizeOf(typeof(PARAFORMAT2));
+			}
+		}
+		#endregion
 //		private iMarkupLanguage markuplanguage;
 
 //		/// <summary>
@@ -55,6 +139,7 @@ namespace Layout
 //				throw new Exception("A markup language is required");
 //			}
 //			Markuplanguage = _Markup;
+			this.AcceptsTab = true;
 			this.MouseDown+= RichTextBoxEx_MouseDown;
 		}
 
@@ -196,7 +281,7 @@ namespace Layout
 			if (start >= end) return; // don't paint if there's no size here
 
 
-
+			//TODO: Move this into a custom richedit used in proofing system instead??
 
 			if (showPartsOfSpeechMode == true)
 			{
@@ -241,8 +326,8 @@ namespace Layout
 									}
 									
 									startofcurrentword = new Point(startofcurrentword.X + x_modifier, startofcurrentword.Y + 10);
-									g.DrawString("FINISH PORTING THIS", drawFont, drawBrush, startofcurrentword);
-									//g.DrawString(GetPartOfSpeech(currentword.Trim(), Speller), drawFont, drawBrush, startofcurrentword);
+									//g.DrawString("FINISH PORTING THIS", drawFont, drawBrush, startofcurrentword);
+									g.DrawString(LayoutDetails.Instance.WordSystemInUse.GetPartOfSpeech(currentword.Trim()), drawFont, drawBrush, startofcurrentword);
 									
 								}
 								// clear
@@ -273,6 +358,8 @@ namespace Layout
 
 		[DllImport("user32.dll", CharSet = CharSet.Auto)]
 		private static extern IntPtr SendMessage(IntPtr hWnd, int msg, IntPtr wParam, IntPtr lParam);
+		[System.Runtime.InteropServices.DllImport("user32.dll", CharSet = System.Runtime.InteropServices.CharSet.Auto)]
+		public static extern IntPtr SendMessage(System.Runtime.InteropServices.HandleRef hWnd, int msg, int wParam, [In, Out, MarshalAs(UnmanagedType.LPStruct)] PARAFORMAT2 lParam);
 		/// <summary>
 		/// Flicker resistance
 		/// http://social.msdn.microsoft.com/Forums/en-US/winforms/thread/a6abf4e1-e502-4988-a239-a082afedf4a7
@@ -306,7 +393,43 @@ namespace Layout
 		{
 			bSuspendUpdateSelection = false;
 		}
-
+		/// <summary>
+		/// default linespace is to select all
+		/// </summary>
+		/// <param name="types"></param>
+		public void LineSpace(LineSpaceTypes types)
+		{
+			LineSpace(types, true);
+		}
+		
+		//http://msdn.microsoft.com/en-us/library/bb787942(VS.85).aspx
+		/// <summary>
+		/// just testing, this is quite complicated
+		/// http://msdn2.microsoft.com/en-us/library/aa140277(office.10).aspx
+		/// </summary>
+		public void LineSpace(LineSpaceTypes types, bool bSelectAll)
+		{
+			PARAFORMAT2 paraformat1 = new PARAFORMAT2();
+			paraformat1.dwMask = (int)PFM_LINESPACING;
+			paraformat1.cbSize = (int)Marshal.SizeOf(paraformat1);//(UInt32)Marshal.SizeOf(paraformat1);
+			paraformat1.bLineSpacingRule = (byte)(((int)types));
+			//paraformat1.wReserved = 0;
+			
+			switch (types)
+			{
+			case LineSpaceTypes.Single: paraformat1.dyLineSpacing = 20; break;
+			case LineSpaceTypes.OneAndHalf: paraformat1.dyLineSpacing = 30; break;
+			case LineSpaceTypes.Double: paraformat1.dyLineSpacing = 40; break;
+			}
+			
+			
+			//  paraformat1.dyLineSpacing = ((int)types)40; // the above commented lie. This does need to be set
+			if (bSelectAll == true) this.SelectAll();
+			
+			SendMessage(new System.Runtime.InteropServices.HandleRef(this, this.Handle), 0x447, 0, paraformat1);
+			this.SelectionLength = 0;
+			
+		}
 	}
 }
 

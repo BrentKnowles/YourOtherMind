@@ -9,6 +9,7 @@ namespace Layout
 	// Current value will appear in options
 	public class WordsSystem
 	{
+
 		/// <summary>
 		/// Count words with Regex.
 		/// </summary>
@@ -37,6 +38,15 @@ namespace Layout
 		public virtual bool AddWordToDictionary(string newWord, bool EditMode)
 		{
 			NewMessage.Show (Loc.Instance.GetString("Feature not implemented for default word system"));
+			return false;
+		}
+		public virtual string GetPartOfSpeech(string sWord)
+		{
+			// intended to overridden
+			return "n/a";
+		}
+		public virtual bool IsVerb(string sWord)
+		{
 			return false;
 		}
 	}

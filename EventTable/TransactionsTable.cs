@@ -10,6 +10,10 @@ namespace Transactions
 	public class TransactionsTable
 	{
 
+		// set in LayoutDetails
+		public Func<List<Type>> TransactionTypesAddedThroughAddIns=null;
+
+
 		const string table_name = "events";
 		// an int. Values MEAN:
 		public const int T_ADDED = 1;
@@ -227,8 +231,22 @@ namespace Transactions
 					Type returnValueType = Type.GetType (objArray[TYPE_OF_OBJECT.Index].ToString());
 					if (null == returnValueType)
 					{
-
+						lg.Instance.Line ("TransactionsTable->GetEventsForLayoutGuid", ProblemType.WARNING, "Did not find Type : " + objArray[TYPE_OF_OBJECT.Index].ToString());
+						// as a last ditch effort (because I was having troubles getting the types to appear before functonality in the addin was used
+						// we scroll through the type list we made and try to find a match
+						List<Type> TranTypes = TransactionTypesAddedThroughAddIns();
+						foreach (Type t in TranTypes)
+						{
+							if (t.AssemblyQualifiedName.ToString () == objArray[TYPE_OF_OBJECT.Index].ToString())
+							{
+								returnValueType = t;
+							}
+						}
+						if (returnValueType == null)
+						{
+							lg.Instance.Line ("TransactionsTable->GetEventsForLayoutGuid", ProblemType.WARNING, "STILL FAILING Did not find Type : " + objArray[TYPE_OF_OBJECT.Index].ToString());
 						returnValueType = new TransactionBase().GetType();
+						}
 					}
 					TransactionBase transaction = (TransactionBase)Activator.CreateInstance(returnValueType, objArray.Clone());
 

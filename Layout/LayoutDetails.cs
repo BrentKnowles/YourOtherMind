@@ -13,6 +13,15 @@ namespace Layout
 	/// </summary>
 	public class LayoutDetails
 	{
+		private List<Type> transactionsLIST = new List<Type>();
+
+		public void AddTo_TransactionsLIST (Type newType)
+		{
+			transactionsLIST.Add(newType);
+			//NewMessage.Show (((TransactionBase)Activator.CreateInstance (newType, DateTime.Now, "Boo", "Boo2")).Display);
+		}
+			
+
 		#region constants
 		public const string SYSTEM_RANDOM_TABLES = "list_randomtables";
 		public const string SYSTEM_NOTEBOOKS = "list_notebooks";
@@ -21,6 +30,7 @@ namespace Layout
 		public const string SYSTEM_KEYWORDS = "list_keywords";
 
 		public const string SYSTEM_WORKLOGCATEGORY="list_worklogcategory";
+		public const string SYSTEM_GRAMMAR="list_grammar";
 #endregion
 		#region variables
 		protected static volatile LayoutDetails instance;
@@ -102,7 +112,7 @@ namespace Layout
 #if(DEBUG)
 				path = System.IO.Path.Combine (Environment.GetFolderPath (Environment.SpecialFolder.MyDocuments), "YOMDEBUG");
 #else
-				path =System.IO.Path.Combine ( Environment.CurrentDirectory, "YOMRELEASE");
+				path =System.IO.Path.Combine ( Environment.CurrentDirectory, "YourOtherMind");
 #endif
 
 				if (Constants.BLANK != OverridePath)
@@ -353,7 +363,12 @@ namespace Layout
 		}
 
 
-		public TransactionsTable transactionsList=null;
+		private TransactionsTable transactionsList=null;
+
+		List<Type> GetListOfTransacitonTypesAddedByAddIns ()
+		{
+			return transactionsLIST;
+		}
 
 		/// <summary>
 		/// Access to the event table
@@ -363,11 +378,15 @@ namespace Layout
 		/// </value>
 		public TransactionsTable TransactionsList {
 			get {
-				if (transactionsList == null) throw new Exception ("Event list has not been setup.");
+				if (transactionsList == null) throw new Exception ("Tran list has not been setup.");
 				return transactionsList;
 			}
 			set {
+
+				// when we set the transaction list we set a callback to get the list of types
+
 				transactionsList = value;
+				transactionsList.TransactionTypesAddedThroughAddIns += GetListOfTransacitonTypesAddedByAddIns;
 			}
 		}
 

@@ -2,7 +2,7 @@ using System;
 using CoreUtilities;
 namespace MefAddIns.Extensibility
 {
-	public struct PlugInAction
+	public class PlugInAction
 	{
 		// Jan 2013 - Considered removing this struct, but one benefit (though a lazy one) is that I don't have to create get;set; for everything I pass arond
 		public bool IsOnAMenu;
@@ -31,7 +31,9 @@ namespace MefAddIns.Extensibility
 		public string GUID;
 
 		// if blank NoteActions use the standard menu label otherwise they use this
-		public string NoteActionMenuOverride;
+		public string NoteActionMenuOverride=Constants.BLANK;
+
+	
 
 	
 

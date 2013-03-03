@@ -222,6 +222,51 @@ namespace Testing
 			findBar.DoFind("dog2", false,fakeTextNote.GetRichTextBox(),0);
 			Assert.AreEqual(5, findBar.PositionsFOUND(), "Found 4 dog2. 4 replacements NOTE: This will not work until I implement the Replace system improvements ");
 		}
+		[Test]
+		public void AlLFindBarsAreTheSame()
+		{
+			// children panels have the same findbar as a parent
+			_TestSingleTon.Instance._SetupForLayoutPanelTests();
+			
+			
+			System.Windows.Forms .Form form = new System.Windows.Forms.Form();
+			
+			
+			
+			FAKE_LayoutPanel panel = new FAKE_LayoutPanel (CoreUtilities.Constants.BLANK, false);
+			
+			form.Controls.Add (panel);
+			
+			// needed else DataGrid does not initialize
+			
+			form.Show ();
+			//form.Visible = false;
+			
+			//NOTE: For now remember that htis ADDS 1 Extra notes
+			string panelname = System.Guid.NewGuid().ToString();
+			panel.NewLayout (panelname,true, null);
+			LayoutDetails.Instance.AddToList (typeof(FAKE_NoteDataXML_Panel), "testingpanel");
+			
+			FAKE_NoteDataXML_Panel panelA = new FAKE_NoteDataXML_Panel();
+			panelA.GuidForNote="panelA";
+			panel.AddNote(panelA);
+
+
+		
+			//panel.AddNote(panelA); Intentionally do not add this because it should bea  failre
+
+			// Won't actually add things properly because I need to override the findbar
+			FAKE_FindBar findBar = new FAKE_FindBar();
+			form.Controls.Add (findBar);
+			RichTextExtended fakeText = new RichTextExtended();
+			form.Controls.Add (fakeText);
+			fakeText.Text = "We have a dog. His name is Jake." + Environment.NewLine + "We love him a lot. He is a nice dog. We all love dogs.";
+			findBar.DoFind("dog", false,fakeText,0);
+
+			Assert.AreEqual(panelA.GetPanelsLayout().GetFindbar(), panel.GetFindbar());
+		//	Assert.AreEqual(panelB.GetPanelsLayout().GetFindbar(), panel.GetFindbar());
+
+		}
 	}
 }
 
