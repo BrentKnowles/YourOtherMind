@@ -78,6 +78,7 @@
     <Compile Include="AppearancePanelForm.cs" />
     <Compile Include="notetypes\AppearanceClass.cs" />
     <Compile Include="WordsSystem.cs" />
+    <Compile Include="RichText\CursorPositionclass.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

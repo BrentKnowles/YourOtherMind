@@ -46,10 +46,23 @@ namespace Layout
 
 		// used when needing random numbers
 		public Random RandomNumbers;
-
+		public List<Color> HighlightColorList = new List<Color>();
 
 		public LayoutPanelBase SystemLayout = null;
 		public LayoutPanelBase TableLayout = null;
+
+		ToolStripProgressBar progress=null;
+
+		public ToolStripProgressBar Progress {
+			get {
+
+				return progress;
+			}
+			set {
+				progress = value;
+			}
+		}
+
 		private WordsSystem wordSystemInUse = null;
 
 		public WordsSystem WordSystemInUse {
@@ -328,6 +341,21 @@ namespace Layout
 						if (null == instance)
 						{
 							instance = new LayoutDetails();
+							instance.HighlightColorList.Add (Color.BurlyWood);
+							instance.HighlightColorList.Add (Color.Yellow);
+							instance.HighlightColorList.Add (Color.CornflowerBlue);
+							
+							instance.HighlightColorList.Add (Color.Red);
+							instance.HighlightColorList.Add (Color.Green);
+							instance.HighlightColorList.Add (Color.White);
+							instance.HighlightColorList.Add (Color.Black);
+							instance.HighlightColorList.Add (Color.MediumSpringGreen);
+							instance.HighlightColorList.Add (Color.Aquamarine);
+							instance.HighlightColorList.Add (Color.GreenYellow);
+							instance.HighlightColorList.Add (Color.LightSalmon);
+							instance.HighlightColorList.Add (Color.Blue);
+							instance.HighlightColorList.Add (Color.Sienna);
+							instance.HighlightColorList.Add (Color.PeachPuff);
 						
 						}
 					}

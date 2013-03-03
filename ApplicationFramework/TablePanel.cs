@@ -32,7 +32,7 @@ namespace appframe
 
 #endregion
 		#region variables
-	
+		public bool SuppressWarning = false;// able to turn off the no columns warning when it is not a valid warning (beacuse table was not visible)
 		// delegate: called whenever the table changes
 		Func<int> TableChanged = null;
 		Func<string> GenerateResults = null;
@@ -591,7 +591,13 @@ namespace appframe
 
 				ColumnDetails[] columns = new ColumnDetails[dataGrid1.Columns.Count];
 
-				if (0 == dataGrid1.Columns.Count) NewMessage.Show(Loc.Instance.GetStringFmt("This table {0} has no columns! This usually happens if loading the Table without the Layout it contains being on a form! And form has to call its Show method",this.TableName));
+				if (0 == dataGrid1.Columns.Count)
+				{
+					string message = Loc.Instance.GetStringFmt("This table {0} has no columns! This usually happens if loading the Table without the Layout it contains being on a form! And form has to call its Show method",this.TableName);
+					lg.Instance.Line("TablePanel->Columns->Get", ProblemType.WARNING, "This happens when saving a NON VISIBILE table. Suppressing the Popup in this situation but leaving the log in case it causes errors " +message);
+					if (SuppressWarning == false) NewMessage.Show(message);
+					return null;
+				}
 				for (int i = 0; i <  dataGrid1.Columns.Count; i++) {
 					columns [i] = new ColumnDetails (dataGrid1.Columns[i].Name, dataGrid1.Columns[i].Width);
 				}
@@ -621,6 +627,10 @@ namespace appframe
 		{
 			return(DataTable) dataGrid1.DataSource;
 		}
+		public ColumnDetails[] GetColumns ()
+		{
+			return GetColumns(false);
+		}
 		/// <summary>
 		/// Gets the columns.
 		/// 
@@ -629,8 +639,9 @@ namespace appframe
 		/// <returns>
 		/// The columns.
 		/// </returns>
-		public ColumnDetails[] GetColumns()
+		public ColumnDetails[] GetColumns(bool DoISuppressWarning)
 		{
+			SuppressWarning = DoISuppressWarning;
 			return Columns;
 		}
 		/// <summary>

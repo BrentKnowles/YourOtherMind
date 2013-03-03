@@ -47,7 +47,7 @@ namespace YOM2013
 		private Options Settings ;
 		private Options_InterfaceElements SettingsInterfaceOptions;
 		private TransactionsTable Transaction;
-	
+
 
 		#endregion
 		#region delegates
@@ -301,14 +301,14 @@ namespace YOM2013
 		}
 
 
-		List<Color> HighlightColorList = new List<Color>();
+
 		void HandleOpeningForHighlightColorMenu (object sender, System.ComponentModel.CancelEventArgs e)
 		{
 		
 			(sender as ContextMenuStrip).Items.Clear ();
-			foreach (Color c in HighlightColorList) {
+			foreach (Color c in LayoutDetails.Instance.HighlightColorList) {
 				ToolStripMenuItem item = new ToolStripMenuItem();
-				item.Text = c.ToString ();
+				item.Text = c.Name;
 				item.BackColor = c;
 				item.Click+= HandleHighlightColorClick;
 				(sender as ContextMenuStrip).Items.Add (item);
@@ -603,6 +603,7 @@ namespace YOM2013
 
 
 			BuildFooter();
+		
 
 			Transaction = new TransactionsTable(MasterOfLayouts.GetDatabaseType(LayoutDetails.Instance.YOM_DATABASE));
 			LayoutDetails.Instance.TransactionsList = Transaction;
@@ -685,6 +686,9 @@ namespace YOM2013
 			Hotkeys.Add (new KeyData(Loc.Instance.GetString ("Bold"), 	Bold, Keys.Control,  Keys.B,mainform, true, "boldguid"));
 			Hotkeys.Add (new KeyData(Loc.Instance.GetString ("Strike"), 	Strike, Keys.Alt,  Keys.S,mainform, true, "strikeguid"));
 			Hotkeys.Add (new KeyData(Loc.Instance.GetString ("Find"), 	FindBarFocus, Keys.Control,  Keys.F,mainform, true, "findbarguid"));
+			Hotkeys.Add (new KeyData(Loc.Instance.GetString ("Line"), 	Line, Keys.Control,  Keys.L,mainform, true, "format_line_guid"));
+			Hotkeys.Add (new KeyData(Loc.Instance.GetString ("Bullet"), 	Bullet, Keys.Control,  Keys.G,mainform, true, "format_bullet_normal"));
+			Hotkeys.Add (new KeyData(Loc.Instance.GetString ("Bullet, Numbered"), 	BulletNumber, Keys.Control,  Keys.N,mainform, true, "format_bullet_Number"));
 
 			// temporary to test the form thing
 			//Hotkeys.Add (new KeyData(Loc.Instance.GetString ("test"),Test , Keys.Control, Keys.Q, "optionform", true, "testguid"));
@@ -702,18 +706,38 @@ namespace YOM2013
 				}
 			}
 		}
-
-		public void Test(bool b)
-     	{
-			NewMessage.Show ("should only appear on optionform with Control Q");
+		public void BulletNumber (bool b)
+		{
+			
+			// WHEN: I do this, I want a FormatBar class or something
+			if (LayoutDetails.Instance.CurrentLayout != null) {
+				LayoutDetails.Instance.CurrentLayout.DoFormatOnText(NoteDataXML_RichText.FormatText.BULLETNUMBER);
+				
+			}
 		}
 
-
+		public void Bullet (bool b)
+		{
+			
+			// WHEN: I do this, I want a FormatBar class or something
+			if (LayoutDetails.Instance.CurrentLayout != null) {
+				LayoutDetails.Instance.CurrentLayout.DoFormatOnText(NoteDataXML_RichText.FormatText.BULLET);
+				
+			}
+		}
+		public void Line (bool b)
+		{
+			
+			// WHEN: I do this, I want a FormatBar class or something
+			if (LayoutDetails.Instance.CurrentLayout != null) {
+				LayoutDetails.Instance.CurrentLayout.DoFormatOnText(NoteDataXML_RichText.FormatText.LINE);
+				
+			}
+		}
 		public void Bold (bool b)
 		{
 
-			//TODO: do properly, just got this in to test hotkeys acting on a textbox
-			// WHEN: I do this, I want a FormatBar class or something
+
 			if (LayoutDetails.Instance.CurrentLayout != null) {
 				LayoutDetails.Instance.CurrentLayout.DoFormatOnText(NoteDataXML_RichText.FormatText.BOLD);
 
@@ -748,6 +772,10 @@ namespace YOM2013
 //			FooterStatus.Items.Add (Load);
 			FooterStatus.Items.Add (Messages);
 			FooterStatus.Items[0].Tag = Constants.BLANK;
+
+			ToolStripProgressBar progress = new ToolStripProgressBar();
+			FooterStatus.Items.Add (progress);
+			LayoutDetails.Instance.Progress = progress;
 
 			Messages.Click+= HandleMessagesOnFooterDoubleClick;
 
@@ -831,10 +859,6 @@ namespace YOM2013
 
 
 
-			HighlightColorList.Add (Color.BurlyWood);
-			HighlightColorList.Add (Color.Red);
-			HighlightColorList.Add (Color.Green);
-			HighlightColorList.Add (Color.White);
 
 
 			ContextMenuStrip HighlightColors = new System.Windows.Forms.ContextMenuStrip();
@@ -1058,6 +1082,7 @@ namespace YOM2013
 			LayoutPanel newLayout =  new Layout.LayoutPanel (CoreUtilities.Constants.BLANK, false);
 			newLayout.BorderStyle = BorderStyle.Fixed3D;
 			newLayout.Parent = MDIHOST.ParentNotePanel;
+			newLayout.BackColor = Color.Wheat;
 			newLayout.SystemNote = true;
 			newLayout.Visible = true;
 			newLayout.Dock = System.Windows.Forms.DockStyle.Fill;

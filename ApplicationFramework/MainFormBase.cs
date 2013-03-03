@@ -70,6 +70,8 @@ namespace appframe
 		void BuildFooterStatus ()
 		{
 			FooterStatus = new StatusStrip();
+
+
 			this.Controls.Add (FooterStatus);
 		}
 

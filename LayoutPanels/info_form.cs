@@ -16,7 +16,7 @@ namespace Layout
 		public info_form (string infoText, string _GUID)
 		{
 
-			this.Width = 400;
+			this.Width = 600;
 			this.Height = 500;
 			this.Icon = LayoutDetails.Instance.MainFormIcon;
 			FormUtils.SizeFormsForAccessibility(this, LayoutDetails.Instance.MainFormFontSize);

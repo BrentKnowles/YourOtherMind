@@ -285,6 +285,15 @@ namespace Layout
 				case NoteDataXML_RichText.FormatText.ZOOM:
 					CurrentTextNote.ZoomToggle();
 					break;
+				case NoteDataXML_RichText.FormatText.LINE:
+					CurrentTextNote.GetRichTextBox().DrawBlackLine();
+					break;
+				case NoteDataXML_RichText.FormatText.BULLET:
+					CurrentTextNote.GetRichTextBox().Bullet(false);
+					break;
+				case NoteDataXML_RichText.FormatText.BULLETNUMBER:
+					CurrentTextNote.GetRichTextBox().Bullet(true);
+					break;
 				}
 			}
 		}

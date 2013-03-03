@@ -4,6 +4,7 @@ using System.Drawing;
 using System.Xml;
 using CoreUtilities;
 using System.Runtime.InteropServices;
+using RichBoxLinks;
 namespace Layout
 {
 	public class RichTextExtended : RichTextBox
@@ -429,6 +430,215 @@ namespace Layout
 			SendMessage(new System.Runtime.InteropServices.HandleRef(this, this.Handle), 0x447, 0, paraformat1);
 			this.SelectionLength = 0;
 			
+		}
+		public enum AdvRichTextBulletType
+		{
+			Normal = 1,
+			Number = 2,
+			LowerCaseLetter = 3,
+			UpperCaseLetter = 4,
+			LowerCaseRoman = 5,
+			UpperCaseRoman = 6
+		}
+		
+		public enum AdvRichTextBulletStyle
+		{
+			RightParenthesis = 0x000,
+			DoubleParenthesis = 0x100,
+			Period = 0x200,
+			Plain = 0x300,
+			NoNumber = 0x400
+		}
+		private AdvRichTextBulletType _BulletType = AdvRichTextBulletType.Number;
+		private AdvRichTextBulletStyle _BulletStyle = AdvRichTextBulletStyle.NoNumber;
+		private short _BulletNumberStart = 1;
+		
+		
+		public AdvRichTextBulletType BulletType
+		{
+			get { return _BulletType; }
+			set
+			{
+				_BulletType = value;
+				lg.Instance.Line("RichTextExtended->BulletTYpe", ProblemType.MESSAGE, "bullets turned on in BulletType");
+				NumberedBullet(true);
+			}
+		}
+		public AdvRichTextBulletStyle BulletStyle
+		{
+			get { return _BulletStyle; }
+			set
+			{
+				_BulletStyle = value;
+				lg.Instance.Line("RichTextExtended->BulletStyle", ProblemType.MESSAGE, "bullets turned on in BulletStyle");
+				
+				NumberedBullet(true);
+			}
+		}
+		public void NumberedBullet(bool TurnOn)
+		{
+			PARAFORMAT2 paraformat1 = new PARAFORMAT2();
+			paraformat1.dwMask = (int)(PFM_NUMBERING | PFM_OFFSET | PFM_NUMBERINGSTART |
+			                           PFM_NUMBERINGSTYLE | PFM_NUMBERINGTAB);
+			if (!TurnOn)
+			{
+				paraformat1.wNumbering = 0;
+				paraformat1.dxOffset = 0;
+			}
+			else
+			{
+				paraformat1.wNumbering = (short)_BulletType;
+				paraformat1.dxOffset = this.BulletIndent;
+				paraformat1.wNumberingStyle = (short)_BulletStyle;
+				paraformat1.wNumberingStart = _BulletNumberStart;
+				paraformat1.wNumberingTab = 500;
+			}
+			
+			
+			SendMessage(new System.Runtime.InteropServices.HandleRef(this, this.Handle), 0x447, 0, paraformat1);
+		}
+		/// <summary>
+		/// inserts a bullet at current selection point
+		/// </summary>
+		/// <param name="bNumbered"></param>
+		public void Bullet(bool bNumbered)
+		{
+			
+			// find current bullet style
+			AdvRichTextBulletType current = this.BulletType;
+			AdvRichTextBulletType newstyle = this.BulletType;
+			
+			
+			// find new bullet style
+			if (bNumbered == true)
+			{
+				//  getRichText().SelectionBullet = true;
+				
+				newstyle = AdvRichTextBulletType.Number;
+			}
+			else
+			{
+				
+				newstyle = AdvRichTextBulletType.Normal;
+				
+			}
+			
+			// if current = new, then we want to turn it off
+			// Number does not set SelectionBullet == true so we have to be tricky
+			if ((this.SelectionBullet == true || current == AdvRichTextBulletType.Number) && newstyle == current)
+			{
+				// set always back to normal
+				this.BulletType = AdvRichTextBulletType.Normal;
+				this.SelectionBullet = false;
+			}
+			else // we toggle
+			{
+				this.BulletStyle = AdvRichTextBulletStyle.Plain;
+				this.BulletType = newstyle;
+				//this.SelectionBullet = true;
+			}
+			
+			
+			
+		}
+		/// <summary>
+		/// Draws a colored line; used for headnigs and whatnot
+		/// 
+		/// Oct 2009 - moving code from mdi.cs to RichTextBoxEx
+		/// </summary>
+		/// <param name="sText"></param>
+		/// <param name="font"></param>
+		/// <param name="fontColor"></param>
+		/// <param name="backColor"></param>
+		/// <param name="nLines"></param>
+		public void DrawColoredLine(string sText, Font font, Color fontColor, Color backColor, int nLines)
+		{
+			
+			if (this != null)
+			{
+				// select proper range
+				// get line from selection start
+				int nStart = this.SelectionStart;
+				try
+				{
+					
+					int nLine = CursorPosition.Line(this, nStart);
+					
+					// if the selection length is > 0 that means we have selected text
+					// in this situation we replace the default text with this selected text
+					if (this.SelectionLength > 0)
+					{
+						sText = this.SelectedText;
+					}
+					string sLine = "";
+					
+					for (int i = 0; i < 500; i++)
+					{
+						sLine = sLine + " ";
+					}
+					
+					
+					
+					
+					
+					
+					// keep selection "big"
+					this.SelectionFont = font;
+					
+					this.SelectionColor = fontColor;
+					this.SelectionBackColor = backColor;
+					
+					
+					
+					// now put text
+					this.SelectedText = sLine;
+					this.SelectionStart = nStart;
+					
+					this.SelectionLength = 0;
+					this.SelectedText = sText;
+					
+					if (nLines > 1)
+					{
+						// need to set selection to next line
+						int nPosition = this.SelectionStart;
+						
+						do
+						{
+							nPosition++;
+						}
+						while (this.GetLineFromCharIndex(nPosition) <= nLine);
+						this.SelectionStart = nPosition - 1;
+						
+						
+						nLines = nLines - 1;
+						DrawColoredLine("", font, fontColor, backColor, nLines);
+					}
+				}
+				catch (Exception ex)
+				{
+					// I get a weird formatting error in the    RichTextBoxLinks.CursorPosition.Line
+					// for richtext boxes on my work machines
+					// suppressing the error but logging it
+					
+					lg.Instance.Line("RichTextExtended->DrawColoredLine", ProblemType.EXCEPTION, ex.ToString());
+					//Main.UpdateStatusHelpText("Unable to do that operation at this time.");
+					// Main.t
+				}
+			}
+			
+			
+		}
+
+
+		/// <summary>
+		/// Draws just a black line
+		/// </summary>
+		public void DrawBlackLine()
+		{
+			Font font = new Font("Georgia", 8); // UserInfo.StringToFont("Georgia");
+			
+			DrawColoredLine("", font,
+			                Color.White, Color.Black, 1);
 		}
 	}
 }

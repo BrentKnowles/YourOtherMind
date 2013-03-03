@@ -150,6 +150,30 @@ namespace Layout
 			zoom.Click+= (object sender, EventArgs e) => DoFormatOnText(NoteDataXML_RichText.FormatText.ZOOM);
 			formatBar.Items.Add (zoom);
 
+
+			ToolStripButton line = new ToolStripButton();
+			line.Text = Loc.Instance.GetString ("LINE");
+			line.Click+= (object sender, EventArgs e) => DoFormatOnText(NoteDataXML_RichText.FormatText.LINE);
+			formatBar.Items.Add (line);
+
+			ToolStripSplitButton Bullets = new ToolStripSplitButton();
+			Bullets.Text = Loc.Instance.GetString ("BULLETS");
+
+			ToolStripButton BulletNormal = new ToolStripButton();
+			BulletNormal.Click+= (object sender, EventArgs e) => DoFormatOnText(NoteDataXML_RichText.FormatText.BULLET);
+			BulletNormal.Text = "bullet";
+
+			Bullets.DropDownItems.Add (BulletNormal);
+
+
+			ToolStripButton BulletNumber = new ToolStripButton();
+			BulletNumber.Text = "number";
+			BulletNumber.Click+= (object sender, EventArgs e) => DoFormatOnText(NoteDataXML_RichText.FormatText.BULLETNUMBER);
+			Bullets.DropDownItems.Add (BulletNumber);
+		//	Bullets.Click+= (object sender, EventArgs e) => DoFormatOnText(NoteDataXML_RichText.FormatText.ZOOM);
+			formatBar.Items.Add (Bullets);
+
+
 		}
 
 		void HandleStrikeClick (object sender, EventArgs e)

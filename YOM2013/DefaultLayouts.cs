@@ -18,6 +18,7 @@ namespace YOM2013
 		{
 			LayoutPanel SystemLayout = new Layout.LayoutPanel (CoreUtilities.Constants.BLANK, true);
 			SystemLayout.NewLayout ("system" ,false, textEditorContextStrip);
+			SystemLayout.BackColor = System.Drawing.Color.Wheat;
 			SystemLayout.SetName (Loc.Instance.GetString("system"));
 			SystemLayout.Parent = parent;
 			SystemLayout.Visible = true;

@@ -40,6 +40,7 @@ namespace Layout
 		{
 
 			this.Icon = icon;
+			FormUtils.SizeFormsForAccessibility(this, LayoutDetails.Instance.MainFormFontSize);
 			this.Text = Loc.Instance.GetString ("Add Note to Storyboard");
 
 			Button bOk = new Button();

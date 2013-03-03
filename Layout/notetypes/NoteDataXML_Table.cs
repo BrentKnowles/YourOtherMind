@@ -180,7 +180,16 @@ namespace Layout
 
 
 				dataSource = Table.GetTable();
-				Columns=Table.GetColumns();
+
+				//we pass !Visible because when we are false we SUPPRESS the warnnig
+				ColumnDetails[] updatedColumns = Table.GetColumns(!this.Visible);
+				if (null != updatedColumns)
+				{
+
+					// we don't save if columns have been blanked
+					lg.Instance.Line("NoteDataXML_Table->Save", ProblemType.MESSAGE, "Do not save empty columns, which may have happened simply because the control was not visible");
+					Columns=updatedColumns;
+				}
 
 
 			}
