@@ -779,6 +779,12 @@ namespace Layout
 		{
 			if (null != Notes) {
 				lg.Instance.Line("LayoutPanel.SaveLayout", ProblemType.MESSAGE, "Saved");
+
+				// March 4 2013
+				if (GetIsChild == true && Notes.ParentGuid == Constants.BLANK)
+				{
+					Notes.ParentGuid =  GetAbsoluteParent().GUID;// GUID;// ParentGUID;
+				}
 				if (Notes.SaveTo() == true)
 				{
 				SetSaveRequired (false);

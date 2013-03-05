@@ -27,6 +27,7 @@ namespace appframe
 		}
 		private ToolStripMenuItem FindMenuItem;
 		private ToolStripMenuItem ToolMenuItem;
+		private ToolStripMenuItem Notes;
 		AddIns addIns;
 		List<MefAddIns.Extensibility.mef_IBase> AddInsLoaded;
 
@@ -149,7 +150,7 @@ namespace appframe
 		
 		
 
-			ToolStripMenuItem Notes = new ToolStripMenuItem ();
+			 Notes = new ToolStripMenuItem ();
 			Notes.Name = "NotesMenu";
 			Notes.Text = Loc.Instance.GetString ("Notes");
 
@@ -576,6 +577,11 @@ namespace appframe
 		public ToolStripMenuItem GetToolMenu ()
 		{
 			return ToolMenuItem;
+			//return (ToolStripMenuItem)MainMenu.Items.Find (FindMenu, true)[0];
+		}
+		public ToolStripMenuItem GetNoteMenu ()
+		{
+			return Notes;
 			//return (ToolStripMenuItem)MainMenu.Items.Find (FindMenu, true)[0];
 		}
 

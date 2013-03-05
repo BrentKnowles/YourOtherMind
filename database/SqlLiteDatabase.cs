@@ -671,8 +671,9 @@ namespace database
 					}
 					
 					sqlStatement = String.Format ("INSERT INTO {0}({1}) VALUES({2})", tableName, cols, vals);
-					lg.Instance.Line("SqlLiteDatabase.InsertData", ProblemType.MESSAGE, sqlStatement);
-
+					lg.Instance.Line("SqlLiteDatabase.InsertDataCORE", ProblemType.MESSAGE, "***********************");
+					lg.Instance.Line("SqlLiteDatabase.InsertDataCORE", ProblemType.MESSAGE, sqlStatement);
+					lg.Instance.Line("SqlLiteDatabase.InsertDataCORE", ProblemType.MESSAGE, "***********************");
 
 					SQLiteCommand command = new SQLiteCommand (sqlStatement, sqlTransaction.Connection);
 						// fill in parameters
@@ -806,6 +807,196 @@ namespace database
 			return result;
 		}
 
+		const string EXPORT_DELIM = "**&&**";
+		const string EQUAL_DELIM ="&&==&&";
+		public override List<string> GetBackupRowAsString(string Table, string ColumnToMatch, string ColumnValueToMatch, bool IncludeTableNameAtTop)
+		{
+			List<string> results = new List<string>();
+			SQLiteConnection sqliteCon = new SQLiteConnection (Connection_String);
+			sqliteCon.Open ();
+
+			// this is the main backup routine, which exports it as a string
+			// up to the caller to save it into an apporparite file
+			string selectSQL = String.Format ("SELECT * from {0} where {1}='{2}'", Table, ColumnToMatch, ColumnValueToMatch);
+			SQLiteCommand selectCommand = new SQLiteCommand (selectSQL, sqliteCon);
+			SQLiteDataReader dataReader = selectCommand.ExecuteReader ();
+		
+			// Iterate every record in the AppUser table
+			while (dataReader.Read()) {
+				string result = Constants.BLANK;
+				if (true == IncludeTableNameAtTop)
+				{
+					result = "Table"+EQUAL_DELIM+Table+EXPORT_DELIM;
+				}
+				for (int i = 0 ; i < dataReader.FieldCount; i++)
+				{
+					string valuetowrite = dataReader[i].ToString();
+					//if (valuetowrite.ToLower () == "false") valuetowrite="0";
+					//if (valuetowrite.ToLower() == "true") valuetowrite="1";
+					result = result +  (dataReader.GetName(i) + EQUAL_DELIM +   valuetowrite)+ EXPORT_DELIM;
+					//	Console.WriteLine ("");
+				}
+				results.Add (result);
+			}
+			
+		
+		dataReader.Close ();
+		sqliteCon.Close ();
+			return results;
+
+		}
+
+
+		// if overwrite false then we Add new
+		/// <summary>
+		/// Imports from string.
+		/// </summary>
+		/// <returns>
+		/// an error code
+        /// 0 - no error
+		/// -1 array values do not match
+		/// -2 No table or invalid table name found
+		/// -3 No data
+		/// -4 Did not find TestColumn in the list of data and hence have no value to compare for uniqueness
+		/// </returns>
+		/// <param name='Table'>
+		/// Table.
+		/// </param>
+		/// <param name='Incoming'>
+		/// Incoming.
+		/// </param>
+		/// <param name='Overwrite'>
+		/// If set to <c>true</c> overwrite.
+		/// </param>
+		public override int ImportFromString (string Incoming, string TestColumn)
+		{
+			string TestValue = Constants.BLANK;
+			int errorCode = 0;
+			// this is the hard bit. We take the string (which has been previously loaded from a file
+			// and dissect it into something that can be inserted into a database
+
+
+			// a super-smart approach would be building the data we need to do an insert/add without knowing about it. Possible?
+			List<string> columnsFound = new List<string> ();
+			List<object> valuesFound = new List<object> ();
+
+			string[] split = Incoming.Split (new string[1] {EXPORT_DELIM}, StringSplitOptions.None);
+
+			//	return split.Length;
+
+			string Table = Constants.BLANK;
+
+			for (int i = 0; i <split.Length; i++) {
+				if (0 == i) {
+					//TableName
+					Table = split [0].Split (new string[1]{EQUAL_DELIM}, StringSplitOptions.None) [1]; 
+				} else
+			    // id right at start
+					if (split [i].IndexOf ("id" + EQUAL_DELIM) == 0) {
+					// we skip ID row too
+				} else {
+					// we split the string to build Columsn and Values
+					string[] keyvalue = split [i].Split (new string[1]{EQUAL_DELIM}, StringSplitOptions.None);
+
+					if (keyvalue != null && keyvalue.Length == 2) {
+						lg.Instance.Line ("SqlLIteDatabsae->ImportFromString", ProblemType.MESSAGE, String.Format ("Adding Column {0}, Value {1}", keyvalue [0], keyvalue [1]));
+						columnsFound.Add (keyvalue [0]);
+						object value = keyvalue [1];
+						if (keyvalue [0].IndexOf ("date") > -1) {
+							// date fields need special processing
+							lg.Instance.Line ("SqlDataBase->ImprotFromString", ProblemType.MESSAGE, "Translteing a Date");
+							value = DateTime.Parse (value.ToString ());
+							//DateTime boo = DateTime.Now;
+							//	value = boo;
+						}
+						if (keyvalue [0] == TestColumn) {
+							// we found the guid (or whatever other criteria we passed in)
+							TestValue = keyvalue [1];
+						}
+
+						if (keyvalue[1] == "False")
+						{
+							value = 0;
+						}
+						if (keyvalue[1] == "True")
+						{
+							value = "1";
+						}
+						valuesFound.Add (value);
+					} else {
+						lg.Instance.Line ("SqlLIteDatabsae->ImportFromString", ProblemType.MESSAGE, "Skipping [" + split [i] + "]");
+					}
+				}
+			}
+
+
+			if (columnsFound.Count != valuesFound.Count) {
+				errorCode = -1;
+			
+			}
+			if (Constants.BLANK == Table) {
+				errorCode = -2;
+			}
+
+			if (columnsFound.Count == 0) {
+				errorCode = -3;
+			}
+
+			if (TestValue == Constants.BLANK) {
+				errorCode = -4;
+			}
+
+			if (0 == errorCode) {
+
+					// add new
+					lg.Instance.Line("SqlItedatabase->ImportFromString", ProblemType.MESSAGE, String.Format ("Table: {0}, Column 1 {1}, Column 1 Value {2}",
+					                                                                                         Table, columnsFound[0], valuesFound[0].ToString ()));
+
+					if (Exists(Table,TestColumn, TestValue) == false)
+					{
+						InsertData (Table, columnsFound.ToArray (), valuesFound.ToArray ());
+					}
+					else
+				{
+					// we update existing.
+					// this simplification was needed because of subpanels (they will inherently exist after the parent is imported)
+					// I figure this is acceptable because you are importing in case of emergency only
+					UpdateSpecificColumnData(Table, columnsFound.ToArray(), valuesFound.ToArray(), TestColumn, TestValue);
+				}
+				
+			}
+
+			return errorCode;
+
+		}
+	
+		public override List<string> GetListOfTables ()
+		{
+			List<string> ListOfTables = new List<string>();
+		
+			SQLiteConnection sqliteCon = new SQLiteConnection (Connection_String);
+			sqliteCon.Open ();
+
+			string selectTables = "Select name from sqlite_master where type='table' order by name;";
+			// just a list of table names
+			SQLiteCommand selectCommand = new SQLiteCommand (selectTables, sqliteCon);
+
+			SQLiteDataReader dataReader = selectCommand.ExecuteReader ();
+
+			while (dataReader.Read()) {
+			//	result = result + (dataReader["name"].ToString())+ Environment.NewLine;
+				ListOfTables.Add (dataReader["name"].ToString());
+			}
+			dataReader.Close ();
+			sqliteCon.Close ();
+			return ListOfTables;
+		}
+
+//		public override List<DataRow> GetRowsChangedSince (DateTime Since)
+//		{
+//			// only write out 'master rows'
+//		}
+
 		/// <summary>
 		/// Will export the entire database to a string and you can do what you want with it.
 		/// </summary>
@@ -814,7 +1005,7 @@ namespace database
 		/// </param>
 		public override string BackupDatabase ()
 		{
-
+			// February 2013 Leave this as Is, won't be used, except for testing, BUT parts will be used to build other elements
 
 			string result = "";
 			/*Proper backup
@@ -1022,6 +1213,32 @@ ORDER BY name;
 			executeReader.Close ();
 			sqliteCon.Close ();
 			return value;
+		}
+		public override List<string> ExecuteCommandMultiple (string select, DateTime start, DateTime end, bool IgnoreDate)
+		{
+			List<string> results = new List<string>();
+			SQLiteConnection sqliteCon = new SQLiteConnection (Connection_String);
+			sqliteCon.Open ();
+			SQLiteCommand dbCommand = new SQLiteCommand (sqliteCon);
+			dbCommand.CommandText = select;
+
+			//SQLiteParameter sinceDateTimeParam = new SQLiteParameter("@DateStart",SQLiteParameter.);
+			if (false == IgnoreDate) {
+				dbCommand.Parameters.Add (new SQLiteParameter ("@DateStart", start));
+				dbCommand.Parameters.Add (new SQLiteParameter ("@DateEnd", end));
+			}
+			
+			
+			lg.Instance.Line("SqlLiteDatabase->ExecuteCommand", ProblemType.MESSAGE, select);
+			string value = "";
+			SQLiteDataReader executeReader = dbCommand.ExecuteReader (System.Data.CommandBehavior.SingleResult);
+			while (executeReader.Read ()) {
+				results.Add(executeReader[0].ToString ());
+			}
+			
+			executeReader.Close ();
+			sqliteCon.Close ();
+			return results;
 		}
 	}
 }

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Layout.data;
 using CoreUtilities;
 using System.Data;
+using System.IO;
 
 namespace Layout
 {
@@ -224,6 +225,34 @@ namespace Layout
 				if (MyDatabase.Delete(dbConstants.table_name, dbConstants.GUID, guid) == true)
 				{
 					LayoutDetails.Instance.TransactionsList.AddEvent (new Transactions.TransactionDeleteLayout(DateTime.Now, guid));
+
+					//now DELETE  any page with the GUId as their ParentGuid
+
+					// we have to grab the actual list of children and delete each individually
+					List<object[]> Deletable = MyDatabase.GetValues(dbConstants.table_name, new string[1] {dbConstants.GUID}, dbConstants.PARENT_GUID, guid);
+					if (Deletable != null)
+					{
+						foreach (object[] oArray  in Deletable)
+						{
+							if (oArray.Length >0 )
+							{
+								DeleteLayout (oArray[0].ToString());
+							}
+						}
+					}
+
+					//MyDatabase.Delete(dbConstants.table_name, dbConstants.PARENT_GUID, guid);
+
+
+//					List<object> children = MyDatabase.GetValues(dbConstants.table_name, dbConstants.PARENT_GUID, guid);
+//
+//					if (children != null && children.Count > 0) {
+//						for (int i = 0; i < children.Count; i++)
+//						{
+//							WriteFile (String.Format ("{1}__child{0}.txt", i.ToString (),FileName),children[i]);
+//						}
+//					}
+
 				}
 				else
 				{
@@ -494,7 +523,215 @@ namespace Layout
 		
 			return result;
 		}
+		/// <summary>
+		/// Count the number of Rows in the Layout table.
+		/// 
+		/// This WILL include subpanels
+		/// </summary>
+		public static int Count (bool CountSubpanels)
+		{
+			BaseDatabase MyDatabase = CreateDatabase ();
+			int count = 0;
 
+			string testColumn = BaseDatabase.GetValues_ANY;
+			string testValue = BaseDatabase.GetValues_WILDCARD;
+
+			if (false == CountSubpanels) {
+				testColumn = dbConstants.SUBPANEL;
+				testValue = "0";
+			}
+		
+
+			List<object[]> results = MyDatabase.GetValues (dbConstants.table_name, new string[1] {dbConstants.NAME}, testColumn, testValue);
+			if (results != null) {
+				count = results.Count;
+			}
+			MyDatabase.Dispose();
+			return count;
+		}
+
+		private static void WriteFile(string FileName, string value)
+		{
+			lg.Instance.Line("MasterOfLayouts->WriteFile", ProblemType.MESSAGE, "Writing: " + FileName);
+			StreamWriter writer = new StreamWriter (FileName, false);
+			writer.Write (value);
+			writer.Close ();
+			writer.Dispose ();
+
+		}
+		public static int ImportLayout (string file)
+		{
+			int errorCode = 0;
+			if (File.Exists (file) == true) {
+				BaseDatabase MyDatabase = CreateDatabase ();
+				string line = Constants.BLANK;
+				using (StreamReader sr = new StreamReader(file)) {
+					line = sr.ReadToEnd ();
+					Console.WriteLine (line);
+				}
+
+				errorCode = MyDatabase.ImportFromString (line, dbConstants.GUID);
+
+
+
+
+				if (-1 == errorCode) {
+					NewMessage.Show (Loc.Instance.GetStringFmt ("We found {0} columns but found {1} values. They do not match. Failing to import"));
+					return errorCode;
+				}
+				if (-2 == errorCode) {
+					NewMessage.Show (Loc.Instance.GetString ("An invalid tablename was found in the file to be imported"));
+					return errorCode;
+				}
+				if (-3 == errorCode) {
+					NewMessage.Show (Loc.Instance.GetString ("No data was found to be imported (no columns), everything skipped"));
+					return errorCode;
+				}
+				if (-4 == errorCode)
+				{
+					NewMessage.Show (Loc.Instance.GetString ("Did not find TestColumn in the list of data and hence have no value to compare for uniqueness"));
+					return errorCode;
+				}
+
+
+				//Test for existence in a loop??!? Recursion
+				if (errorCode == 0 && file.IndexOf("_child") == -1) {
+					// do not bother importing if Parent failed
+					int counter = 0;
+					bool done = false;
+					while (false == done) {
+						string ChildFile = String.Format ("{0}__child{1}.txt",file, counter.ToString ());
+						if (File.Exists (ChildFile)) {
+							lg.Instance.Line ("MasterOfLayouts->ImportLayout", ProblemType.MESSAGE,"A child was found");
+							errorCode = ImportLayout(ChildFile);
+							if (errorCode < 0)
+							{
+								done = true;
+							}
+						}
+						else
+						{
+							lg.Instance.Line ("MasterOfLayouts->ImportLayout", ProblemType.MESSAGE,ChildFile + " did not exist ************************");
+							done = true;
+						}
+						counter++;
+
+
+					}
+
+				}
+				//Console.WriteLine (errorCode);
+				MyDatabase.Dispose ();
+			}
+
+			
+			return errorCode;
+		}
+		public static void ExportLayout (string GUID, string FileName)
+		{
+		
+			BaseDatabase MyDatabase = CreateDatabase ();
+			string value = MyDatabase.GetBackupRowAsString (dbConstants.table_name, dbConstants.GUID, GUID, true) [0];
+			if (value != Constants.BLANK) {
+			//	NewMessage.Show("Writing " + FileName);
+				WriteFile (FileName, value);
+			} else {
+				//NewMessage.Show("Skipped " + FileName);
+			}
+
+//			List<object[]> Deletable = MyDatabase.GetValues(dbConstants.table_name, new string[1] {dbConstants.GUID}, dbConstants.PARENT_GUID, GUID);
+//			if (Deletable != null)
+//			{
+//				foreach (object[] oArray  in Deletable)
+//				{
+//					if (oArray.Length >0 )
+//					{
+//						ExportLayout (oArray[0].ToString(),String.Format ("{1}__child{0}.txt",FileName) );
+//					}
+//				}
+//			}
+
+
+
+			// Attempt 1
+			//now export any page with the GUId as their ParentGuid
+			List<string> children = MyDatabase.GetBackupRowAsString (dbConstants.table_name, dbConstants.PARENT_GUID, GUID, true);
+			if (children != null && children.Count > 0) {
+				for (int i = 0; i < children.Count; i++)
+				{
+
+					WriteFile (String.Format ("{1}__child{0}.txt", i.ToString (),FileName),children[i]);
+				}
+			}
+
+
+			MyDatabase.Dispose ();
+
+		}
+
+		static List<string> GetListOfLayoutsChangedRecently (int hours)
+		{
+			BaseDatabase MyDatabase = CreateDatabase ();
+			DateTime ToCheck = DateTime.Now.AddHours (-hours);
+			DateTime AboutNow = DateTime.Now;
+			string DateComparer = String.Format ("({0} >= @DateStart) AND ({0} < @DateEnd)", dbConstants.DATEEDITED);
+			List<string> Results = MyDatabase.ExecuteCommandMultiple (String.Format ("Select {0} from {1} where {2}", dbConstants.GUID, dbConstants.table_name, 
+			                                                   DateComparer), ToCheck, AboutNow, false);
+			List<string> ResultList = new  List<string>();
+			if (Results != null) {
+				foreach (string s in Results)
+				{
+
+						ResultList.Add (s);
+
+				}
+
+			}
+			MyDatabase.Dispose();
+			return ResultList;
+		}
+
+		public static void ExportRecent ()
+		{
+			BaseDatabase MyDatabase = CreateDatabase ();
+
+
+			// get list of GUIDS changed in the last 12 hours
+			List<string> GuidsChanged = GetListOfLayoutsChangedRecently (12);
+
+			// Create Export/Timed, if necessary
+			string exportDirectory = Path.Combine (LayoutDetails.Instance.Path, "export");
+			exportDirectory = Path.Combine (exportDirectory, "timed");
+			if (!Directory.Exists (exportDirectory)) {
+				Directory.CreateDirectory (exportDirectory);
+			} else {
+				// Delete all files in Export/Timed
+
+				string[] files = Directory.GetFiles (exportDirectory);
+				foreach (string s in files) {
+					File.Delete (s);
+				}
+
+			}
+			int count = 0;
+			//string temp = "";
+			foreach (string guid in GuidsChanged) {
+			//	temp = temp + Environment.NewLine + guid;
+				count++;
+				string THISGUID = guid;
+				THISGUID = guid.Replace ("{","");
+				THISGUID = THISGUID.Replace ("}","");
+				ExportLayout(guid, Path.Combine (exportDirectory,THISGUID + ".txt"));
+
+			}
+			NewMessage.Show (Loc.Instance.GetStringFmt("Exported {0} files", count));
+
+			//NewMessage.Show (temp);
+
+
+
+			MyDatabase.Dispose ();
+		}
 	}
 }
 

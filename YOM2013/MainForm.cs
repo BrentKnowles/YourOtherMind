@@ -549,7 +549,17 @@ namespace YOM2013
 			GetToolMenu().DropDownItems.Add (Monitor_OneScreen);
 			Monitor_OneScreen.Click += HandleMonitorOneScreenClick;
 
+			ToolStripMenuItem ExportCurrent = new ToolStripMenuItem(Loc.Instance.GetString ("Export Current Layout"));
+			ToolStripMenuItem ImportToCurrent = new ToolStripMenuItem(Loc.Instance.GetString ("Import Layout"));
+			ToolStripMenuItem ExportRecent = new ToolStripMenuItem(Loc.Instance.GetString ("Export Recently Modified"));
 
+			ExportCurrent.Click+= HandleExportCurrentClick;
+			ImportToCurrent.Click += HandleImportCurrentClick;
+			ExportRecent.Click+= HandleExportRecentClick;
+
+			GetNoteMenu().DropDownItems.Add (ExportCurrent);
+			GetNoteMenu().DropDownItems.Add (ImportToCurrent);
+			GetNoteMenu().DropDownItems.Add (ExportRecent);
 
 			Windows = new ToolStripMenuItem (Loc.Instance.GetString ("Windows"));
 			Windows.DropDownOpening += HandleWindowsMenuDropDownOpening;
@@ -609,6 +619,36 @@ namespace YOM2013
 			LayoutDetails.Instance.TransactionsList = Transaction;
 
 
+		}
+
+		void HandleExportRecentClick (object sender, EventArgs e)
+		{
+			MasterOfLayouts.ExportRecent();
+		}
+
+		void HandleImportCurrentClick (object sender, EventArgs e)
+		{
+			OpenFileDialog ImportMe = new OpenFileDialog ();
+			if (NewMessage.Show (Loc.Instance.GetString ("Overwrite Existing?"), Loc.Instance.GetString ("If this layout already exists, it will be replaced by the file you import. Proceed?"),
+			                 MessageBoxButtons.YesNo, null) == DialogResult.Yes) {
+
+				if (ImportMe.ShowDialog () == DialogResult.OK) {
+					if (MasterOfLayouts.ImportLayout (ImportMe.FileName) == 0) 
+						NewMessage.Show (Loc.Instance.GetString ("Import worked. You may need to refresh list of layouts."));
+				}
+			}
+		}
+
+		void HandleExportCurrentClick (object sender, EventArgs e)
+		{
+			if (LayoutDetails.Instance.CurrentLayout != null) {
+				SaveFileDialog ExportMe = new SaveFileDialog ();
+				if (ExportMe.ShowDialog () == DialogResult.OK) {
+					MasterOfLayouts.ExportLayout (LayoutDetails.Instance.CurrentLayout.GUID, ExportMe.FileName);
+				}
+			} else {
+				NewMessage.Show (Loc.Instance.GetString ("Please select a layout to export first"));
+			}
 		}
 
 		void HandleAboutClick (object sender, EventArgs e)
@@ -689,12 +729,45 @@ namespace YOM2013
 			Hotkeys.Add (new KeyData(Loc.Instance.GetString ("Line"), 	Line, Keys.Control,  Keys.L,mainform, true, "format_line_guid"));
 			Hotkeys.Add (new KeyData(Loc.Instance.GetString ("Bullet"), 	Bullet, Keys.Control,  Keys.G,mainform, true, "format_bullet_normal"));
 			Hotkeys.Add (new KeyData(Loc.Instance.GetString ("Bullet, Numbered"), 	BulletNumber, Keys.Control,  Keys.N,mainform, true, "format_bullet_Number"));
-
+			Hotkeys.Add (new KeyData(Loc.Instance.GetString ("Highlight Yellow"), 	HighlightYellow, Keys.Control,  Keys.OemOpenBrackets,mainform, true, "highlightyellow"));
+			Hotkeys.Add (new KeyData(Loc.Instance.GetString ("Highlight Red"), 	HighlightRed, Keys.Control,  Keys.OemCloseBrackets,mainform, true, "highlightred"));
+			Hotkeys.Add (new KeyData(Loc.Instance.GetString ("Highlight Green"), 	HighlightGreen, Keys.Control,  Keys.OemBackslash,mainform, true, "highlightgreen"));
 			// temporary to test the form thing
 			//Hotkeys.Add (new KeyData(Loc.Instance.GetString ("test"),Test , Keys.Control, Keys.Q, "optionform", true, "testguid"));
 			base.BuildAndProcessHotKeys(Storage);
 		}
 
+
+		void HighlightYellow(bool obj)
+		{
+			if (LayoutDetails.Instance.CurrentLayout != null) {
+				if (LayoutDetails.Instance.CurrentLayout.CurrentTextNote != null)
+				{
+					LayoutDetails.Instance.CurrentLayout.CurrentTextNote.GetRichTextBox().SelectionBackColor = Color.Yellow;
+				}
+				
+			}
+		}
+		void HighlightRed(bool obj)
+		{
+			if (LayoutDetails.Instance.CurrentLayout != null) {
+				if (LayoutDetails.Instance.CurrentLayout.CurrentTextNote != null)
+				{
+					LayoutDetails.Instance.CurrentLayout.CurrentTextNote.GetRichTextBox().SelectionBackColor = Color.Red;
+				}
+				
+			}
+		}
+		void HighlightGreen(bool obj)
+		{
+			if (LayoutDetails.Instance.CurrentLayout != null) {
+				if (LayoutDetails.Instance.CurrentLayout.CurrentTextNote != null)
+				{
+					LayoutDetails.Instance.CurrentLayout.CurrentTextNote.GetRichTextBox().SelectionBackColor = Color.Green;
+				}
+				
+			}
+		}
 		void FindBarFocus (bool obj)
 		{
 			if (LayoutDetails.Instance.CurrentLayout != null) {

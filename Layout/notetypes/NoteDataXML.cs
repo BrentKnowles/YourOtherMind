@@ -394,7 +394,11 @@ namespace Layout
 		{
 			string result = Constants.BLANK;
 			if (Layout != null) {
-				result = Layout.GetAbsoluteParent().GUID;
+				LayoutPanelBase lp  = Layout.GetAbsoluteParent();
+				if (lp != null)
+				{
+					result = lp.GUID;
+				}
 			}
 			return result;
 		}

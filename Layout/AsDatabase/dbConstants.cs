@@ -7,6 +7,7 @@ namespace Layout.data
 	{
 
 		static public ColumnConstant SHOWTABS = new ColumnConstant("showtabs", 5, "boolean", 2);
+		// true or false is a subpanel
 		static public ColumnConstant SUBPANEL = new ColumnConstant("subpanel", 6, "boolean", 3);
 		static public ColumnConstant MAXIMIZETABS = new ColumnConstant("maximizetabs", 7, "boolean", 4);
 

@@ -36,6 +36,7 @@ namespace Layout
 		string Keywords {get;set;}
 		System.Drawing.Color BackgroundColor { get; set; }
 		string Blurb {get;set;}
+		string ParentGuid {get;set;}
 		#endregion
 
 

@@ -747,7 +747,7 @@ namespace Layout
 							// We want the LinkTable BEFORE the other notes are CreateParent'ed
 								if (false == IsSubPanel && null != LayoutPanelToLoadNoteOnto) {
 								if (MyLinkTableNote == null)
-									NewMessage.Show ("LinkTableNote is null??");
+									NewMessage.Show ("LinkTableNote is null?? Is Layout Visible?");
 								dataForThisLayout.Add (MyLinkTableNote);
 								// always minimize the linktable note
 								//MyLinkTableNote.Minimize(true);
@@ -843,6 +843,8 @@ namespace Layout
 					throw new Exception ("Unable to create database in SaveTo");
 				}
 
+				// I did major changes and for some reason
+				// when I store a ParentGUID in LayoutPanel (to avoid ahving no ParentGUID) it is the wrong GUID??
 				if (IsSubPanel == true && ParentGuid == Constants.BLANK)
 				{
 					if (dataForThisLayout.Count > 0)

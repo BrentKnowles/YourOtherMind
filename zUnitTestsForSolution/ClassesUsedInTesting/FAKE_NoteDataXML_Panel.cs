@@ -10,6 +10,12 @@ namespace Testing
 		public FAKE_NoteDataXML_Panel (int _height, int _width):base (_height, _width)
 		{
 		}
+
+//		public Layout.LayoutDatabase TheNotesDatabase()
+//		{
+//			return this.panelLayout.Notes
+//		}
+
 		public Layout.LayoutPanel myLayoutPanel()
 		{
 			return (Layout.LayoutPanel)this.panelLayout;

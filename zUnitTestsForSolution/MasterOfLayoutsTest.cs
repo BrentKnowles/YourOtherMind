@@ -1,7 +1,9 @@
 using System;
 using NUnit.Framework;
 using Layout;
-
+using System.IO;
+using CoreUtilities;
+using System.Windows.Forms;
 namespace Testing
 {
 	[TestFixture]
@@ -80,10 +82,25 @@ namespace Testing
 				basicNote.CreateParent(panel);
 				panel.SaveLayout();
 
+			FAKE_NoteDataXML_Panel panelA = new FAKE_NoteDataXML_Panel ();
+			panelA.Caption = "PanelA";
+			panelA.GuidForNote = "panela";
+			panel.AddNote (panelA);
+			panelA.CreateParent (panel);
+			
+			
+			FAKE_NoteDataXML_Text textNote = new FAKE_NoteDataXML_Text ();
+			
+			panelA.AddNote (textNote);
+			textNote.CreateParent (panelA.GetPanelsLayout ());
+			textNote.Caption = "My text";
+			textNote.GetRichTextBox ().Text = "Hello there.";
+			panel.SaveLayout ();
+			Assert.AreEqual (2, MasterOfLayouts.Count (true));
 			Assert.True (MasterOfLayouts.ExistsByGUID("mynewpanel"));
 			MasterOfLayouts.DeleteLayout("mynewpanel");
 			Assert.False (MasterOfLayouts.ExistsByGUID("mynewpanel"));
-
+			Assert.AreEqual (0, MasterOfLayouts.Count (true));
 				
 				
 
@@ -374,6 +391,209 @@ namespace Testing
 			NoteDataXML note = new NoteDataXML();
 			note.Caption = "boo";
 			Assert.AreNotEqual(0, note.ToString().Length);
+		}
+
+
+		[Test]
+		public void AnEmptyPanelStillHasAParent()
+		{
+			lg.Instance.OutputToConstoleToo = true;
+			Form form = new Form();
+			string ThisLayoutGUID = "mynewpanelXA";
+			// create a layout
+			_TestSingleTon.Instance._SetupForLayoutPanelTests ();
+			//	_SetupForLayoutPanelTests ();
+			
+			FAKE_LayoutPanel panel = new FAKE_LayoutPanel (CoreUtilities.Constants.BLANK, false);
+			form.Controls.Add (panel);
+			//NOTE: For now remember that htis ADDS 1 Extra notes
+			panel.NewLayout (ThisLayoutGUID, true, null);
+			
+			NoteDataXML basicNote = new NoteDataXML ();
+			basicNote.GuidForNote = "thisguid1";
+			basicNote.Caption = "note1";
+			
+			panel.AddNote (basicNote);
+			//basicNote.CreateParent (panel);
+			panel.SaveLayout ();
+			
+			
+			FAKE_NoteDataXML_Panel panelA = new FAKE_NoteDataXML_Panel ();
+			panelA.Caption = "PanelA";
+			panelA.GuidForNote = "panela";
+			panel.AddNote (panelA);
+			panelA.CreateParent (panel);
+			
+			
+			FAKE_NoteDataXML_Panel panelB = new FAKE_NoteDataXML_Panel ();
+			panelB.Caption = "PanelBBBBB";
+			panelB.GuidForNote = "panelBB";
+			panelA.AddNote (panelB);
+			panelB.CreateParent (panelA.GetPanelsLayout());
+		
+			
+			
+			
+			FAKE_NoteDataXML_Text textNote = new FAKE_NoteDataXML_Text ();
+			
+			panelA.AddNote (textNote);
+			textNote.CreateParent (panelA.GetPanelsLayout ());
+			textNote.Caption = "My text";
+			textNote.GetRichTextBox ().Text = "Hello there." +Environment.NewLine +"I am still here, are you?" + Environment.NewLine+"Yep!";
+			panel.SaveLayout ();
+			Assert.AreEqual (6, panel.CountNotes ());
+			_w.output(panelB.GetPanelsLayout().ParentGUID);
+
+			// get parent GUID directlyf rom database
+			FAKE_LayoutPanel SubPanelB = new FAKE_LayoutPanel ("panelBB", true);
+			form.Controls.Add (SubPanelB);
+			SubPanelB.LoadLayout("panelBB", true, null);
+
+			Assert.AreNotEqual(Constants.BLANK, SubPanelB.GetLayoutDatabase().ParentGuid);
+		}
+
+		[Test]
+		public void ExportImport ()
+		{	lg.Instance.OutputToConstoleToo = true;
+			Form form = new Form();
+			string ThisLayoutGUID = "mynewpanelXA";
+			// create a layout
+			_TestSingleTon.Instance._SetupForLayoutPanelTests ();
+			//	_SetupForLayoutPanelTests ();
+			
+			FAKE_LayoutPanel panel = new FAKE_LayoutPanel (CoreUtilities.Constants.BLANK, false);
+			form.Controls.Add (panel);
+			//NOTE: For now remember that htis ADDS 1 Extra notes
+			panel.NewLayout (ThisLayoutGUID, true, null);
+			
+			NoteDataXML basicNote = new NoteDataXML ();
+			basicNote.GuidForNote = "thisguid1";
+			basicNote.Caption = "note1";
+			
+			panel.AddNote (basicNote);
+			//basicNote.CreateParent (panel);
+			panel.SaveLayout ();
+
+			
+			FAKE_NoteDataXML_Panel panelA = new FAKE_NoteDataXML_Panel ();
+			panelA.Caption = "PanelA";
+			panelA.GuidForNote = "panela";
+			panel.AddNote (panelA);
+			panelA.CreateParent (panel);
+
+
+			FAKE_NoteDataXML_Panel panelB = new FAKE_NoteDataXML_Panel ();
+			panelB.Caption = "PanelBBBBB2";
+			panelB.GuidForNote = "panelBB";
+			panelA.AddNote (panelB);
+			panelB.CreateParent (panelA.GetPanelsLayout());
+			FAKE_NoteDataXML_Text textNoteA = new FAKE_NoteDataXML_Text ();
+
+			panelB.AddNote (textNoteA);
+			textNoteA.GuidForNote = "My Text Note For the B Panel";
+			textNoteA.CreateParent (panelB.GetPanelsLayout ());
+			textNoteA.Caption = "My text B";
+
+
+
+			FAKE_NoteDataXML_Text textNote = new FAKE_NoteDataXML_Text ();
+
+			panelA.AddNote (textNote);
+			textNote.GuidForNote = "Text Note For Panel A";
+			textNote.CreateParent (panelA.GetPanelsLayout ());
+			textNote.Caption = "My text A";
+			textNote.GetRichTextBox ().Text = "Hello there." +Environment.NewLine +"I am still here, are you?" + Environment.NewLine+"Yep!";
+			panel.SaveLayout ();
+			Assert.AreEqual (7, panel.CountNotes (), "Count1");
+
+			// Note count: Default Note + BasicNote+ PanelA + LinkTable + MyText  + PanbelB + My Text B  =7
+
+
+			//test existence
+			Assert.True (MasterOfLayouts.ExistsByGUID (ThisLayoutGUID));
+			// counting our subpanel we have 2
+			Assert.AreEqual (3, MasterOfLayouts.Count (true));
+			// NOT counting our subpanel we have 1
+			Assert.AreEqual (1, MasterOfLayouts.Count (false));
+
+			// export
+			string file = Path.Combine (Environment.CurrentDirectory, "exportest.txt");
+			if (File.Exists (file)) {
+				File.Delete (file);
+			}
+			string subfile = file+"__child0.txt";
+			if (File.Exists (subfile)) {
+				File.Delete (subfile);
+			}
+			string subfile2 = file+"__child1.txt";
+			if (File.Exists (subfile2)) {
+				File.Delete (subfile2);
+			}
+			
+			Assert.False (File.Exists (file), file + " does not exist");
+
+			MasterOfLayouts.ExportLayout(ThisLayoutGUID, file);
+			// test exportfile existence 	// count 2 files exported
+			Assert.True (File.Exists(file),"main file exists");
+			Assert.True (File.Exists(subfile),"subfile exists");
+			Assert.True (File.Exists(subfile2),"subfile2 exists");
+		
+		
+
+
+			// delete original note
+			MasterOfLayouts.DeleteLayout(ThisLayoutGUID);
+
+
+			// test existence
+			Assert.False (MasterOfLayouts.ExistsByGUID (ThisLayoutGUID));
+			// counting our subpanel we have ZERO
+			Assert.AreEqual (0, MasterOfLayouts.Count (true) ,"Nothing should be left");
+			// Import as New (but won't be duplicate because old is gone)
+
+			int errorcode = MasterOfLayouts.ImportLayout(file);
+			Console.WriteLine(errorcode);
+			Assert.True (MasterOfLayouts.ExistsByGUID (ThisLayoutGUID));
+			// test existence
+			 
+			// confirm all notes laoded into layout
+			panel = null;
+			panel = new FAKE_LayoutPanel(ThisLayoutGUID, false);
+			form.Controls.Add (panel);
+			panel.LoadLayout (ThisLayoutGUID,false, null);
+		//	panel.SaveLayout();
+
+			Assert.AreEqual (7, panel.CountNotes (), "Count2");
+			Assert.AreEqual (1, MasterOfLayouts.Count (false));
+			Assert.AreEqual (3, MasterOfLayouts.Count (true));
+	
+
+
+			// Import as Overwrite
+			if (File.Exists (file)) {
+				File.Delete (file);
+			}
+			subfile = file+"__child0.txt";
+			if (File.Exists (subfile)) {
+				File.Delete (subfile);
+			}
+			Assert.True (MasterOfLayouts.ExistsByGUID (ThisLayoutGUID));
+			MasterOfLayouts.ExportLayout(ThisLayoutGUID, file);
+
+			panel = null;
+			errorcode = MasterOfLayouts.ImportLayout(file);
+			Assert.AreEqual (0, errorcode);
+			// test existences
+			panel = new FAKE_LayoutPanel(ThisLayoutGUID, false);
+			form.Controls.Add (panel);
+			panel.LoadLayout (ThisLayoutGUID,false, null);
+			
+			Assert.AreEqual (7, panel.CountNotes ());
+			Assert.AreEqual (1, MasterOfLayouts.Count (false));
+			Assert.AreEqual (3, MasterOfLayouts.Count (true));
+
+
+			lg.Instance.OutputToConstoleToo = false;
 		}
 	}
 }

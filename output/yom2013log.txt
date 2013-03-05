@@ -54,7 +54,7 @@ SqLiteDatabase->CreateTableIfDoesNotExist, MESSAGE, CREATE TABLE if not exists [
 SqLiteDatabase->CreateTableIfDoesNotExist, MESSAGE, CREATE TABLE if not exists [pages] ( id INTEGER,  guid TEXT UNIQUE,  xml LONGTEXT,  status TEXT,  name VARCHAR(50),  showtabs boolean,  subpanel boolean,  maximizetabs boolean,  stars INTEGER,  hits INTEGER,  datecreated datetime,  dateedited datetime,  notebook TEXT,  section TEXT,  type TEXT,  source TEXT,  words INTEGER,  keywords TEXT,  linktable LONGTEXT,  backcolor INTEGER,  blurb TEXT,  parentguid TEXT, PRIMARY KEY (id)), ACRITICAL
 SqLiteDatabase->CreateTableIfDoesNotExist, MESSAGE, CREATE TABLE if not exists [pages] ( id INTEGER,  guid TEXT UNIQUE,  xml LONGTEXT,  status TEXT,  name VARCHAR(50),  showtabs boolean,  subpanel boolean,  maximizetabs boolean,  stars INTEGER,  hits INTEGER,  datecreated datetime,  dateedited datetime,  notebook TEXT,  section TEXT,  type TEXT,  source TEXT,  words INTEGER,  keywords TEXT,  linktable LONGTEXT,  backcolor INTEGER,  blurb TEXT,  parentguid TEXT, PRIMARY KEY (id)), ACRITICAL
 SqlLiteDatabase.GetValues, WARNING, SELECT id,guid,xml,status,name,showtabs,subpanel,maximizetabs,stars,hits,datecreated,dateedited,notebook,section,type,source,words,keywords,linktable,backcolor,blurb,parentguid FROM pages where guid = 'system'  , CTRIVIAL
-LayoutDatabase->LoadFrom, TIMING, GETVALUES for LayoutDatabase: Name=default name Guid = system  took 00:00:00.0104017, ACRITICAL
+LayoutDatabase->LoadFrom, TIMING, GETVALUES for LayoutDatabase: Name=default name Guid = system  took 00:00:00.0123269, ACRITICAL
 NoteDataXML_Table->BuildDefaultColumns, MESSAGE, Creating a Table, CTRIVIAL
 NoteDataXML_Table->BuildDefaultColumns, MESSAGE, Building Columns Start, CTRIVIAL
 NoteDataXML_table->Columns, TEMPORARY, Setting mColumns to array of length4, CTRIVIAL
@@ -138,22 +138,22 @@ NoteDataXML_table->Columns, TEMPORARY, Hooking up DataSource4, CTRIVIAL
 NoteDataXML_Table->BuildDefaultColumns, MESSAGE, Building Columns Done, CTRIVIAL
 NoteDataXML_table->Columns, TEMPORARY, Setting mColumns to array of length4, CTRIVIAL
 NoteDataXML_table->Columns, TEMPORARY, NOT Hooking up DataSource, CTRIVIAL
-LayoutDatabase->LoadFrom, TIMING, LINKTABLE for LayoutDatabase: Name=default name Guid = system  took 00:00:00.7187408, ACRITICAL
+LayoutDatabase->LoadFrom, TIMING, LINKTABLE for LayoutDatabase: Name=default name Guid = system  took 00:00:00.7156408, ACRITICAL
 AddToStart, MESSAGE, Adding  to system  the linktable. Count before was 0, ACRITICAL
 AddToStart, MESSAGE, Adding  to system  the linktable. Count AFTER was 1, ACRITICAL
 NoteDataXML_Table-CreateParent, MESSAGE, Passing 4 columns into new TablePanel, ACRITICAL
 NoteDataXML_Table->CreateParent, MESSAGE, Before HANDLEDATABINING my name is _linktable_, ACRITICAL
 SqLiteDatabase->CreateTableIfDoesNotExist, MESSAGE, CREATE TABLE if not exists [interfacesettings] ( id INTEGER,  key TEXT,  value TEXT,  type INTEGER, PRIMARY KEY (id)), ACRITICAL
 SqlLiteDatabase.GetValues, WARNING, SELECT value FROM interfacesettings where key = 'classic'  , CTRIVIAL
-LayoutDatabase->LoadFrom, TIMING, CREATELINKTABLE for LayoutDatabase: Name=default name Guid = system  took 00:00:00.4231531, ACRITICAL
-LayoutDatabase->LoadFrom, TIMING, ASSIGNVALUES for LayoutDatabase: Name=system Guid = system  took 00:00:00.0021684, ACRITICAL
-LayoutDatabase->LoadFrom, TIMING, DESERIALIZEALL for LayoutDatabase: Name=system Guid = system  took 00:00:00.2713846, ACRITICAL
+LayoutDatabase->LoadFrom, TIMING, CREATELINKTABLE for LayoutDatabase: Name=default name Guid = system  took 00:00:00.4393489, ACRITICAL
+LayoutDatabase->LoadFrom, TIMING, ASSIGNVALUES for LayoutDatabase: Name=system Guid = system  took 00:00:00.0024569, ACRITICAL
+LayoutDatabase->LoadFrom, TIMING, DESERIALIZEALL for LayoutDatabase: Name=system Guid = system  took 00:00:00.2277066, ACRITICAL
 SqLiteDatabase->CreateTableIfDoesNotExist, MESSAGE, CREATE TABLE if not exists [pages] ( id INTEGER,  guid TEXT UNIQUE,  xml LONGTEXT,  status TEXT,  name VARCHAR(50),  showtabs boolean,  subpanel boolean,  maximizetabs boolean,  stars INTEGER,  hits INTEGER,  datecreated datetime,  dateedited datetime,  notebook TEXT,  section TEXT,  type TEXT,  source TEXT,  words INTEGER,  keywords TEXT,  linktable LONGTEXT,  backcolor INTEGER,  blurb TEXT,  parentguid TEXT, PRIMARY KEY (id)), ACRITICAL
 SqLiteDatabase->CreateTableIfDoesNotExist, MESSAGE, CREATE TABLE if not exists [pages] ( id INTEGER,  guid TEXT UNIQUE,  xml LONGTEXT,  status TEXT,  name VARCHAR(50),  showtabs boolean,  subpanel boolean,  maximizetabs boolean,  stars INTEGER,  hits INTEGER,  datecreated datetime,  dateedited datetime,  notebook TEXT,  section TEXT,  type TEXT,  source TEXT,  words INTEGER,  keywords TEXT,  linktable LONGTEXT,  backcolor INTEGER,  blurb TEXT,  parentguid TEXT, PRIMARY KEY (id)), ACRITICAL
 SqlLiteDatabase.GetValues, WARNING, SELECT id,guid,xml,status,name,showtabs,subpanel,maximizetabs,stars,hits,datecreated,dateedited,notebook,section,type,source,words,keywords,linktable,backcolor,blurb,parentguid FROM pages where guid = 'system_sidedock'  , CTRIVIAL
-LayoutDatabase->LoadFrom, TIMING, GETVALUES for LayoutDatabase: Name=default name Guid = system_sidedock  took 00:00:00.0014509, ACRITICAL
-LayoutDatabase->LoadFrom, TIMING, ASSIGNVALUES for LayoutDatabase: Name=default name Guid = system_sidedock  took 00:00:00.0000493, ACRITICAL
-LayoutDatabase->LoadFrom, TIMING, DESERIALIZEALL for LayoutDatabase: Name=default name Guid = system_sidedock  took 00:00:00.1920617, ACRITICAL
+LayoutDatabase->LoadFrom, TIMING, GETVALUES for LayoutDatabase: Name=default name Guid = system_sidedock  took 00:00:00.0013720, ACRITICAL
+LayoutDatabase->LoadFrom, TIMING, ASSIGNVALUES for LayoutDatabase: Name=default name Guid = system_sidedock  took 00:00:00.0000497, ACRITICAL
+LayoutDatabase->LoadFrom, TIMING, DESERIALIZEALL for LayoutDatabase: Name=default name Guid = system_sidedock  took 00:00:00.1999104, ACRITICAL
 SqLiteDatabase->CreateTableIfDoesNotExist, MESSAGE, CREATE TABLE if not exists [pages] ( id INTEGER,  guid TEXT UNIQUE,  xml LONGTEXT,  status TEXT,  name VARCHAR(50),  showtabs boolean,  subpanel boolean,  maximizetabs boolean,  stars INTEGER,  hits INTEGER,  datecreated datetime,  dateedited datetime,  notebook TEXT,  section TEXT,  type TEXT,  source TEXT,  words INTEGER,  keywords TEXT,  linktable LONGTEXT,  backcolor INTEGER,  blurb TEXT,  parentguid TEXT, PRIMARY KEY (id)), ACRITICAL
 SqlLiteDatabase.GetValues, WARNING, SELECT guid,name,blurb FROM pages where subpanel = 0   order by name COLLATE NOCASE, CTRIVIAL
 MasterOfLayouts->GetListOfLayouts, MESSAGE, adding to ListOfLayouts Big Newsy, ACRITICAL
@@ -169,8 +169,8 @@ MasterOfLayouts->GetListOfLayouts, MESSAGE, adding to ListOfLayouts Zombieworld,
 SqLiteDatabase->CreateTableIfDoesNotExist, MESSAGE, CREATE TABLE if not exists [pages] ( id INTEGER,  guid TEXT UNIQUE,  xml LONGTEXT,  status TEXT,  name VARCHAR(50),  showtabs boolean,  subpanel boolean,  maximizetabs boolean,  stars INTEGER,  hits INTEGER,  datecreated datetime,  dateedited datetime,  notebook TEXT,  section TEXT,  type TEXT,  source TEXT,  words INTEGER,  keywords TEXT,  linktable LONGTEXT,  backcolor INTEGER,  blurb TEXT,  parentguid TEXT, PRIMARY KEY (id)), ACRITICAL
 SqLiteDatabase->CreateTableIfDoesNotExist, MESSAGE, CREATE TABLE if not exists [pages] ( id INTEGER,  guid TEXT UNIQUE,  xml LONGTEXT,  status TEXT,  name VARCHAR(50),  showtabs boolean,  subpanel boolean,  maximizetabs boolean,  stars INTEGER,  hits INTEGER,  datecreated datetime,  dateedited datetime,  notebook TEXT,  section TEXT,  type TEXT,  source TEXT,  words INTEGER,  keywords TEXT,  linktable LONGTEXT,  backcolor INTEGER,  blurb TEXT,  parentguid TEXT, PRIMARY KEY (id)), ACRITICAL
 SqlLiteDatabase.GetValues, WARNING, SELECT id,guid,xml,status,name,showtabs,subpanel,maximizetabs,stars,hits,datecreated,dateedited,notebook,section,type,source,words,keywords,linktable,backcolor,blurb,parentguid FROM pages where guid = 'tables'  , CTRIVIAL
-LayoutDatabase->LoadFrom, TIMING, GETVALUES for LayoutDatabase: Name=default name Guid = tables  took 00:00:00.0013983, ACRITICAL
-LayoutDatabase->LoadFrom, TIMING, ASSIGNVALUES for LayoutDatabase: Name=default name Guid = tables  took 00:00:00.0000489, ACRITICAL
+LayoutDatabase->LoadFrom, TIMING, GETVALUES for LayoutDatabase: Name=default name Guid = tables  took 00:00:00.0012882, ACRITICAL
+LayoutDatabase->LoadFrom, TIMING, ASSIGNVALUES for LayoutDatabase: Name=default name Guid = tables  took 00:00:00.0000427, ACRITICAL
 NoteDataXML_Table->BuildDefaultColumns, MESSAGE, Creating a Table, CTRIVIAL
 NoteDataXML_Table->BuildDefaultColumns, MESSAGE, Building Columns Start, CTRIVIAL
 NoteDataXML_table->Columns, TEMPORARY, Setting mColumns to array of length4, CTRIVIAL
@@ -227,7 +227,7 @@ NoteDataXML_table->Columns, TEMPORARY, Hooking up DataSource4, CTRIVIAL
 NoteDataXML_Table->BuildDefaultColumns, MESSAGE, Building Columns Done, CTRIVIAL
 NoteDataXML_table->Columns, TEMPORARY, Setting mColumns to array of length4, CTRIVIAL
 NoteDataXML_table->Columns, TEMPORARY, NOT Hooking up DataSource, CTRIVIAL
-LayoutDatabase->LoadFrom, TIMING, DESERIALIZEALL for LayoutDatabase: Name=default name Guid = tables  took 00:00:00.2362834, ACRITICAL
+LayoutDatabase->LoadFrom, TIMING, DESERIALIZEALL for LayoutDatabase: Name=default name Guid = tables  took 00:00:00.2305732, ACRITICAL
 NoteDataXML_Table-CreateParent, MESSAGE, Passing 4 columns into new TablePanel, ACRITICAL
 NoteDataXML_Table->CreateParent, MESSAGE, Before HANDLEDATABINING my name is list_randomtables, ACRITICAL
 SetSaveRequired, MESSAGE, tablesValue of _savequired BEFORE SET is False, CTRIVIAL
@@ -347,7 +347,7 @@ SetSaveRequired, MESSAGE, systemset to True, CTRIVIAL
 SetSaveRequired, MESSAGE, systemValue of _savequired is True, CTRIVIAL
 LayoutPanelBase->GetSaveRequired, MESSAGE, True GetSaveRequired for system, CTRIVIAL
 SetSaveRequired, MESSAGE, systemValue of GetSaveRequired is True, CTRIVIAL
-LayoutDatabase->LoadFrom, TIMING, COPYARRAYS for tables  took 00:00:00.3203607, ACRITICAL
+LayoutDatabase->LoadFrom, TIMING, COPYARRAYS for tables  took 00:00:00.3134949, ACRITICAL
 LayoutPanel->RefreshTables, MESSAGE, >>> refresh tabs for: !<<<, CTRIVIAL
 LayoutPanel->RefreshTables, MESSAGE, >>> refresh tabs for: !<<<, CTRIVIAL
 SetSaveRequired, MESSAGE, tablesValue of _savequired BEFORE SET is True, CTRIVIAL
@@ -365,7 +365,7 @@ SetSaveRequired, MESSAGE, systemset to False, CTRIVIAL
 SetSaveRequired, MESSAGE, systemValue of _savequired is False, CTRIVIAL
 LayoutPanelBase->GetSaveRequired, MESSAGE, False GetSaveRequired for system, CTRIVIAL
 SetSaveRequired, MESSAGE, systemValue of GetSaveRequired is False, CTRIVIAL
-LayoutDatabase->LoadFrom, TIMING, COPYARRAYS for system_sidedock  took 00:00:00.9185020, ACRITICAL
+LayoutDatabase->LoadFrom, TIMING, COPYARRAYS for system_sidedock  took 00:00:00.8697857, ACRITICAL
 LayoutPanel->RefreshTables, MESSAGE, >>> refresh tabs for: !<<<, CTRIVIAL
 LayoutPanel->RefreshTables, MESSAGE, >>> refresh tabs for: !<<<, CTRIVIAL
 SetSaveRequired, MESSAGE, system_sidedockValue of _savequired BEFORE SET is False, CTRIVIAL
@@ -378,7 +378,7 @@ SetSaveRequired, MESSAGE, systemset to False, CTRIVIAL
 SetSaveRequired, MESSAGE, systemValue of _savequired is False, CTRIVIAL
 LayoutPanelBase->GetSaveRequired, MESSAGE, False GetSaveRequired for system, CTRIVIAL
 SetSaveRequired, MESSAGE, systemValue of GetSaveRequired is False, CTRIVIAL
-LayoutDatabase->LoadFrom, TIMING, COPYARRAYS for system  took 00:00:01.2206843, ACRITICAL
+LayoutDatabase->LoadFrom, TIMING, COPYARRAYS for system  took 00:00:01.1684405, ACRITICAL
 SetSaveRequired, MESSAGE, systemValue of _savequired BEFORE SET is False, CTRIVIAL
 SetSaveRequired, MESSAGE, systemset to False, CTRIVIAL
 SetSaveRequired, MESSAGE, systemValue of _savequired is False, CTRIVIAL
@@ -387,8 +387,8 @@ SetSaveRequired, MESSAGE, systemValue of GetSaveRequired is False, CTRIVIAL
 SqLiteDatabase->CreateTableIfDoesNotExist, MESSAGE, CREATE TABLE if not exists [pages] ( id INTEGER,  guid TEXT UNIQUE,  xml LONGTEXT,  status TEXT,  name VARCHAR(50),  showtabs boolean,  subpanel boolean,  maximizetabs boolean,  stars INTEGER,  hits INTEGER,  datecreated datetime,  dateedited datetime,  notebook TEXT,  section TEXT,  type TEXT,  source TEXT,  words INTEGER,  keywords TEXT,  linktable LONGTEXT,  backcolor INTEGER,  blurb TEXT,  parentguid TEXT, PRIMARY KEY (id)), ACRITICAL
 SqLiteDatabase->CreateTableIfDoesNotExist, MESSAGE, CREATE TABLE if not exists [pages] ( id INTEGER,  guid TEXT UNIQUE,  xml LONGTEXT,  status TEXT,  name VARCHAR(50),  showtabs boolean,  subpanel boolean,  maximizetabs boolean,  stars INTEGER,  hits INTEGER,  datecreated datetime,  dateedited datetime,  notebook TEXT,  section TEXT,  type TEXT,  source TEXT,  words INTEGER,  keywords TEXT,  linktable LONGTEXT,  backcolor INTEGER,  blurb TEXT,  parentguid TEXT, PRIMARY KEY (id)), ACRITICAL
 SqlLiteDatabase.GetValues, WARNING, SELECT id,guid,xml,status,name,showtabs,subpanel,maximizetabs,stars,hits,datecreated,dateedited,notebook,section,type,source,words,keywords,linktable,backcolor,blurb,parentguid FROM pages where guid = 'tables'  , CTRIVIAL
-LayoutDatabase->LoadFrom, TIMING, GETVALUES for LayoutDatabase: Name=default name Guid = tables  took 00:00:00.0014743, ACRITICAL
-LayoutDatabase->LoadFrom, TIMING, ASSIGNVALUES for LayoutDatabase: Name=default name Guid = tables  took 00:00:00.0000443, ACRITICAL
+LayoutDatabase->LoadFrom, TIMING, GETVALUES for LayoutDatabase: Name=default name Guid = tables  took 00:00:00.0023632, ACRITICAL
+LayoutDatabase->LoadFrom, TIMING, ASSIGNVALUES for LayoutDatabase: Name=default name Guid = tables  took 00:00:00.0000439, ACRITICAL
 NoteDataXML_Table->BuildDefaultColumns, MESSAGE, Creating a Table, CTRIVIAL
 NoteDataXML_Table->BuildDefaultColumns, MESSAGE, Building Columns Start, CTRIVIAL
 NoteDataXML_table->Columns, TEMPORARY, Setting mColumns to array of length4, CTRIVIAL
@@ -445,7 +445,7 @@ NoteDataXML_table->Columns, TEMPORARY, Hooking up DataSource4, CTRIVIAL
 NoteDataXML_Table->BuildDefaultColumns, MESSAGE, Building Columns Done, CTRIVIAL
 NoteDataXML_table->Columns, TEMPORARY, Setting mColumns to array of length4, CTRIVIAL
 NoteDataXML_table->Columns, TEMPORARY, NOT Hooking up DataSource, CTRIVIAL
-LayoutDatabase->LoadFrom, TIMING, DESERIALIZEALL for LayoutDatabase: Name=default name Guid = tables  took 00:00:00.2522421, ACRITICAL
+LayoutDatabase->LoadFrom, TIMING, DESERIALIZEALL for LayoutDatabase: Name=default name Guid = tables  took 00:00:00.1997867, ACRITICAL
 NoteDataXML_Table-CreateParent, MESSAGE, Passing 4 columns into new TablePanel, ACRITICAL
 NoteDataXML_Table->CreateParent, MESSAGE, Before HANDLEDATABINING my name is list_randomtables, ACRITICAL
 NoteDataXML_Table-CreateParent, MESSAGE, Passing 4 columns into new TablePanel, ACRITICAL
@@ -460,7 +460,7 @@ NoteDataXML_Table-CreateParent, MESSAGE, Passing 4 columns into new TablePanel, 
 NoteDataXML_Table->CreateParent, MESSAGE, Before HANDLEDATABINING my name is list_worklogcategory, ACRITICAL
 NoteDataXML_Table-CreateParent, MESSAGE, Passing 4 columns into new TablePanel, ACRITICAL
 NoteDataXML_Table->CreateParent, MESSAGE, Before HANDLEDATABINING my name is list_grammar, ACRITICAL
-LayoutDatabase->LoadFrom, TIMING, COPYARRAYS for tables  took 00:00:00.1654482, ACRITICAL
+LayoutDatabase->LoadFrom, TIMING, COPYARRAYS for tables  took 00:00:00.1673442, ACRITICAL
 LayoutPanel->RefreshTables, MESSAGE, >>> refresh tabs for: !<<<, CTRIVIAL
 LayoutPanel->RefreshTables, MESSAGE, >>> refresh tabs for: !<<<, CTRIVIAL
 HeaderBar.UpdateHeader, MESSAGE, Header should be visible, ACRITICAL
@@ -575,8 +575,8 @@ SetSaveRequired, MESSAGE, systemValue of GetSaveRequired is False, CTRIVIAL
 SqLiteDatabase->CreateTableIfDoesNotExist, MESSAGE, CREATE TABLE if not exists [pages] ( id INTEGER,  guid TEXT UNIQUE,  xml LONGTEXT,  status TEXT,  name VARCHAR(50),  showtabs boolean,  subpanel boolean,  maximizetabs boolean,  stars INTEGER,  hits INTEGER,  datecreated datetime,  dateedited datetime,  notebook TEXT,  section TEXT,  type TEXT,  source TEXT,  words INTEGER,  keywords TEXT,  linktable LONGTEXT,  backcolor INTEGER,  blurb TEXT,  parentguid TEXT, PRIMARY KEY (id)), ACRITICAL
 SqLiteDatabase->CreateTableIfDoesNotExist, MESSAGE, CREATE TABLE if not exists [pages] ( id INTEGER,  guid TEXT UNIQUE,  xml LONGTEXT,  status TEXT,  name VARCHAR(50),  showtabs boolean,  subpanel boolean,  maximizetabs boolean,  stars INTEGER,  hits INTEGER,  datecreated datetime,  dateedited datetime,  notebook TEXT,  section TEXT,  type TEXT,  source TEXT,  words INTEGER,  keywords TEXT,  linktable LONGTEXT,  backcolor INTEGER,  blurb TEXT,  parentguid TEXT, PRIMARY KEY (id)), ACRITICAL
 SqlLiteDatabase.GetValues, WARNING, SELECT id,guid,xml,status,name,showtabs,subpanel,maximizetabs,stars,hits,datecreated,dateedited,notebook,section,type,source,words,keywords,linktable,backcolor,blurb,parentguid FROM pages where guid = 'tables'  , CTRIVIAL
-LayoutDatabase->LoadFrom, TIMING, GETVALUES for LayoutDatabase: Name=default name Guid = tables  took 00:00:00.0022333, ACRITICAL
-LayoutDatabase->LoadFrom, TIMING, ASSIGNVALUES for LayoutDatabase: Name=default name Guid = tables  took 00:00:00.0000419, ACRITICAL
+LayoutDatabase->LoadFrom, TIMING, GETVALUES for LayoutDatabase: Name=default name Guid = tables  took 00:00:00.0012660, ACRITICAL
+LayoutDatabase->LoadFrom, TIMING, ASSIGNVALUES for LayoutDatabase: Name=default name Guid = tables  took 00:00:00.0000415, ACRITICAL
 NoteDataXML_Table->BuildDefaultColumns, MESSAGE, Creating a Table, CTRIVIAL
 NoteDataXML_Table->BuildDefaultColumns, MESSAGE, Building Columns Start, CTRIVIAL
 NoteDataXML_table->Columns, TEMPORARY, Setting mColumns to array of length4, CTRIVIAL
@@ -633,7 +633,7 @@ NoteDataXML_table->Columns, TEMPORARY, Hooking up DataSource4, CTRIVIAL
 NoteDataXML_Table->BuildDefaultColumns, MESSAGE, Building Columns Done, CTRIVIAL
 NoteDataXML_table->Columns, TEMPORARY, Setting mColumns to array of length4, CTRIVIAL
 NoteDataXML_table->Columns, TEMPORARY, NOT Hooking up DataSource, CTRIVIAL
-LayoutDatabase->LoadFrom, TIMING, DESERIALIZEALL for LayoutDatabase: Name=default name Guid = tables  took 00:00:00.1861542, ACRITICAL
+LayoutDatabase->LoadFrom, TIMING, DESERIALIZEALL for LayoutDatabase: Name=default name Guid = tables  took 00:00:00.1878563, ACRITICAL
 NoteDataXML_Table-CreateParent, MESSAGE, Passing 4 columns into new TablePanel, ACRITICAL
 NoteDataXML_Table->CreateParent, MESSAGE, Before HANDLEDATABINING my name is list_randomtables, ACRITICAL
 NoteDataXML_Table-CreateParent, MESSAGE, Passing 4 columns into new TablePanel, ACRITICAL
@@ -648,7 +648,7 @@ NoteDataXML_Table-CreateParent, MESSAGE, Passing 4 columns into new TablePanel, 
 NoteDataXML_Table->CreateParent, MESSAGE, Before HANDLEDATABINING my name is list_worklogcategory, ACRITICAL
 NoteDataXML_Table-CreateParent, MESSAGE, Passing 4 columns into new TablePanel, ACRITICAL
 NoteDataXML_Table->CreateParent, MESSAGE, Before HANDLEDATABINING my name is list_grammar, ACRITICAL
-LayoutDatabase->LoadFrom, TIMING, COPYARRAYS for tables  took 00:00:00.1732204, ACRITICAL
+LayoutDatabase->LoadFrom, TIMING, COPYARRAYS for tables  took 00:00:00.1680941, ACRITICAL
 LayoutPanel->RefreshTables, MESSAGE, >>> refresh tabs for: !<<<, CTRIVIAL
 LayoutPanel->RefreshTables, MESSAGE, >>> refresh tabs for: !<<<, CTRIVIAL
 HeaderBar.UpdateHeader, MESSAGE, Header should be visible, ACRITICAL
@@ -673,7 +673,7 @@ SetSaveRequired, MESSAGE, systemValue of GetSaveRequired is False, CTRIVIAL
 SqLiteDatabase->CreateTableIfDoesNotExist, MESSAGE, CREATE TABLE if not exists [pages] ( id INTEGER,  guid TEXT UNIQUE,  xml LONGTEXT,  status TEXT,  name VARCHAR(50),  showtabs boolean,  subpanel boolean,  maximizetabs boolean,  stars INTEGER,  hits INTEGER,  datecreated datetime,  dateedited datetime,  notebook TEXT,  section TEXT,  type TEXT,  source TEXT,  words INTEGER,  keywords TEXT,  linktable LONGTEXT,  backcolor INTEGER,  blurb TEXT,  parentguid TEXT, PRIMARY KEY (id)), ACRITICAL
 SqLiteDatabase->CreateTableIfDoesNotExist, MESSAGE, CREATE TABLE if not exists [pages] ( id INTEGER,  guid TEXT UNIQUE,  xml LONGTEXT,  status TEXT,  name VARCHAR(50),  showtabs boolean,  subpanel boolean,  maximizetabs boolean,  stars INTEGER,  hits INTEGER,  datecreated datetime,  dateedited datetime,  notebook TEXT,  section TEXT,  type TEXT,  source TEXT,  words INTEGER,  keywords TEXT,  linktable LONGTEXT,  backcolor INTEGER,  blurb TEXT,  parentguid TEXT, PRIMARY KEY (id)), ACRITICAL
 SqlLiteDatabase.GetValues, WARNING, SELECT id,guid,xml,status,name,showtabs,subpanel,maximizetabs,stars,hits,datecreated,dateedited,notebook,section,type,source,words,keywords,linktable,backcolor,blurb,parentguid FROM pages where guid = 'e2a949c4-fd94-402d-9019-91d94f5f54ac'  , CTRIVIAL
-LayoutDatabase->LoadFrom, TIMING, GETVALUES for LayoutDatabase: Name=default name Guid = e2a949c4-fd94-402d-9019-91d94f5f54ac  took 00:00:00.0019736, ACRITICAL
+LayoutDatabase->LoadFrom, TIMING, GETVALUES for LayoutDatabase: Name=default name Guid = e2a949c4-fd94-402d-9019-91d94f5f54ac  took 00:00:00.0044281, ACRITICAL
 NoteDataXML_Table->BuildDefaultColumns, MESSAGE, Creating a Table, CTRIVIAL
 NoteDataXML_Table->BuildDefaultColumns, MESSAGE, Building Columns Start, CTRIVIAL
 NoteDataXML_table->Columns, TEMPORARY, Setting mColumns to array of length4, CTRIVIAL
@@ -857,13 +857,13 @@ NoteDataXML_table->Columns, TEMPORARY, Hooking up DataSource4, CTRIVIAL
 NoteDataXML_Table->BuildDefaultColumns, MESSAGE, Building Columns Done, CTRIVIAL
 NoteDataXML_table->Columns, TEMPORARY, Setting mColumns to array of length4, CTRIVIAL
 NoteDataXML_table->Columns, TEMPORARY, NOT Hooking up DataSource, CTRIVIAL
-LayoutDatabase->LoadFrom, TIMING, LINKTABLE for LayoutDatabase: Name=default name Guid = e2a949c4-fd94-402d-9019-91d94f5f54ac  took 00:00:00.0107863, ACRITICAL
+LayoutDatabase->LoadFrom, TIMING, LINKTABLE for LayoutDatabase: Name=default name Guid = e2a949c4-fd94-402d-9019-91d94f5f54ac  took 00:00:00.0126827, ACRITICAL
 AddToStart, MESSAGE, Adding  to e2a949c4-fd94-402d-9019-91d94f5f54ac  the linktable. Count before was 0, ACRITICAL
 AddToStart, MESSAGE, Adding  to e2a949c4-fd94-402d-9019-91d94f5f54ac  the linktable. Count AFTER was 1, ACRITICAL
 NoteDataXML_Table-CreateParent, MESSAGE, Passing 4 columns into new TablePanel, ACRITICAL
 NoteDataXML_Table->CreateParent, MESSAGE, Before HANDLEDATABINING my name is _linktable_, ACRITICAL
-LayoutDatabase->LoadFrom, TIMING, CREATELINKTABLE for LayoutDatabase: Name=default name Guid = e2a949c4-fd94-402d-9019-91d94f5f54ac  took 00:00:00.0279654, ACRITICAL
-LayoutDatabase->LoadFrom, TIMING, ASSIGNVALUES for LayoutDatabase: Name=FactSearchTests Guid = e2a949c4-fd94-402d-9019-91d94f5f54ac  took 00:00:00.0000530, ACRITICAL
+LayoutDatabase->LoadFrom, TIMING, CREATELINKTABLE for LayoutDatabase: Name=default name Guid = e2a949c4-fd94-402d-9019-91d94f5f54ac  took 00:00:00.0297057, ACRITICAL
+LayoutDatabase->LoadFrom, TIMING, ASSIGNVALUES for LayoutDatabase: Name=FactSearchTests Guid = e2a949c4-fd94-402d-9019-91d94f5f54ac  took 00:00:00.0000534, ACRITICAL
 NoteDataXML_Table->BuildDefaultColumns, MESSAGE, Creating a Table, CTRIVIAL
 NoteDataXML_Table->BuildDefaultColumns, MESSAGE, Building Columns Start, CTRIVIAL
 NoteDataXML_table->Columns, TEMPORARY, Setting mColumns to array of length4, CTRIVIAL
@@ -872,7 +872,7 @@ NoteDataXML_table->Columns, TEMPORARY, Hooking up DataSource4, CTRIVIAL
 NoteDataXML_Table->BuildDefaultColumns, MESSAGE, Building Columns Done, CTRIVIAL
 NoteDataXML_table->Columns, TEMPORARY, Setting mColumns to array of length3, CTRIVIAL
 NoteDataXML_table->Columns, TEMPORARY, NOT Hooking up DataSource, CTRIVIAL
-LayoutDatabase->LoadFrom, TIMING, DESERIALIZEALL for LayoutDatabase: Name=FactSearchTests Guid = e2a949c4-fd94-402d-9019-91d94f5f54ac  took 00:00:00.2082760, ACRITICAL
+LayoutDatabase->LoadFrom, TIMING, DESERIALIZEALL for LayoutDatabase: Name=FactSearchTests Guid = e2a949c4-fd94-402d-9019-91d94f5f54ac  took 00:00:00.2112519, ACRITICAL
 SetSaveRequired, MESSAGE, e2a949c4-fd94-402d-9019-91d94f5f54acValue of _savequired BEFORE SET is False, CTRIVIAL
 SetSaveRequired, MESSAGE, e2a949c4-fd94-402d-9019-91d94f5f54acset to True, CTRIVIAL
 SetSaveRequired, MESSAGE, e2a949c4-fd94-402d-9019-91d94f5f54acValue of _savequired is True, CTRIVIAL
@@ -953,7 +953,26 @@ SqlLiteDatabase->ExecuteCommand, MESSAGE, Select SUM(data4) from events where  (
 TransactionsTable->QueryValueForTimePeriod, MESSAGE, , ACRITICAL
 SqlLiteDatabase.GetValues, WARNING, SELECT id,date,type,data1,data2,data3,data4,money1,money2,date2,notes,data5,data6,data7,data8,data9,typeofobject FROM events where data1 = 'e2a949c4-fd94-402d-9019-91d94f5f54ac'  and type='5'  , CTRIVIAL
 SqlLiteDatabase.GetValues, MESSAGE, GetValues query returned an empty list, ACRITICAL
-LayoutDatabase->LoadFrom, TIMING, COPYARRAYS for e2a949c4-fd94-402d-9019-91d94f5f54ac  took 00:00:01.0731590, ACRITICAL
+SqLiteDatabase->CreateTableIfDoesNotExist, MESSAGE, CREATE TABLE if not exists [pages] ( id INTEGER,  guid TEXT UNIQUE,  xml LONGTEXT,  status TEXT,  name VARCHAR(50),  showtabs boolean,  subpanel boolean,  maximizetabs boolean,  stars INTEGER,  hits INTEGER,  datecreated datetime,  dateedited datetime,  notebook TEXT,  section TEXT,  type TEXT,  source TEXT,  words INTEGER,  keywords TEXT,  linktable LONGTEXT,  backcolor INTEGER,  blurb TEXT,  parentguid TEXT, PRIMARY KEY (id)), ACRITICAL
+SqLiteDatabase->CreateTableIfDoesNotExist, MESSAGE, CREATE TABLE if not exists [pages] ( id INTEGER,  guid TEXT UNIQUE,  xml LONGTEXT,  status TEXT,  name VARCHAR(50),  showtabs boolean,  subpanel boolean,  maximizetabs boolean,  stars INTEGER,  hits INTEGER,  datecreated datetime,  dateedited datetime,  notebook TEXT,  section TEXT,  type TEXT,  source TEXT,  words INTEGER,  keywords TEXT,  linktable LONGTEXT,  backcolor INTEGER,  blurb TEXT,  parentguid TEXT, PRIMARY KEY (id)), ACRITICAL
+SqlLiteDatabase.GetValues, WARNING, SELECT id,guid,xml,status,name,showtabs,subpanel,maximizetabs,stars,hits,datecreated,dateedited,notebook,section,type,source,words,keywords,linktable,backcolor,blurb,parentguid FROM pages where guid = '8dd65c13-5f68-4f0b-8513-d8d8658f5193'  , CTRIVIAL
+LayoutDatabase->LoadFrom, TIMING, GETVALUES for LayoutDatabase: Name=default name Guid = 8dd65c13-5f68-4f0b-8513-d8d8658f5193  took 00:00:00.0010379, ACRITICAL
+LayoutDatabase->LoadFrom, TIMING, ASSIGNVALUES for LayoutDatabase: Name=default name Guid = 8dd65c13-5f68-4f0b-8513-d8d8658f5193  took 00:00:00.0000419, ACRITICAL
+LayoutDatabase->LoadFrom, TIMING, DESERIALIZEALL for LayoutDatabase: Name=default name Guid = 8dd65c13-5f68-4f0b-8513-d8d8658f5193  took 00:00:00.2269250, ACRITICAL
+LayoutDatabase->LoadFrom, TIMING, COPYARRAYS for 8dd65c13-5f68-4f0b-8513-d8d8658f5193  took 00:00:00.0297468, ACRITICAL
+LayoutPanel->RefreshTables, MESSAGE, >>> refresh tabs for: !<<<, CTRIVIAL
+LayoutPanel->RefreshTables, MESSAGE, >>> refresh tabs for: !<<<, CTRIVIAL
+SetSaveRequired, MESSAGE, 8dd65c13-5f68-4f0b-8513-d8d8658f5193Value of _savequired BEFORE SET is False, CTRIVIAL
+SetSaveRequired, MESSAGE, 8dd65c13-5f68-4f0b-8513-d8d8658f5193set to False, CTRIVIAL
+SetSaveRequired, MESSAGE, 8dd65c13-5f68-4f0b-8513-d8d8658f5193Value of _savequired is False, CTRIVIAL
+LayoutPanelBase->GetSaveRequired, MESSAGE, False GetSaveRequired for 8dd65c13-5f68-4f0b-8513-d8d8658f5193, CTRIVIAL
+SetSaveRequired, MESSAGE, 8dd65c13-5f68-4f0b-8513-d8d8658f5193Value of GetSaveRequired is False, CTRIVIAL
+SetSaveRequired, MESSAGE, e2a949c4-fd94-402d-9019-91d94f5f54acValue of _savequired BEFORE SET is True, CTRIVIAL
+SetSaveRequired, MESSAGE, e2a949c4-fd94-402d-9019-91d94f5f54acset to False, CTRIVIAL
+SetSaveRequired, MESSAGE, e2a949c4-fd94-402d-9019-91d94f5f54acValue of _savequired is False, CTRIVIAL
+LayoutPanelBase->GetSaveRequired, MESSAGE, False GetSaveRequired for e2a949c4-fd94-402d-9019-91d94f5f54ac, CTRIVIAL
+SetSaveRequired, MESSAGE, e2a949c4-fd94-402d-9019-91d94f5f54acValue of GetSaveRequired is False, CTRIVIAL
+LayoutDatabase->LoadFrom, TIMING, COPYARRAYS for e2a949c4-fd94-402d-9019-91d94f5f54ac  took 00:00:01.3373072, ACRITICAL
 LayoutPanel->RefreshTables, MESSAGE, >>> refresh tabs for: !<<<, CTRIVIAL
 LayoutDatabase->GetAllNotes, TEMPORARY, GetAllNotes.AddingNoteGUID _linktable_, ACRITICAL
 AddChildrenToList, TEMPORARY, checking..., ACRITICAL
@@ -983,9 +1002,22 @@ LayoutDatabase->GetAllNotes, TEMPORARY, GetAllNotes.AddingNoteGUID bab49bc0-9ca7
 AddChildrenToList, TEMPORARY, checking..., ACRITICAL
 LayoutDatabase->GetAllNotes, TEMPORARY, GetAllNotes.AddingNoteGUID d8aa530e-9332-4c9d-a125-d95b36bd4bd4, ACRITICAL
 AddChildrenToList, TEMPORARY, checking..., ACRITICAL
+LayoutDatabase->GetAllNotes, TEMPORARY, GetAllNotes.AddingNoteGUID 8dd65c13-5f68-4f0b-8513-d8d8658f5193, ACRITICAL
+AddChildrenToList, TEMPORARY, checking..., ACRITICAL
+AddChildrenToList, TEMPORARY, is a Panel..., ACRITICAL
+SqLiteDatabase->CreateTableIfDoesNotExist, MESSAGE, CREATE TABLE if not exists [pages] ( id INTEGER,  guid TEXT UNIQUE,  xml LONGTEXT,  status TEXT,  name VARCHAR(50),  showtabs boolean,  subpanel boolean,  maximizetabs boolean,  stars INTEGER,  hits INTEGER,  datecreated datetime,  dateedited datetime,  notebook TEXT,  section TEXT,  type TEXT,  source TEXT,  words INTEGER,  keywords TEXT,  linktable LONGTEXT,  backcolor INTEGER,  blurb TEXT,  parentguid TEXT, PRIMARY KEY (id)), ACRITICAL
+SqLiteDatabase->CreateTableIfDoesNotExist, MESSAGE, CREATE TABLE if not exists [pages] ( id INTEGER,  guid TEXT UNIQUE,  xml LONGTEXT,  status TEXT,  name VARCHAR(50),  showtabs boolean,  subpanel boolean,  maximizetabs boolean,  stars INTEGER,  hits INTEGER,  datecreated datetime,  dateedited datetime,  notebook TEXT,  section TEXT,  type TEXT,  source TEXT,  words INTEGER,  keywords TEXT,  linktable LONGTEXT,  backcolor INTEGER,  blurb TEXT,  parentguid TEXT, PRIMARY KEY (id)), ACRITICAL
+SqlLiteDatabase.GetValues, WARNING, SELECT id,guid,xml,status,name,showtabs,subpanel,maximizetabs,stars,hits,datecreated,dateedited,notebook,section,type,source,words,keywords,linktable,backcolor,blurb,parentguid FROM pages where guid = '8dd65c13-5f68-4f0b-8513-d8d8658f5193'  , CTRIVIAL
+LayoutDatabase->LoadFrom, TIMING, GETVALUES for LayoutDatabase: Name=default name Guid = 8dd65c13-5f68-4f0b-8513-d8d8658f5193  took 00:00:00.0017267, ACRITICAL
+LayoutDatabase->LoadFrom, TIMING, ASSIGNVALUES for LayoutDatabase: Name=default name Guid = 8dd65c13-5f68-4f0b-8513-d8d8658f5193  took 00:00:00.0000456, ACRITICAL
+LayoutDatabase->LoadFrom, TIMING, DESERIALIZEALL for LayoutDatabase: Name=default name Guid = 8dd65c13-5f68-4f0b-8513-d8d8658f5193  took 00:00:00.1822990, ACRITICAL
+LayoutDatabase->LoadFrom, TIMING, COPYARRAYS for 8dd65c13-5f68-4f0b-8513-d8d8658f5193  took 00:00:00.0000012, ACRITICAL
+LayoutDatabase->GetAllNotes, TEMPORARY, GetAllNotes.AddingNoteGUID b4c5b5c0-4eb6-42f8-98ff-293649f85c8f, ACRITICAL
+AddChildrenToList, TEMPORARY, checking..., ACRITICAL
+AddChildrenToList, TEMPORARY, scanning children...b4c5b5c0-4eb6-42f8-98ff-293649f85c8f from MyPanel, ACRITICAL
 LayoutPanel->RefreshTables, MESSAGE, >>> refresh tabs for: !<<<, CTRIVIAL
 HeaderBar.UpdateHeader, MESSAGE, Header should be visible, ACRITICAL
-SetSaveRequired, MESSAGE, e2a949c4-fd94-402d-9019-91d94f5f54acValue of _savequired BEFORE SET is True, CTRIVIAL
+SetSaveRequired, MESSAGE, e2a949c4-fd94-402d-9019-91d94f5f54acValue of _savequired BEFORE SET is False, CTRIVIAL
 SetSaveRequired, MESSAGE, e2a949c4-fd94-402d-9019-91d94f5f54acset to False, CTRIVIAL
 SetSaveRequired, MESSAGE, e2a949c4-fd94-402d-9019-91d94f5f54acValue of _savequired is False, CTRIVIAL
 LayoutPanelBase->GetSaveRequired, MESSAGE, False GetSaveRequired for e2a949c4-fd94-402d-9019-91d94f5f54ac, CTRIVIAL
@@ -1019,164 +1051,303 @@ LayoutDatabase->GetAllNotes, TEMPORARY, GetAllNotes.AddingNoteGUID bab49bc0-9ca7
 AddChildrenToList, TEMPORARY, checking..., ACRITICAL
 LayoutDatabase->GetAllNotes, TEMPORARY, GetAllNotes.AddingNoteGUID d8aa530e-9332-4c9d-a125-d95b36bd4bd4, ACRITICAL
 AddChildrenToList, TEMPORARY, checking..., ACRITICAL
-NoteDataXML_RichText, MESSAGE, StarsSilent has been set as CurrentTextNote for Layout e2a949c4-fd94-402d-9019-91d94f5f54ac, ACRITICAL
-LayoutDatabase->GetAllNotes, TEMPORARY, GetAllNotes.AddingNoteGUID _linktable_, ACRITICAL
+LayoutDatabase->GetAllNotes, TEMPORARY, GetAllNotes.AddingNoteGUID 8dd65c13-5f68-4f0b-8513-d8d8658f5193, ACRITICAL
 AddChildrenToList, TEMPORARY, checking..., ACRITICAL
-LayoutDatabase->GetAllNotes, TEMPORARY, GetAllNotes.AddingNoteGUID 9dfc2441-26bd-4734-a878-726583f3e8e5, ACRITICAL
+AddChildrenToList, TEMPORARY, is a Panel..., ACRITICAL
+SqLiteDatabase->CreateTableIfDoesNotExist, MESSAGE, CREATE TABLE if not exists [pages] ( id INTEGER,  guid TEXT UNIQUE,  xml LONGTEXT,  status TEXT,  name VARCHAR(50),  showtabs boolean,  subpanel boolean,  maximizetabs boolean,  stars INTEGER,  hits INTEGER,  datecreated datetime,  dateedited datetime,  notebook TEXT,  section TEXT,  type TEXT,  source TEXT,  words INTEGER,  keywords TEXT,  linktable LONGTEXT,  backcolor INTEGER,  blurb TEXT,  parentguid TEXT, PRIMARY KEY (id)), ACRITICAL
+SqLiteDatabase->CreateTableIfDoesNotExist, MESSAGE, CREATE TABLE if not exists [pages] ( id INTEGER,  guid TEXT UNIQUE,  xml LONGTEXT,  status TEXT,  name VARCHAR(50),  showtabs boolean,  subpanel boolean,  maximizetabs boolean,  stars INTEGER,  hits INTEGER,  datecreated datetime,  dateedited datetime,  notebook TEXT,  section TEXT,  type TEXT,  source TEXT,  words INTEGER,  keywords TEXT,  linktable LONGTEXT,  backcolor INTEGER,  blurb TEXT,  parentguid TEXT, PRIMARY KEY (id)), ACRITICAL
+SqlLiteDatabase.GetValues, WARNING, SELECT id,guid,xml,status,name,showtabs,subpanel,maximizetabs,stars,hits,datecreated,dateedited,notebook,section,type,source,words,keywords,linktable,backcolor,blurb,parentguid FROM pages where guid = '8dd65c13-5f68-4f0b-8513-d8d8658f5193'  , CTRIVIAL
+LayoutDatabase->LoadFrom, TIMING, GETVALUES for LayoutDatabase: Name=default name Guid = 8dd65c13-5f68-4f0b-8513-d8d8658f5193  took 00:00:00.0017723, ACRITICAL
+LayoutDatabase->LoadFrom, TIMING, ASSIGNVALUES for LayoutDatabase: Name=default name Guid = 8dd65c13-5f68-4f0b-8513-d8d8658f5193  took 00:00:00.0000431, ACRITICAL
+LayoutDatabase->LoadFrom, TIMING, DESERIALIZEALL for LayoutDatabase: Name=default name Guid = 8dd65c13-5f68-4f0b-8513-d8d8658f5193  took 00:00:00.1899841, ACRITICAL
+LayoutDatabase->LoadFrom, TIMING, COPYARRAYS for 8dd65c13-5f68-4f0b-8513-d8d8658f5193  took 00:00:00.0000016, ACRITICAL
+LayoutDatabase->GetAllNotes, TEMPORARY, GetAllNotes.AddingNoteGUID b4c5b5c0-4eb6-42f8-98ff-293649f85c8f, ACRITICAL
 AddChildrenToList, TEMPORARY, checking..., ACRITICAL
-LayoutDatabase->GetAllNotes, TEMPORARY, GetAllNotes.AddingNoteGUID 5c23c626-1e39-4ee8-bef3-6a5a24141e73, ACRITICAL
-AddChildrenToList, TEMPORARY, checking..., ACRITICAL
-LayoutDatabase->GetAllNotes, TEMPORARY, GetAllNotes.AddingNoteGUID ef253ad8-6054-49b2-85c3-7873b4bbe6f1, ACRITICAL
-AddChildrenToList, TEMPORARY, checking..., ACRITICAL
-LayoutDatabase->GetAllNotes, TEMPORARY, GetAllNotes.AddingNoteGUID d625d100-6c92-45ff-9287-636e095b5abf, ACRITICAL
-AddChildrenToList, TEMPORARY, checking..., ACRITICAL
-LayoutDatabase->GetAllNotes, TEMPORARY, GetAllNotes.AddingNoteGUID dc2f33a1-40fa-4508-8273-90d78f61f2b4, ACRITICAL
-AddChildrenToList, TEMPORARY, checking..., ACRITICAL
-LayoutDatabase->GetAllNotes, TEMPORARY, GetAllNotes.AddingNoteGUID 183a31bd-71b1-4bba-b2d7-1bfb1b425769, ACRITICAL
-AddChildrenToList, TEMPORARY, checking..., ACRITICAL
-LayoutDatabase->GetAllNotes, TEMPORARY, GetAllNotes.AddingNoteGUID 1f2664c6-9936-4370-b3ae-9551d069b1bd, ACRITICAL
-AddChildrenToList, TEMPORARY, checking..., ACRITICAL
-LayoutDatabase->GetAllNotes, TEMPORARY, GetAllNotes.AddingNoteGUID 257681f0-70d4-47c0-bbbc-f5d0bb27b8d2, ACRITICAL
-AddChildrenToList, TEMPORARY, checking..., ACRITICAL
-LayoutDatabase->GetAllNotes, TEMPORARY, GetAllNotes.AddingNoteGUID b43738f7-142f-420b-807b-cfb1a509e5d3, ACRITICAL
-AddChildrenToList, TEMPORARY, checking..., ACRITICAL
-LayoutDatabase->GetAllNotes, TEMPORARY, GetAllNotes.AddingNoteGUID afc53290-c7cd-47be-97dd-88491e40eb3a, ACRITICAL
-AddChildrenToList, TEMPORARY, checking..., ACRITICAL
-LayoutDatabase->GetAllNotes, TEMPORARY, GetAllNotes.AddingNoteGUID 2b18e737-4797-4341-9ad3-1a5781e1a31f, ACRITICAL
-AddChildrenToList, TEMPORARY, checking..., ACRITICAL
-LayoutDatabase->GetAllNotes, TEMPORARY, GetAllNotes.AddingNoteGUID bab49bc0-9ca7-4cb3-bfc4-2ef2e86af806, ACRITICAL
-AddChildrenToList, TEMPORARY, checking..., ACRITICAL
-LayoutDatabase->GetAllNotes, TEMPORARY, GetAllNotes.AddingNoteGUID d8aa530e-9332-4c9d-a125-d95b36bd4bd4, ACRITICAL
-AddChildrenToList, TEMPORARY, checking..., ACRITICAL
-WriteThink->LoadTextStringIntoDatabase, MESSAGE,  deleting, ACRITICAL
-WriteThink->LoadTextStringIntoDatabase, MESSAGE,  deleting, ACRITICAL
-WriteThink->LoadTextStringIntoDatabase, MESSAGE,  deleting, ACRITICAL
-WriteThink->LoadTextStringIntoDatabase, MESSAGE,  deleting, ACRITICAL
-WriteThink->LoadTextStringIntoDatabase, MESSAGE,  deleting, ACRITICAL
-WriteThink->LoadTextStringIntoDatabase, MESSAGE,  deleting, ACRITICAL
-WriteThink->LoadTextStringIntoDatabase, MESSAGE,  deleting, ACRITICAL
-WriteThink->LoadTextStringIntoDatabase, MESSAGE,  deleting, ACRITICAL
-WriteThink->LoadTextStringIntoDatabase, MESSAGE,  deleting, ACRITICAL
-WriteThink->LoadTextStringIntoDatabase, MESSAGE,  deleting, ACRITICAL
-WriteThink->LoadTextStringIntoDatabase, MESSAGE,  deleting, ACRITICAL
-WriteThink->LoadTextStringIntoDatabase, MESSAGE,  deleting, ACRITICAL
-WriteThink->LoadTextStringIntoDatabase, MESSAGE,  deleting, ACRITICAL
-WriteThink->LoadTextStringIntoDatabase, MESSAGE,  deleting, ACRITICAL
-WriteThink->LoadTextStringIntoDatabase, MESSAGE,  deleting, ACRITICAL
-WriteThink->LoadTextStringIntoDatabase, MESSAGE,  deleting, ACRITICAL
-WriteThink->LoadTextStringIntoDatabase, MESSAGE,  deleting, ACRITICAL
-WriteThink->LoadTextStringIntoDatabase, MESSAGE,  deleting, ACRITICAL
-WriteThink->LoadTextStringIntoDatabase, MESSAGE,  deleting, ACRITICAL
-WriteThink->LoadTextStringIntoDatabase, MESSAGE,  deleting, ACRITICAL
-WriteThink->LoadTextStringIntoDatabase, MESSAGE,  deleting, ACRITICAL
-WriteThink->LoadTextStringIntoDatabase, MESSAGE,  deleting, ACRITICAL
-WriteThink->LoadTextStringIntoDatabase, MESSAGE,  deleting, ACRITICAL
-WriteThink->LoadTextStringIntoDatabase, MESSAGE,  deleting, ACRITICAL
-WriteThink->LoadTextStringIntoDatabase, MESSAGE,  deleting, ACRITICAL
-WriteThink->LoadTextStringIntoDatabase, MESSAGE,  deleting, ACRITICAL
-WriteThink->LoadTextStringIntoDatabase, MESSAGE,  deleting, ACRITICAL
-WriteThink->LoadTextStringIntoDatabase, MESSAGE,  deleting, ACRITICAL
-KnoweldgeBase->Deduction, MESSAGE, he || is || Narrator ||  deduction?:False ||  || weight:87.5 || priority100  Adding new rule based on deduction, ACRITICAL
-KnoweldgeBase->Deduction, MESSAGE, he || is || egghead ||  deduction?:False ||  || weight:75 || priority100  Adding new rule based on deduction, ACRITICAL
-KnoweldgeBase->Deduction, MESSAGE, he || is ||  Reacher ||  deduction?:False ||  || weight:75 || priority100  Adding new rule based on deduction, ACRITICAL
-KnoweldgeBase->Deduction, MESSAGE, he || is ||  Doser ||  deduction?:False ||  || weight:75 || priority100  Adding new rule based on deduction, ACRITICAL
-KnoweldgeBase->Deduction, MESSAGE, he || is ||  robot ||  deduction?:False ||  || weight:75 || priority100  Adding new rule based on deduction, ACRITICAL
-KnoweldgeBase->Deduction, MESSAGE, he || is || Narrator ||  deduction?:False ||  || weight:87.5 || priority100  Adding new rule based on deduction, ACRITICAL
-KnoweldgeBase->Deduction, MESSAGE, he || is || egghead ||  deduction?:False ||  || weight:75 || priority100  Adding new rule based on deduction, ACRITICAL
-KnoweldgeBase->Deduction, MESSAGE, he || is ||  Reacher ||  deduction?:False ||  || weight:75 || priority100  Adding new rule based on deduction, ACRITICAL
-KnoweldgeBase->Deduction, MESSAGE, he || is ||  Doser ||  deduction?:False ||  || weight:75 || priority100  Adding new rule based on deduction, ACRITICAL
-KnoweldgeBase->Deduction, MESSAGE, he || is ||  robot ||  deduction?:False ||  || weight:75 || priority100  Adding new rule based on deduction, ACRITICAL
-KnoweldgeBase->Deduction, MESSAGE, his || is || Narrator ||  deduction?:False ||  || weight:87.5 || priority100  Adding new rule based on deduction, ACRITICAL
-KnoweldgeBase->Deduction, MESSAGE, his || is || egghead ||  deduction?:False ||  || weight:75 || priority100  Adding new rule based on deduction, ACRITICAL
-KnoweldgeBase->Deduction, MESSAGE, his || is ||  Reacher ||  deduction?:False ||  || weight:75 || priority100  Adding new rule based on deduction, ACRITICAL
-KnoweldgeBase->Deduction, MESSAGE, his || is ||  Doser ||  deduction?:False ||  || weight:75 || priority100  Adding new rule based on deduction, ACRITICAL
-KnoweldgeBase->Deduction, MESSAGE, his || is ||  robot ||  deduction?:False ||  || weight:75 || priority100  Adding new rule based on deduction, ACRITICAL
-KnoweldgeBase->Deduction, MESSAGE, his || is || Narrator ||  deduction?:False ||  || weight:87.5 || priority100  Adding new rule based on deduction, ACRITICAL
-KnoweldgeBase->Deduction, MESSAGE, his || is || egghead ||  deduction?:False ||  || weight:75 || priority100  Adding new rule based on deduction, ACRITICAL
-KnoweldgeBase->Deduction, MESSAGE, his || is ||  Reacher ||  deduction?:False ||  || weight:75 || priority100  Adding new rule based on deduction, ACRITICAL
-KnoweldgeBase->Deduction, MESSAGE, his || is ||  Doser ||  deduction?:False ||  || weight:75 || priority100  Adding new rule based on deduction, ACRITICAL
-KnoweldgeBase->Deduction, MESSAGE, his || is ||  robot ||  deduction?:False ||  || weight:75 || priority100  Adding new rule based on deduction, ACRITICAL
-KnoweldgeBase->Deduction, MESSAGE, she || is || Rhea ||  deduction?:False ||  || weight:87.5 || priority100  Adding new rule based on deduction, ACRITICAL
-KnoweldgeBase->Deduction, MESSAGE, she || is || mother ||  deduction?:False ||  || weight:75 || priority100  Adding new rule based on deduction, ACRITICAL
-KnoweldgeBase->Deduction, MESSAGE, she || is || Kay ||  deduction?:False ||  || weight:75 || priority100  Adding new rule based on deduction, ACRITICAL
-KnoweldgeBase->Deduction, MESSAGE, she || is || Rhea ||  deduction?:False ||  || weight:87.5 || priority100  Adding new rule based on deduction, ACRITICAL
-KnoweldgeBase->Deduction, MESSAGE, she || is || mother ||  deduction?:False ||  || weight:75 || priority100  Adding new rule based on deduction, ACRITICAL
-KnoweldgeBase->Deduction, MESSAGE, she || is || Kay ||  deduction?:False ||  || weight:75 || priority100  Adding new rule based on deduction, ACRITICAL
-KnoweldgeBase->Deduction, MESSAGE, her || is || Rhea ||  deduction?:False ||  || weight:87.5 || priority100  Adding new rule based on deduction, ACRITICAL
-KnoweldgeBase->Deduction, MESSAGE, her || is || mother ||  deduction?:False ||  || weight:75 || priority100  Adding new rule based on deduction, ACRITICAL
-KnoweldgeBase->Deduction, MESSAGE, her || is || Kay ||  deduction?:False ||  || weight:75 || priority100  Adding new rule based on deduction, ACRITICAL
-KnoweldgeBase->Deduction, MESSAGE, her || is || Rhea ||  deduction?:False ||  || weight:87.5 || priority100  Adding new rule based on deduction, ACRITICAL
-KnoweldgeBase->Deduction, MESSAGE, her || is || mother ||  deduction?:False ||  || weight:75 || priority100  Adding new rule based on deduction, ACRITICAL
-KnoweldgeBase->Deduction, MESSAGE, her || is || Kay ||  deduction?:False ||  || weight:75 || priority100  Adding new rule based on deduction, ACRITICAL
-KnoweldgeBase->Deduction, MESSAGE, i || is || Rhea ||  deduction?:False ||  || weight:87.5 || priority100  Adding new rule based on deduction, ACRITICAL
-KnoweldgeBase->Deduction, MESSAGE, i || is || Rhea ||  deduction?:False ||  || weight:87.5 || priority100  Adding new rule based on deduction, ACRITICAL
-KnoweldgeBase->Deduction, MESSAGE, my || is || Rhea ||  deduction?:False ||  || weight:87.5 || priority100  Adding new rule based on deduction, ACRITICAL
-WriteThink->GetSpeaker, MESSAGE, her has been replaced by Rhea , ACRITICAL
-WriteThink->GetSpeaker, MESSAGE, her has been replaced by Rhea , ACRITICAL
-WriteThink->GetSpeaker, MESSAGE, her has been replaced by Rhea , ACRITICAL
-WriteThink->GetSpeaker, MESSAGE, her has been replaced by Rhea , ACRITICAL
-WriteThink->GetSpeaker, MESSAGE, no match found pick most popular, ACRITICAL
-WriteThink->GetSpeaker, MESSAGE, no match found pick most popular, ACRITICAL
-WriteThink->GetSpeaker, MESSAGE, his has been replaced by Narrator , ACRITICAL
-WriteThink->GetSpeaker, MESSAGE, she has been replaced by Rhea , ACRITICAL
-WriteThink->GetSpeaker, MESSAGE, she has been replaced by Kay , ACRITICAL
-WriteThink->GetSpeaker, MESSAGE, no match found pick most popular, ACRITICAL
-WriteThink->GetSpeaker, MESSAGE, His has been replaced by Narrator , ACRITICAL
-WriteThink->GetSpeaker, MESSAGE, she has been replaced by Rhea , ACRITICAL
-WriteThink->GetSpeaker, MESSAGE, no match found pick most popular, ACRITICAL
-WriteThink->GetSpeaker, MESSAGE, no match found pick most popular, ACRITICAL
-WriteThink->GetSpeaker, MESSAGE, no match found pick most popular, ACRITICAL
-WriteThink->GetSpeaker, MESSAGE, she has been replaced by Rhea , ACRITICAL
-WriteThink->GetSpeaker, MESSAGE, her has been replaced by Rhea , ACRITICAL
-WriteThink->GetSpeaker, MESSAGE, her has been replaced by Rhea , ACRITICAL
-WriteThink->GetSpeaker, MESSAGE, she has been replaced by Rhea , ACRITICAL
-WriteThink->GetSpeaker, MESSAGE, her has been replaced by Rhea , ACRITICAL
-WriteThink->GetSpeaker, MESSAGE, he has been replaced by Narrator , ACRITICAL
-WriteThink->GetSpeaker, MESSAGE, she has been replaced by Rhea , ACRITICAL
-WriteThink->GetSpeaker, MESSAGE, she has been replaced by Rhea , ACRITICAL
-WriteThink->GetSpeaker, MESSAGE, no match found pick most popular, ACRITICAL
-WriteThink->GetSpeaker, MESSAGE, his has been replaced by Narrator , ACRITICAL
-WriteThink->GetSpeaker, MESSAGE, no match found pick most popular, ACRITICAL
-WriteThink->LoadTextStringIntoDatabase, MESSAGE,  deleting, ACRITICAL
-WriteThink->LoadTextStringIntoDatabase, MESSAGE,  deleting, ACRITICAL
-WriteThink->LoadTextStringIntoDatabase, MESSAGE,  deleting, ACRITICAL
-KnoweldgeBase->Deduction, MESSAGE, he || is || Narrator ||  deduction?:False ||  || weight:87.5 || priority100  Adding new rule based on deduction, ACRITICAL
-KnoweldgeBase->Deduction, MESSAGE, he || is || egghead ||  deduction?:False ||  || weight:75 || priority100  Adding new rule based on deduction, ACRITICAL
-KnoweldgeBase->Deduction, MESSAGE, he || is ||  Reacher ||  deduction?:False ||  || weight:75 || priority100  Adding new rule based on deduction, ACRITICAL
-KnoweldgeBase->Deduction, MESSAGE, he || is ||  Doser ||  deduction?:False ||  || weight:75 || priority100  Adding new rule based on deduction, ACRITICAL
-KnoweldgeBase->Deduction, MESSAGE, he || is ||  robot ||  deduction?:False ||  || weight:75 || priority100  Adding new rule based on deduction, ACRITICAL
-KnoweldgeBase->Deduction, MESSAGE, he || is || Narrator ||  deduction?:False ||  || weight:87.5 || priority100  Adding new rule based on deduction, ACRITICAL
-KnoweldgeBase->Deduction, MESSAGE, he || is || egghead ||  deduction?:False ||  || weight:75 || priority100  Adding new rule based on deduction, ACRITICAL
-KnoweldgeBase->Deduction, MESSAGE, he || is ||  Reacher ||  deduction?:False ||  || weight:75 || priority100  Adding new rule based on deduction, ACRITICAL
-KnoweldgeBase->Deduction, MESSAGE, he || is ||  Doser ||  deduction?:False ||  || weight:75 || priority100  Adding new rule based on deduction, ACRITICAL
-KnoweldgeBase->Deduction, MESSAGE, he || is ||  robot ||  deduction?:False ||  || weight:75 || priority100  Adding new rule based on deduction, ACRITICAL
-KnoweldgeBase->Deduction, MESSAGE, his || is || Narrator ||  deduction?:False ||  || weight:87.5 || priority100  Adding new rule based on deduction, ACRITICAL
-KnoweldgeBase->Deduction, MESSAGE, his || is || egghead ||  deduction?:False ||  || weight:75 || priority100  Adding new rule based on deduction, ACRITICAL
-KnoweldgeBase->Deduction, MESSAGE, his || is ||  Reacher ||  deduction?:False ||  || weight:75 || priority100  Adding new rule based on deduction, ACRITICAL
-KnoweldgeBase->Deduction, MESSAGE, his || is ||  Doser ||  deduction?:False ||  || weight:75 || priority100  Adding new rule based on deduction, ACRITICAL
-KnoweldgeBase->Deduction, MESSAGE, his || is ||  robot ||  deduction?:False ||  || weight:75 || priority100  Adding new rule based on deduction, ACRITICAL
-KnoweldgeBase->Deduction, MESSAGE, his || is || Narrator ||  deduction?:False ||  || weight:87.5 || priority100  Adding new rule based on deduction, ACRITICAL
-KnoweldgeBase->Deduction, MESSAGE, his || is || egghead ||  deduction?:False ||  || weight:75 || priority100  Adding new rule based on deduction, ACRITICAL
-KnoweldgeBase->Deduction, MESSAGE, his || is ||  Reacher ||  deduction?:False ||  || weight:75 || priority100  Adding new rule based on deduction, ACRITICAL
-KnoweldgeBase->Deduction, MESSAGE, his || is ||  Doser ||  deduction?:False ||  || weight:75 || priority100  Adding new rule based on deduction, ACRITICAL
-KnoweldgeBase->Deduction, MESSAGE, his || is ||  robot ||  deduction?:False ||  || weight:75 || priority100  Adding new rule based on deduction, ACRITICAL
-KnoweldgeBase->Deduction, MESSAGE, she || is || Rhea ||  deduction?:False ||  || weight:87.5 || priority100  Adding new rule based on deduction, ACRITICAL
-KnoweldgeBase->Deduction, MESSAGE, she || is || mother ||  deduction?:False ||  || weight:75 || priority100  Adding new rule based on deduction, ACRITICAL
-KnoweldgeBase->Deduction, MESSAGE, she || is || Kay ||  deduction?:False ||  || weight:75 || priority100  Adding new rule based on deduction, ACRITICAL
-KnoweldgeBase->Deduction, MESSAGE, she || is || Rhea ||  deduction?:False ||  || weight:87.5 || priority100  Adding new rule based on deduction, ACRITICAL
-KnoweldgeBase->Deduction, MESSAGE, she || is || mother ||  deduction?:False ||  || weight:75 || priority100  Adding new rule based on deduction, ACRITICAL
-KnoweldgeBase->Deduction, MESSAGE, she || is || Kay ||  deduction?:False ||  || weight:75 || priority100  Adding new rule based on deduction, ACRITICAL
-KnoweldgeBase->Deduction, MESSAGE, her || is || Rhea ||  deduction?:False ||  || weight:87.5 || priority100  Adding new rule based on deduction, ACRITICAL
-KnoweldgeBase->Deduction, MESSAGE, her || is || mother ||  deduction?:False ||  || weight:75 || priority100  Adding new rule based on deduction, ACRITICAL
-KnoweldgeBase->Deduction, MESSAGE, her || is || Kay ||  deduction?:False ||  || weight:75 || priority100  Adding new rule based on deduction, ACRITICAL
-KnoweldgeBase->Deduction, MESSAGE, her || is || Rhea ||  deduction?:False ||  || weight:87.5 || priority100  Adding new rule based on deduction, ACRITICAL
-KnoweldgeBase->Deduction, MESSAGE, her || is || mother ||  deduction?:False ||  || weight:75 || priority100  Adding new rule based on deduction, ACRITICAL
-KnoweldgeBase->Deduction, MESSAGE, her || is || Kay ||  deduction?:False ||  || weight:75 || priority100  Adding new rule based on deduction, ACRITICAL
-KnoweldgeBase->Deduction, MESSAGE, i || is || Rhea ||  deduction?:False ||  || weight:87.5 || priority100  Adding new rule based on deduction, ACRITICAL
-KnoweldgeBase->Deduction, MESSAGE, i || is || Rhea ||  deduction?:False ||  || weight:87.5 || priority100  Adding new rule based on deduction, ACRITICAL
-KnoweldgeBase->Deduction, MESSAGE, my || is || Rhea ||  deduction?:False ||  || weight:87.5 || priority100  Adding new rule based on deduction, ACRITICAL
-WriteThink->LoadTextStringIntoDatabase, MESSAGE,  deleting, ACRITICAL
-WriteThink->LoadTextStringIntoDatabase, MESSAGE,  deleting, ACRITICAL
-WriteThink->LoadTextStringIntoDatabase, MESSAGE,  deleting, ACRITICAL
-WriteThink->LoadTextStringIntoDatabase, MESSAGE,  deleting, ACRITICAL
+AddChildrenToList, TEMPORARY, scanning children...b4c5b5c0-4eb6-42f8-98ff-293649f85c8f from MyPanel, ACRITICAL
+NoteDataXML_RichText, MESSAGE, Chapter 1 has been set as CurrentTextNote for Layout e2a949c4-fd94-402d-9019-91d94f5f54ac, ACRITICAL
+SetSaveRequired, MESSAGE, e2a949c4-fd94-402d-9019-91d94f5f54acValue of _savequired BEFORE SET is False, CTRIVIAL
+SetSaveRequired, MESSAGE, e2a949c4-fd94-402d-9019-91d94f5f54acset to True, CTRIVIAL
+SetSaveRequired, MESSAGE, e2a949c4-fd94-402d-9019-91d94f5f54acValue of _savequired is True, CTRIVIAL
+LayoutPanelBase->GetSaveRequired, MESSAGE, True GetSaveRequired for e2a949c4-fd94-402d-9019-91d94f5f54ac, CTRIVIAL
+SetSaveRequired, MESSAGE, e2a949c4-fd94-402d-9019-91d94f5f54acValue of GetSaveRequired is True, CTRIVIAL
+SetSaveRequired, MESSAGE, e2a949c4-fd94-402d-9019-91d94f5f54acValue of _savequired BEFORE SET is True, CTRIVIAL
+SetSaveRequired, MESSAGE, e2a949c4-fd94-402d-9019-91d94f5f54acset to True, CTRIVIAL
+SetSaveRequired, MESSAGE, e2a949c4-fd94-402d-9019-91d94f5f54acValue of _savequired is True, CTRIVIAL
+LayoutPanelBase->GetSaveRequired, MESSAGE, True GetSaveRequired for e2a949c4-fd94-402d-9019-91d94f5f54ac, CTRIVIAL
+SetSaveRequired, MESSAGE, e2a949c4-fd94-402d-9019-91d94f5f54acValue of GetSaveRequired is True, CTRIVIAL
+SetSaveRequired, MESSAGE, e2a949c4-fd94-402d-9019-91d94f5f54acValue of _savequired BEFORE SET is True, CTRIVIAL
+SetSaveRequired, MESSAGE, e2a949c4-fd94-402d-9019-91d94f5f54acset to True, CTRIVIAL
+SetSaveRequired, MESSAGE, e2a949c4-fd94-402d-9019-91d94f5f54acValue of _savequired is True, CTRIVIAL
+LayoutPanelBase->GetSaveRequired, MESSAGE, True GetSaveRequired for e2a949c4-fd94-402d-9019-91d94f5f54ac, CTRIVIAL
+SetSaveRequired, MESSAGE, e2a949c4-fd94-402d-9019-91d94f5f54acValue of GetSaveRequired is True, CTRIVIAL
+SetSaveRequired, MESSAGE, e2a949c4-fd94-402d-9019-91d94f5f54acValue of _savequired BEFORE SET is True, CTRIVIAL
+SetSaveRequired, MESSAGE, e2a949c4-fd94-402d-9019-91d94f5f54acset to True, CTRIVIAL
+SetSaveRequired, MESSAGE, e2a949c4-fd94-402d-9019-91d94f5f54acValue of _savequired is True, CTRIVIAL
+LayoutPanelBase->GetSaveRequired, MESSAGE, True GetSaveRequired for e2a949c4-fd94-402d-9019-91d94f5f54ac, CTRIVIAL
+SetSaveRequired, MESSAGE, e2a949c4-fd94-402d-9019-91d94f5f54acValue of GetSaveRequired is True, CTRIVIAL
+LayoutPanelBase->GetSaveRequired, MESSAGE, True GetSaveRequired for e2a949c4-fd94-402d-9019-91d94f5f54ac, CTRIVIAL
+LayoutPanel.SaveLayout, MESSAGE, Saved, ACRITICAL
+SqLiteDatabase->CreateTableIfDoesNotExist, MESSAGE, CREATE TABLE if not exists [pages] ( id INTEGER,  guid TEXT UNIQUE,  xml LONGTEXT,  status TEXT,  name VARCHAR(50),  showtabs boolean,  subpanel boolean,  maximizetabs boolean,  stars INTEGER,  hits INTEGER,  datecreated datetime,  dateedited datetime,  notebook TEXT,  section TEXT,  type TEXT,  source TEXT,  words INTEGER,  keywords TEXT,  linktable LONGTEXT,  backcolor INTEGER,  blurb TEXT,  parentguid TEXT, PRIMARY KEY (id)), ACRITICAL
+SaveTo, MESSAGE, Number of Notes to copy = 1 On GUID'system' Name'system' IsSubpanel 'False' Starting Count 3 System Notes 1 SkipLinkTable 1, ACRITICAL
+LayoutDatabase->SaveTo, MESSAGE, SKIPPED writing position 0 with caption _linktable_ and GUID_linktable_ and Type Layout.NoteDataXML_Table, ACRITICAL
+LayoutDatabase->SaveTo, MESSAGE, Trying to set Note with Caption Panel, ACRITICAL
+LayoutDatabase->SaveTo, MESSAGE, writing position 0 with caption Panel, ACRITICAL
+LayoutDatabase->SaveTo, MESSAGE, SKIPPED writing position 1 with caption  and GUIDe890cd48-65d4-4fd3-a862-95d8cccef98e and Type Layout.NoteDataXML_SystemOnly, ACRITICAL
+SaveTo, MESSAGE, Trying to save note of type LayoutPanels.NoteDataXML_Panel with Guid system_sidedock, ACRITICAL
+LayoutPanel.SaveLayout, MESSAGE, Saved, ACRITICAL
+SqLiteDatabase->CreateTableIfDoesNotExist, MESSAGE, CREATE TABLE if not exists [pages] ( id INTEGER,  guid TEXT UNIQUE,  xml LONGTEXT,  status TEXT,  name VARCHAR(50),  showtabs boolean,  subpanel boolean,  maximizetabs boolean,  stars INTEGER,  hits INTEGER,  datecreated datetime,  dateedited datetime,  notebook TEXT,  section TEXT,  type TEXT,  source TEXT,  words INTEGER,  keywords TEXT,  linktable LONGTEXT,  backcolor INTEGER,  blurb TEXT,  parentguid TEXT, PRIMARY KEY (id)), ACRITICAL
+SaveTo, MESSAGE, Number of Notes to copy = 2 On GUID'system_sidedock' Name'default name' IsSubpanel 'True' Starting Count 2 System Notes 0 SkipLinkTable 0, ACRITICAL
+LayoutDatabase->SaveTo, MESSAGE, Trying to set Note with Caption Note List, ACRITICAL
+LayoutDatabase->SaveTo, MESSAGE, writing position 0 with caption Note List, ACRITICAL
+LayoutDatabase->SaveTo, MESSAGE, Trying to set Note with Caption Tables, ACRITICAL
+LayoutDatabase->SaveTo, MESSAGE, writing position 1 with caption Tables, ACRITICAL
+SaveTo, MESSAGE, Trying to save note of type Layout.NoteDataXML_NoteList with Guid 886faf44-5097-4f0a-9009-92fa5bfbf87e, ACRITICAL
+SaveTo, MESSAGE, Trying to save note of type LayoutPanels.NoteDataXML_Panel with Guid tables, ACRITICAL
+LayoutPanel.SaveLayout, MESSAGE, Saved, ACRITICAL
+SqLiteDatabase->CreateTableIfDoesNotExist, MESSAGE, CREATE TABLE if not exists [pages] ( id INTEGER,  guid TEXT UNIQUE,  xml LONGTEXT,  status TEXT,  name VARCHAR(50),  showtabs boolean,  subpanel boolean,  maximizetabs boolean,  stars INTEGER,  hits INTEGER,  datecreated datetime,  dateedited datetime,  notebook TEXT,  section TEXT,  type TEXT,  source TEXT,  words INTEGER,  keywords TEXT,  linktable LONGTEXT,  backcolor INTEGER,  blurb TEXT,  parentguid TEXT, PRIMARY KEY (id)), ACRITICAL
+SaveTo, MESSAGE, Number of Notes to copy = 7 On GUID'tables' Name'default name' IsSubpanel 'True' Starting Count 7 System Notes 0 SkipLinkTable 0, ACRITICAL
+LayoutDatabase->SaveTo, MESSAGE, Trying to set Note with Caption list_randomtables, ACRITICAL
+LayoutDatabase->SaveTo, MESSAGE, writing position 0 with caption list_randomtables, ACRITICAL
+LayoutDatabase->SaveTo, MESSAGE, Trying to set Note with Caption list_notebooks, ACRITICAL
+LayoutDatabase->SaveTo, MESSAGE, writing position 1 with caption list_notebooks, ACRITICAL
+LayoutDatabase->SaveTo, MESSAGE, Trying to set Note with Caption list_status, ACRITICAL
+LayoutDatabase->SaveTo, MESSAGE, writing position 2 with caption list_status, ACRITICAL
+LayoutDatabase->SaveTo, MESSAGE, Trying to set Note with Caption list_subtypes, ACRITICAL
+LayoutDatabase->SaveTo, MESSAGE, writing position 3 with caption list_subtypes, ACRITICAL
+LayoutDatabase->SaveTo, MESSAGE, Trying to set Note with Caption list_keywords, ACRITICAL
+LayoutDatabase->SaveTo, MESSAGE, writing position 4 with caption list_keywords, ACRITICAL
+LayoutDatabase->SaveTo, MESSAGE, Trying to set Note with Caption list_worklogcategory, ACRITICAL
+LayoutDatabase->SaveTo, MESSAGE, writing position 5 with caption list_worklogcategory, ACRITICAL
+LayoutDatabase->SaveTo, MESSAGE, Trying to set Note with Caption list_grammar, ACRITICAL
+LayoutDatabase->SaveTo, MESSAGE, writing position 6 with caption list_grammar, ACRITICAL
+SaveTo, MESSAGE, Trying to save note of type Layout.NoteDataXML_Table with Guid c9d39093-7c91-43e1-a1d3-143d572f691d, ACRITICAL
+NoteDataXML_Table->Save, MESSAGE, Do not save empty columns, which may have happened simply because the control was not visible, ACRITICAL
+NoteDataXML_table->Columns, TEMPORARY, Setting mColumns to array of length4, CTRIVIAL
+NoteDataXML_table->Columns, TEMPORARY, NOT Hooking up DataSource, CTRIVIAL
+SaveTo, MESSAGE, Trying to save note of type Layout.NoteDataXML_Table with Guid 5f64641b-62eb-4db7-8fbd-453eeaa92b6a, ACRITICAL
+NoteDataXML_Table->Save, MESSAGE, Do not save empty columns, which may have happened simply because the control was not visible, ACRITICAL
+NoteDataXML_table->Columns, TEMPORARY, Setting mColumns to array of length4, CTRIVIAL
+NoteDataXML_table->Columns, TEMPORARY, NOT Hooking up DataSource, CTRIVIAL
+SaveTo, MESSAGE, Trying to save note of type Layout.NoteDataXML_Table with Guid d7d314db-64a0-4e5f-9fd6-c17c150bf73e, ACRITICAL
+NoteDataXML_Table->Save, MESSAGE, Do not save empty columns, which may have happened simply because the control was not visible, ACRITICAL
+NoteDataXML_table->Columns, TEMPORARY, Setting mColumns to array of length4, CTRIVIAL
+NoteDataXML_table->Columns, TEMPORARY, NOT Hooking up DataSource, CTRIVIAL
+SaveTo, MESSAGE, Trying to save note of type Layout.NoteDataXML_Table with Guid 167c7b8d-852d-42cc-9ec2-e48f83318aaa, ACRITICAL
+NoteDataXML_Table->Save, MESSAGE, Do not save empty columns, which may have happened simply because the control was not visible, ACRITICAL
+NoteDataXML_table->Columns, TEMPORARY, Setting mColumns to array of length4, CTRIVIAL
+NoteDataXML_table->Columns, TEMPORARY, NOT Hooking up DataSource, CTRIVIAL
+SaveTo, MESSAGE, Trying to save note of type Layout.NoteDataXML_Table with Guid 48b0d70d-4d45-4196-984c-1d33b8430845, ACRITICAL
+NoteDataXML_Table->Save, MESSAGE, Do not save empty columns, which may have happened simply because the control was not visible, ACRITICAL
+NoteDataXML_table->Columns, TEMPORARY, Setting mColumns to array of length4, CTRIVIAL
+NoteDataXML_table->Columns, TEMPORARY, NOT Hooking up DataSource, CTRIVIAL
+SaveTo, MESSAGE, Trying to save note of type Layout.NoteDataXML_Table with Guid fef71fa8-79f4-4bd9-a57e-ad48cc342461, ACRITICAL
+NoteDataXML_Table->Save, MESSAGE, Do not save empty columns, which may have happened simply because the control was not visible, ACRITICAL
+NoteDataXML_table->Columns, TEMPORARY, Setting mColumns to array of length4, CTRIVIAL
+NoteDataXML_table->Columns, TEMPORARY, NOT Hooking up DataSource, CTRIVIAL
+SaveTo, MESSAGE, Trying to save note of type Layout.NoteDataXML_Table with Guid a680e603-98ac-48a9-86cb-d6bf4a038e82, ACRITICAL
+NoteDataXML_Table->Save, MESSAGE, Do not save empty columns, which may have happened simply because the control was not visible, ACRITICAL
+NoteDataXML_table->Columns, TEMPORARY, Setting mColumns to array of length4, CTRIVIAL
+NoteDataXML_table->Columns, TEMPORARY, NOT Hooking up DataSource, CTRIVIAL
+LayoutDatabase->SaveTo, MESSAGE, Guid = 'tables', ACRITICAL
+LayoutDatabase.SaveTo, MESSAGE, We are UPDATING existing Row.tables, ACRITICAL
+SqlLiteDatabase->UpdateDataCore, MESSAGE, WHERE: tables, ACRITICAL
+SqlLiteDatabase.UpdateSpecific, MESSAGE, UPDATE pages set guid = @guidVALUE,xml = @xmlVALUE,status = @statusVALUE,name = @nameVALUE,showtabs = @showtabsVALUE,subpanel = @subpanelVALUE,maximizetabs = @maximizetabsVALUE,stars = @starsVALUE,hits = @hitsVALUE,datecreated = @datecreatedVALUE,dateedited = @dateeditedVALUE,notebook = @notebookVALUE,section = @sectionVALUE,type = @typeVALUE,source = @sourceVALUE,words = @wordsVALUE,keywords = @keywordsVALUE,linktable = @linktableVALUE,backcolor = @backcolorVALUE,blurb = @blurbVALUE,parentguid = @parentguidVALUE where guid=@WhereValue, ACRITICAL
+SetSaveRequired, MESSAGE, tablesValue of _savequired BEFORE SET is False, CTRIVIAL
+SetSaveRequired, MESSAGE, tablesset to False, CTRIVIAL
+SetSaveRequired, MESSAGE, tablesValue of _savequired is False, CTRIVIAL
+LayoutPanelBase->GetSaveRequired, MESSAGE, False GetSaveRequired for tables, CTRIVIAL
+SetSaveRequired, MESSAGE, tablesValue of GetSaveRequired is False, CTRIVIAL
+SetSaveRequired, MESSAGE, system_sidedockValue of _savequired BEFORE SET is False, CTRIVIAL
+SetSaveRequired, MESSAGE, system_sidedockset to False, CTRIVIAL
+SetSaveRequired, MESSAGE, system_sidedockValue of _savequired is False, CTRIVIAL
+LayoutPanelBase->GetSaveRequired, MESSAGE, False GetSaveRequired for system_sidedock, CTRIVIAL
+SetSaveRequired, MESSAGE, system_sidedockValue of GetSaveRequired is False, CTRIVIAL
+SetSaveRequired, MESSAGE, systemValue of _savequired BEFORE SET is False, CTRIVIAL
+SetSaveRequired, MESSAGE, systemset to False, CTRIVIAL
+SetSaveRequired, MESSAGE, systemValue of _savequired is False, CTRIVIAL
+LayoutPanelBase->GetSaveRequired, MESSAGE, False GetSaveRequired for system, CTRIVIAL
+SetSaveRequired, MESSAGE, systemValue of GetSaveRequired is False, CTRIVIAL
+LayoutDatabase->SaveTo, MESSAGE, Guid = 'system_sidedock', ACRITICAL
+LayoutDatabase.SaveTo, MESSAGE, We are UPDATING existing Row.system_sidedock, ACRITICAL
+SqlLiteDatabase->UpdateDataCore, MESSAGE, WHERE: system_sidedock, ACRITICAL
+SqlLiteDatabase.UpdateSpecific, MESSAGE, UPDATE pages set guid = @guidVALUE,xml = @xmlVALUE,status = @statusVALUE,name = @nameVALUE,showtabs = @showtabsVALUE,subpanel = @subpanelVALUE,maximizetabs = @maximizetabsVALUE,stars = @starsVALUE,hits = @hitsVALUE,datecreated = @datecreatedVALUE,dateedited = @dateeditedVALUE,notebook = @notebookVALUE,section = @sectionVALUE,type = @typeVALUE,source = @sourceVALUE,words = @wordsVALUE,keywords = @keywordsVALUE,linktable = @linktableVALUE,backcolor = @backcolorVALUE,blurb = @blurbVALUE,parentguid = @parentguidVALUE where guid=@WhereValue, ACRITICAL
+SetSaveRequired, MESSAGE, system_sidedockValue of _savequired BEFORE SET is False, CTRIVIAL
+SetSaveRequired, MESSAGE, system_sidedockset to False, CTRIVIAL
+SetSaveRequired, MESSAGE, system_sidedockValue of _savequired is False, CTRIVIAL
+LayoutPanelBase->GetSaveRequired, MESSAGE, False GetSaveRequired for system_sidedock, CTRIVIAL
+SetSaveRequired, MESSAGE, system_sidedockValue of GetSaveRequired is False, CTRIVIAL
+SetSaveRequired, MESSAGE, systemValue of _savequired BEFORE SET is False, CTRIVIAL
+SetSaveRequired, MESSAGE, systemset to False, CTRIVIAL
+SetSaveRequired, MESSAGE, systemValue of _savequired is False, CTRIVIAL
+LayoutPanelBase->GetSaveRequired, MESSAGE, False GetSaveRequired for system, CTRIVIAL
+SetSaveRequired, MESSAGE, systemValue of GetSaveRequired is False, CTRIVIAL
+LayoutDatabase->SaveTo, MESSAGE, Guid = 'system', ACRITICAL
+LayoutDatabase.SaveTo, MESSAGE, We are UPDATING existing Row.system, ACRITICAL
+SqlLiteDatabase->UpdateDataCore, MESSAGE, WHERE: system, ACRITICAL
+SqlLiteDatabase.UpdateSpecific, MESSAGE, UPDATE pages set guid = @guidVALUE,xml = @xmlVALUE,status = @statusVALUE,name = @nameVALUE,showtabs = @showtabsVALUE,subpanel = @subpanelVALUE,maximizetabs = @maximizetabsVALUE,stars = @starsVALUE,hits = @hitsVALUE,datecreated = @datecreatedVALUE,dateedited = @dateeditedVALUE,notebook = @notebookVALUE,section = @sectionVALUE,type = @typeVALUE,source = @sourceVALUE,words = @wordsVALUE,keywords = @keywordsVALUE,linktable = @linktableVALUE,backcolor = @backcolorVALUE,blurb = @blurbVALUE,parentguid = @parentguidVALUE where guid=@WhereValue, ACRITICAL
+SetSaveRequired, MESSAGE, systemValue of _savequired BEFORE SET is False, CTRIVIAL
+SetSaveRequired, MESSAGE, systemset to False, CTRIVIAL
+SetSaveRequired, MESSAGE, systemValue of _savequired is False, CTRIVIAL
+LayoutPanelBase->GetSaveRequired, MESSAGE, False GetSaveRequired for system, CTRIVIAL
+SetSaveRequired, MESSAGE, systemValue of GetSaveRequired is False, CTRIVIAL
+SqLiteDatabase->CreateTableIfDoesNotExist, MESSAGE, CREATE TABLE if not exists [pages] ( id INTEGER,  guid TEXT UNIQUE,  xml LONGTEXT,  status TEXT,  name VARCHAR(50),  showtabs boolean,  subpanel boolean,  maximizetabs boolean,  stars INTEGER,  hits INTEGER,  datecreated datetime,  dateedited datetime,  notebook TEXT,  section TEXT,  type TEXT,  source TEXT,  words INTEGER,  keywords TEXT,  linktable LONGTEXT,  backcolor INTEGER,  blurb TEXT,  parentguid TEXT, PRIMARY KEY (id)), ACRITICAL
+SqLiteDatabase->CreateTableIfDoesNotExist, MESSAGE, CREATE TABLE if not exists [pages] ( id INTEGER,  guid TEXT UNIQUE,  xml LONGTEXT,  status TEXT,  name VARCHAR(50),  showtabs boolean,  subpanel boolean,  maximizetabs boolean,  stars INTEGER,  hits INTEGER,  datecreated datetime,  dateedited datetime,  notebook TEXT,  section TEXT,  type TEXT,  source TEXT,  words INTEGER,  keywords TEXT,  linktable LONGTEXT,  backcolor INTEGER,  blurb TEXT,  parentguid TEXT, PRIMARY KEY (id)), ACRITICAL
+SqlLiteDatabase.GetValues, WARNING, SELECT id,guid,xml,status,name,showtabs,subpanel,maximizetabs,stars,hits,datecreated,dateedited,notebook,section,type,source,words,keywords,linktable,backcolor,blurb,parentguid FROM pages where guid = 'tables'  , CTRIVIAL
+LayoutDatabase->LoadFrom, TIMING, GETVALUES for LayoutDatabase: Name=default name Guid = tables  took 00:00:00.0027116, ACRITICAL
+LayoutDatabase->LoadFrom, TIMING, ASSIGNVALUES for LayoutDatabase: Name=default name Guid = tables  took 00:00:00.0000986, ACRITICAL
+NoteDataXML_Table->BuildDefaultColumns, MESSAGE, Creating a Table, CTRIVIAL
+NoteDataXML_Table->BuildDefaultColumns, MESSAGE, Building Columns Start, CTRIVIAL
+NoteDataXML_table->Columns, TEMPORARY, Setting mColumns to array of length4, CTRIVIAL
+NoteDataXML_table->Columns, TEMPORARY, Hooking up DataSource, CTRIVIAL
+NoteDataXML_table->Columns, TEMPORARY, Hooking up DataSource4, CTRIVIAL
+NoteDataXML_Table->BuildDefaultColumns, MESSAGE, Building Columns Done, CTRIVIAL
+NoteDataXML_table->Columns, TEMPORARY, Setting mColumns to array of length4, CTRIVIAL
+NoteDataXML_table->Columns, TEMPORARY, NOT Hooking up DataSource, CTRIVIAL
+NoteDataXML_Table->BuildDefaultColumns, MESSAGE, Creating a Table, CTRIVIAL
+NoteDataXML_Table->BuildDefaultColumns, MESSAGE, Building Columns Start, CTRIVIAL
+NoteDataXML_table->Columns, TEMPORARY, Setting mColumns to array of length4, CTRIVIAL
+NoteDataXML_table->Columns, TEMPORARY, Hooking up DataSource, CTRIVIAL
+NoteDataXML_table->Columns, TEMPORARY, Hooking up DataSource4, CTRIVIAL
+NoteDataXML_Table->BuildDefaultColumns, MESSAGE, Building Columns Done, CTRIVIAL
+NoteDataXML_table->Columns, TEMPORARY, Setting mColumns to array of length4, CTRIVIAL
+NoteDataXML_table->Columns, TEMPORARY, NOT Hooking up DataSource, CTRIVIAL
+NoteDataXML_Table->BuildDefaultColumns, MESSAGE, Creating a Table, CTRIVIAL
+NoteDataXML_Table->BuildDefaultColumns, MESSAGE, Building Columns Start, CTRIVIAL
+NoteDataXML_table->Columns, TEMPORARY, Setting mColumns to array of length4, CTRIVIAL
+NoteDataXML_table->Columns, TEMPORARY, Hooking up DataSource, CTRIVIAL
+NoteDataXML_table->Columns, TEMPORARY, Hooking up DataSource4, CTRIVIAL
+NoteDataXML_Table->BuildDefaultColumns, MESSAGE, Building Columns Done, CTRIVIAL
+NoteDataXML_table->Columns, TEMPORARY, Setting mColumns to array of length4, CTRIVIAL
+NoteDataXML_table->Columns, TEMPORARY, NOT Hooking up DataSource, CTRIVIAL
+NoteDataXML_Table->BuildDefaultColumns, MESSAGE, Creating a Table, CTRIVIAL
+NoteDataXML_Table->BuildDefaultColumns, MESSAGE, Building Columns Start, CTRIVIAL
+NoteDataXML_table->Columns, TEMPORARY, Setting mColumns to array of length4, CTRIVIAL
+NoteDataXML_table->Columns, TEMPORARY, Hooking up DataSource, CTRIVIAL
+NoteDataXML_table->Columns, TEMPORARY, Hooking up DataSource4, CTRIVIAL
+NoteDataXML_Table->BuildDefaultColumns, MESSAGE, Building Columns Done, CTRIVIAL
+NoteDataXML_table->Columns, TEMPORARY, Setting mColumns to array of length4, CTRIVIAL
+NoteDataXML_table->Columns, TEMPORARY, NOT Hooking up DataSource, CTRIVIAL
+NoteDataXML_Table->BuildDefaultColumns, MESSAGE, Creating a Table, CTRIVIAL
+NoteDataXML_Table->BuildDefaultColumns, MESSAGE, Building Columns Start, CTRIVIAL
+NoteDataXML_table->Columns, TEMPORARY, Setting mColumns to array of length4, CTRIVIAL
+NoteDataXML_table->Columns, TEMPORARY, Hooking up DataSource, CTRIVIAL
+NoteDataXML_table->Columns, TEMPORARY, Hooking up DataSource4, CTRIVIAL
+NoteDataXML_Table->BuildDefaultColumns, MESSAGE, Building Columns Done, CTRIVIAL
+NoteDataXML_table->Columns, TEMPORARY, Setting mColumns to array of length4, CTRIVIAL
+NoteDataXML_table->Columns, TEMPORARY, NOT Hooking up DataSource, CTRIVIAL
+NoteDataXML_Table->BuildDefaultColumns, MESSAGE, Creating a Table, CTRIVIAL
+NoteDataXML_Table->BuildDefaultColumns, MESSAGE, Building Columns Start, CTRIVIAL
+NoteDataXML_table->Columns, TEMPORARY, Setting mColumns to array of length4, CTRIVIAL
+NoteDataXML_table->Columns, TEMPORARY, Hooking up DataSource, CTRIVIAL
+NoteDataXML_table->Columns, TEMPORARY, Hooking up DataSource4, CTRIVIAL
+NoteDataXML_Table->BuildDefaultColumns, MESSAGE, Building Columns Done, CTRIVIAL
+NoteDataXML_table->Columns, TEMPORARY, Setting mColumns to array of length4, CTRIVIAL
+NoteDataXML_table->Columns, TEMPORARY, NOT Hooking up DataSource, CTRIVIAL
+NoteDataXML_Table->BuildDefaultColumns, MESSAGE, Creating a Table, CTRIVIAL
+NoteDataXML_Table->BuildDefaultColumns, MESSAGE, Building Columns Start, CTRIVIAL
+NoteDataXML_table->Columns, TEMPORARY, Setting mColumns to array of length4, CTRIVIAL
+NoteDataXML_table->Columns, TEMPORARY, Hooking up DataSource, CTRIVIAL
+NoteDataXML_table->Columns, TEMPORARY, Hooking up DataSource4, CTRIVIAL
+NoteDataXML_Table->BuildDefaultColumns, MESSAGE, Building Columns Done, CTRIVIAL
+NoteDataXML_table->Columns, TEMPORARY, Setting mColumns to array of length4, CTRIVIAL
+NoteDataXML_table->Columns, TEMPORARY, NOT Hooking up DataSource, CTRIVIAL
+LayoutDatabase->LoadFrom, TIMING, DESERIALIZEALL for LayoutDatabase: Name=default name Guid = tables  took 00:00:00.2010458, ACRITICAL
+NoteDataXML_Table-CreateParent, MESSAGE, Passing 4 columns into new TablePanel, ACRITICAL
+NoteDataXML_Table->CreateParent, MESSAGE, Before HANDLEDATABINING my name is list_randomtables, ACRITICAL
+NoteDataXML_Table-CreateParent, MESSAGE, Passing 4 columns into new TablePanel, ACRITICAL
+NoteDataXML_Table->CreateParent, MESSAGE, Before HANDLEDATABINING my name is list_notebooks, ACRITICAL
+NoteDataXML_Table-CreateParent, MESSAGE, Passing 4 columns into new TablePanel, ACRITICAL
+NoteDataXML_Table->CreateParent, MESSAGE, Before HANDLEDATABINING my name is list_status, ACRITICAL
+NoteDataXML_Table-CreateParent, MESSAGE, Passing 4 columns into new TablePanel, ACRITICAL
+NoteDataXML_Table->CreateParent, MESSAGE, Before HANDLEDATABINING my name is list_subtypes, ACRITICAL
+NoteDataXML_Table-CreateParent, MESSAGE, Passing 4 columns into new TablePanel, ACRITICAL
+NoteDataXML_Table->CreateParent, MESSAGE, Before HANDLEDATABINING my name is list_keywords, ACRITICAL
+NoteDataXML_Table-CreateParent, MESSAGE, Passing 4 columns into new TablePanel, ACRITICAL
+NoteDataXML_Table->CreateParent, MESSAGE, Before HANDLEDATABINING my name is list_worklogcategory, ACRITICAL
+NoteDataXML_Table-CreateParent, MESSAGE, Passing 4 columns into new TablePanel, ACRITICAL
+NoteDataXML_Table->CreateParent, MESSAGE, Before HANDLEDATABINING my name is list_grammar, ACRITICAL
+LayoutDatabase->LoadFrom, TIMING, COPYARRAYS for tables  took 00:00:00.1764589, ACRITICAL
+LayoutPanel->RefreshTables, MESSAGE, >>> refresh tabs for: !<<<, CTRIVIAL
+LayoutPanel->RefreshTables, MESSAGE, >>> refresh tabs for: !<<<, CTRIVIAL
+HeaderBar.UpdateHeader, MESSAGE, Header should be visible, ACRITICAL
+SetSaveRequired, MESSAGE, tablesValue of _savequired BEFORE SET is False, CTRIVIAL
+SetSaveRequired, MESSAGE, tablesset to False, CTRIVIAL
+SetSaveRequired, MESSAGE, tablesValue of _savequired is False, CTRIVIAL
+LayoutPanelBase->GetSaveRequired, MESSAGE, False GetSaveRequired for tables, CTRIVIAL
+SetSaveRequired, MESSAGE, tablesValue of GetSaveRequired is False, CTRIVIAL
+LayoutPanel.SaveLayout, MESSAGE, Saved, ACRITICAL
+SqLiteDatabase->CreateTableIfDoesNotExist, MESSAGE, CREATE TABLE if not exists [pages] ( id INTEGER,  guid TEXT UNIQUE,  xml LONGTEXT,  status TEXT,  name VARCHAR(50),  showtabs boolean,  subpanel boolean,  maximizetabs boolean,  stars INTEGER,  hits INTEGER,  datecreated datetime,  dateedited datetime,  notebook TEXT,  section TEXT,  type TEXT,  source TEXT,  words INTEGER,  keywords TEXT,  linktable LONGTEXT,  backcolor INTEGER,  blurb TEXT,  parentguid TEXT, PRIMARY KEY (id)), ACRITICAL
+SaveTo, MESSAGE, Number of Notes to copy = 14 On GUID'e2a949c4-fd94-402d-9019-91d94f5f54ac' Name'FactSearchTests' IsSubpanel 'False' Starting Count 15 System Notes 0 SkipLinkTable 1, ACRITICAL
+LayoutDatabase->SaveTo, MESSAGE, SKIPPED writing position 0 with caption _linktable_ and GUID_linktable_ and Type Layout.NoteDataXML_Table, ACRITICAL
+LayoutDatabase->SaveTo, MESSAGE, Trying to set Note with Caption FactIndex, ACRITICAL
+LayoutDatabase->SaveTo, MESSAGE, writing position 0 with caption FactIndex, ACRITICAL
+LayoutDatabase->SaveTo, MESSAGE, Trying to set Note with Caption factlist, ACRITICAL
+LayoutDatabase->SaveTo, MESSAGE, writing position 1 with caption factlist, ACRITICAL
+LayoutDatabase->SaveTo, MESSAGE, Trying to set Note with Caption Chapter 1, ACRITICAL
+LayoutDatabase->SaveTo, MESSAGE, writing position 2 with caption Chapter 1, ACRITICAL
+LayoutDatabase->SaveTo, MESSAGE, Trying to set Note with Caption Storyboard, ACRITICAL
+LayoutDatabase->SaveTo, MESSAGE, writing position 3 with caption Storyboard, ACRITICAL
+LayoutDatabase->SaveTo, MESSAGE, Trying to set Note with Caption Chapter 2, ACRITICAL
+LayoutDatabase->SaveTo, MESSAGE, writing position 4 with caption Chapter 2, ACRITICAL
+LayoutDatabase->SaveTo, MESSAGE, Trying to set Note with Caption list_extrawords, ACRITICAL
+LayoutDatabase->SaveTo, MESSAGE, writing position 5 with caption list_extrawords, ACRITICAL
+LayoutDatabase->SaveTo, MESSAGE, Trying to set Note with Caption StarsSilent, ACRITICAL
+LayoutDatabase->SaveTo, MESSAGE, writing position 6 with caption StarsSilent, ACRITICAL
+LayoutDatabase->SaveTo, MESSAGE, Trying to set Note with Caption Text Note, ACRITICAL
+LayoutDatabase->SaveTo, MESSAGE, writing position 7 with caption Text Note, ACRITICAL
+LayoutDatabase->SaveTo, MESSAGE, Trying to set Note with Caption Rhea, ACRITICAL
+LayoutDatabase->SaveTo, MESSAGE, writing position 8 with caption Rhea, ACRITICAL
+LayoutDatabase->SaveTo, MESSAGE, Trying to set Note with Caption Note List, ACRITICAL
+LayoutDatabase->SaveTo, MESSAGE, writing position 9 with caption Note List, ACRITICAL
+LayoutDatabase->SaveTo, MESSAGE, Trying to set Note with Caption Worklog, ACRITICAL
+LayoutDatabase->SaveTo, MESSAGE, writing position 10 with caption Worklog, ACRITICAL
+LayoutDatabase->SaveTo, MESSAGE, Trying to set Note with Caption Kay, ACRITICAL
+LayoutDatabase->SaveTo, MESSAGE, writing position 11 with caption Kay, ACRITICAL
+LayoutDatabase->SaveTo, MESSAGE, Trying to set Note with Caption Narrator, ACRITICAL
+LayoutDatabase->SaveTo, MESSAGE, writing position 12 with caption Narrator, ACRITICAL
+LayoutDatabase->SaveTo, MESSAGE, Trying to set Note with Caption MyPanel, ACRITICAL
+LayoutDatabase->SaveTo, MESSAGE, writing position 13 with caption MyPanel, ACRITICAL
+SaveTo, MESSAGE, Trying to save note of type Layout.NoteDataXML_RichText with Guid 9dfc2441-26bd-4734-a878-726583f3e8e5, ACRITICAL
+SaveTo, MESSAGE, Trying to save note of type Layout.NoteDataXML_GroupEm with Guid 5c23c626-1e39-4ee8-bef3-6a5a24141e73, ACRITICAL
+SaveTo, MESSAGE, Trying to save note of type Layout.NoteDataXML_RichText with Guid ef253ad8-6054-49b2-85c3-7873b4bbe6f1, ACRITICAL
+SaveTo, MESSAGE, Trying to save note of type Layout.NoteDataXML_GroupEm with Guid d625d100-6c92-45ff-9287-636e095b5abf, ACRITICAL
+SaveTo, MESSAGE, Trying to save note of type Layout.NoteDataXML_RichText with Guid dc2f33a1-40fa-4508-8273-90d78f61f2b4, ACRITICAL
+SaveTo, MESSAGE, Trying to save note of type Layout.NoteDataXML_Table with Guid 183a31bd-71b1-4bba-b2d7-1bfb1b425769, ACRITICAL
+TablePanel->Columns->Get, WARNING, This happens when saving a NON VISIBILE table. Suppressing the Popup in this situation but leaving the log in case it causes errors This table list_extrawords has no columns! This usually happens if loading the Table without the Layout it contains being on a form! And form has to call its Show method, ACRITICAL
+SaveTo, MESSAGE, Trying to save note of type Layout.NoteDataXML_RichText with Guid 1f2664c6-9936-4370-b3ae-9551d069b1bd, ACRITICAL
+SaveTo, MESSAGE, Trying to save note of type Layout.NoteDataXML_RichText with Guid 257681f0-70d4-47c0-bbbc-f5d0bb27b8d2, ACRITICAL
+SaveTo, MESSAGE, Trying to save note of type AddIn_Proofread.NoteDataXML_Character with Guid b43738f7-142f-420b-807b-cfb1a509e5d3, ACRITICAL
+SaveTo, MESSAGE, Trying to save note of type Layout.NoteDataXML_NoteList with Guid afc53290-c7cd-47be-97dd-88491e40eb3a, ACRITICAL
+SaveTo, MESSAGE, Trying to save note of type Worklog.NoteDataXML_Worklog with Guid 2b18e737-4797-4341-9ad3-1a5781e1a31f, ACRITICAL
+SaveTo, MESSAGE, Trying to save note of type AddIn_Proofread.NoteDataXML_Character with Guid bab49bc0-9ca7-4cb3-bfc4-2ef2e86af806, ACRITICAL
+SaveTo, MESSAGE, Trying to save note of type AddIn_Proofread.NoteDataXML_Character with Guid d8aa530e-9332-4c9d-a125-d95b36bd4bd4, ACRITICAL
+SaveTo, MESSAGE, Trying to save note of type LayoutPanels.NoteDataXML_Panel with Guid 8dd65c13-5f68-4f0b-8513-d8d8658f5193, ACRITICAL
+LayoutPanel.SaveLayout, MESSAGE, Saved, ACRITICAL
+SqLiteDatabase->CreateTableIfDoesNotExist, MESSAGE, CREATE TABLE if not exists [pages] ( id INTEGER,  guid TEXT UNIQUE,  xml LONGTEXT,  status TEXT,  name VARCHAR(50),  showtabs boolean,  subpanel boolean,  maximizetabs boolean,  stars INTEGER,  hits INTEGER,  datecreated datetime,  dateedited datetime,  notebook TEXT,  section TEXT,  type TEXT,  source TEXT,  words INTEGER,  keywords TEXT,  linktable LONGTEXT,  backcolor INTEGER,  blurb TEXT,  parentguid TEXT, PRIMARY KEY (id)), ACRITICAL
+SaveTo, MESSAGE, Number of Notes to copy = 1 On GUID'8dd65c13-5f68-4f0b-8513-d8d8658f5193' Name'default name' IsSubpanel 'True' Starting Count 1 System Notes 0 SkipLinkTable 0, ACRITICAL
+LayoutDatabase->SaveTo, MESSAGE, Trying to set Note with Caption Text Note, ACRITICAL
+LayoutDatabase->SaveTo, MESSAGE, writing position 0 with caption Text Note, ACRITICAL
+SaveTo, MESSAGE, Trying to save note of type Layout.NoteDataXML_RichText with Guid b4c5b5c0-4eb6-42f8-98ff-293649f85c8f, ACRITICAL
+LayoutDatabase->SaveTo, MESSAGE, Guid = '8dd65c13-5f68-4f0b-8513-d8d8658f5193', ACRITICAL
+LayoutDatabase.SaveTo, MESSAGE, We are UPDATING existing Row.8dd65c13-5f68-4f0b-8513-d8d8658f5193, ACRITICAL
+SqlLiteDatabase->UpdateDataCore, MESSAGE, WHERE: 8dd65c13-5f68-4f0b-8513-d8d8658f5193, ACRITICAL
+SqlLiteDatabase.UpdateSpecific, MESSAGE, UPDATE pages set guid = @guidVALUE,xml = @xmlVALUE,status = @statusVALUE,name = @nameVALUE,showtabs = @showtabsVALUE,subpanel = @subpanelVALUE,maximizetabs = @maximizetabsVALUE,stars = @starsVALUE,hits = @hitsVALUE,datecreated = @datecreatedVALUE,dateedited = @dateeditedVALUE,notebook = @notebookVALUE,section = @sectionVALUE,type = @typeVALUE,source = @sourceVALUE,words = @wordsVALUE,keywords = @keywordsVALUE,linktable = @linktableVALUE,backcolor = @backcolorVALUE,blurb = @blurbVALUE,parentguid = @parentguidVALUE where guid=@WhereValue, ACRITICAL
+SetSaveRequired, MESSAGE, 8dd65c13-5f68-4f0b-8513-d8d8658f5193Value of _savequired BEFORE SET is False, CTRIVIAL
+SetSaveRequired, MESSAGE, 8dd65c13-5f68-4f0b-8513-d8d8658f5193set to False, CTRIVIAL
+SetSaveRequired, MESSAGE, 8dd65c13-5f68-4f0b-8513-d8d8658f5193Value of _savequired is False, CTRIVIAL
+LayoutPanelBase->GetSaveRequired, MESSAGE, False GetSaveRequired for 8dd65c13-5f68-4f0b-8513-d8d8658f5193, CTRIVIAL
+SetSaveRequired, MESSAGE, 8dd65c13-5f68-4f0b-8513-d8d8658f5193Value of GetSaveRequired is False, CTRIVIAL
+SetSaveRequired, MESSAGE, e2a949c4-fd94-402d-9019-91d94f5f54acValue of _savequired BEFORE SET is True, CTRIVIAL
+SetSaveRequired, MESSAGE, e2a949c4-fd94-402d-9019-91d94f5f54acset to False, CTRIVIAL
+SetSaveRequired, MESSAGE, e2a949c4-fd94-402d-9019-91d94f5f54acValue of _savequired is False, CTRIVIAL
 LayoutPanelBase->GetSaveRequired, MESSAGE, False GetSaveRequired for e2a949c4-fd94-402d-9019-91d94f5f54ac, CTRIVIAL
+SetSaveRequired, MESSAGE, e2a949c4-fd94-402d-9019-91d94f5f54acValue of GetSaveRequired is False, CTRIVIAL
+LayoutDatabase->SaveTo, MESSAGE, Guid = 'e2a949c4-fd94-402d-9019-91d94f5f54ac', ACRITICAL
+LayoutDatabase.SaveTo, MESSAGE, We are UPDATING existing Row.e2a949c4-fd94-402d-9019-91d94f5f54ac, ACRITICAL
+SqlLiteDatabase->UpdateDataCore, MESSAGE, WHERE: e2a949c4-fd94-402d-9019-91d94f5f54ac, ACRITICAL
+SqlLiteDatabase.UpdateSpecific, MESSAGE, UPDATE pages set guid = @guidVALUE,xml = @xmlVALUE,status = @statusVALUE,name = @nameVALUE,showtabs = @showtabsVALUE,subpanel = @subpanelVALUE,maximizetabs = @maximizetabsVALUE,stars = @starsVALUE,hits = @hitsVALUE,datecreated = @datecreatedVALUE,dateedited = @dateeditedVALUE,notebook = @notebookVALUE,section = @sectionVALUE,type = @typeVALUE,source = @sourceVALUE,words = @wordsVALUE,keywords = @keywordsVALUE,linktable = @linktableVALUE,backcolor = @backcolorVALUE,blurb = @blurbVALUE,parentguid = @parentguidVALUE where guid=@WhereValue, ACRITICAL
+SetSaveRequired, MESSAGE, e2a949c4-fd94-402d-9019-91d94f5f54acValue of _savequired BEFORE SET is False, CTRIVIAL
+SetSaveRequired, MESSAGE, e2a949c4-fd94-402d-9019-91d94f5f54acset to False, CTRIVIAL
+SetSaveRequired, MESSAGE, e2a949c4-fd94-402d-9019-91d94f5f54acValue of _savequired is False, CTRIVIAL
+LayoutPanelBase->GetSaveRequired, MESSAGE, False GetSaveRequired for e2a949c4-fd94-402d-9019-91d94f5f54ac, CTRIVIAL
+SetSaveRequired, MESSAGE, e2a949c4-fd94-402d-9019-91d94f5f54acValue of GetSaveRequired is False, CTRIVIAL

@@ -80,11 +80,19 @@ namespace LayoutPanels
 			// issues with destroying/disposing the original object
 			//note.CreateParent(panelLayout);
 		}
-		public override void Save()
+		public override void Save ()
 		{
-			base.Save();
+			base.Save ();
 
+
+			// February 2013 - Confusion arises because both LayoutPanel and Notes have ParentGUID
+			//    it is the notes ParentGUID that is blank, not the layoutpanel
+			//NewMessage.Show(String.Format ("My {0} parent GUid is {1} ..", this.Caption, panelLayout.ParentGUID));
 			// need some kind of copy constructor to grab things like Notebook and Section from the parent to give to the child panels
+//			if (panelLayout.ParentGUID == Constants.BLANK) {
+//				panelLayout.ParentGUID = GetAbsoluteParent ();
+//			}
+			//panelLayout.ParentGUID = Layout.GetAbsoluteParent().GUID;
 			panelLayout.SetParentFields(Layout.Section, Layout.Keywords, Layout.Subtype, Layout.Notebook);
 			panelLayout.SaveLayout ();
 		}

@@ -234,7 +234,9 @@ namespace Layout
 				//	NewMessage.Show (this.Parent.Name);
 				
 				Control looker = this.Parent;
-				while ( (layoutParent == null || layoutParent.GetIsChild == true) /*not sure&& (looker != null)*/)
+				if (looker != null)
+				{
+				while ( (layoutParent == null || layoutParent.GetIsChild == true) && (looker != null) /*not sure&& (looker != null)*/)
 				{
 					if (looker is LayoutPanelBase )
 					{
@@ -248,9 +250,14 @@ namespace Layout
 					}
 					// because we want to go all the way to the top we keep looking
 
-
-					looker = looker.Parent;
+						if (null == looker.Parent)
+						{
+							looker = null;
+						}
+						else
+							looker = looker.Parent;
 				}
+				}//if looker not null
 				
 			} else {
 				NewMessage.Show (Loc.Instance.GetStringFmt("No parent for this layout {0} with ParentGUID = {1}", GUID, this.ParentGUID));

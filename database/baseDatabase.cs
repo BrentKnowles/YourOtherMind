@@ -208,6 +208,10 @@ namespace database
 		public abstract void UpdateMultiple_Start ();
 		public abstract bool Delete (string tableName, string WhereColumn, string WhereValue);
 		public abstract int Count(string tablename);
+		public abstract  List<string> GetBackupRowAsString(string Table, string ColumnToMatch, string ColumnValueToMatch, bool IncludeTableNameAtTop);
+		public abstract int ImportFromString ( string Incoming,  string TestColumn);
+		public abstract List<string> GetListOfTables ();
+		public abstract List<string> ExecuteCommandMultiple (string select, DateTime start, DateTime end, bool IgnoreDate);
 	}
 }
 
