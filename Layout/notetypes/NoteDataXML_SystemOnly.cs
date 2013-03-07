@@ -121,7 +121,11 @@ namespace Layout
 			
 			
 			if (GetChildLayout().GetSaveRequired == true) {
-				NewMessage.Show("HandleCloseClick Save is required ");
+				// March 7 2013
+				// Found this message still here WITHOUT an explict save.
+				// Added the save
+				GetChildLayout().SaveLayout ();
+			//	NewMessage.Show("HandleCloseClick Save is required ");
 			}
 			
 			//			if (CloseNoteDelegate != null) {
