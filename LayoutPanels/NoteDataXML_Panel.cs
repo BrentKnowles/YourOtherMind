@@ -75,6 +75,10 @@ namespace LayoutPanels
 		/// </param>
 		public void AddNote (NoteDataInterface note)
 		{
+			if (null == panelLayout) {
+				throw new Exception("No layout defined for this Subpanel. Did you remember to add it to a Layout?");
+			}
+			else
 			panelLayout.AddNote (note);
 			// jan 20 2013 - added this because i was doing an Update in LayoutPanel but that was causing
 			// issues with destroying/disposing the original object

@@ -63,6 +63,8 @@
     <Compile Include="Listitem.cs" />
     <Compile Include="FormUtils.cs" />
     <Compile Include="structGradient.cs" />
+    <Compile Include="TypeConverterYesNo.cs" />
+    <Compile Include="TypeConverterGenericListConverter.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
