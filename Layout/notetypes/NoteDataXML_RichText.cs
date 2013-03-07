@@ -7,7 +7,7 @@ namespace Layout
 {
 	public class NoteDataXML_RichText : NoteDataXML
 	{
-		public enum FormatText {BOLD, STRIKETHRU, ZOOM, LINE, BULLET, BULLETNUMBER};
+		public enum FormatText {BOLD, STRIKETHRU, ZOOM, LINE, BULLET, BULLETNUMBER, DEFAULTFONT};
 		// if this is the value set on the dropdown then we use the defined default in OPTIONS
 		const string defaultmarkup = "Default"; 
 		#region XML

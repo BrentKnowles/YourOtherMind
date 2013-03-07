@@ -74,6 +74,8 @@
     <Compile Include="SqlLiteDatabaseTest.cs" />
     <Compile Include="FindBarTest.cs" />
     <Compile Include="ClassesUsedInTesting\FAKE_FindBar.cs" />
+    <Compile Include="ADDIN_Archive_Test.cs" />
+    <Compile Include="ADDIN_SendAway_Test.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
@@ -108,6 +110,18 @@
     <ProjectReference Include="..\EventTable\TransactionSystem.csproj">
       <Project>{015AC0C9-2F05-45BE-AD21-5A475AACA2D7}</Project>
       <Name>TransactionSystem</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Addins\Addin_Archive\Addin_Archive.csproj">
+      <Project>{026DC0D9-1F00-4D35-BE7E-D9A99688E98E}</Project>
+      <Name>Addin_Archive</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MEF_Interfaces\MEF_Interfaces.csproj">
+      <Project>{2E366A51-224A-4C3B-90D6-FE8C81C9EB78}</Project>
+      <Name>MEF_Interfaces</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Addins\Addin_SendTextAway\Addin_SendTextAway.csproj">
+      <Project>{D11FCD84-F7BD-47D9-A9F4-216319B5351C}</Project>
+      <Name>Addin_SendTextAway</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

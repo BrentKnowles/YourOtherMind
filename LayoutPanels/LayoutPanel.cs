@@ -174,6 +174,13 @@ namespace Layout
 			formatBar.Items.Add (Bullets);
 
 
+			ToolStripButton DefaultText = new ToolStripButton();
+			DefaultText.Text = "default";
+			DefaultText.Click+= (object sender, EventArgs e) => DoFormatOnText(NoteDataXML_RichText.FormatText.DEFAULTFONT);
+
+			//	Bullets.Click+= (object sender, EventArgs e) => DoFormatOnText(NoteDataXML_RichText.FormatText.ZOOM);
+			formatBar.Items.Add (DefaultText);
+
 		}
 
 		void HandleStrikeClick (object sender, EventArgs e)
@@ -654,7 +661,7 @@ namespace Layout
 			(sender as ToolStripDropDownButton).DropDownItems.Clear ();
 
 			foreach (Type t in LayoutDetails.Instance.ListOfTypesToStoreInXML()) {
-				ToolStripButton AddNote = new ToolStripButton(LayoutDetails.Instance.GetNameFromType(t));
+				ToolStripButton AddNote = new ToolStripButton(String.Format ("{0}",LayoutDetails.Instance.GetNameFromType(t)));
 
 				AddNote.Tag = t;
 

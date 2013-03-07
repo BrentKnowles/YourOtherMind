@@ -4,6 +4,7 @@ using System.Drawing;
 using System.Windows.Forms;
 using System.Xml.Serialization;
 using System.Reflection;
+using System.Collections.Generic;
 namespace CoreUtilities
 {
 	public static class FileUtils
@@ -314,6 +315,115 @@ namespace CoreUtilities
 			}
 		}
 	
+		
+		/// <summary>
+		// SOURCE: did up where this cam efrom
+		/// xDirectory.Copy() - Copy a Source Directory
+		/// and it's SubDirectories/Files
+		/// </summary>
+		/// <param name="diSource">The Source Directory</param>
+		/// <param name="diDestination">The Destination Directory</param>
+		/// <param name="FileFilter">The File Filter
+		/// (Standard Windows Filter Parameter, Wildcards: "*" and "?")</param>
+		
+		/// <param name="DirectoryFilter">The Directory Filter
+		/// (Standard Windows Filter Parameter, Wildcards: "*" and "?")</param>
+		/// <param name="Overwrite">Whether or not to Overwrite
+		/// a Destination File if it Exists.</param>
+		/// <param name="FolderLimit">Iteration Limit - Total Number
+		/// of Folders/SubFolders to Copy</param>
+		public static void Copy(DirectoryInfo diSource,
+		                        DirectoryInfo diDestination,
+		                        string FileFilter, string DirectoryFilter,
+		                        bool Overwrite, int FolderLimit, ProgressBar bar)
+		{
+			int iterator = 0;
+			List<DirectoryInfo> diSourceList =
+				new List<DirectoryInfo>();
+			List<FileInfo> fiSourceList =
+				new List<FileInfo>();
+			
+			try
+			{
+				///// Error Checking /////
+				if (diSource == null)
+					throw new ArgumentException("Source Directory: NULL");
+				if (diDestination == null)
+					throw new ArgumentException("Destination Directory: NULL");
+				if (!diSource.Exists)
+					throw new IOException("Source Directory: Does Not Exist");
+				if (!(FolderLimit > 0))
+					throw new ArgumentException("Folder Limit: Less Than 1");
+				if (DirectoryFilter == null || DirectoryFilter == string.Empty)
+					DirectoryFilter = "*";
+				if (FileFilter == null || FileFilter == string.Empty)
+					FileFilter = "*";
+				if (bar == null)
+					throw new ArgumentException("Copy - Progress Bar: NULL");
+				///// Add Source Directory to List /////
+				diSourceList.Add(diSource);
+				
+				///// First Section: Get Folder/File Listing /////
+				while (iterator < diSourceList.Count && iterator < FolderLimit)
+				{
+					foreach (DirectoryInfo di in
+					         diSourceList[iterator].GetDirectories(DirectoryFilter))
+						diSourceList.Add(di);
+					
+					foreach (FileInfo fi in
+					         diSourceList[iterator].GetFiles(FileFilter))
+						fiSourceList.Add(fi);
+					
+					iterator++;
+				}
+				if (bar != null)
+				{
+					bar.Maximum = fiSourceList.Count;
+					bar.Minimum = 0;
+					bar.Step = 1;
+					bar.Value = 0;
+				}
+				///// Second Section: Create Folders from Listing /////
+				foreach (DirectoryInfo di in diSourceList)
+				{
+					if (di.Exists)
+					{
+						string sFolderPath = diDestination.FullName + @"\" +
+							di.FullName.Remove(0, diSource.FullName.Length);
+						
+						///// Prevent Silly IOException /////
+						if (!Directory.Exists(sFolderPath))
+							Directory.CreateDirectory(sFolderPath);
+					}
+				}
+				
+				///// Third Section: Copy Files from Listing /////
+				foreach (FileInfo fi in fiSourceList)
+				{
+					if (fi.Exists)
+					{
+						string sFilePath = diDestination.FullName + @"\" +
+							fi.FullName.Remove(0, diSource.FullName.Length);
+						
+						//// Better Overwrite Test W/O IOException from CopyTo() ////
+						if (Overwrite)
+							fi.CopyTo(sFilePath, true);
+						else
+						{
+							///// Prevent Silly IOException /////
+							if (!File.Exists(sFilePath))
+								fi.CopyTo(sFilePath, true);
+						}
+						if (bar != null)
+						{
+							bar.Increment(1);
+						}
+					}
+				}
+			}
+			catch
+			{ throw; }
+		}
 	}
 }
 

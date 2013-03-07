@@ -151,7 +151,10 @@ namespace YOM2013
 				
 				try {
 					StreamWriter writer = new StreamWriter (sFilepath);
-					if (LinesOfText [0].ToLower () == "[[index]]") {
+
+					if (LayoutDetails.Instance.GetCurrentMarkup().IsIndex(LinesOfText [0].ToLower ()) == true)
+					{
+					//if (LinesOfText [0].ToLower () == "[[index]]") {
 						// we are actually an index note
 						// which will instead list a bunch of other pages to use
 						// we now iterate through LinesOfText[1] to end and parse those instead
@@ -170,45 +173,48 @@ namespace YOM2013
 							}
 							//TODO hook up to Custom Scripting Language system
 							if (sLine.IndexOf ("[[Group") > -1) {
-								//TODO Hook up again laterListOfParsePages = GetListOfPages(sLine, ref bGetWords);
-								NewMessage.Show ("Can I hook this up now?");
+
+								ListOfParsePages = LayoutDetails.Instance.GetCurrentMarkup().GetListOfPages(sLine, ref bGetWords);
+							
 								// we have a group
 								
 							} else {
 								ListOfParsePages.Add (sLine);
 							}
-							
+
+							if (ListOfParsePages != null)
+							{
 							// Now we go through the pages and write them into the text file
 							// feb 19 2010 - added because chapter notes were not coming out in alphaetical
 							ListOfParsePages.Sort ();
 							
 							foreach (string notetoopen in ListOfParsePages) {
-//								DrawingTest.NotePanel panel = ((mdi)_CORE_GetActiveChild()).page_Visual.GetPanelByName(notetoopen);
-//								
-//								
-//							//TODO hook up to Custom Scripting Language system and make more efficient
-//								if (panel != null)
-//								{
-//									RichTextBox tempBox = new RichTextBox();
-//									tempBox.Rtf = panel.appearance.Text;
-//								SaveTextLineByLine(writer, tempBox.Lines, notetoopen);
-//									
-//									if (true == bGetWords)
-//									{
-//										
-//										int Words = RichTextBoxLinks.RichTextBoxEx.WordCount(tempBox.Text);
-//										TotalWords = TotalWords + Words;
-//										
-//										
-//										
-//										
-//										sWordInformation = sWordInformation + String.Format("{0}: {1}\n", notetoopen, Words.ToString());
-//									}
-//									
-//									tempBox.Dispose();
-								//}
+							//	DrawingTest.NotePanel panel = ((mdi)_CORE_GetActiveChild()).page_Visual.GetPanelByName(notetoopen);
+								NoteDataInterface note = LayoutDetails.Instance.CurrentLayout.FindNoteByName(notetoopen);	
+								
+							//TODO hook up to Custom Scripting Language system and make more efficient
+								if (note != null && (note is NoteDataXML_RichText))
+								{
+									RichTextBox tempBox = new RichTextBox();
+									tempBox.Rtf = note.Data1;
+								SaveTextLineByLine(writer, tempBox.Lines, notetoopen);
+									
+									if (true == bGetWords)
+									{
+										int Words = 
+												LayoutDetails.Instance.WordSystemInUse.CountWords(tempBox.Text);//TODO: Hookup RichTextBoxLinks.RichTextBoxEx.WordCount(tempBox.Text);
+										TotalWords = TotalWords + Words;
+										
+										
+
+										
+										sWordInformation = sWordInformation + String.Format("{0}: {1}\n", notetoopen, Words.ToString());
+									}
+									
+									tempBox.Dispose();
+								}
 							} //open each note list
-							
+							}//list not nulls
 							//                            panel.Dispose(); Don't think I can do this becauseit would dlette hte note, benig an ojbect
 							ListOfParsePages = null;
 							
@@ -731,7 +737,7 @@ namespace YOM2013
 			Hotkeys.Add (new KeyData(Loc.Instance.GetString ("Bullet, Numbered"), 	BulletNumber, Keys.Control,  Keys.N,mainform, true, "format_bullet_Number"));
 			Hotkeys.Add (new KeyData(Loc.Instance.GetString ("Highlight Yellow"), 	HighlightYellow, Keys.Control,  Keys.OemOpenBrackets,mainform, true, "highlightyellow"));
 			Hotkeys.Add (new KeyData(Loc.Instance.GetString ("Highlight Red"), 	HighlightRed, Keys.Control,  Keys.OemCloseBrackets,mainform, true, "highlightred"));
-			Hotkeys.Add (new KeyData(Loc.Instance.GetString ("Highlight Green"), 	HighlightGreen, Keys.Control,  Keys.OemBackslash,mainform, true, "highlightgreen"));
+			Hotkeys.Add (new KeyData(Loc.Instance.GetString ("Highlight Green"), 	HighlightGreen, Keys.Control,  Keys.OemMinus,mainform, true, "highlightgreen"));
 			// temporary to test the form thing
 			//Hotkeys.Add (new KeyData(Loc.Instance.GetString ("test"),Test , Keys.Control, Keys.Q, "optionform", true, "testguid"));
 			base.BuildAndProcessHotKeys(Storage);

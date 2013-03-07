@@ -8,8 +8,8 @@ namespace Testing
 		#region variables
 		protected static volatile _TestSingleTon instance;
 		protected static object syncRoot = new Object();
-		
-
+		public static string PathToSendAwayEPUBTemplates = @"C:\Users\BrentK\Documents\Keeper\SendTextAwayControlFiles\epubfiles";
+		public static string Zipper = @"C:\Program Files\7-Zip\";
         #endregion;
 		public _TestSingleTon ()
 		{

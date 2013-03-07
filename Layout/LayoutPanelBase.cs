@@ -301,6 +301,9 @@ namespace Layout
 				case NoteDataXML_RichText.FormatText.BULLETNUMBER:
 					CurrentTextNote.GetRichTextBox().Bullet(true);
 					break;
+				case NoteDataXML_RichText.FormatText.DEFAULTFONT:
+					CurrentTextNote.GetRichTextBox().Font = new System.Drawing.Font("Courier New", 12);
+					break;
 				}
 			}
 		}
