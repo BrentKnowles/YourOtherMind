@@ -710,6 +710,31 @@ namespace Layout
 
 			//return Notes.GetAllNotes().Count;
 		}
+
+		void AddNoteFromMenu (Type TypeTest)
+		{
+			if (null != TypeTest) {
+				NoteDataInterface note = null;
+				try {
+					note = (NoteDataInterface)Activator.CreateInstance (TypeTest, -1, -1);
+					Notes.Add (note);
+					note.CreateParent (this);
+					note.BringToFrontAndShow ();
+					// march 2013, added this for operations that are not guaranteed to work during loading and must be delayed. of corse
+					// they must happen immediately after a create
+					note.UpdateAfterLoad();
+					UpdateListOfNotes ();
+				}
+				catch (Exception ex) {
+					NewMessage.Show (ex.ToString ());
+				}
+				SetSaveRequired (true);
+			}
+			else {
+				lg.Instance.Line ("LayoutPanel.HandleAddNoteClick", ProblemType.ERROR, String.Format ("{0} Type not found", TypeTest.ToString ()));
+			}
+		}
+
 		/// <summary>
 		/// Generic Handle for adding notes by type
 		/// </summary>
@@ -745,35 +770,7 @@ namespace Layout
 				}
 				//Type TypeTest = Type.GetType (t.AssemblyQualifiedName.ToString());
 
-				if (null != TypeTest) {
-
-
-
-				
-				
-
-
-					NoteDataInterface note = null;
-
-					try
-					{
-					note = (NoteDataInterface)Activator.CreateInstance (TypeTest, -1, -1);
-						Notes.Add (note);
-						
-						note.CreateParent (this);
-						note.BringToFrontAndShow();
-						UpdateListOfNotes ();
-					}
-					catch (Exception ex)
-					{
-						NewMessage.Show (ex.ToString());
-					}
-			
-
-					SetSaveRequired (true); 
-				} else {
-					lg.Instance.Line ("LayoutPanel.HandleAddNoteClick", ProblemType.ERROR, String.Format ("{0} Type not found", TypeTest.ToString ()));
-				}
+				AddNoteFromMenu (TypeTest);
 			}
 		}
 
@@ -1085,6 +1082,10 @@ namespace Layout
 			Notes.Add (note);
 			// added to simplilfy things but need to test
 			note.CreateParent(this);
+			// march 2013, added this for operations that are not guaranteed to work during loading and must be delayed. of corse
+			// they must happen immediately after a create
+			// ** I realizes this is needed in ADDNOTEFROMMENU and note here. So commented out, in case it breaks things [didn't notice problems with it but if its inot needed, its not needed]
+		//	note.UpdateAfterLoad();
 			RefreshTabs ();
 		}
 		public override void MoveNote (string GUIDOfNoteToMove, string GUIDOfLayoutToMoveItTo)

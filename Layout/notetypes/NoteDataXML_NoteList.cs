@@ -328,28 +328,32 @@ namespace Layout
 
 			///master.Dispose ();
 
-
+			count.Text = Loc.Instance.GetStringFmt("Count = {0}", this.list.Items.Count);
 		}
 
 		void UpdateLists ()
 		{
 			switch (_mode) {
 			case Modes.LAYOUTS:
+
 				FullTextSearch.Visible = true;
 				CurrentFilterDropDown.Visible = true;
+
 				UpdateListOfLayouts ();
 
 				break;
 			case Modes.NOTES: 
-				UpdateListOfNotesOnLayout ();
+
 				
 				FullTextSearch.Visible = false;
 				CurrentFilterDropDown.Visible = false;
 
+				UpdateListOfNotesOnLayout ();
+
 				break;
 
 			}
-			count.Text = Loc.Instance.GetStringFmt("Count = {0}", this.list.Items.Count);
+		
 		}
 
 		void HandleDropDownSelectedIndexChanged (object sender, EventArgs e)
@@ -367,12 +371,14 @@ namespace Layout
 
 
 			}
-			AdjustHeightOfLayoutSearchPanel();
+		
 			UpdateLists ();
+			AdjustHeightOfLayoutSearchPanel();
 		}
 
 		void AdjustHeightOfLayoutSearchPanel ()
 		{
+			//SearchDetails.BringToFront();
 			int totalheight = 0;
 			foreach (Control control in SearchDetails.Controls)
 			{
@@ -417,6 +423,8 @@ namespace Layout
 			} else {
 
 			}
+
+			count.Text = Loc.Instance.GetStringFmt("Count = {0}", this.list.Items.Count);
 		}
 
 		/// <summary>
