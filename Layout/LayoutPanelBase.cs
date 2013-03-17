@@ -276,7 +276,10 @@ namespace Layout
 				FindBar.FocusOnSearchEdit();
 			}
 		}
+		public virtual void BringNoteToFront(string guid)
+		{
 
+		}
 	
 
 		public void DoFormatOnText (NoteDataXML_RichText.FormatText format)

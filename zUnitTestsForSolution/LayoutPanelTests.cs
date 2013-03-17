@@ -56,6 +56,51 @@ namespace Testing
 //		}
 
 		[Test]
+		public void Quicker_UpdateAfterLoadTest()
+		{
+
+				_TestSingleTon.Instance._SetupForLayoutPanelTests();
+				
+				
+				System.Windows.Forms .Form form = new System.Windows.Forms.Form();
+				
+				
+				
+				
+				FAKE_LayoutPanel panel = new FAKE_LayoutPanel (CoreUtilities.Constants.BLANK, false);
+				
+				form.Controls.Add (panel);
+				
+				// needed else DataGrid does not initialize
+				
+				form.Show ();
+				//form.Visible = false;
+				_w.output("boom");
+				// March 2013 -- notelist relies on having this
+				YOM2013.DefaultLayouts.CreateASystemLayout(form,null);
+				
+				
+				//NOTE: For now remember that htis ADDS 1 Extra notes
+				string panelname = System.Guid.NewGuid().ToString();
+				panel.NewLayout (panelname,true, null);
+				LayoutDetails.Instance.AddToList (typeof(FAKE_NoteDataXML_Panel), "testingpanel");
+				_w.output ("herefirst");
+				
+				// ADD 1 of each type
+				foreach (Type t in LayoutDetails.Instance.ListOfTypesToStoreInXML()) {
+					for (int i = 0; i < 5; i++) {
+						NoteDataInterface note = (NoteDataInterface)Activator.CreateInstance (t);
+						panel.AddNote (note);
+						note.CreateParent(panel);
+
+					note.UpdateAfterLoad();
+					}
+				}
+
+			panel.SaveLayout();
+			form.Dispose ();
+		}
+		[Test]
 		public void SpeedTest ()
 		{
 		// this will be a benchmarking test that will create a complicated Layout

@@ -1079,6 +1079,7 @@ namespace Layout
 		}
 		public override void AddNote(NoteDataInterface note)
 		{
+
 			Notes.Add (note);
 			// added to simplilfy things but need to test
 			note.CreateParent(this);
@@ -1636,7 +1637,10 @@ namespace Layout
 			
 			return (string[])items.ToArray(typeof(string));
 		}
-
+		public override void BringNoteToFront(string guid)
+		{
+			GetNoteOnSameLayout(guid, true);
+		}
 	}
 }
 

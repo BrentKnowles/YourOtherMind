@@ -1102,7 +1102,11 @@ namespace YOM2013
 			SystemLayout.BringToFront ();
 			SystemLayout.LoadLayout (LayoutPanel.SYSTEM_LAYOUT, false, TextEditContextStrip);
 			LayoutDetails.Instance.SystemLayout = SystemLayout;
-			
+			// march 2013 - had to add this because I needed to create notelists 
+			// *later* because they rely on Tables loaded (the list of queries)
+			// hence, they must be come in last but we actually want them on front
+			// TODO: This might work better as an option because some people might want to decide which note takes precedence.
+			SystemLayout.BringNoteToFront("notelist");
 			
 			// now load the table layout which is a subnote of System (For FASTER lookups)
 			// we REBUILD this if necessary, above
@@ -1369,8 +1373,16 @@ namespace YOM2013
 
 
 								LayoutPanel newLayout = CreateLayoutContainer (guidtoload);
+
+							// FAILED: Leaving note to remember. There's a reliance on the Notesb eing loaded when CurrentLayout is set. This can't be the solutino
+							// March 2013 - potentially a bad fix 
+							// some adins need to access CurrentLayout *before* the load is complete (in the UpdateAfterLoad method of a note)
+							// technically all note should be present by the time this runs.
+							// So I remember the change, this setting of current layout used to happen AFTER the .LoadLayout call
+							// I moved it to behind the call
+
 								newLayout.LoadLayout (guidtoload, false, TextEditContextStrip);
-								LayoutDetails.Instance.CurrentLayout = newLayout;
+							LayoutDetails.Instance.CurrentLayout = newLayout;	
 
 
 

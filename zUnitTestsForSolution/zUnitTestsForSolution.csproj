@@ -76,7 +76,7 @@
     <Compile Include="ClassesUsedInTesting\FAKE_FindBar.cs" />
     <Compile Include="ADDIN_Archive_Test.cs" />
     <Compile Include="ADDIN_SendAway_Test.cs" />
-    <Compile Include="ADDIN_Submissions.cs" />
+    <Compile Include="ADDIN_Submissions_Test.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

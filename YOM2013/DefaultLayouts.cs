@@ -207,12 +207,16 @@ namespace YOM2013
 	//			new appframe.ColumnDetails("name",100), new appframe.ColumnDetails("query",100)};
 			subpanel.AddNote(randomTables);
 			randomTables.CreateParent(subpanel.GetPanelsLayout ());
-			
+
+
 			randomTables.AddRow(new object[3]{
-				"1", "WritingProjects", @"notebook='Writing' and section='Projects'"}
+				"1", "All", @""}
+			);
+			randomTables.AddRow(new object[3]{
+				"2", "WritingProjects", @"notebook='Writing' and section='Projects'"}
 			);
 
-
+		
 			///
 			/// -- SUBMISSION -- most submission stuff needs to be in Submission AddIn but these two (for load reasons) are here. Sorry.
 			/// 
@@ -252,9 +256,14 @@ namespace YOM2013
 			randomTables.AddRow(new object[2]{"4", Loc.Instance.GetString("Small Press (Token)")});
 
 			SystemLayout.SaveLayout ();
-			// note list needs to be at the end March 2013
+			// note list needs to be at the end March 2013 but creatio happens earlier so it is the defautl viewed note
+		    // so we build it later
+
+
 			NoteDataXML_NoteList list = new NoteDataXML_NoteList();
+			list.GuidForNote = "notelist";
 			sidedockpanel.AddNote(list);
+
 			list.CreateParent(sidedockpanel.GetPanelsLayout());
 			list.Mode = NoteDataXML_NoteList.Modes.LAYOUTS;
 			
