@@ -26,8 +26,8 @@ namespace YOM2013
 
 		#region variables
 
-		public bool dualScreens_TallestHeight=false; 
-		public bool autoSave=false;
+	//	public bool dualScreens_TallestHeight=false; 
+	//	public bool autoSave=false;
 
 
 		// if true on save we know it is safe to try to save (because interface exists)
@@ -70,6 +70,13 @@ struct checkBoxOptions
 
 		public void Dispose ()
 		{
+		}
+
+		public bool Autosave {
+			get {
+				checkBoxOptions defaultValue = Array.Find (booleanValues,checkBoxOptions => checkBoxOptions.columnKey == "autosave");
+				return GetOption ("autosave", defaultValue.defaultValue);
+			}
 		}
 
 		public bool MultipleScreenHigh {

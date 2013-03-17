@@ -14,7 +14,7 @@ namespace Transactions
 		public Func<List<Type>> TransactionTypesAddedThroughAddIns=null;
 
 
-		const string table_name = "events";
+		public const string table_name = "events";
 		// an int. Values MEAN:
 		public const int T_ADDED = 1;
 		public const int T_IMPORTED = 100;
@@ -65,8 +65,8 @@ namespace Transactions
 		static public ColumnConstant DATA7 = new ColumnConstant("data7", 13, "TEXT", 13);
 		static public ColumnConstant DATA8 = new ColumnConstant("data8", 14, "TEXT", 14);
 		static public ColumnConstant DATA9 = new ColumnConstant("data9", 15, "TEXT", 15);
-
 		static public ColumnConstant TYPE_OF_OBJECT = new ColumnConstant("typeofobject", 16, "TEXT", 16);
+		static public ColumnConstant DATA10 = new ColumnConstant("data10", 17, "TEXT", 17);
 
 
 
@@ -78,12 +78,12 @@ namespace Transactions
 //		static public string F_DATA3 = "Data3";  // 
 //		static public string F_DATA4 = "Data4";  // 
 
-		public const int ColumnCount = 17;
+		public const int ColumnCount = 18;
 
 		static public string[] Columns = new string[ColumnCount] {ID, DATE, TYPE, DATA1_LAYOUTGUID, DATA2, DATA3, DATA4
-		,MONEY1,MONEY2, DATE2, NOTES, DATA5, DATA6, DATA7, DATA8, DATA9, TYPE_OF_OBJECT};
+		,MONEY1,MONEY2, DATE2, NOTES, DATA5, DATA6, DATA7, DATA8, DATA9, TYPE_OF_OBJECT, DATA10};
 		static public string[] Types   = new string[ColumnCount]{ID.Type, DATE.Type, TYPE.Type, DATA1_LAYOUTGUID.Type, DATA2.Type, DATA3.Type, DATA4.Type,
-			MONEY1.Type, MONEY2.Type, DATE2.Type, NOTES.Type, DATA5.Type, DATA6.Type, DATA7.Type, DATA8.Type, DATA9.Type, TYPE_OF_OBJECT.Type};
+			MONEY1.Type, MONEY2.Type, DATE2.Type, NOTES.Type, DATA5.Type, DATA6.Type, DATA7.Type, DATA8.Type, DATA9.Type, TYPE_OF_OBJECT.Type, DATA10.Type};
 
 		BaseDatabase ThisDatabase=null;
 
@@ -224,7 +224,16 @@ namespace Transactions
 		public List<TransactionBase> GetEventsForLayoutGuid (string Guid, string ExtraWhere)
 		{
 			List<TransactionBase> returnValue = new List<TransactionBase> ();
-			List<object[]> results = ThisDatabase.GetValues (table_name, Columns, DATA1_LAYOUTGUID, Guid,Constants.BLANK, ExtraWhere);
+			string ColumnToTest = DATA1_LAYOUTGUID;
+			string ColumnValueToTest = Guid;
+
+			if (Guid == "*") {
+				ColumnToTest = "any";
+				ColumnValueToTest = "*";
+			}
+
+
+			List<object[]> results = ThisDatabase.GetValues (table_name, Columns, ColumnToTest, ColumnValueToTest,Constants.BLANK, ExtraWhere);
 			if (results != null) {
 				foreach(object[] objArray in results)
 				{
@@ -754,6 +763,13 @@ namespace Transactions
 		
 
 
+		public int CountQuery (string str)
+		{
+			int output = 0;
+			string result = ThisDatabase.ExecuteCommand(str, DateTime.Now, DateTime.Now, true);
+			Int32.TryParse(result, out output);
+			return output;
+		}
 	} // class
 
 

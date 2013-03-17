@@ -26,14 +26,39 @@ namespace Testing
 //			_w.output ("dropping table " + Layout.data.dbConstants.table_name);
 //		}
 
+//		[Test]
+//		public void NoteListFailsWithoutASystemLayout()
+//		{
+//			_TestSingleTon.Instance._SetupForLayoutPanelTests();
+//			
+//			
+//			System.Windows.Forms .Form form = new System.Windows.Forms.Form();
+//
+//			FAKE_LayoutPanel panel = new FAKE_LayoutPanel (CoreUtilities.Constants.BLANK, false);
+//			form.Controls.Add (panel);
+//			// needed else DataGrid does not initialize
+//			
+//			form.Show ();
+//			//form.Visible = false;
+//			
+//			//NOTE: For now remember that htis ADDS 1 Extra notes
+//			string panelname = System.Guid.NewGuid().ToString();
+//			panel.NewLayout (panelname,true, null);
+//			LayoutDetails.Instance.AddToList (typeof(FAKE_NoteDataXML_Panel), "testingpanel");
+//
+//			panel.SaveLayout();
+//
+//			NoteDataXML_NoteList lister = new NoteDataXML_NoteList();
+//			panel.AddNote(lister);
+//			lister.CreateParent(panel);
+//
+//			panel.SaveLayout();
+//		}
+
 		[Test]
 		public void SpeedTest ()
 		{
-
-
-
-
-			// this will be a benchmarking test that will create a complicated Layout
+		// this will be a benchmarking test that will create a complicated Layout
 			// Then it will time and record the results of LOADING and SAVING that layout into a 
 			// table saved in my backup paths
 			// will also output a DAAbackup file (text readable) format too
@@ -42,7 +67,8 @@ namespace Testing
 
 			System.Windows.Forms .Form form = new System.Windows.Forms.Form();
 		
-		
+	
+
 
 			FAKE_LayoutPanel panel = new FAKE_LayoutPanel (CoreUtilities.Constants.BLANK, false);
 
@@ -52,11 +78,16 @@ namespace Testing
 			
 			form.Show ();
 			//form.Visible = false;
+			_w.output("boom");
+			// March 2013 -- notelist relies on having this
+			YOM2013.DefaultLayouts.CreateASystemLayout(form,null);
+
 
 			//NOTE: For now remember that htis ADDS 1 Extra notes
 			string panelname = System.Guid.NewGuid().ToString();
 			panel.NewLayout (panelname,true, null);
 			LayoutDetails.Instance.AddToList (typeof(FAKE_NoteDataXML_Panel), "testingpanel");
+			_w.output ("herefirst");
 
 			// ADD 1 of each type
 			foreach (Type t in LayoutDetails.Instance.ListOfTypesToStoreInXML()) {
@@ -66,6 +97,7 @@ namespace Testing
 					note.CreateParent(panel);
 				}
 			}
+			_w.output("here");
 			FAKE_NoteDataXML_Panel panelA = new FAKE_NoteDataXML_Panel ();
 			panelA.Caption = "PanelA";
 			panel.AddNote (panelA);

@@ -31,13 +31,6 @@ namespace YOM2013
 			sidedockpanel.CreateParent(SystemLayout);
 
 
-			NoteDataXML_NoteList list = new NoteDataXML_NoteList();
-			sidedockpanel.AddNote(list);
-			list.CreateParent(sidedockpanel.GetPanelsLayout());
-			list.Mode = NoteDataXML_NoteList.Modes.LAYOUTS;
-
-
-			list.Dock = DockStyle.Fill;
 
 			sidedockpanel.BringToFrontAndShow();
 			sidedockpanel.Dock = DockStyle.Left;
@@ -59,9 +52,9 @@ namespace YOM2013
 
 		
 
-			NoteDataXML_Table randomTables = new NoteDataXML_Table();
+			NoteDataXML_Table randomTables = new NoteDataXML_Table(100, 100,new appframe.ColumnDetails[2]{new appframe.ColumnDetails("id",100), new appframe.ColumnDetails("tables",100)} );
 			randomTables.Caption = LayoutDetails.SYSTEM_RANDOM_TABLES;
-			randomTables.Columns = new appframe.ColumnDetails[2]{new appframe.ColumnDetails("id",100), new appframe.ColumnDetails("tables",100)};
+		//	randomTables.Columns = new appframe.ColumnDetails[2]{new appframe.ColumnDetails("id",100), new appframe.ColumnDetails("tables",100)};
 		
 
 
@@ -73,11 +66,13 @@ namespace YOM2013
 			randomTables.AddRow(new object[2]{"2", "example|colorPROMPTS"});
 			SystemLayout.SaveLayout ();
 
-			randomTables = new NoteDataXML_Table();
-			randomTables.Caption = LayoutDetails.SYSTEM_NOTEBOOKS;
-			randomTables.Columns = new appframe.ColumnDetails[3]{new appframe.ColumnDetails("id",100), 
+			randomTables = new NoteDataXML_Table(100, 100, new appframe.ColumnDetails[3]{new appframe.ColumnDetails("id",100), 
 				new appframe.ColumnDetails("notebooks",100),
-				new appframe.ColumnDetails("sections",200)};
+				new appframe.ColumnDetails("sections",200)});
+			randomTables.Caption = LayoutDetails.SYSTEM_NOTEBOOKS;
+//			randomTables.Columns = new appframe.ColumnDetails[3]{new appframe.ColumnDetails("id",100), 
+//				new appframe.ColumnDetails("notebooks",100),
+//				new appframe.ColumnDetails("sections",200)};
 
 		
 			subpanel.AddNote(randomTables);
@@ -90,10 +85,11 @@ namespace YOM2013
 			///
 			/// -- STATUS
 			/// 
-			randomTables = new NoteDataXML_Table();
+			randomTables = new NoteDataXML_Table(100, 100, new appframe.ColumnDetails[2]{new appframe.ColumnDetails("id",100), 
+				new appframe.ColumnDetails("status",100)});
 			randomTables.Caption = LayoutDetails.SYSTEM_STATUS;
-			randomTables.Columns = new appframe.ColumnDetails[2]{new appframe.ColumnDetails("id",100), 
-				new appframe.ColumnDetails("status",100)};
+		//	randomTables.Columns = new appframe.ColumnDetails[2]{new appframe.ColumnDetails("id",100), 
+		//		new appframe.ColumnDetails("status",100)};
 
 			subpanel.AddNote(randomTables);
 			randomTables.CreateParent(subpanel.GetPanelsLayout());
@@ -118,10 +114,11 @@ namespace YOM2013
 			/// 
 			/// 
 			/// 
-			randomTables = new NoteDataXML_Table();
+			randomTables = new NoteDataXML_Table(100, 100, new appframe.ColumnDetails[2]{new appframe.ColumnDetails("id",100), 
+				new appframe.ColumnDetails("subtype",100)});
 			randomTables.Caption = LayoutDetails.SYSTEM_SUBTYPE;
-			randomTables.Columns = new appframe.ColumnDetails[2]{new appframe.ColumnDetails("id",100), 
-				new appframe.ColumnDetails("subtype",100)};
+	//		randomTables.Columns = new appframe.ColumnDetails[2]{new appframe.ColumnDetails("id",100), 
+		//		new appframe.ColumnDetails("subtype",100)};
 			subpanel.AddNote(randomTables);
 			randomTables.CreateParent(subpanel.GetPanelsLayout());
 
@@ -136,10 +133,11 @@ namespace YOM2013
 			/// 
 			/// 
 			/// 
-			randomTables = new NoteDataXML_Table();
+			randomTables = new NoteDataXML_Table(100, 100,  new appframe.ColumnDetails[2]{new appframe.ColumnDetails("id",100), 
+				new appframe.ColumnDetails("keyword",100)});
 			randomTables.Caption = LayoutDetails.SYSTEM_KEYWORDS;
-			randomTables.Columns = new appframe.ColumnDetails[2]{new appframe.ColumnDetails("id",100), 
-				new appframe.ColumnDetails("keyword",100)};
+		//	randomTables.Columns = new appframe.ColumnDetails[2]{new appframe.ColumnDetails("id",100), 
+		//		new appframe.ColumnDetails("keyword",100)};
 			subpanel.AddNote(randomTables);
 			randomTables.CreateParent(subpanel.GetPanelsLayout ());
 
@@ -158,10 +156,11 @@ namespace YOM2013
 			/// 
 			/// 
 			/// 
-			randomTables = new NoteDataXML_Table();
+			randomTables = new NoteDataXML_Table(100, 100, new appframe.ColumnDetails[2]{new appframe.ColumnDetails("id",100), 
+				new appframe.ColumnDetails("category",100)});
 			randomTables.Caption = LayoutDetails.SYSTEM_WORKLOGCATEGORY;
-			randomTables.Columns = new appframe.ColumnDetails[2]{new appframe.ColumnDetails("id",100), 
-				new appframe.ColumnDetails("category",100)};
+		//	randomTables.Columns = new appframe.ColumnDetails[2]{new appframe.ColumnDetails("id",100), 
+		//		new appframe.ColumnDetails("category",100)};
 			subpanel.AddNote(randomTables);
 			randomTables.CreateParent(subpanel.GetPanelsLayout ());
 			
@@ -175,10 +174,11 @@ namespace YOM2013
 			/// 
 			/// 
 			/// 
-			randomTables = new NoteDataXML_Table();
+			randomTables = new NoteDataXML_Table(100, 100 , new appframe.ColumnDetails[4]{new appframe.ColumnDetails("id",100), 
+				new appframe.ColumnDetails("pattern",100), new appframe.ColumnDetails("advice",100), new appframe.ColumnDetails("overused",100)});
 			randomTables.Caption = LayoutDetails.SYSTEM_GRAMMAR;
-			randomTables.Columns = new appframe.ColumnDetails[4]{new appframe.ColumnDetails("id",100), 
-				new appframe.ColumnDetails("pattern",100), new appframe.ColumnDetails("advice",100), new appframe.ColumnDetails("overused",100)};
+		//	randomTables.Columns = new appframe.ColumnDetails[4]{new appframe.ColumnDetails("id",100), 
+		//		new appframe.ColumnDetails("pattern",100), new appframe.ColumnDetails("advice",100), new appframe.ColumnDetails("overused",100)};
 			subpanel.AddNote(randomTables);
 			randomTables.CreateParent(subpanel.GetPanelsLayout ());
 
@@ -193,6 +193,73 @@ namespace YOM2013
 				"3", "As to whether", @"Whether is sufficient.", "1"}
 			);
 
+			
+			///
+			/// -- Queries
+			/// 
+			/// 
+			/// 
+			randomTables = new NoteDataXML_Table(100, 100, new appframe.ColumnDetails[3]{new appframe.ColumnDetails("id",100), 
+				new appframe.ColumnDetails("name",100), new appframe.ColumnDetails("query",100)});
+			randomTables.GuidForNote ="systemqueries";
+			randomTables.Caption = LayoutDetails.SYSTEM_QUERIES;
+	//		randomTables.Columns = new appframe.ColumnDetails[3]{new appframe.ColumnDetails("id",100), 
+	//			new appframe.ColumnDetails("name",100), new appframe.ColumnDetails("query",100)};
+			subpanel.AddNote(randomTables);
+			randomTables.CreateParent(subpanel.GetPanelsLayout ());
+			
+			randomTables.AddRow(new object[3]{
+				"1", "WritingProjects", @"notebook='Writing' and section='Projects'"}
+			);
+
+
+			///
+			/// -- SUBMISSION -- most submission stuff needs to be in Submission AddIn but these two (for load reasons) are here. Sorry.
+			/// 
+			/// 
+			/// 
+			/// 1. Publish Types (electronic or print)
+			/// 
+			/// 
+			randomTables = new NoteDataXML_Table(100, 100, new appframe.ColumnDetails[2]{new appframe.ColumnDetails("id",100), 
+				new appframe.ColumnDetails("category",100)});
+			randomTables.Caption = LayoutDetails.SYSTEM_PUBLISHTYPES;
+			//	randomTables.Columns = new appframe.ColumnDetails[2]{new appframe.ColumnDetails("id",100), 
+			//		new appframe.ColumnDetails("category",100)};
+			subpanel.AddNote(randomTables);
+			randomTables.CreateParent(subpanel.GetPanelsLayout ());
+			
+			randomTables.AddRow(new object[2]{"1", Loc.Instance.GetString("Both")});
+			randomTables.AddRow(new object[2]{"2", Loc.Instance.GetString("Electronic")});
+			randomTables.AddRow(new object[2]{"3", Loc.Instance.GetString("None")});
+			randomTables.AddRow(new object[2]{"4", Loc.Instance.GetString("Print")});
+
+			///
+			/// 2. Market Types (pay category)
+			/// 
+			/// 
+			randomTables = new NoteDataXML_Table(100, 100, new appframe.ColumnDetails[2]{new appframe.ColumnDetails("id",100), 
+				new appframe.ColumnDetails("category",100)});
+			randomTables.Caption = LayoutDetails.SYSTEM_MARKETTYPES;
+			//	randomTables.Columns = new appframe.ColumnDetails[2]{new appframe.ColumnDetails("id",100), 
+			//		new appframe.ColumnDetails("category",100)};
+			subpanel.AddNote(randomTables);
+			randomTables.CreateParent(subpanel.GetPanelsLayout ());
+			
+			randomTables.AddRow(new object[2]{"1", Loc.Instance.GetString("Non Paying")});
+			randomTables.AddRow(new object[2]{"2", Loc.Instance.GetString("None")});
+			randomTables.AddRow(new object[2]{"3", Loc.Instance.GetString("Semi-Pro")});
+			randomTables.AddRow(new object[2]{"4", Loc.Instance.GetString("Small Press (Token)")});
+
+			SystemLayout.SaveLayout ();
+			// note list needs to be at the end March 2013
+			NoteDataXML_NoteList list = new NoteDataXML_NoteList();
+			sidedockpanel.AddNote(list);
+			list.CreateParent(sidedockpanel.GetPanelsLayout());
+			list.Mode = NoteDataXML_NoteList.Modes.LAYOUTS;
+			
+			
+			list.Dock = DockStyle.Fill;
 
 
 			SystemLayout.SaveLayout ();

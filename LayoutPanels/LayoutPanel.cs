@@ -314,7 +314,10 @@ namespace Layout
 		{
 			return GetListOfStringsFromSystemTable(tableName, Column, "*");
 		}
-
+		public override List<string> GetListOfStringsFromSystemTable (string tableName, int Column, string filter)
+		{
+			return 		GetListOfStringsFromSystemTable(tableName, Column, filter, true);
+		}
 		/// <summary>
 		/// Gets the list of strings from system table.
 		/// 
@@ -326,14 +329,17 @@ namespace Layout
 		/// <param name='table'>
 		/// Table.
 		/// </param>
-		public override List<string> GetListOfStringsFromSystemTable (string tableName, int Column, string filter)
+		public override List<string> GetListOfStringsFromSystemTable (string tableName, int Column, string filter, bool sort)
 		{
 			NoteDataInterface table = FindNoteByName (tableName);
 			List<string> result = new List<string>();
 			if (table != null && (table is NoteDataXML_Table)) {
 				if (((NoteDataXML_Table)table).Columns.Length > Column) {
 					result = ((NoteDataXML_Table)table).GetValuesForColumn(Column, filter);
+					if (true == sort)
+					{
 					result.Sort ();
+					}
 				}
 				else
 				{
@@ -698,7 +704,7 @@ namespace Layout
 			System.Collections.ArrayList list = GetAllNotes();
 			foreach (Layout.NoteDataInterface note in list) {
 				count++;
-				Console.WriteLine(String.Format ("**{0}** GUID = {1} Name={2}", count, note.GuidForNote, note.Caption));
+				//Console.WriteLine(String.Format ("**{0}** GUID = {1} Name={2}", count, note.GuidForNote, note.Caption));
 			}
 			return count;
 
@@ -722,7 +728,7 @@ namespace Layout
 			}
 
 			if ((sender as ToolStripButton).Tag == null) {
-				Console.WriteLine ("LayoutPanel.HandleAddNoteClick", ProblemType.WARNING, "Unable to Add a Note of this Type Because Tag was Null");
+				lg.Instance.Line ("LayoutPanel.HandleAddNoteClick", ProblemType.WARNING, "Unable to Add a Note of this Type Because Tag was Null");
 			} else {
 				//Type t = typeof(NoteDataXML);
 				//Console.WriteLine (t.Assembly.FullName.ToString());
@@ -850,34 +856,50 @@ namespace Layout
 			NoteCanvas.AutoScroll = false;
 
 
-			if (Constants.BLANK == GUID) {NewMessage.Show ("You must specify a layout to load"); return;}
+			if (Constants.BLANK == GUID) {
+				NewMessage.Show ("You must specify a layout to load");
+				return;
+			}
 
 
 			Notes = new LayoutDatabase (GUID);
 			Notes.IsSubPanel = IsSubPanel;
 			if (Notes.LoadFrom (this) == false) {
-				lg.Instance.Line("LayoutPanel.LoadLayout", ProblemType.MESSAGE, "This note is blank still.");
+				lg.Instance.Line ("LayoutPanel.LoadLayout", ProblemType.MESSAGE, "This note is blank still.");
 				//Notes = null;
 				//NewMessage.Show ("That note does not exist");
 			} else {
-				if (this.header != null) header.UpdateHeader();
+				if (this.header != null)
+					header.UpdateHeader ();
 				UpdateListOfNotes ();
-			//	NewMessage.Show (String.Format ("Name={0}, Status={1}", Notes.Name, Notes.Status));
+				//	NewMessage.Show (String.Format ("Name={0}, Status={1}", Notes.Name, Notes.Status));
 			}
 		
 			NoteCanvas.AutoScroll = true;
-			RefreshTabs();
+			RefreshTabs ();
 			if (!GetIsChild && !GetIsSystemLayout) {
-				if (header != null) header.Dispose();
-				header = new HeaderBar(this, this.Notes);
+				if (header != null)
+					header.Dispose ();
+				header = new HeaderBar (this, this.Notes);
 				
 			}
-			SetSaveRequired(false);
+			SetSaveRequired (false);
 
 
-			UpdateLayoutToolbar();
+			UpdateLayoutToolbar ();
 			this.BackColor = Notes.BackgroundColor;
 			IsLoaded = true;
+
+			// certain notes need to call an update routine AFTER all the other
+			// notes on the page have been updated
+			foreach (NoteDataInterface note in LayoutDetails.Instance.UpdateAfterLoadList) {
+
+				note.UpdateAfterLoad();
+			//TODO: do speed testing of this aftewreards
+			}
+
+			LayoutDetails.Instance.UpdateAfterLoadList = new List<NoteDataInterface>();
+
 		}
 
 		private void UpdateLayoutToolbar()

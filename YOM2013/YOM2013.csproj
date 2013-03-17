@@ -62,6 +62,10 @@
       <Project>{015AC0C9-2F05-45BE-AD21-5A475AACA2D7}</Project>
       <Name>TransactionSystem</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\Addins\Addin_Submissions\Addin_Submissions.csproj">
+      <Project>{C78868AA-CE73-4D41-88FA-DFDF90EC872F}</Project>
+      <Name>Addin_Submissions</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System.Windows.Forms" />

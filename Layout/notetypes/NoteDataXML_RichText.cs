@@ -93,10 +93,11 @@ namespace Layout
 				this.Data1 = richBox.Rtf;
 			}
 
-			//MarkupTag is used to determine whether user has changed the data or not to avoid unnecessary slowness in save
-			if (((bool)(MarkupCombo.Tag)) == true)
-			{
-			UpdateMarkupSelection();
+			if (MarkupCombo != null && MarkupCombo.Tag != null) {
+				//MarkupTag is used to determine whether user has changed the data or not to avoid unnecessary slowness in save
+				if (((bool)(MarkupCombo.Tag)) == true) {
+					UpdateMarkupSelection ();
+				}
 			}
 
 		}

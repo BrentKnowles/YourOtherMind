@@ -13,8 +13,11 @@ namespace Layout
 	/// </summary>
 	public class LayoutDetails
 	{
+		// the list of events (deleting, submissions, worklogs)
 		private List<Type> transactionsLIST = new List<Type>();
 
+		// this list TEMPORARILY stores, during a LayoutPanel Load, the list of notes requesting an Update-after-load-finishes. LayoutPanel does this form this. TODO: This is a poor implementation
+		public List<NoteDataInterface> UpdateAfterLoadList = new List<NoteDataInterface>();
 		public void AddTo_TransactionsLIST (Type newType)
 		{
 			transactionsLIST.Add(newType);
@@ -23,11 +26,20 @@ namespace Layout
 			
 
 		#region constants
+
+		public static string SYSTEM_QUERIES ="list_queries";
 		public const string SYSTEM_RANDOM_TABLES = "list_randomtables";
 		public const string SYSTEM_NOTEBOOKS = "list_notebooks";
 		public const string SYSTEM_STATUS = "list_status";
 		public const string SYSTEM_SUBTYPE = "list_subtypes";
 		public const string SYSTEM_KEYWORDS = "list_keywords";
+
+		// March 2013
+		// these two tables need to be in System because of the way I'm storing and loading them from the serialized market table
+		public const  string SYSTEM_PUBLISHTYPES ="list_publishtypes";
+		public const  string SYSTEM_MARKETTYPES ="list_markettypes";
+
+		
 
 		public const string SYSTEM_WORKLOGCATEGORY="list_worklogcategory";
 		public const string SYSTEM_GRAMMAR="list_grammar";

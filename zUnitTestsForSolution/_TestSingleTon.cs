@@ -70,6 +70,7 @@ namespace Testing
 
 			LayoutDetails.Instance.TransactionsList =new Transactions.TransactionsTable(MasterOfLayouts.GetDatabaseType(LayoutDetails.Instance.YOM_DATABASE));
 			db.DropTableIfExists(Layout.data.dbConstants.table_name);
+			db.DropTableIfExists("system");
 			_w.output ("dropping table " + Layout.data.dbConstants.table_name);
 		}
 	}

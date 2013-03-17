@@ -21,9 +21,13 @@ namespace YOM2013
 	public class MainForm : appframe.MainFormBase
 	{
 		// the types of footer messages, influences the control that is updated
-		enum FootMessageType  {LOAD, NOTES, SAVE, SWITCHWINDOWS, NEWSYSTEMNOTE};
+		enum FootMessageType  {LOAD, NOTES, SAVE, SWITCHWINDOWS, NEWSYSTEMNOTE, AUTOSAVE};
 		// the position of the label that is used to display the FooterMessages
 		const int MAIN_MESSAGE_INDEX = 0;
+
+
+		Timer SaveTimer = null;
+
 		#region gui
 		ToolStripMenuItem Windows;
 		ContextMenuStrip TextEditContextStrip;
@@ -441,7 +445,13 @@ namespace YOM2013
 
 		void HandleTestClick (object sender, EventArgs e)
 		{
-			NewMessage.Show ("RANDOM NOTE: " + MasterOfLayouts.GetRandomNoteBy("notebook", "Writing"));
+
+
+			MasterOfLayouts.DeleteTransactionTable();
+
+			//MasterOfLayouts.SearchFor("fish");
+
+		//	NewMessage.Show ("RANDOM NOTE: " + MasterOfLayouts.GetRandomNoteBy("notebook", "Writing"));
 		}
 
 /// <summary>
@@ -590,6 +600,10 @@ namespace YOM2013
 			import.Click += HandleImportOldFilesClick;
 			MainMenu.Items.Add (import);
 
+
+			ToolStripButton ImportAllFromTempDirectory = new ToolStripButton("IMPORT DIrECTORY");
+			ImportAllFromTempDirectory.Click+= HandleImportAllFromDirectoryOfOldFilesCLICK;
+				MainMenu.Items.Add(ImportAllFromTempDirectory);
 			ToolStripButton importEvents = new ToolStripButton("import events");
 			importEvents.Click+= HandleImportEventClick;
 				MainMenu.Items.Add (importEvents);
@@ -597,12 +611,16 @@ namespace YOM2013
 			// DELEGATES
 			LayoutDetails.Instance.UpdateTitle = UpdateTitle;
 
-			ToolStripMenuItem Test = new ToolStripMenuItem (Loc.Instance.Cat.GetString ("TEST"));
+			ToolStripMenuItem Test = new ToolStripMenuItem (Loc.Instance.GetString ("Delete Transaction Table"));
 			MainMenu.Items.Add (Test);
 			//	((ToolStripMenuItem)MainMenu.Items [0]).DropDownItems.Add (Save);
 			Test.Click += HandleTestClick;
 
 
+
+			ToolStripMenuItem Random = new ToolStripMenuItem(Loc.Instance.GetString ("Random Layout"));
+			Random.Click+= HandleRandomClick;
+			GetNoteMenu().DropDownItems.Add (Random);
 
 			// Add option panels to options menu
 			Settings = new Options(LayoutDetails.Instance.YOM_DATABASE);
@@ -625,6 +643,80 @@ namespace YOM2013
 			LayoutDetails.Instance.TransactionsList = Transaction;
 
 
+			SaveTimer= new Timer();
+			SaveTimer.Interval = 300000;
+			SaveTimer.Tick+= HandleSaveTimerTick;
+			SaveTimer.Start ();
+		}
+
+		void HandleImportAllFromDirectoryOfOldFilesCLICK (object sender, EventArgs e)
+		{
+			int count  = 0;
+			int countsubpanels = 0;
+			string directory = @"C:\temppicdirectory\importfiles";
+			string[] files = System.IO.Directory.GetFiles (directory);
+
+			//if (open.ShowDialog () == DialogResult.OK) {
+				TestAndSaveIfNecessary ();
+//			NewMessage.Show ("Count " + files.Length.ToString ());
+				foreach (string thefile in files)
+				{
+					if (thefile.IndexOf("panel") > -1)
+				{countsubpanels++;
+					//break; // we skip subpanels, they get imported implicitly.
+				     }
+				else
+				{
+				UpdateFooter(FootMessageType.LOAD, "Importing " + thefile);
+				FooterStatus.Invalidate();
+				count++;
+					
+					string guid = System.Guid.NewGuid().ToString();
+					//CurrentLayout = new LayoutPanel(Constants.BLANK);
+					
+					LayoutPanel newLayout = CreateLayoutContainer(guid);
+					newLayout.NewLayoutFromOldFile (guid, thefile, false);
+					
+					//newLayout.Dispose();
+				try
+				{
+					newLayout.SaveLayout();
+					MDIHOST.DoCloseNote(false);
+				}
+				catch (Exception ex)
+				{
+					NewMessage.Show ("Skipping" + ex.ToString ());
+				}
+				}	
+					
+					// not sure why this was set. We closeit, why would we have a pointer to it??
+					// Feb 2013 - THis line (once I added automatic saving) actually caused a blank version 
+					// of the Layout to be saved (presumably because it was CLOSED and then a save happened that 
+					// blanked the XML portions! [TODO: Can I replicate this to create a catch for this happening for real?]
+					//LayoutDetails.Instance.CurrentLayout = newLayout;
+				}
+				
+				
+				
+			NewMessage.Show (String.Format ("Imported {0} notes with {1} subpanels skipped from direct import with {2} files in fulll list", count, countsubpanels, files.Length));
+		}
+
+		void HandleRandomClick (object sender, EventArgs e)
+		{
+			NewMessage.Show ("RANDOM NOTE: " + MasterOfLayouts.GetRandomNoteBy("notebook", "Writing"));
+		}
+
+		void HandleSaveTimerTick (object sender, EventArgs e)
+		{
+			if (LayoutDetails.Instance.CurrentLayout != null && Settings != null) {
+
+				if (Settings.Autosave == true)
+				{
+					UpdateFooter(FootMessageType.AUTOSAVE, Loc.Instance.GetStringFmt("Autosaved {0} at {1}", LayoutDetails.Instance.CurrentLayout.Caption, DateTime.Now));
+				                                                            
+				LayoutDetails.Instance.CurrentLayout.SaveLayout ();
+				}
+			}
 		}
 
 		void HandleExportRecentClick (object sender, EventArgs e)
@@ -886,7 +978,7 @@ namespace YOM2013
 			// this was clever but I don't really want a ToolItem for each message
 			// what we will do instead is a Two-Count. You can have two items on at a time, but the l
 
-			if (messageType == FootMessageType.SAVE || messageType == FootMessageType.SWITCHWINDOWS) {
+			if (messageType == FootMessageType.SAVE || messageType == FootMessageType.SWITCHWINDOWS || messageType == FootMessageType.AUTOSAVE) {
 				FooterStatus.Items [MAIN_MESSAGE_INDEX].Tag = "";
 			}
 
@@ -1037,6 +1129,10 @@ namespace YOM2013
 
 				for (int i = 1; i <=bulkmode; i++)
 				{
+
+
+
+
 				string guid = System.Guid.NewGuid().ToString();
 				//CurrentLayout = new LayoutPanel(Constants.BLANK);
 				

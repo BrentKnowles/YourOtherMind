@@ -58,6 +58,8 @@ namespace Testing
 //					2,snake,3
 //					3,lizard,4
 
+			form.Dispose ();
+
 		}
 		[Test]
 		public void ImportListTest_UnequalColumns()
@@ -89,7 +91,7 @@ namespace Testing
 			List<string> values =  test.GetValuesForColumn(1, "*");
 			Assert.AreEqual (3, values.Count);
 			Assert.AreEqual ("1,col2,col3", values[0]);
-
+			form.Dispose ();
 
 		}
 		[Test]
@@ -132,7 +134,7 @@ namespace Testing
 			Assert.AreEqual(91, result.Length);
 			
 
-
+			form.Dispose ();
 
 		}
 
@@ -166,6 +168,7 @@ namespace Testing
 			test.GetTablePanel().InsertRow();
 			test.GetTablePanel().InsertRow();
 			Assert.AreEqual (6, test.RowCount());
+			form.Dispose ();
 		}
 
 

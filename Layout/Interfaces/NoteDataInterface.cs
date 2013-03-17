@@ -75,6 +75,7 @@ namespace Layout
 		// returns the GUID of the master containing object for this form
 		string GetAbsoluteParent();
 		void EndDrag ();
+		void UpdateAfterLoad();
 
 		#endregion;
 	}

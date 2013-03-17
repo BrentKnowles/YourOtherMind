@@ -48,6 +48,19 @@ namespace Transactions
 			RowData[TransactionsTable.TYPE_OF_OBJECT.Index] = this.GetType ().AssemblyQualifiedName;//this.GetType().ToString ();
 		}
 
+		/// <summary>
+		/// Refreshs the type. Call this when Transforming one Transaction into a different kind of transaction to
+		/// ensure the right type is associated with it
+		/// </summary>
+		public void RefreshType(int newTypeNumber)
+		{
+			RowData [TransactionsTable.TYPE.Index] = newTypeNumber;
+			RowData[TransactionsTable.TYPE_OF_OBJECT.Index] = this.GetType ().AssemblyQualifiedName;
+		}
+
+		public string GetTypeCode {
+			get { return RowData [TransactionsTable.TYPE.Index].ToString ();}
+		}
 
 		public DateTime Date1 {
 			get { return DateTime.Parse (this.RowData [TransactionsTable.DATE.Index].ToString ());}

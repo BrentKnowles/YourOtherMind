@@ -385,6 +385,7 @@ namespace Layout
 				(sender as ContextMenuStrip).Items.Add (button);
 			}
 
+
 		}
 
 		void HandleChooseNewAppearanceClick (object sender, EventArgs e)
@@ -856,8 +857,13 @@ namespace Layout
 
 
 			}
+
 			
-			
+		}
+		public virtual void UpdateAfterLoad()
+		{
+			// some notes will override this.
+			// They also need to add themselves to LayoutDetails.Instance.UpdateAfterLoadList
 		}
 
 	}

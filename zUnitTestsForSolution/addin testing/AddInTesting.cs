@@ -18,6 +18,7 @@ namespace Testing
 
 		}
 		[Test]
+		[Ignore]
 		public void TEstMEFPlug ()
 		{
 

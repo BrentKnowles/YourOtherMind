@@ -330,7 +330,8 @@ namespace Layout
 			ShowTabs = false;
 
 			// changed this, might not work. 
-
+			try
+			{
 			XmlSerializer serializer = new XmlSerializer (typeof(NoteDataXML[]),
 			                                              LayoutDetails.Instance.ListOfTypesToStoreInXML ());
 			
@@ -416,7 +417,9 @@ namespace Layout
 						lg.Instance.Line ("LayoutDatabase->LoadFromOld", ProblemType.MESSAGE, "converting " + LayoutElements [i], Loud.CTRIVIAL);
 						//double date = Double.Parse (LayoutElements [i]);
 						//this.DateCreated = DateTime.FromOADate (date);
-						this.DateCreated = DateTime.Parse (LayoutElements [i]);
+						DateTime aDate = DateTime.Now;
+						DateTime.TryParse(LayoutElements [i], out aDate);
+						this.DateCreated = aDate;
 						break;//date
 					case 2:
 						this.Notebook = LayoutElements [i];
@@ -431,26 +434,36 @@ namespace Layout
 
 						break; //page.HighPriority); break;
 					case 5:
-						this.Hits = Int32.Parse (LayoutElements [i]);
+
+						int hits = 0;
+						Int32.TryParse (LayoutElements [i], out hits);
+						this.Hits = hits;
 						break;// page.Hits); break;
 					case 6:
 						this.Keywords = LayoutElements [i];
 						break;// Keywords); break;
 					case 7:
-						this.DateEdited = DateTime.Parse (LayoutElements [i]);
+						DateTime aDate2 = DateTime.Now;
+						DateTime.TryParse (LayoutElements [i], out aDate2);
+						this.DateEdited = aDate2;
 						break; // page.LastEdited); break;
 					case 8:
 						this.Section = LayoutElements [i];
 						break;// page.Section); break;
 					case 9:
-						this.Stars = Int32.Parse (LayoutElements [i]);
+						int TheStars = 0;
+						Int32.TryParse (LayoutElements [i], out TheStars);
+						this.Stars = TheStars;
 						break;// page.Stars); break;
 					case 10:
 						this.Status = LayoutElements [i];
 						break;// page.StatusType); break;
 					case 11:
 						this.Subtype = LayoutElements [i];
-						break;// page.SubType); 
+						break;// page.SubType);
+
+					case 12: this.Source = LayoutElements[i];
+						break;
 					}
 				} catch (Exception ex) {
 					NewMessage.Show (ex.ToString ());
@@ -462,6 +475,12 @@ namespace Layout
 			}
 			dataForThisLayout.Remove (feeder);
 			returnvalue = this.LayoutGUID;
+			}
+			catch (Exception ex)
+			{
+				NewMessage.Show (String.Format ("Import failed for file {0} with error {1}", sFile, ex.ToString()));
+			}
+
 			return returnvalue;
 		}
 
@@ -638,7 +657,7 @@ namespace Layout
 					time = CoreUtilities.TimerCore.Time (() => {
 						// Fill in LAYOUT specific details
 						Status = result [3].ToString ();
-						Name = result [4].ToString ();
+						Name = result [dbConstants.NAME.Index].ToString ();
 						if (result [dbConstants.SHOWTABS.Index].ToString () != Constants.BLANK) {
 							ShowTabs = (bool)result [dbConstants.SHOWTABS.Index];
 						} else {

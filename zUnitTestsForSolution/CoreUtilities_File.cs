@@ -29,6 +29,7 @@ namespace Testing
 		}
 
 		[Test]
+		[Ignore]
 		public void TestEveryThingInCoreUtilities ()
 		{
 			// see commented out stuff, below

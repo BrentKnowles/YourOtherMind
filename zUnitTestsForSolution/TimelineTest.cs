@@ -134,7 +134,7 @@ namespace Testing
 			Assert.NotNull(FoundTable);
 			
 			Assert.AreEqual (1, FoundTable.RowCount());
-
+			form.Dispose ();
 		}
 
 

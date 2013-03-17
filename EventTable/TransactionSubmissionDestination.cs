@@ -9,10 +9,10 @@ namespace Transactions
 		public TransactionSubmissionDestination (DateTime dateSubmitted, string ProjectGUID, string MarketGUID, int Priority,
 		                              float Money1, float Money2, DateTime DataReplied,
 		                              string Notes, string Rights, string Version,
-		                                         string ReplyType, string ReplyFeedback, string SubmissionType) : base(dateSubmitted, ProjectGUID
+		                                         string ReplyType, string ReplyFeedback, string SubmissionType, string MarketName) : base(dateSubmitted, ProjectGUID
 		                                                                      ,MarketGUID,Priority,  Money1,  Money2,  DataReplied,
 		                                                                       Notes,  Rights,  Version,
-		                                                                       ReplyType,  ReplyFeedback,  SubmissionType
+		                                                                       ReplyType,  ReplyFeedback,  SubmissionType, MarketName
 		                                                                      )
 		{
 		}

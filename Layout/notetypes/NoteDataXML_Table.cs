@@ -41,6 +41,7 @@ namespace Layout
 			}
 
 		}
+
 		string tableCaption = Loc.Instance.GetString("ATableCaption");
 		/// <summary>
 		/// Gets or sets the table caption.
@@ -123,7 +124,7 @@ namespace Layout
 		}
 
 		#endregion
-		public void CommonConstructor ()
+		public virtual void CommonConstructor ()
 		{
 			Caption = Loc.Instance.Cat.GetString("Table");
 			lg.Instance.Line("NoteDataXML_Table->BuildDefaultColumns", ProblemType.MESSAGE, "Creating a Table", Loud.CTRIVIAL);
@@ -277,7 +278,7 @@ namespace Layout
 		}
 
 
-		int HandleCellBeginEdit ()
+		protected int HandleCellBeginEdit ()
 		{
 			SetSaveRequired(true);
 			return 1;
@@ -808,6 +809,7 @@ namespace Layout
 							bool add = true;
 							if (filter != "*")
 							{
+								//Console.WriteLine ("Comparing {0} to {1}", row[column].ToString(), value);
 								if (row[column].ToString()!=value)
 								{
 									add = false;
@@ -871,6 +873,24 @@ namespace Layout
 				rows.Add (row);
 			}
 			return rows;
+		}
+		public void ForceTableUpdate(DataTable newDataSource)
+		{
+			dataSource = newDataSource;
+			Table = new TablePanel (dataSource, HandleCellBeginEdit, Columns, GoToNote, this.Caption, GetRandomTableResults);
+//			ColumnDetails[] updatedColumns = Table.GetColumns(true);
+//			if (null != updatedColumns)
+//			{
+//				
+//				// we don't save if columns have been blanked
+//				lg.Instance.Line("NoteDataXML_Table->Save", ProblemType.MESSAGE, "Do not save empty columns, which may have happened simply because the control was not visible");
+//				Columns=updatedColumns;
+//			}
+	//		Save ();
+			//Update(Layout);
+			ParentNotePanel.Dispose();
+			//Parent = null;
+			CreateParent(Layout);
 		}
 
 //		public void AddRow(DataRow row)

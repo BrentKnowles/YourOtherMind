@@ -119,6 +119,9 @@ namespace database
 		/// 
 		///   *      List[0] = the first row with an array matching in size the array ColumnToReturn that was Passed in
 		///   *      To get all values then use columnToTest=any, test="*"
+		/// 
+		/// 
+		/// TODO: Document sorting
 		/// </summary>
 		/// <returns>
 		/// The values.
@@ -1086,54 +1089,60 @@ ORDER BY name;
 
 		public void SearchFullSearchDatabase ()
 		{
+			//NewMessage.Show ("Not implemented");
+			return;
 
-			//TODO: just testing
-			SQLiteConnection sqliteCon = new SQLiteConnection (Connection_String);
-			
-			sqliteCon.Open();
-			string selectSQL = String.Format ("SELECT * FROM {0} where {1} MATCH '{2}'", "fulltextsearch", "texttosearch", "fish");
-			
-			lg.Instance.Line("SqlLiteDatabase.GetValues", ProblemType.WARNING, selectSQL, Loud.CTRIVIAL);
-			//string selectSQL = String.Format ("SELECT {0} FROM {1} LIMIT 1", columnToReturn, tableName, columnToTest, Test);
-			SQLiteCommand selectCommand = new SQLiteCommand (selectSQL, sqliteCon);
-			SQLiteDataReader dataReader = selectCommand.ExecuteReader ();
-			int ColumnToReturn = 1;
-
-			// Iterate every record in the AppUser table
-			while (dataReader.Read()) {
-				object[] tempRow = new object[ColumnToReturn]; // only have one search column
-				for (int i = 0; i < ColumnToReturn; i++ )
-				{
-					Console.WriteLine (dataReader[i].ToString ());
-				}
-
-				//Console.WriteLine ("Name: " + dataReader.GetString (0)					                   + " Username: " + dataReader.GetString (1));
-			}
-			dataReader.Close ();
-			sqliteCon.Close();
+//			//TODO: just testing
+//			SQLiteConnection sqliteCon = new SQLiteConnection (Connection_String);
+//			
+//			sqliteCon.Open();
+//			string selectSQL = String.Format ("SELECT * FROM {0} where {1} MATCH '{2}'", "fulltextsearch", "texttosearch", "fish");
+//			
+//			lg.Instance.Line("SqlLiteDatabase.GetValues", ProblemType.WARNING, selectSQL, Loud.CTRIVIAL);
+//			//string selectSQL = String.Format ("SELECT {0} FROM {1} LIMIT 1", columnToReturn, tableName, columnToTest, Test);
+//			SQLiteCommand selectCommand = new SQLiteCommand (selectSQL, sqliteCon);
+//			SQLiteDataReader dataReader = selectCommand.ExecuteReader ();
+//			int ColumnToReturn = 1;
+//
+//			// Iterate every record in the AppUser table
+//			while (dataReader.Read()) {
+//				object[] tempRow = new object[ColumnToReturn]; // only have one search column
+//				for (int i = 0; i < ColumnToReturn; i++ )
+//				{
+//					Console.WriteLine (dataReader[i].ToString ());
+//				}
+//
+//				//Console.WriteLine ("Name: " + dataReader.GetString (0)					                   + " Username: " + dataReader.GetString (1));
+//			}
+//			dataReader.Close ();
+//			sqliteCon.Close();
 		}
 		public void CreateFullSearchDatabase()
 		{
-			//TODO: http://answers.oreilly.com/topic/1955-how-to-use-full-text-search-in-sqlite/
-			SQLiteConnection sqliteCon = new SQLiteConnection (Connection_String);
-			
-			sqliteCon.Open();
-			string createAppUserTableSQL = String.Format ("CREATE VIRTUAL TABLE {0} USING FTS3 (texttosearch)","fulltextsearch");
-			// status: just testing
 
-			using (SQLiteTransaction sqlTransaction = sqliteCon.BeginTransaction())
-			{
-				// Create the table
-				SQLiteCommand createCommand = new SQLiteCommand(createAppUserTableSQL
-				                                                , sqliteCon);
-				createCommand.ExecuteNonQuery();
-				createCommand.Dispose();
-				
-				// Commit the changes into the database
-				sqlTransaction.Commit();
-			} // end using
+		//	NewMessage.Show ("Not implemented");
+			return;
 
-			sqliteCon.Close();
+//			//TODO: http://answers.oreilly.com/topic/1955-how-to-use-full-text-search-in-sqlite/
+//			SQLiteConnection sqliteCon = new SQLiteConnection (Connection_String);
+//			
+//			sqliteCon.Open();
+//			string createAppUserTableSQL = String.Format ("CREATE VIRTUAL TABLE {0} USING FTS3 (texttosearch)","fulltextsearch");
+//			// status: just testing
+//
+//			using (SQLiteTransaction sqlTransaction = sqliteCon.BeginTransaction())
+//			{
+//				// Create the table
+//				SQLiteCommand createCommand = new SQLiteCommand(createAppUserTableSQL
+//				                                                , sqliteCon);
+//				createCommand.ExecuteNonQuery();
+//				createCommand.Dispose();
+//				
+//				// Commit the changes into the database
+//				sqlTransaction.Commit();
+//			} // end using
+//
+//			sqliteCon.Close();
 
 
 		}
@@ -1230,7 +1239,7 @@ ORDER BY name;
 			
 			
 			lg.Instance.Line("SqlLiteDatabase->ExecuteCommand", ProblemType.MESSAGE, select);
-			string value = "";
+		//	string value = "";
 			SQLiteDataReader executeReader = dbCommand.ExecuteReader (System.Data.CommandBehavior.SingleResult);
 			while (executeReader.Read ()) {
 				results.Add(executeReader[0].ToString ());

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using database;
 using Layout.data;
 using CoreUtilities;
-
+using Layout;
 namespace Testing
 {
 	[TestFixture()]
@@ -782,8 +782,8 @@ namespace Testing
 			db.InsertData (dbConstants.table_name, new string[4] {	dbConstants.NAME,dbConstants.XML,dbConstants.GUID, dbConstants.SUBPANEL
 			}, new object[4] {"Calv", "boo xml", "GUID_C",0});
 
-			Layout.MasterOfLayouts mastery = new Layout.MasterOfLayouts ();
-			List<Layout.MasterOfLayouts.NameAndGuid> list = mastery.GetListOfLayouts ("");
+		//	Layout.MasterOfLayouts mastery = new Layout.MasterOfLayouts ();
+			List<Layout.MasterOfLayouts.NameAndGuid> list = MasterOfLayouts.GetListOfLayouts (Constants.BLANK);
 			foreach (Layout.MasterOfLayouts.NameAndGuid guid in list) {
 				_w.output (guid.Caption);
 			}
@@ -795,7 +795,7 @@ namespace Testing
 
 
 
-			mastery.Dispose ();
+			//mastery.Dispose ();
 			db.Dispose();
 		}
 		[Test()]
@@ -812,8 +812,8 @@ namespace Testing
 			db.InsertData (dbConstants.table_name, new string[4] {	dbConstants.NAME,dbConstants.XML,dbConstants.GUID, dbConstants.SUBPANEL
 			}, new object[4] {"Calv", "boo xml", "GUID_C",1});
 			
-			Layout.MasterOfLayouts mastery = new Layout.MasterOfLayouts ();
-			List<Layout.MasterOfLayouts.NameAndGuid> list = mastery.GetListOfLayouts ("");
+		//	Layout.MasterOfLayouts mastery = new Layout.MasterOfLayouts ();
+			List<Layout.MasterOfLayouts.NameAndGuid> list = MasterOfLayouts.GetListOfLayouts (Constants.BLANK);
 			foreach (Layout.MasterOfLayouts.NameAndGuid guid in list) {
 				_w.output (guid.Caption);
 			}
@@ -825,33 +825,33 @@ namespace Testing
 			*/
 			
 			
-			mastery.Dispose ();
+		//	mastery.Dispose ();
 			db.Dispose();
 		}
 		#endregion
 
 
-		[Test]
-		public void TestFullTextSearch()
-		{
-			Assert.True (false);
-			// This test seems to cause mdhost.exe crashes!?!? Wasn't finished anyways so aborted it
-			return;
-
-			FAKE_SqlLiteDatabase db =CreateTestDatabase(String.Format ("{0}", dbConstants.GUID));
-			db.DropTableIfExists("fulltextsearch");
-			db.CreateFullSearchDatabase();
-			db.InsertData("fulltextsearch", new string[1] {"texttosearch"}, new object[1] {"blah blah hello there"});
-			db.InsertData("fulltextsearch", new string[1] {"texttosearch"}, new object[1] {"blah blah fish hello there"});
-			db.InsertData("fulltextsearch", new string[1] {"texttosearch"}, new object[1] {"blah blah hello there"});
-			db.InsertData("fulltextsearch", new string[1] {"texttosearch"}, new object[1] {"blah blah dog fish hello there"});
-			_w.output("now search");
-			db.SearchFullSearchDatabase ();
-			_w.output("now search over");
-			Console.WriteLine (db.BackupDatabase());
-			db.Dispose();
-			Assert.True (false);
-		}
+//		[Test] - Removed this, won't be using FullTextSearch unless I REALLY need it. Just using standard search seems sufficient.
+//		public void TestFullTextSearch()
+//		{
+//			Assert.True (false);
+//			// This test seems to cause mdhost.exe crashes!?!? Wasn't finished anyways so aborted it
+//			return;
+//
+//			FAKE_SqlLiteDatabase db =CreateTestDatabase(String.Format ("{0}", dbConstants.GUID));
+//			db.DropTableIfExists("fulltextsearch");
+//			db.CreateFullSearchDatabase();
+//			db.InsertData("fulltextsearch", new string[1] {"texttosearch"}, new object[1] {"blah blah hello there"});
+//			db.InsertData("fulltextsearch", new string[1] {"texttosearch"}, new object[1] {"blah blah fish hello there"});
+//			db.InsertData("fulltextsearch", new string[1] {"texttosearch"}, new object[1] {"blah blah hello there"});
+//			db.InsertData("fulltextsearch", new string[1] {"texttosearch"}, new object[1] {"blah blah dog fish hello there"});
+//			_w.output("now search");
+//			db.SearchFullSearchDatabase ();
+//			_w.output("now search over");
+//			Console.WriteLine (db.BackupDatabase());
+//			db.Dispose();
+//			Assert.True (false);
+//		}
 
 	}
 }

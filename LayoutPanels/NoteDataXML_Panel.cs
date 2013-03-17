@@ -97,8 +97,14 @@ namespace LayoutPanels
 //				panelLayout.ParentGUID = GetAbsoluteParent ();
 //			}
 			//panelLayout.ParentGUID = Layout.GetAbsoluteParent().GUID;
-			panelLayout.SetParentFields(Layout.Section, Layout.Keywords, Layout.Subtype, Layout.Notebook);
-			panelLayout.SaveLayout ();
+
+			if (Layout != null) {
+				panelLayout.SetParentFields (Layout.Section, Layout.Keywords, Layout.Subtype, Layout.Notebook);
+				panelLayout.SaveLayout ();
+			} else {
+				NewMessage.Show ("Could not save a subpanel. Import error. Layout was null on " + Caption + " from? " );
+			}
+
 		}
 		
 		protected override void DoBuildChildren (LayoutPanelBase Layout)

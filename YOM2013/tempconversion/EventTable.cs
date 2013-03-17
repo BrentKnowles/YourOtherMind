@@ -914,7 +914,7 @@ namespace Incentives
 		public static void ConvertToYom2013_FromYom2013 (TransactionsTable TransactionT)
 		{
 
-			char DELIM = '@'; // could not be semi because semis are used in RTF text
+			string DELIM = "@@@@"; // could not be semi because semis are used in RTF text
 			DataSet ds = EventTable._LoadTable ();
 			DataTable table = ds.Tables [0];
 
@@ -941,7 +941,7 @@ namespace Incentives
 					string LayoutGUID = error;
 				if (fireline != "")
 				{
-					asparam = fireline.Split (new char[1]{DELIM});
+					asparam = fireline.Split (new string[1]{DELIM},StringSplitOptions.None);
 					if (asparam != null && asparam.Length >=2)
 					{
 						//fireline = asparam[0]; we never use this first line again
@@ -991,7 +991,7 @@ namespace Incentives
 					break;
 				case 1001: 
 					Added++;
-					if (asparam.Length == 13)
+					if (asparam.Length == 14)
 					{
 					//	string dataToAdd = String.Format("{0};{1};{2};{3};{4};{5};{6};{7};{8};{9};{10};{11};{12}", date, GuidOfLayout, GuidOfMarket, Priority, 
 					//	                                 Expenses, Earned, dataReplied, notes, rights, draftversionused, replytype, replyfeedback, submissiontype);
@@ -1013,11 +1013,15 @@ namespace Incentives
 						int Priority = 0;
 						int.TryParse (asparam[3].ToString (), out Priority);
 
+						//NewMessage.Show ("confirm that money1 is expenses!");
 						float Money1 = 0.0f;
 						float.TryParse (asparam[4].ToString(), out  Money1);
 					
 						float Money2 = 0.0f;
 						float.TryParse (asparam[5].ToString (), out Money2);
+
+
+
 						DateTime DataReplied;
 						DateTime.TryParse (asparam[6], out DataReplied);
 
@@ -1028,6 +1032,7 @@ namespace Incentives
 						string ReplyType= asparam[10];
 					string ReplyFeedback=asparam[11]; 
 					string SubmissionType=asparam[12];
+						string MarketName = asparam[13];
 
 						// for this we do not USE the date
 						// we use the parsed date instead
@@ -1036,16 +1041,21 @@ namespace Incentives
 						TransactionT.AddEvent(new TransactionSubmission(DateSubbed, LayoutGUID, MarketGUID,  Priority,
 						                                                Money1,  Money2,  DataReplied,
 						                                                Notes,  Rights,  Version,
-						                                                ReplyType, ReplyFeedback,  SubmissionType));
+						                                                ReplyType, ReplyFeedback,  SubmissionType, MarketName));
 					}
 					else
 					{
-						NewMessage.Show ("A submission did not have right length");
+						string details = "";
+						foreach (string s in asparam)
+						{
+							details = details + Environment.NewLine + s;
+						}
+						NewMessage.Show (String.Format ("A submission did not have right length. Length was {0} should be {1}. Details: {2}", asparam.Length, 14, details));
 					}
 					break;
 				case 1005: 
 					Added++;
-					if (asparam.Length == 13)
+					if (asparam.Length == 14)
 					{
 						//	string dataToAdd = String.Format("{0};{1};{2};{3};{4};{5};{6};{7};{8};{9};{10};{11};{12}", date, GuidOfLayout, GuidOfMarket, Priority, 
 						//	                                 Expenses, Earned, dataReplied, notes, rights, draftversionused, replytype, replyfeedback, submissiontype);
@@ -1082,7 +1092,7 @@ namespace Incentives
 						string ReplyType= asparam[10];
 						string ReplyFeedback=asparam[11]; 
 						string SubmissionType=asparam[12];
-						
+						string MarketName = asparam[13];
 						// for this we do not USE the date
 						// we use the parsed date instead
 						
@@ -1090,11 +1100,16 @@ namespace Incentives
 						TransactionT.AddEvent(new TransactionSubmissionDestination(DateSubbed, LayoutGUID, MarketGUID,  Priority,
 						                                                Money1,  Money2,  DataReplied,
 						                                                Notes,  Rights,  Version,
-						                                                ReplyType, ReplyFeedback,  SubmissionType));
+						                                                ReplyType, ReplyFeedback,  SubmissionType, MarketName));
 					}
 					else
 					{
-						NewMessage.Show ("A submission did not have right length");
+						string details = "";
+						foreach (string s in asparam)
+						{
+							details = details + Environment.NewLine + s;
+						}
+						NewMessage.Show (String.Format ("A submission did not have right length. Length was {0} should be {1}. Details: {2}", asparam.Length, 14, details));
 					}
 					break;
 				}

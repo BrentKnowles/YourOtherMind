@@ -76,6 +76,7 @@
     <Compile Include="ClassesUsedInTesting\FAKE_FindBar.cs" />
     <Compile Include="ADDIN_Archive_Test.cs" />
     <Compile Include="ADDIN_SendAway_Test.cs" />
+    <Compile Include="ADDIN_Submissions.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
@@ -122,6 +123,10 @@
     <ProjectReference Include="..\..\Addins\Addin_SendTextAway\Addin_SendTextAway.csproj">
       <Project>{D11FCD84-F7BD-47D9-A9F4-216319B5351C}</Project>
       <Name>Addin_SendTextAway</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Addins\Addin_Submissions\Addin_Submissions.csproj">
+      <Project>{C78868AA-CE73-4D41-88FA-DFDF90EC872F}</Project>
+      <Name>Addin_Submissions</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

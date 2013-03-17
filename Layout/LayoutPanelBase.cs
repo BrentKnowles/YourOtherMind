@@ -210,6 +210,7 @@ namespace Layout
 		public abstract NoteDataInterface GetNoteOnSameLayout (string GUID, bool GoTo, string TextToFindInRichEdit);
 		public abstract NoteDataInterface FindSubpanelNote (NoteDataInterface note);
 		public abstract void SetCurrentTextNote (NoteDataXML_RichText note);
+		public abstract List<string> GetListOfStringsFromSystemTable (string tableName, int Column, string filter, bool sort);
 		public abstract List<string> GetListOfStringsFromSystemTable (string tableName, int Column, string filter);
 		public abstract List<string> GetListOfStringsFromSystemTable (string tableName, int Column);
 		public abstract NoteDataXML_SystemOnly GetSystemPanel ();

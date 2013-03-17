@@ -299,10 +299,12 @@ namespace Layout
 
 		public override void Save ()
 		{
-			this.ViewStyle = StoryBoard.ViewStyle;
-			this.Storyboard_ShowPreview = StoryBoard.IsPreview;
-			this.Storyboard_SplitterSetting  = StoryBoard.SplitterPosition;
+			if (StoryBoard != null) {
+				this.ViewStyle = StoryBoard.ViewStyle;
+				this.Storyboard_ShowPreview = StoryBoard.IsPreview;
+				this.Storyboard_SplitterSetting = StoryBoard.SplitterPosition;
 
+			}
 
 			base.Save ();
 

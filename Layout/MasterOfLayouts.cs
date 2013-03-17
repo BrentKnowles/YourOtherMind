@@ -34,6 +34,17 @@ namespace Layout
 			private string _caption;
 			public string Guid {get {return _guid;}  set {_guid = value;}}
 			public string Caption {get {return _caption;}  set {_caption = value;}}
+
+			private int words;
+
+			public int Words {
+				get {
+					return words;
+				}
+				set {
+					words = value;
+				}
+			}
 		}
 		#endregion
 		/// <summary>
@@ -47,6 +58,15 @@ namespace Layout
 		                              dbConstants.Types, String.Format ("{0}", dbConstants.ID)
 			);
 			return db;
+		}
+
+		public static void DeleteTransactionTable ()
+		{
+		//	NewMessage.Show ("Not done. Just temp for import/export testing");
+
+			BaseDatabase db = CreateDatabase();
+			db.DropTableIfExists(Transactions.TransactionsTable.table_name);
+			db.Dispose ();
 		}
 
 		public static BaseDatabase GetDatabaseType(string DatabaseName)
@@ -133,6 +153,24 @@ namespace Layout
 			MyDatabase.Dispose();
 			return name;
 		}
+		public static int GetWordsFromGuid (string guid)
+		{
+			BaseDatabase MyDatabase = CreateDatabase ();
+			string name=Constants.BLANK;
+			List<object[]> result = MyDatabase.GetValues(dbConstants.table_name, new string[1] {dbConstants.WORDS}, dbConstants.GUID, guid);
+			if (result != null && result.Count > 0)
+			{
+				if (result[0][0] != null)
+				{
+					name = (result[0][0]).ToString();
+				}
+			}
+
+			int words = 0;
+			Int32.TryParse(name, out words);
+			MyDatabase.Dispose();
+			return words;
+		}
 		/// <summary>
 		/// Gets the name of the GUID from.
 		/// </summary>
@@ -172,7 +210,28 @@ namespace Layout
 			db.Dispose();
 			return result;
 		}
-
+		public static string LookupFilter (string filter)
+		{
+			return LookupFilter (filter, null);
+		}
+		public static string LookupFilter (string filter, LayoutPanelBase OverridePanelToUse)
+		{
+			LayoutPanelBase LayoutToUse = LayoutDetails.Instance.TableLayout;
+			if (null != OverridePanelToUse) {
+				LayoutToUse = OverridePanelToUse;
+			}
+			if (filter != Constants.BLANK) {
+				List<string> results = LayoutToUse.GetListOfStringsFromSystemTable (LayoutDetails.SYSTEM_QUERIES, 2, String.Format ("1|{0}", filter));
+				if (results != null && results.Count > 0) {
+					return results [0];
+				}
+			}
+			return Constants.BLANK;
+		}
+		public static List<NameAndGuid> GetListOfLayouts (string filter)
+		{
+			return GetListOfLayouts(filter, Constants.BLANK, false, null);
+		}
 		/// <summary>
 		/// Gets the list of layouts.
 		/// </summary>
@@ -183,19 +242,42 @@ namespace Layout
 		/// Filter.
 		/// </param>
 			/// 
-		public List<NameAndGuid> GetListOfLayouts (string filter)
+		public static List<NameAndGuid> GetListOfLayouts (string filter, string likename, bool FullTextSearch, LayoutPanelBase OverrideLayoutToUseToFindTable)
 		{
 			
 			BaseDatabase MyDatabase = CreateDatabase ();
-			List<NameAndGuid>result = new List<NameAndGuid>();
+			List<NameAndGuid> result = new List<NameAndGuid> ();
 			if (MyDatabase == null) {
 				throw new Exception ("Unable to create database in LoadFrom");
 			}
+
+			string test = LookupFilter (filter, OverrideLayoutToUseToFindTable); //"and notebook='Writing' ";
+			if (test != Constants.BLANK) {
+				// initial implementation influenced by needs of SUbmission list
+				// always has an existing Where clause (no subpanels) so we need to 
+				// predicate with an AND
+				test = String.Format ("and {0}", test);
+			}
+			if (Constants.BLANK == filter)
+				test = "";
+
+
+			// Add a name filter
+			if (false == FullTextSearch && Constants.BLANK != likename) {
+				test = String.Format ("and name like '%{0}%'", likename);
+			} else if (true == FullTextSearch) {
+				// modify the query to handle full text searching
+				test = String.Format ("and xml like '%{0}%'", likename);
+			}
+
+
+		
+
+			List<object[]> myList = MyDatabase.GetValues (dbConstants.table_name, new string[4] {dbConstants.GUID, dbConstants.NAME, dbConstants.BLURB
+			,dbConstants.WORDS},
+			dbConstants.SUBPANEL , 0,String.Format(" order by {0} COLLATE NOCASE", dbConstants.NAME),test);
 			
-			List<object[]> myList = MyDatabase.GetValues (dbConstants.table_name, new string[3] {dbConstants.GUID, dbConstants.NAME, dbConstants.BLURB},
-			dbConstants.SUBPANEL , 0,String.Format(" order by {0} COLLATE NOCASE", dbConstants.NAME));
-			
-			
+
 			if (myList != null && myList.Count > 0) {
 				
 				foreach (object[] o in myList)
@@ -204,6 +286,9 @@ namespace Layout
 					record.Guid = o[0].ToString();
 					record.Caption = o [1].ToString();
 					record.Blurb = o [2].ToString();
+					int Words = 0;
+					Int32.TryParse(o[3].ToString(), out Words);
+					record.Words = Words;
 					lg.Instance.Line("MasterOfLayouts->GetListOfLayouts", ProblemType.MESSAGE, "adding to ListOfLayouts " + record.Caption);
 					result.Add (record);
 				}
@@ -567,7 +652,7 @@ namespace Layout
 				string line = Constants.BLANK;
 				using (StreamReader sr = new StreamReader(file)) {
 					line = sr.ReadToEnd ();
-					Console.WriteLine (line);
+					//Console.WriteLine (line);
 				}
 
 				errorCode = MyDatabase.ImportFromString (line, dbConstants.GUID);
@@ -731,6 +816,34 @@ namespace Layout
 
 
 			MyDatabase.Dispose ();
+		}
+
+		/// <summary>
+		/// Searchs for. Searches the entire database for any layout with a note mentoining ths search phrase
+		/// </summary>
+		/// <param name='fish'>
+		/// Fish.
+		/// </param>
+		public static void SearchFor (string search_phrase)
+		{
+
+			// I think this is good enough, I don't need full text search
+
+			BaseDatabase MyDatabase = CreateDatabase ();
+			List<object[]> results = MyDatabase.GetValues (dbConstants.table_name, dbConstants.Columns, "any", "*", "", String.Format ("and xml like '%{0}%'", search_phrase));
+			string resultnames = Constants.BLANK;
+			if (results != null) {
+				if (results.Count > 0)
+				{
+					foreach (object[] objectAray in results)
+					{
+						resultnames = resultnames +  " " + objectAray[dbConstants.NAME.Index].ToString ();
+					}
+				}
+			}
+
+			NewMessage.Show (resultnames);
+			MyDatabase.Dispose();
 		}
 	}
 }
