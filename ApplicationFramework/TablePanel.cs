@@ -49,6 +49,12 @@ namespace appframe
 		}
 
 #endregion
+
+		void Row_Changed (object sender, DataRowChangeEventArgs e)
+		{
+			TableChanged();
+		}
+
 		public TablePanel (DataTable _dataSource, Func<int> _tableChanged, ColumnDetails[] incomingColumns, Action<string>_GoToNote, string _TableName, Func<string> _GenerateResults)
 		{
 			InitializeComponent ();
@@ -57,6 +63,9 @@ namespace appframe
 				dataGrid1.DataSource = _dataSource;
 				dataGrid1.DataBindingComplete += HandleDataBindingComplete;
 				dataGrid1.CellBeginEdit += HandleCellBeginEdit;
+
+
+				_dataSource.RowChanged+=Row_Changed;
 				dataGrid1.DataSourceChanged += HandleDataSourceChanged;
 //				NewMessage.Show (((DataTable)dataGrid1.DataSource).Columns.Count.ToString());
 //				NewMessage.Show (Columns.Length.ToString ());

@@ -15,6 +15,11 @@ namespace Testing
 		}
 		protected void _SetupForLayoutPanelTests ()
 		{
+
+			// just to make sure we are calling any other essential setters we call the Singleton, even though we are doign some custom stuff here to
+			_TestSingleTon.Instance._SetupForLayoutPanelTests();
+
+
 			LayoutDetails.Instance.YOM_DATABASE = "yom_test_database.s3db";
 			LayoutDetails.Instance.AddToList(typeof(FAKE_NoteDataXML_Panel),"testingpanel");
 			LayoutDetails.Instance.AddToList(typeof(FAKE_NoteDataXML_Text),"testingtext");

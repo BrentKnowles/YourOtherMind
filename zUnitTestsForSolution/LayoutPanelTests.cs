@@ -110,7 +110,7 @@ namespace Testing
 			_TestSingleTon.Instance._SetupForLayoutPanelTests();
 
 
-			System.Windows.Forms .Form form = new System.Windows.Forms.Form();
+			System.Windows.Forms .Form form = _TestSingleTon.Instance.FORM;//new System.Windows.Forms.Form();
 		
 	
 

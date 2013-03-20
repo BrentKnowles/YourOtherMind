@@ -136,7 +136,7 @@ namespace Layout
 		}
 		protected override void HandleCloseClick (object sender, EventArgs e)
 		{
-			// TODO: probably should save, when I finish that system
+
 			DoCloseNote (false);
 
 		}

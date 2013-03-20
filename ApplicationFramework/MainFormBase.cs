@@ -307,7 +307,7 @@ namespace appframe
 								string menuNameToUse= AddIn.CalledFrom.MyMenuName;
 								if (AddIn.CalledFrom.NoteActionMenuOverride != Constants.BLANK)
 								{
-									menuNameToUse = AddIn.CalledFrom.NoteActionMenuOverride;
+									menuNameToUse =  AddIn.CalledFrom.NoteActionMenuOverride;
 								}
 								NoteTextAction tmp = new NoteTextAction (AddIn.ActionWithParamForNoteTextActions, AddIn.BuildFileNameForActionWithParam, menuNameToUse, AddIn.CalledFrom.ToolTip);
 								tmp.Parent = NoteTextActions;

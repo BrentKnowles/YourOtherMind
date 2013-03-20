@@ -393,7 +393,88 @@ namespace Testing
 			Assert.AreNotEqual(0, note.ToString().Length);
 		}
 
+		/// <summary>
+		/// Iterates the big database. Runs through the DEBUG IMPORET of old data (140mb file)
+		/// Only run this periodically. It worked the last time I used it (March 19 2013)
+	
+		/// </summary>
+		[Test]
+		[Ignore]
+		public void IterateBigDatabase()
+		{
 
+			_TestSingleTon.Instance.SetupForAnyTest ();
+			LayoutDetails.Instance.YOM_DATABASE =@"C:\Users\BrentK\Documents\Projects\Utilities\yom2013B\zUnitTestsForSolution\bin\Debug\yomBIGGY.s3db";
+			LayoutDetails.Instance.OverridePath = Environment.CurrentDirectory;
+			
+			LayoutDetails.Instance.GetAppearanceFromStorage = _TestSingleTon.Instance.GetAppearanceFromStorage;
+
+			
+			
+			LayoutDetails.Instance.AddToList(typeof(FAKE_NoteDataXML_Panel),"testingpanel");
+			LayoutDetails.Instance.AddToList(typeof(FAKE_NoteDataXML_Text),"testingtext");
+			
+			FakeLayoutDatabase layout = new FakeLayoutDatabase("testguid");
+			FAKE_SqlLiteDatabase db = new FAKE_SqlLiteDatabase(layout.GetDatabaseName ());
+
+			LayoutDetails.Instance.SuppressWarnings = true; /// want image missing popups not to bug us
+
+			LayoutDetails.Instance.AddToList(typeof(NoteDataXML_Picture.NoteDataXML_Pictures), "picture");
+			LayoutDetails.Instance.AddToList(typeof(MefAddIns.NoteDataXML_SendIndex), "index");
+			LayoutDetails.Instance.AddToList(typeof(MefAddIns.NoteDataXML_Submissions), "index");
+
+			LayoutDetails.Instance.TransactionsList =new Transactions.TransactionsTable(MasterOfLayouts.GetDatabaseType(LayoutDetails.Instance.YOM_DATABASE));
+		
+
+			Form form = new Form();
+
+			// system panel
+//			LayoutPanel panel = new LayoutPanel("", false);
+//			panel.LoadLayout("system", false, null);
+
+
+			FAKE_LayoutPanel system = new FAKE_LayoutPanel("", false);
+			form.Controls.Add(system);
+			system.LoadLayout("system", false, null);
+
+			LayoutDetails.Instance.SystemLayout = system;
+
+			FAKE_LayoutPanel tablelay = new FAKE_LayoutPanel("", false);
+			form.Controls.Add(tablelay);
+			tablelay.LoadLayout ("tables", false, null);
+
+			LayoutDetails.Instance.TableLayout = tablelay;
+		//	YOM2013.DefaultLayouts.CreateASystemLayout(form,null);
+		//	string ThisLayoutGUID = "mynewpanelXA";
+			// create a layout
+		//	_TestSingleTon.Instance._SetupForLayoutPanelTests (false, @"C:\Users\BrentK\Documents\Projects\Utilities\yom2013B\zUnitTestsForSolution\bin\Debug\yomBIGGY.s3db");
+			//	_SetupForLayoutPanelTests ();
+			
+			FAKE_LayoutPanel panel = new FAKE_LayoutPanel (CoreUtilities.Constants.BLANK, false);
+			form.Controls.Add (panel);
+			//NOTE: For now remember that htis ADDS 1 Extra notes
+		//	panel.NewLayout (ThisLayoutGUID, true, null);
+
+
+
+
+			// tmp: goto all notes
+			System.Collections.Generic.List<MasterOfLayouts.NameAndGuid> ss = MasterOfLayouts.GetListOfLayouts ("");
+			Assert.AreEqual (3651, ss.Count);
+			//Console.WriteLine(ss.Count);
+		//	NewMessage.Show (ss.Count.ToString ());
+			int count = 0;
+			foreach (MasterOfLayouts.NameAndGuid name in ss) {
+				panel.Dispose ();
+				panel = new FAKE_LayoutPanel (CoreUtilities.Constants.BLANK, false);
+				form.Controls.Add (panel);
+				count++;
+				panel.LoadLayout(name.Guid,false, null);
+			//	MDIHOST.DoCloseNote(false);
+			}
+			Assert.AreEqual (3651, count);
+			form.Dispose ();
+		}
 		[Test]
 		public void AnEmptyPanelStillHasAParent()
 		{

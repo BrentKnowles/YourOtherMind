@@ -291,6 +291,14 @@ namespace Layout
 			return dataForThisLayout.AsReadOnly();
 		}
 
+		public NoteDataInterface[] GetNotesSorted ()
+		{
+			NoteDataInterface[] notes_array = new NoteDataInterface[dataForThisLayout.Count];
+			dataForThisLayout.CopyTo (notes_array);
+			Array.Sort (notes_array);
+			return notes_array;
+		}
+
 		/// <summary>
 		/// Creates the name of the file.
 		/// </summary>

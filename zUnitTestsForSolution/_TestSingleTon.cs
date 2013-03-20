@@ -14,6 +14,9 @@ namespace Testing
 		public _TestSingleTon ()
 		{
 		}
+
+
+		public System.Windows.Forms.Form FORM = new System.Windows.Forms.Form();
 		public static _TestSingleTon Instance
 		{
 			get
@@ -37,12 +40,12 @@ namespace Testing
 		// a second test will move it into a subdirectory
 		public const string InvalidImageFile="012.jpg";
 		public const string TESTDATABASE = "yom_test_database.s3db";
-		private void SetupForAnyTest ()
+		public void SetupForAnyTest ()
 		{
 			CoreUtilities.lg.Instance.OnlyTime= false;
 			CoreUtilities.lg.Instance.Loudness = CoreUtilities.Loud.CTRIVIAL;
 		}
-		Layout.AppearanceClass GetAppearanceFromStorage (string Key)
+		public Layout.AppearanceClass GetAppearanceFromStorage (string Key)
 		{
 			Layout.AppearanceClass fake = AppearanceClass.SetAsClassic();
 			//fake.SetAsClassic();
@@ -50,14 +53,22 @@ namespace Testing
 		}
 		public void _SetupForLayoutPanelTests ()
 		{
-			_SetupForLayoutPanelTests(false);
+			_SetupForLayoutPanelTests(false,"");
 		}
 		public void _SetupForLayoutPanelTests (bool BreakAppearanceOnPurpose)
 		{
-			SetupForAnyTest();
+			_SetupForLayoutPanelTests(BreakAppearanceOnPurpose,"");
+		}
+		public void _SetupForLayoutPanelTests (bool BreakAppearanceOnPurpose, string OverrideDatabaseName)
+		{
+			LayoutDetails.Instance.UpdateAfterLoadList.Clear ();
+			SetupForAnyTest ();
 			LayoutDetails.Instance.YOM_DATABASE = TESTDATABASE;
+			if ("" != OverrideDatabaseName) {
+				LayoutDetails.Instance.YOM_DATABASE = OverrideDatabaseName;
+			}
 			LayoutDetails.Instance.OverridePath = Environment.CurrentDirectory;
-
+			_w.output(LayoutDetails.Instance.YOM_DATABASE);
 			if (false == BreakAppearanceOnPurpose) LayoutDetails.Instance.GetAppearanceFromStorage = GetAppearanceFromStorage;
 				else LayoutDetails.Instance.GetAppearanceFromStorage = null;
 
@@ -70,7 +81,7 @@ namespace Testing
 
 			LayoutDetails.Instance.TransactionsList =new Transactions.TransactionsTable(MasterOfLayouts.GetDatabaseType(LayoutDetails.Instance.YOM_DATABASE));
 			db.DropTableIfExists(Layout.data.dbConstants.table_name);
-			db.DropTableIfExists("system");
+		//	db.DropTableIfExists("system");
 			_w.output ("dropping table " + Layout.data.dbConstants.table_name);
 		}
 	}

@@ -31,6 +31,14 @@ namespace Layout
 			return Child;
 		}
 
+		public void BringToFrontChild ()
+		{
+			if (Child != null) {
+				Child.BringToFrontAndShow();
+			}
+		}
+
+
 		public NotePanel (NoteDataInterface child)
 		{
 			this.BackColor = Color.Beige;

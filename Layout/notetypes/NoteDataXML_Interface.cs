@@ -130,7 +130,7 @@ namespace Layout
 
 
 			captionLabel = new ToolStripLabel (this.Caption);
-			captionLabel.ToolTipText = "TIP: Doubleclick this to set the note to its regular size";
+			captionLabel.ToolTipText = Loc.Instance.GetString("TIP: Doubleclick this to set the note to its regular size");
 
 			captionLabel.MouseDown += HandleMouseDown;
 			captionLabel.MouseUp += HandleMouseUp;
@@ -505,6 +505,20 @@ namespace Layout
 				this.Visible = true;
 				ParentNotePanel.Visible = true;
 				ParentNotePanel.BringToFront ();
+
+				if (this.Layout != null)
+				{
+					if (this.Layout.GetIsChild == true)
+					{
+						// get its Panel note somehow?
+						if (this.Layout.Parent is NotePanel)
+						{
+							((NotePanel)Layout.Parent).BringToFrontChild();
+							//this.Layout.Parent.BringToFront();
+						}
+
+					}
+				}
 			}
 		}
 

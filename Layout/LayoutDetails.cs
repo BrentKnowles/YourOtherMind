@@ -27,6 +27,9 @@ namespace Layout
 
 		#region constants
 
+		// for testing and want certain minor warnings not to trigger. use sparingly
+		public bool SuppressWarnings = false;
+
 		public static string SYSTEM_QUERIES ="list_queries";
 		public const string SYSTEM_RANDOM_TABLES = "list_randomtables";
 		public const string SYSTEM_NOTEBOOKS = "list_notebooks";

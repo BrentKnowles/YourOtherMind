@@ -156,6 +156,13 @@ namespace YOM2013
 				try {
 					StreamWriter writer = new StreamWriter (sFilepath);
 
+//
+//					if (LayoutDetails.Instance.CurrentLayout != null && LayoutDetails.Instance.CurrentLayout.CurrentTextNote != null)
+//					{
+//						NewMessage.Show (Loc.Instance.GetString ("The current markup does not support Sending-Away files correctly. Did you forget to set the current markup in the Options menu?"));
+//												if (LayoutDetails.Instance.CurrentLayout.CurrentTextNote is NoteData
+//					}
+
 					if (LayoutDetails.Instance.GetCurrentMarkup().IsIndex(LinesOfText [0].ToLower ()) == true)
 					{
 					//if (LinesOfText [0].ToLower () == "[[index]]") {
@@ -224,8 +231,7 @@ namespace YOM2013
 							
 						}
 					} else {
-						
-						SaveTextLineByLine (writer, LinesOfText, "");
+							SaveTextLineByLine (writer, LinesOfText, "");
 					}
 					
 					writer.Close ();
@@ -616,7 +622,10 @@ namespace YOM2013
 			//	((ToolStripMenuItem)MainMenu.Items [0]).DropDownItems.Add (Save);
 			Test.Click += HandleTestClick;
 
-
+			ToolStripMenuItem Test2 = new ToolStripMenuItem (Loc.Instance.GetString ("Run Through All Pages"));
+			MainMenu.Items.Add (Test2);
+			//	((ToolStripMenuItem)MainMenu.Items [0]).DropDownItems.Add (Save);
+			Test2.Click+= HandleTest2Click; ;
 
 			ToolStripMenuItem Random = new ToolStripMenuItem(Loc.Instance.GetString ("Random Layout"));
 			Random.Click+= HandleRandomClick;
@@ -647,6 +656,18 @@ namespace YOM2013
 			SaveTimer.Interval = 300000;
 			SaveTimer.Tick+= HandleSaveTimerTick;
 			SaveTimer.Start ();
+		}
+
+		void HandleTest2Click (object sender, EventArgs e)
+		{
+			// tmp: goto all notes
+			List<MasterOfLayouts.NameAndGuid> ss = MasterOfLayouts.GetListOfLayouts ("");
+			NewMessage.Show (ss.Count.ToString ());
+			foreach (MasterOfLayouts.NameAndGuid name in ss) {
+
+				LoadLayout(name.Guid,"");
+				MDIHOST.DoCloseNote(false);
+			}
 		}
 
 		void HandleImportAllFromDirectoryOfOldFilesCLICK (object sender, EventArgs e)
@@ -708,7 +729,7 @@ namespace YOM2013
 
 		void HandleSaveTimerTick (object sender, EventArgs e)
 		{
-			if (LayoutDetails.Instance.CurrentLayout != null && Settings != null) {
+			if (LayoutDetails.Instance.CurrentLayout != null && Settings != null && mutex_IsLoading == false) {
 
 				if (Settings.Autosave == true)
 				{
@@ -1313,6 +1334,11 @@ namespace YOM2013
 			}
 		}
 
+
+		/// <summary>
+		/// We are busy loading if this is true which means AUTOSAVES will not function during this time.
+		/// </summary>
+		bool mutex_IsLoading = false;
 		/// <summary>
 		/// Loads the layout.
 		/// </summary>
@@ -1322,11 +1348,15 @@ namespace YOM2013
 		/// <param name='guidtoload'>
 		/// Guidtoload.
 		/// </param>
+		/// <param name="childGUID"> If a guid is specified this note will be GONE to once the load is compete</param>
 		void LoadLayout (string guidtoload, string childGuid)
 		{
 			// force a save before opening or reloading a note
 			Save (true);
 
+			// march 2013 - we do this before the load in case a weird bug or osmething
+			// happens that kept items on the list (occurred int he unit testing)
+			LayoutDetails.Instance.UpdateAfterLoadList.Clear ();
 			if (guidtoload == LayoutPanel.SYSTEM_LAYOUT) {
 				NewMessage.Show (Loc.Instance.GetString ("You are not permitted to load the SYSTEM layout directly but you can make edits to it as it is."));
 			} else {
@@ -1334,7 +1364,7 @@ namespace YOM2013
 
 				
 
-
+					mutex_IsLoading = true;
 
 					this.Cursor = Cursors.WaitCursor;
 					TimeSpan time;
@@ -1420,6 +1450,7 @@ namespace YOM2013
 					NewMessage.Show (Loc.Instance.GetStringFmt ("The layout with ID = '{0}' does not exist. Perhaps it has been deleted. Try refreshing the list.", guidtoload));
 				}
 			}
+			mutex_IsLoading = false; 
 		}
 
 		void RefreshWindowsMenu ()

@@ -355,7 +355,7 @@ namespace Layout
 			newApp.mcaptionBackground = -2987746;
 			newApp.mcaptionForeground = -16777216;
 			newApp.mmainBackground = Color.White.ToArgb();
-			// TODO: What is this for?
+
 			newApp.UseBackgroundColor = true;
 			return newApp;
 
@@ -389,7 +389,7 @@ namespace Layout
 newApp.mcaptionBackground =-16777216;
 			newApp.mcaptionForeground = -256;
 			newApp.mmainBackground =-16777216;
-			// TODO: What is this for?
+
 			newApp.UseBackgroundColor = true;
 			return newApp;
 		}
@@ -406,7 +406,7 @@ newApp.mcaptionBackground =-16777216;
 			newApp.mcaptionBackground =-128;
 			newApp.mcaptionForeground = -16777216;
 			newApp.mmainBackground =-128;
-			// TODO: What is this for?
+
 			newApp.UseBackgroundColor = true;
 			return newApp;
 		}
@@ -423,7 +423,7 @@ newApp.mcaptionBackground =-16777216;
 			newApp.mcaptionBackground =-6972;
 			newApp.mcaptionForeground = -16777216;
 			newApp.mmainBackground =-1468806;
-			// TODO: What is this for?
+
 			newApp.UseBackgroundColor = true;
 			return newApp;
 		}
@@ -440,7 +440,7 @@ newApp.mcaptionBackground =-16777216;
 			newApp.mcaptionBackground =-12490271;
 			newApp.mcaptionForeground = -657931;
 			newApp.mmainBackground =-12490271;
-			// TODO: What is this for?
+		
 			newApp.UseBackgroundColor = true;
 			return newApp;
 		}

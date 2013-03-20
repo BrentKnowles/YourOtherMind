@@ -20,7 +20,7 @@ namespace Layout
 	public class NoteDataXML_NoteList : NoteDataXML
 	{
 		#region constants
-		public enum Modes  {NOTES, LAYOUTS};
+		public enum Modes  {NOTES, LAYOUTS, LAYOUTSONCURRENTLAYOUT};
 
 		public override int defaultHeight { get { return 600; } }
 		public override int defaultWidth { get { return 200; } }
@@ -116,6 +116,7 @@ namespace Layout
 
 			TextEditor = new TextBox();
 			TextEditor.Dock = DockStyle.Bottom;
+			TextEditor.KeyUp+= HandleKeyUp;
 		
 			FullTextSearch = new CheckBox();
 			FullTextSearch.Checked = false;
@@ -160,6 +161,15 @@ namespace Layout
 
 		//	AdjustHeightOfLayoutSearchPanel (); This already gets called when the note type is chosen
 		}
+
+		void HandleKeyUp (object sender, KeyEventArgs e)
+		{
+			if (e.KeyCode == Keys.Enter) {
+				Refresh ();
+			}
+		}
+
+
 		public override void UpdateAfterLoad ()
 		{
 			System.Collections.Generic.List<string> queries = new List<string> ();
@@ -187,6 +197,7 @@ namespace Layout
 			switch (Mode) {
 			case Modes.NOTES: mode.SelectedIndex = 0; break;
 			case Modes.LAYOUTS: mode.SelectedIndex = 1; break;
+			case Modes.LAYOUTSONCURRENTLAYOUT: mode.SelectedIndex = 2; break;
 			}
 		}
 		void HandleSelectedIndexLastQueryChanged (object sender, EventArgs e)
@@ -212,6 +223,9 @@ namespace Layout
 					blurb.Text =(record.Blurb);
 				}
 				break;
+			case Modes.LAYOUTSONCURRENTLAYOUT:
+				//NewMessage.Show ("notes on other click");
+				break;
 			}
 		}
 
@@ -221,16 +235,20 @@ namespace Layout
 		}
 
 	
+	
 
 
-		public void Refresh()
+		public void Refresh ()
 		{
 			if (Modes.NOTES == _mode) {
 				UpdateListOfNotesOnLayout ();
 			} else
 			if (Modes.LAYOUTS == _mode) {
-				UpdateListOfLayouts();
+				UpdateListOfLayouts ();
 				
+			} else
+				if (Modes.LAYOUTSONCURRENTLAYOUT == _mode) {
+				UpdateListOfNotesFromCurrentLayout();
 			}
 		}
 
@@ -261,28 +279,39 @@ namespace Layout
 		/// </param>
 		void HandleListBoxDoubleClick (object sender, EventArgs e)
 		{
+			if (this.list.SelectedItem != null) {
 
-			if (Modes.NOTES == _mode) {
+
+				if (Modes.NOTES == _mode) {
 
 
-					NoteDataInterface note =  (NoteDataInterface)this.list.SelectedItem;
+					NoteDataInterface note = (NoteDataInterface)this.list.SelectedItem;
 
-				if (note != null)
-				{
+					if (note != null) {
 
-					Layout.GoToNote(note);
-				}
-				else
-				{
-					lg.Instance.Line ("LayoutPanel->HandleTabButtonClick", ProblemType.WARNING, String.Format ("Note with guid = {0} not found",note.GuidForNote));
-				}
+						Layout.GoToNote (note);
+					} else {
+						lg.Instance.Line ("LayoutPanel->HandleTabButtonClick", ProblemType.WARNING, String.Format ("Note with guid = {0} not found", note.GuidForNote));
+					}
 
-			} else
+				} else
 				if (Modes.LAYOUTS == _mode) {
-				if (this.list.SelectedItem != null)
-				{
+
 					MasterOfLayouts.NameAndGuid record = (MasterOfLayouts.NameAndGuid)this.list.SelectedItem;
-				LayoutDetails.Instance.LoadLayout(record.Guid);
+					LayoutDetails.Instance.LoadLayout (record.Guid);
+				} else
+					if (Modes.LAYOUTSONCURRENTLAYOUT == _mode) {
+					if (LayoutDetails.Instance.CurrentLayout != null) {
+						NoteDataInterface note = (NoteDataInterface)this.list.SelectedItem;
+						if (note != null) {
+							
+							LayoutDetails.Instance.CurrentLayout.GoToNote (note);
+						} else {
+							lg.Instance.Line ("LayoutPanel->HandleTabButtonClick", ProblemType.WARNING, String.Format ("Note with guid = {0} not found", note.GuidForNote));
+						}
+
+					}
+				
 				}
 
 			}
@@ -351,8 +380,11 @@ namespace Layout
 				UpdateListOfNotesOnLayout ();
 
 				break;
-
+			case Modes.LAYOUTSONCURRENTLAYOUT:
+				UpdateListOfNotesFromCurrentLayout();
+				break;
 			}
+
 		
 		}
 
@@ -370,6 +402,10 @@ namespace Layout
 
 
 
+			}
+			else if ((sender as ComboBox).SelectedIndex == 2)
+			{
+				_mode = Modes.LAYOUTSONCURRENTLAYOUT;
 			}
 		
 			UpdateLists ();
@@ -389,42 +425,57 @@ namespace Layout
 			}
 			SearchDetails.Height = totalheight;
 		}
+		void UpdateListOfNotesFromCurrentLayout ()
+		{
+			if (LayoutDetails.Instance.CurrentLayout != null) {
+				ArrayList Notes = LayoutDetails.Instance.CurrentLayout.GetAllNotes ();
+			
+				BuildListOfNotesOnALayout (Notes);
+			}
+		}
 
+		private void BuildListOfNotesOnALayout (ArrayList Notes)
+		{
+			this.list.DataSource = null;
+			this.list.Items.Clear ();
+			
+		
+			for (int i = Notes.Count - 1; i >= 0; i--) {
+				if (TextEditor.Text != Constants.BLANK) {
+					if (((NoteDataInterface)Notes [i]).Caption.IndexOf (TextEditor.Text) > -1) {
+						
+					} else {
+						Notes.Remove (Notes [i]);
+					}
+				}
+			}
+
+			if (Notes.Count > 0) {
+			
+				this.list.Sorted = true;
+				this.list.DataSource = Notes;
+				this.list.DisplayMember = "Caption";
+				try {
+					this.list.ValueMember = "GuidForNote";
+				} catch (Exception ex) {
+					NewMessage.Show (ex.ToString ());
+				}
+			}
+			count.Text = Loc.Instance.GetStringFmt("Count = {0}", this.list.Items.Count);
+		}
 		public void UpdateListOfNotesOnLayout ()
 		{
 			// if find one then we call its update function
 			if (_mode == Modes.NOTES) {
-				this.list.DataSource = null;
-				this.list.Items.Clear ();
-
-
 
 				ArrayList Notes = Layout.GetAllNotes();
-				for (int i = Notes.Count - 1; i >= 0; i--)
-				{
-					if (TextEditor.Text != Constants.BLANK)
-					{
-						if ( ((NoteDataInterface)Notes[i]).Caption.IndexOf(TextEditor.Text) > -1)
-						{
-							
-						}
-						else
-						{
-							Notes.Remove (Notes[i]);
-						}
-					}
-				}
 
-
-				this.list.Sorted = true;
-				this.list.DataSource = Notes;
-				this.list.DisplayMember = "Caption";
-				this.list.ValueMember = "GuidForNote";
+				BuildListOfNotesOnALayout(Notes);
 			} else {
 
 			}
 
-			count.Text = Loc.Instance.GetStringFmt("Count = {0}", this.list.Items.Count);
+		
 		}
 
 		/// <summary>

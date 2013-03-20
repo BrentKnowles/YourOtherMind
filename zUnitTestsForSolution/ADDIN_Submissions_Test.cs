@@ -42,7 +42,7 @@ namespace Testing
 			//NOTE: For now remember that htis ADDS 1 Extra notes
 			string panelname = System.Guid.NewGuid().ToString();
 			panel.NewLayout (panelname,true, null);
-			LayoutDetails.Instance.AddToList (typeof(FAKE_NoteDataXML_Panel), "testingpanel");
+			LayoutDetails.Instance.AddToList (typeof(FAKE_NoteDataXML_Panel), "testingpanelZZ");
 			_w.output ("herefirst");
 
 

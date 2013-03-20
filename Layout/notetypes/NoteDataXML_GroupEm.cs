@@ -100,7 +100,11 @@ namespace Layout
 			}
 			if (this.Storyboard_SplitterSetting > 0)
 			{
+				// make it run through autmoated test
+				if (true == StoryBoard.Visible )
+				{
 				StoryBoard.SplitterPosition = this.Storyboard_SplitterSetting;
+				}
 			}
 
 
@@ -165,6 +169,7 @@ namespace Layout
 				if (General.IsGraphicFile(record.sFileName))
 				{
 					//NewMessage.Show ("image");
+
 					Layout.GetNoteOnSameLayout(record.ExtraField, true);
 				}
 				else

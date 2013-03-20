@@ -69,6 +69,7 @@ namespace Layout
 		/// The notes.
 		/// </returns>
 		System.Collections.ObjectModel.ReadOnlyCollection<NoteDataInterface>  GetNotes();
+		NoteDataInterface[] GetNotesSorted ();
 		System.Collections.ArrayList GetAllNotes ();
 		NoteDataInterface GetNoteByGUID(string GUID);
 		System.Collections.Generic.List<NoteDataInterface> GetAvailableFolders ();

@@ -915,13 +915,17 @@ namespace Layout
 		/// </summary>
 		public override void RefreshTabs ()
 		{
+			//return; //disabling this made NO difference on a 6 second load card
+
 
 			if (Notes.ShowTabs == true && tabsBar != null) {
 				lg.Instance.Line("LayoutPanel->RefreshTables", ProblemType.MESSAGE,String.Format (">>> refresh tabs for: {0}!<<<", this.Name), Loud.CTRIVIAL);
 				tabsBar.Visible = true;
 				tabsBar.Items.Clear ();
+
+				NoteDataInterface[] notes_array = Notes.GetNotesSorted();
 				// redraw the list of tabs
-				foreach (NoteDataInterface note in Notes.GetNotes()) {
+				foreach (NoteDataInterface note in notes_array) {
 					if (tabsBar.Items.Count > 0) {
 						// insert sep
 						ToolStripSeparator sep = new ToolStripSeparator ();
@@ -1397,7 +1401,8 @@ namespace Layout
 //			return note;
 		}
 
-		private NoteDataInterface GetNote (NoteDataInterface note)
+		// the fast version, looking 
+		public NoteDataInterface GetNote (NoteDataInterface note)
 		{
 			// at this point if the note does not have a parent (because it is a subnote and this is not instantiated when 
 			// searching
@@ -1429,16 +1434,42 @@ namespace Layout
 			// we make a fake note, knowing we'll find the real deal
 			NoteDataInterface fakeNote = new NoteDataXML ();
 			fakeNote.GuidForNote = GUID;
+
+			//	fakeNote = FindNoteByGuid
+			fakeNote.Caption="findme";
 			fakeNote = GetNote (fakeNote);
+			LayoutPanel myParent = null;
+
+			if (null == fakeNote || "findme" == fakeNote.Caption) {
+				// try to look at parent
+				myParent = (LayoutPanel)this.GetAbsoluteParent();
+				if (null != myParent)
+				{
+					fakeNote = myParent.GetNote(fakeNote);
+				}
+			}
+
+
 			if (null != fakeNote) {
 				if (GoTo) {
 					ShowAndFlash (fakeNote);
 
 				
 					if (Constants.BLANK != TextToFindInRichEdit) {
+
 						if (fakeNote is NoteDataXML_RichText) {
+
 							CurrentTextNote = (NoteDataXML_RichText)fakeNote;
+
+							// if we needed to find a parent then the findbar is probably null
+							if (null == FindBar && null != myParent)
+							{
+								myParent.FindBar.DoFind (TextToFindInRichEdit, false, CurrentTextNote.GetRichTextBox (),0);
+							}
+							else
+							{
 							FindBar.DoFind (TextToFindInRichEdit, false, CurrentTextNote.GetRichTextBox (),0);
+							}
 						}
 					}
 

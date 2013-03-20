@@ -498,7 +498,7 @@ namespace Testing
 			_TestSingleTon.Instance._SetupForLayoutPanelTests();
 			
 			//FAKE_LayoutPanel panel = new FAKE_LayoutPanel(CoreUtilities.Constants.BLANK, false);
-
+			Assert.False (MasterOfLayouts.ExistsByGUID("testlayout"));
 
 
 			_w.output("here");
@@ -509,10 +509,11 @@ namespace Testing
 			int count = 25;
 
 		//	FakeLayoutDatabase layout = new FakeLayoutDatabase ("testguid");
-			LayoutPanel layoutPanel = new LayoutPanel (CoreUtilities.Constants.BLANK, false);
+			FAKE_LayoutPanel layoutPanel = new FAKE_LayoutPanel (CoreUtilities.Constants.BLANK, false);
+			layoutPanel.NewLayout("testlayout", false, null);
 			form.Controls.Add (layoutPanel);
 			form.Show ();
-			layoutPanel.NewLayout("testlayout", false, null);
+		
 
 
 			NoteDataXML note = new NoteDataXML ();
@@ -538,7 +539,7 @@ namespace Testing
 
 			
 			layoutPanel.SaveLayout();
-			layoutPanel = new LayoutPanel (CoreUtilities.Constants.BLANK, false);
+			layoutPanel = new FAKE_LayoutPanel (CoreUtilities.Constants.BLANK, false);
 			//_w.output(String.Format ("{0} Objects Saved", layoutPanel.ObjectsSaved().ToString()));
 			layoutPanel.LoadLayout("testlayout",false, null);
 
