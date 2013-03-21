@@ -607,6 +607,12 @@ namespace Layout
 			return app;
 		}
 		#endregion
+
+		public static void SupressBeep (KeyPressEventArgs e)
+		{
+			//e.SuppressKeyPress = true;
+			e.Handled = true;
+		}
 	}
 }
 

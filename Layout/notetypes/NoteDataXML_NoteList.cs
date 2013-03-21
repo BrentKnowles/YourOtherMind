@@ -116,7 +116,8 @@ namespace Layout
 
 			TextEditor = new TextBox();
 			TextEditor.Dock = DockStyle.Bottom;
-			TextEditor.KeyUp+= HandleKeyUp;
+			TextEditor.KeyPress+= HandleTextEditKeyPress;
+						TextEditor.KeyUp+= HandleKeyUp;
 		
 			FullTextSearch = new CheckBox();
 			FullTextSearch.Checked = false;
@@ -162,11 +163,20 @@ namespace Layout
 		//	AdjustHeightOfLayoutSearchPanel (); This already gets called when the note type is chosen
 		}
 
+		void HandleTextEditKeyPress (object sender, KeyPressEventArgs e)
+										{
+											if (e.KeyChar == (char)Keys.Enter) {
+				Refresh ();
+												LayoutDetails.SupressBeep (e);
+											}
+		}
+
 		void HandleKeyUp (object sender, KeyEventArgs e)
 		{
-			if (e.KeyCode == Keys.Enter) {
-				Refresh ();
-			}
+//			if (e.KeyCode == Keys.Enter) {
+//
+//			
+//			}
 		}
 
 

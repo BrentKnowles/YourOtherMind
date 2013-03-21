@@ -1,5 +1,23 @@
-A test readme.
-Just figuring out things.
+YOUROTHERMIND
+=============
+Software for organizing text and notes, offline. Framework supports AddIns. Based upon previous iterations, details at www.yourothermind.com.
 
+Storage
+-------
+Stores data in an sqlite database with simple hooks for exporting data out. Main unit of storage is a Layout, which is a visual canvas allowing notes and images to be placed spatially.
 
-test
+The AddIn system allows new note types to be created.
+
+Installing
+----------
+Details forthcoming. Package should compile as is but there are issues with the sqlite database I used while developing the software I need to explore.
+
+Contact
+=======
+Brent Knowles
+* www.yourothermind.com (software site)
+* www.brentknowles.com (author site)
+
+License
+=======
+YourOtherMind is available under the MIT license. See the LICENSE file for more info.
