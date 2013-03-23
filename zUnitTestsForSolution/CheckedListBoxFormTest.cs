@@ -30,7 +30,7 @@ namespace Testing
 
 
 
-			CheckBoxForm checkers = new CheckBoxForm(All, Selected,"boo", null);
+			CheckBoxForm checkers = new CheckBoxForm(All, Selected,"boo", null, 25);
 			// should not be equal because list comes back sorted
 			Assert.AreNotEqual(checkers.GetItems(), Selected);
 			Selected.Sort();

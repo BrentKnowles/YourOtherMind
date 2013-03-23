@@ -8,11 +8,12 @@ namespace CoreUtilities
 	public class CheckBoxForm : Form
 	{
 		CheckedListBox checkers;
-		public CheckBoxForm (List<string>allItems, List<string> itemsChecked, string label, Icon icon)
+		public CheckBoxForm (List<string>allItems, List<string> itemsChecked, string label, Icon icon, int buttonheight)
 		{
 			this.Text = label;
 
 			Panel panel = new Panel ();
+			panel.Height = buttonheight;
 			this.Controls.Add (panel);
 			checkers = new CheckedListBox ();
 			this.Controls.Add (checkers);
@@ -48,7 +49,7 @@ namespace CoreUtilities
 			}
 
 			checkers.Sorted = true;
-
+			checkers.BringToFront();
 
 		}
 

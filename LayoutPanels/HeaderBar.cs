@@ -248,8 +248,8 @@ namespace LayoutPanels
 
 				headerBar.Items.Add (NameOfLayout);
 				headerBar.Items.Add (starControl);
-
-				foreach (string keyword in GetKeywords ())
+				string[] keywords_list = GetKeywords();
+				foreach (string keyword in keywords_list)
 				{
 
 					// build floating labels
@@ -391,7 +391,8 @@ namespace LayoutPanels
 				checkeditems = new List<string> (temp);
 			}
 
-			CheckBoxForm checkers = new CheckBoxForm (allitems, checkeditems, Loc.Instance.GetString ("Keywords"), appframe.MainFormBase.MainFormIcon);
+			CheckBoxForm checkers = new CheckBoxForm (allitems, checkeditems, Loc.Instance.GetString ("Keywords"), appframe.MainFormBase.MainFormIcon, LayoutDetails.ButtonHeight);
+			checkers.Height = 600;
 			if (checkers.ShowDialog () == DialogResult.OK) {
 				string result = Constants.BLANK;
 				foreach (string s in checkers.GetItems())

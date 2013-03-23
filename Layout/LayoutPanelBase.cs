@@ -73,7 +73,8 @@ namespace Layout
 		}
 
 		/// <summary>
-		/// Gets or sets the parent GUI. (Will be set by NoteDataXML_Panel) and refers to the Layout that owns this layout. That value in turn is used in the MoveNote code
+		/// Gets or sets the parent GUI. (Will be set by NoteDataXML_Panel) and refers to the Layout 
+		/// that owns this layout. That value in turn is used in the MoveNote code
 		/// </summary>
 		/// <value>
 		/// The parent GUI.
@@ -307,6 +308,9 @@ namespace Layout
 					break;
 				case NoteDataXML_RichText.FormatText.DEFAULTFONT:
 					CurrentTextNote.GetRichTextBox().Font = new System.Drawing.Font("Courier New", 12);
+					break;
+				case NoteDataXML_RichText.FormatText.DATE:
+					CurrentTextNote.GetRichTextBox().InsertDate();
 					break;
 				}
 			}

@@ -1,3 +1,32 @@
+// MainForm.cs
+//
+// Copyright (c) 2013 Brent Knowles (http://www.brentknowles.com)
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
+//
+// Review documentation at http://www.yourothermind.com for updated implementation notes, license updates
+// or other general information/
+// 
+// Author information available at http://www.brentknowles.com or http://www.amazon.com/Brent-Knowles/e/B0035WW7OW
+//
+//
+
 using System;
 using System.Windows.Forms;
 using CoreUtilities;
@@ -435,6 +464,7 @@ namespace YOM2013
 		{
 			if ((sender as ToolStripButton).Tag != null && ((sender as ToolStripButton).Tag is NoteTextAction)) {
 				if (LayoutDetails.Instance.CurrentLayout.CurrentTextNote != null) {
+					LayoutDetails.Instance.CurrentLayout.SaveLayout();
 					string[] lines = LayoutDetails.Instance.CurrentLayout.CurrentTextNote.Lines ();
 					if (lines.Length > 0) {
 						string FileName = ((NoteTextAction)(sender as ToolStripButton).Tag).BuildTheFileName();
@@ -458,6 +488,40 @@ namespace YOM2013
 			//MasterOfLayouts.SearchFor("fish");
 
 		//	NewMessage.Show ("RANDOM NOTE: " + MasterOfLayouts.GetRandomNoteBy("notebook", "Writing"));
+		}
+
+		ToolStripMenuItem BuildTempExportMenu ()
+		{
+
+			ToolStripMenuItem exporter = new ToolStripMenuItem();
+			exporter.Text = Loc.Instance.GetString ("Import To New Version (TEMP)");
+			MainMenu.Items.Add (exporter);
+
+			ToolStripButton import = new ToolStripButton ("Import");
+			import.Click += HandleImportOldFilesClick;
+			exporter.DropDownItems.Add (import);
+			
+			
+			ToolStripButton ImportAllFromTempDirectory = new ToolStripButton("IMPORT DIrECTORY");
+			ImportAllFromTempDirectory.Click+= HandleImportAllFromDirectoryOfOldFilesCLICK;
+			exporter.DropDownItems.Add(ImportAllFromTempDirectory);
+			ToolStripButton importEvents = new ToolStripButton("import events");
+			importEvents.Click+= HandleImportEventClick;
+			exporter.DropDownItems.Add (importEvents);
+			
+			
+			
+			ToolStripMenuItem Test = new ToolStripMenuItem (Loc.Instance.GetString ("Delete Transaction Table"));
+			exporter.DropDownItems.Add (Test);
+			//	((ToolStripMenuItem)MainMenu.Items [0]).DropDownItems.Add (Save);
+			Test.Click += HandleTestClick;
+			
+			ToolStripMenuItem Test2 = new ToolStripMenuItem (Loc.Instance.GetString ("Run Through All Pages"));
+			exporter.DropDownItems.Add (Test2);
+			//	((ToolStripMenuItem)MainMenu.Items [0]).DropDownItems.Add (Save);
+			Test2.Click+= HandleTest2Click; ;
+
+			return exporter;
 		}
 
 /// <summary>
@@ -518,10 +582,10 @@ namespace YOM2013
 				lg.Instance.Line ("MainForm", ProblemType.MESSAGE,Loc.Instance.Cat.GetString ("Loading"));
 			
 			} catch (Exception ex) {
-				Console.WriteLine (ex.ToString ());
+				lg.Instance.Line ("MainForm", ProblemType.EXCEPTION,ex.ToString ());
 			}
 
-			Console.WriteLine (LayoutDetails.Instance.Path);
+		//	Conole.WriteLine (LayoutDetails.Instance.Path);
 
 
 
@@ -600,32 +664,13 @@ namespace YOM2013
 			About.Click+= HandleAboutClick;
 			Help.DropDownItems.Add (About);
 			MainMenu.Items.Add (Help);
-
-
-			ToolStripButton import = new ToolStripButton ("Import");
-			import.Click += HandleImportOldFilesClick;
-			MainMenu.Items.Add (import);
-
-
-			ToolStripButton ImportAllFromTempDirectory = new ToolStripButton("IMPORT DIrECTORY");
-			ImportAllFromTempDirectory.Click+= HandleImportAllFromDirectoryOfOldFilesCLICK;
-				MainMenu.Items.Add(ImportAllFromTempDirectory);
-			ToolStripButton importEvents = new ToolStripButton("import events");
-			importEvents.Click+= HandleImportEventClick;
-				MainMenu.Items.Add (importEvents);
-
 			// DELEGATES
 			LayoutDetails.Instance.UpdateTitle = UpdateTitle;
+			ToolStripMenuItem EXPORTTEMP = BuildTempExportMenu();
 
-			ToolStripMenuItem Test = new ToolStripMenuItem (Loc.Instance.GetString ("Delete Transaction Table"));
-			MainMenu.Items.Add (Test);
-			//	((ToolStripMenuItem)MainMenu.Items [0]).DropDownItems.Add (Save);
-			Test.Click += HandleTestClick;
 
-			ToolStripMenuItem Test2 = new ToolStripMenuItem (Loc.Instance.GetString ("Run Through All Pages"));
-			MainMenu.Items.Add (Test2);
-			//	((ToolStripMenuItem)MainMenu.Items [0]).DropDownItems.Add (Save);
-			Test2.Click+= HandleTest2Click; ;
+
+
 
 			ToolStripMenuItem Random = new ToolStripMenuItem(Loc.Instance.GetString ("Random Layout"));
 			Random.Click+= HandleRandomClick;
@@ -731,12 +776,14 @@ namespace YOM2013
 		{
 			if (LayoutDetails.Instance.CurrentLayout != null && Settings != null && mutex_IsLoading == false) {
 
+				this.Cursor = Cursors.WaitCursor;
 				if (Settings.Autosave == true)
 				{
 					UpdateFooter(FootMessageType.AUTOSAVE, Loc.Instance.GetStringFmt("Autosaved {0} at {1}", LayoutDetails.Instance.CurrentLayout.Caption, DateTime.Now));
 				                                                            
 				LayoutDetails.Instance.CurrentLayout.SaveLayout ();
 				}
+				this.Cursor = Cursors.Default;
 			}
 		}
 
@@ -848,14 +895,52 @@ namespace YOM2013
 			Hotkeys.Add (new KeyData(Loc.Instance.GetString ("Line"), 	Line, Keys.Control,  Keys.L,mainform, true, "format_line_guid"));
 			Hotkeys.Add (new KeyData(Loc.Instance.GetString ("Bullet"), 	Bullet, Keys.Control,  Keys.G,mainform, true, "format_bullet_normal"));
 			Hotkeys.Add (new KeyData(Loc.Instance.GetString ("Bullet, Numbered"), 	BulletNumber, Keys.Control,  Keys.N,mainform, true, "format_bullet_Number"));
+		
+			Hotkeys.Add (new KeyData(Loc.Instance.GetString ("Date"), 	InsertDate, Keys.Control,  Keys.D,mainform, true, "format_date"));
+
+
 			Hotkeys.Add (new KeyData(Loc.Instance.GetString ("Highlight Yellow"), 	HighlightYellow, Keys.Control,  Keys.OemOpenBrackets,mainform, true, "highlightyellow"));
 			Hotkeys.Add (new KeyData(Loc.Instance.GetString ("Highlight Red"), 	HighlightRed, Keys.Control,  Keys.OemCloseBrackets,mainform, true, "highlightred"));
 			Hotkeys.Add (new KeyData(Loc.Instance.GetString ("Highlight Green"), 	HighlightGreen, Keys.Control,  Keys.OemMinus,mainform, true, "highlightgreen"));
+			Hotkeys.Add (new KeyData(Loc.Instance.GetString ("Highlight Light Blue"), 	HighlightLightBlue, Keys.Control,  Keys.D1,mainform, true, "highlightlightblue"));
+			Hotkeys.Add (new KeyData(Loc.Instance.GetString ("Highlight Peach"), 	HighlightPeach, Keys.Control,  Keys.D2,mainform, true, "highlightpeach"));
 			// temporary to test the form thing
 			//Hotkeys.Add (new KeyData(Loc.Instance.GetString ("test"),Test , Keys.Control, Keys.Q, "optionform", true, "testguid"));
 			base.BuildAndProcessHotKeys(Storage);
 		}
 
+		void HighlightPeach (bool obj)
+		{
+			if (LayoutDetails.Instance.CurrentLayout != null) {
+				if (LayoutDetails.Instance.CurrentLayout.CurrentTextNote != null)
+				{
+					LayoutDetails.Instance.CurrentLayout.CurrentTextNote.GetRichTextBox().SelectionBackColor = Color.PeachPuff;
+				}
+				
+			}
+		}
+
+		void HighlightLightBlue (bool obj)
+		{
+			if (LayoutDetails.Instance.CurrentLayout != null) {
+				if (LayoutDetails.Instance.CurrentLayout.CurrentTextNote != null)
+				{
+					LayoutDetails.Instance.CurrentLayout.CurrentTextNote.GetRichTextBox().SelectionBackColor = Color.LightBlue;
+				}
+				
+			}
+		}
+
+		void InsertDate (bool obj)
+		{
+			if (LayoutDetails.Instance.CurrentLayout != null) {
+				if (LayoutDetails.Instance.CurrentLayout.CurrentTextNote != null)
+				{
+					LayoutDetails.Instance.CurrentLayout.CurrentTextNote.GetRichTextBox().InsertDate();
+				}
+				
+			}
+		}
 
 		void HighlightYellow(bool obj)
 		{
@@ -1050,7 +1135,14 @@ namespace YOM2013
 			ContextMenus.Add (TextEditContextStrip);
 
 
+			ToolStripMenuItem PasteToMatch = new ToolStripMenuItem();
+			PasteToMatch.Text = Loc.Instance.GetString ("Paste To Match");
+			PasteToMatch.Click+= HandlePasteToMatchClick;;
+			TextEditContextStrip.Items.Add (PasteToMatch);
 
+
+			ToolStripSeparator sep = new ToolStripSeparator();
+			TextEditContextStrip.Items.Add (sep);
 
 
 			ContextMenuStrip HighlightColors = new System.Windows.Forms.ContextMenuStrip();
@@ -1064,6 +1156,13 @@ namespace YOM2013
 			TextEditContextStrip.Items.Add (Highlight);
 
 			TextEditContextStrip.Opening+= HandleTextEditOpening;
+		}
+
+		void HandlePasteToMatchClick (object sender, EventArgs e)
+		{
+			if (LayoutDetails.Instance.CurrentLayout != null && LayoutDetails.Instance.CurrentLayout.CurrentTextNote != null) {
+				LayoutDetails.Instance.CurrentLayout.CurrentTextNote.GetRichTextBox().PasteToMatch();
+			}
 		}
 
 		void HandleTextEditOpening (object sender, System.ComponentModel.CancelEventArgs e)
@@ -1225,7 +1324,7 @@ namespace YOM2013
 				LayoutsInMemory existing = IsLayoutPresent(ourGUID);
 
 				if (null != existing) {
-					Console.WriteLine ("ourGUID = {0} // FoundGUID = {1}", ourGUID, existing.GUID);
+					lg.Instance.Line ("ToggleCurrentNoteMaximized", ProblemType.MESSAGE, String.Format ("ourGUID = {0} // FoundGUID = {1}", ourGUID, existing.GUID));
 					// We assume we are operating only on the CURRENT Layout
 					existing.Maximized = !existing.Maximized;
 					existing.Container.Maximize(existing.Maximized);
@@ -1531,7 +1630,7 @@ namespace YOM2013
 		void HandleBackupClick (object sender, EventArgs e)
 		{
 			MasterOfLayouts master = new MasterOfLayouts();
-			Console.WriteLine (master.Backup());
+			lg.Instance.Line("HandleBackupClick", ProblemType.MESSAGE, master.Backup());
 			master.Dispose();
 		}
 

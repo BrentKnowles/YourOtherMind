@@ -640,6 +640,42 @@ namespace Layout
 			DrawColoredLine("", font,
 			                Color.White, Color.Black, 1);
 		}
+
+		public void InsertDate ()
+		{
+			if (this != null)
+			{
+				Font currentFont = this.SelectionFont;
+				Font newFont = new Font (this.SelectionFont.FontFamily, this.SelectionFont.Size, FontStyle.Bold);
+				this.SelectionFont = newFont;
+
+				string sDate = DateTime.Now.ToLongDateString();
+				this.SelectedText = sDate;
+				this.SelectionStart = this.SelectionStart + this.SelectionLength;
+				this.SelectionFont = currentFont;
+			}
+		}
+		/// <summary>
+		/// pastes the current text from the clipboard to match current selection formatting
+		/// </summary>
+		public void PasteToMatch()
+		{
+			if (this.SelectionFont != null)
+			{
+				Font oldFont = this.SelectionFont;
+				
+				
+				this.SelectedText = Clipboard.GetText();
+				
+				if (oldFont != null)
+				{
+					this.SelectionFont = oldFont;
+				}
+			}
+			
+		}
+
+
 	}
 }
 

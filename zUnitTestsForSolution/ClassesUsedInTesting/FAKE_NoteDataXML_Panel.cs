@@ -47,6 +47,10 @@ namespace Testing
 		{
 			return this.panelLayout.Subtype;
 		}
+		public string GetParent_ParentGuid()
+		{
+			return this.panelLayout.ParentGUID;
+		}
 	}
 }
 

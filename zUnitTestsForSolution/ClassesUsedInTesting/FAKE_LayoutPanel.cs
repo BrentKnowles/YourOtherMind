@@ -28,6 +28,16 @@ namespace Testing
 			FindBar = newFindBar;
 		}
 
+		public void SetNotebookSection(string notebook, string section)
+		{
+			this.Notes.Notebook = notebook;
+			this.Notes.Section = section;
+		}
+		public void SetCaption (string cap)
+		{
+			this.Notes.Name = cap;
+		}
+	
 	}
 }
 

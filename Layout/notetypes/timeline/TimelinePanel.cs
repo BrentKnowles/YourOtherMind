@@ -575,6 +575,10 @@ namespace Timeline
 									{
 										CurrentVersionofTableForTHisTimeline = MyTimeline.GetTableForThisTimeline(s);
 									}
+									if (null==CurrentVersionofTableForTHisTimeline)
+									{
+										return;
+									}
 									if (CurrentVersionofTableForTHisTimeline != null)
 									{
 										

@@ -51,21 +51,24 @@ namespace Layout
 			// takes the current appearance and adjusts it.
 
 
-			AppearanceClass app = LayoutDetails.Instance.GetAppearanceByName(this.Appearance);
-			//Layout.AppearanceClass app = AppearanceClass.SetAsProgrammer();
-			CaptionLabel.SuspendLayout(); //minor, fraction of a second savings
-			CaptionLabel.Font = app.captionFont;   //1
-			this.CaptionLabel.Height = app.nHeaderHeight; //2
+			AppearanceClass app = LayoutDetails.Instance.GetAppearanceByName (this.Appearance);
+			if (null != app) {
+				//Layout.AppearanceClass app = AppearanceClass.SetAsProgrammer();
+				CaptionLabel.SuspendLayout (); //minor, fraction of a second savings
+				CaptionLabel.Font = app.captionFont;   //1
+				this.CaptionLabel.Height = app.nHeaderHeight; //2
 
 
-			ParentNotePanel.BorderStyle = app.mainPanelBorderStyle; //3
+				ParentNotePanel.BorderStyle = app.mainPanelBorderStyle; //3
 
-			this.CaptionLabel.BackColor = app.captionBackground; //4
-			this.CaptionLabel.ForeColor = app.captionForeground; //5
+				this.CaptionLabel.BackColor = app.captionBackground; //4
+				this.CaptionLabel.ForeColor = app.captionForeground; //5
 
-			DoChildAppearance(app);
-			CaptionLabel.ResumeLayout();
-			AppearanceSet.Text = Loc.Instance.GetStringFmt("Appearance: {0}",this.Appearance);
+				DoChildAppearance (app);
+				CaptionLabel.ResumeLayout ();
+
+			}
+			AppearanceSet.Text = Loc.Instance.GetStringFmt ("Appearance: {0}", this.Appearance);
 			// NOT BEING USED YET
 			//this.CaptionLabel.Bord = app.HeaderBorderStyle;  //6
 			// TODO: RichEdit would use the Mainbackground on the TExt box (i.e., fantasy looks like a  single note, caption and text the same. //7 

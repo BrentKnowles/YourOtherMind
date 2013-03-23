@@ -1,11 +1,14 @@
 using System;
 using Layout;
-
+using System.Collections.Generic;
 namespace Testing
 {
 	public class _TestSingleTon
 	{
 		#region variables
+
+		public List<string> ListOfTablesToDrop = new List<string>();
+
 		protected static volatile _TestSingleTon instance;
 		protected static object syncRoot = new Object();
 		public static string PathToSendAwayEPUBTemplates = @"C:\Users\BrentK\Documents\Keeper\SendTextAwayControlFiles\epubfiles";
@@ -15,8 +18,18 @@ namespace Testing
 		{
 		}
 
+		System.Windows.Forms.Form form = null;
+		public System.Windows.Forms.Form FORM {
+			get {
+				if (null == form)
+				{
+					form = new System.Windows.Forms.Form();
+				}
+				return form;
+			}
+		}
 
-		public System.Windows.Forms.Form FORM = new System.Windows.Forms.Form();
+			
 		public static _TestSingleTon Instance
 		{
 			get
@@ -29,6 +42,7 @@ namespace Testing
 						if (null == instance)
 						{
 							instance = new _TestSingleTon();
+							instance.ListOfTablesToDrop.Add (Layout.data.dbConstants.table_name);
 						}
 					}
 				}
@@ -68,21 +82,25 @@ namespace Testing
 				LayoutDetails.Instance.YOM_DATABASE = OverrideDatabaseName;
 			}
 			LayoutDetails.Instance.OverridePath = Environment.CurrentDirectory;
-			_w.output(LayoutDetails.Instance.YOM_DATABASE);
-			if (false == BreakAppearanceOnPurpose) LayoutDetails.Instance.GetAppearanceFromStorage = GetAppearanceFromStorage;
-				else LayoutDetails.Instance.GetAppearanceFromStorage = null;
+			_w.output (LayoutDetails.Instance.YOM_DATABASE);
+			if (false == BreakAppearanceOnPurpose)
+				LayoutDetails.Instance.GetAppearanceFromStorage = GetAppearanceFromStorage;
+			else
+				LayoutDetails.Instance.GetAppearanceFromStorage = null;
 
 
-			LayoutDetails.Instance.AddToList(typeof(FAKE_NoteDataXML_Panel),"testingpanel");
-			LayoutDetails.Instance.AddToList(typeof(FAKE_NoteDataXML_Text),"testingtext");
+			LayoutDetails.Instance.AddToList (typeof(FAKE_NoteDataXML_Panel), "testingpanel");
+			LayoutDetails.Instance.AddToList (typeof(FAKE_NoteDataXML_Text), "testingtext");
 
-			FakeLayoutDatabase layout = new FakeLayoutDatabase("testguid");
-			FAKE_SqlLiteDatabase db = new FAKE_SqlLiteDatabase(layout.GetDatabaseName ());
+			FakeLayoutDatabase layout = new FakeLayoutDatabase ("testguid");
+			FAKE_SqlLiteDatabase db = new FAKE_SqlLiteDatabase (layout.GetDatabaseName ());
 
-			LayoutDetails.Instance.TransactionsList =new Transactions.TransactionsTable(MasterOfLayouts.GetDatabaseType(LayoutDetails.Instance.YOM_DATABASE));
-			db.DropTableIfExists(Layout.data.dbConstants.table_name);
-		//	db.DropTableIfExists("system");
-			_w.output ("dropping table " + Layout.data.dbConstants.table_name);
+			LayoutDetails.Instance.TransactionsList = new Transactions.TransactionsTable (MasterOfLayouts.GetDatabaseType (LayoutDetails.Instance.YOM_DATABASE));
+			foreach (string s in ListOfTablesToDrop) {
+				db.DropTableIfExists (s);
+				//	db.DropTableIfExists("system");
+				_w.output ("dropping table " + s);
+			}
 		}
 	}
 }

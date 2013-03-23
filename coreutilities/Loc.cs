@@ -39,7 +39,7 @@ namespace CoreUtilities
 			bool result = false;
 
 			if (Locale != "") {
-				Console.WriteLine ("needs finished imp");
+				//TODO: Console.WriteLine ("needs finished imp");
 				string locale = Locale; //"en-US";//"fr-FR";
 				System.Threading.Thread.CurrentThread.CurrentUICulture = new CultureInfo (locale);
 

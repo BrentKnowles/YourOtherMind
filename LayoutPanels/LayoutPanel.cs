@@ -156,6 +156,12 @@ namespace Layout
 			line.Click+= (object sender, EventArgs e) => DoFormatOnText(NoteDataXML_RichText.FormatText.LINE);
 			formatBar.Items.Add (line);
 
+
+			ToolStripButton InsertDate = new ToolStripButton();
+			InsertDate.Text = Loc.Instance.GetString ("INSERT DATE");
+			InsertDate.Click+= HandleInsertDateClick;
+
+
 			ToolStripSplitButton Bullets = new ToolStripSplitButton();
 			Bullets.Text = Loc.Instance.GetString ("BULLETS");
 
@@ -181,6 +187,11 @@ namespace Layout
 			//	Bullets.Click+= (object sender, EventArgs e) => DoFormatOnText(NoteDataXML_RichText.FormatText.ZOOM);
 			formatBar.Items.Add (DefaultText);
 
+		}
+
+		void HandleInsertDateClick (object sender, EventArgs e)
+		{
+			DoFormatOnText (NoteDataXML_RichText.FormatText.DATE);
 		}
 
 		void HandleStrikeClick (object sender, EventArgs e)
@@ -319,8 +330,8 @@ namespace Layout
 			return 		GetListOfStringsFromSystemTable(tableName, Column, filter, true);
 		}
 		/// <summary>
-		/// Gets the list of strings from system table.
-		/// 
+		/// Gets the list of strings from ANY table (ignore name of method). It is called from the current layout and the curent layout looks in itself.
+		/// NOTE: Tablename is the CAPTION  and not the GUID
 		/// This is a wrapper to other public behavior but in order to consolidate error messaging
 		/// </summary>
 		/// <returns>
@@ -346,7 +357,7 @@ namespace Layout
 					NewMessage.Show (Loc.Instance.GetStringFmt ("The table named {0} does not have at least 2 columns, as is required. If you need to reset the System Layout, do so through Options|Interface.",tableName));
 				}
 			} else {
-				NewMessage.Show (Loc.Instance.GetStringFmt ("The table named {0} did not exist on the System Note page. If you need to reset the System Layout, do so through Options|Interface.",tableName));
+				NewMessage.Show (Loc.Instance.GetStringFmt ("The table named {0} did not exist on LAYOUT {1}. If you need to reset the System Layout, do so through Options|Interface.",tableName, this.Caption));
 			}
 			return result;
 		}
@@ -860,7 +871,7 @@ namespace Layout
 
 
 			Notes = new LayoutDatabase (GUID);
-			Notes.IsSubPanel = IsSubPanel;
+			Notes.IsSubPanel = IsSubPanel; /**/
 			if (Notes.LoadFrom (this) == false) {
 				lg.Instance.Line ("LayoutPanel.LoadLayout", ProblemType.MESSAGE, "This note is blank still.");
 				//Notes = null;
@@ -871,7 +882,15 @@ namespace Layout
 				UpdateListOfNotes ();
 				//	NewMessage.Show (String.Format ("Name={0}, Status={1}", Notes.Name, Notes.Status));
 			}
-		
+
+			//
+			// March 2013 MAJOR MAJOR MAJOR (UNDID ::  I had moved this after the load but then it caused SpeedTest to fail. So Moved it back.
+			// ** it did not fix the issue anyways [the notes I imported not having parentguids] so it was a pointless change, reverted.
+			//
+			// Setting the subpanel was happening before the load.
+			// The pages I imported from the old version did not have this field set correctly(and hence they could not export files properly among others things)
+			// so I moved this to after the load. Eek.
+
 			NoteCanvas.AutoScroll = true;
 			RefreshTabs ();
 			if (!GetIsChild && !GetIsSystemLayout) {
@@ -1255,11 +1274,16 @@ namespace Layout
 
 		public override void SetSaveRequired (bool NeedSave)
 		{
-			lg.Instance.Line("SetSaveRequired", ProblemType.MESSAGE, this.GUID+"Value of _savequired BEFORE SET is " + _saverequired, Loud.CTRIVIAL);
+			lg.Instance.Line ("SetSaveRequired", ProblemType.MESSAGE, this.GUID + "Value of _savequired BEFORE SET is " + _saverequired, Loud.CTRIVIAL);
 			_saverequired = NeedSave;
-			lg.Instance.Line("SetSaveRequired", ProblemType.MESSAGE, this.GUID+"set to " + NeedSave.ToString(), Loud.CTRIVIAL);
-			lg.Instance.Line("SetSaveRequired", ProblemType.MESSAGE, this.GUID+"Value of _savequired is " + _saverequired, Loud.CTRIVIAL);
-			lg.Instance.Line("SetSaveRequired", ProblemType.MESSAGE, this.GUID+"Value of GetSaveRequired is " + GetSaveRequired, Loud.CTRIVIAL);
+			if (true == NeedSave) {
+				LayoutDetails.Instance.DoUpdateTitle (this.Caption+"*");
+			} else {
+				LayoutDetails.Instance.DoUpdateTitle (this.Caption);
+			}
+		//	lg.Instance.Line("SetSaveRequired", ProblemType.MESSAGE, this.GUID+"set to " + NeedSave.ToString(), Loud.CTRIVIAL);
+		//	lg.Instance.Line("SetSaveRequired", ProblemType.MESSAGE, this.GUID+"Value of _savequired is " + _saverequired, Loud.CTRIVIAL);
+		//	lg.Instance.Line("SetSaveRequired", ProblemType.MESSAGE, this.GUID+"Value of GetSaveRequired is " + GetSaveRequired, Loud.CTRIVIAL);
 			if (SetSubNoteSaveRequired != null) {
 
 				SetSubNoteSaveRequired(NeedSave);

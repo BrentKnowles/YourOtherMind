@@ -130,6 +130,12 @@ namespace Layout
 		// added this for testing purposes
 		public string OverridePath=Constants.BLANK;
 
+		public void DoUpdateTitle (string newTitle)
+		{
+			if (UpdateTitle != null) {
+				UpdateTitle(newTitle);
+			}
+		}
 
 		public string Path {
 			get {

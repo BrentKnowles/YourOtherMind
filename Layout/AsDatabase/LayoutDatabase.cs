@@ -978,7 +978,7 @@ namespace Layout
 						// saves the actual UI elements
 							if (note == null)
 							{
-								NewMessage.Show ("LayoutDatabase->SNull note?");
+								NewMessage.Show (String.Format ("LayoutDatabase->SNull note on {0}", this.Name));
 							}
 							else
 							{

@@ -391,6 +391,9 @@ namespace Layout
 
 				break;
 			case Modes.LAYOUTSONCURRENTLAYOUT:
+
+				FullTextSearch.Visible = false;
+				CurrentFilterDropDown.Visible = false;
 				UpdateListOfNotesFromCurrentLayout();
 				break;
 			}

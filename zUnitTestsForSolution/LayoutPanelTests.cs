@@ -657,6 +657,8 @@ namespace Testing
 			panel.NotesForYou ().Notebook="freshnote";
 			panel.NotesForYou().Subtype = "thebestsub";
 
+
+
 			panel.SaveLayout ();
 			// now reload
 			panel = new FAKE_LayoutPanel (CoreUtilities.Constants.BLANK, false);
@@ -666,6 +668,10 @@ namespace Testing
 
 			panelA = (FAKE_NoteDataXML_Panel)panel.FindNoteByGuid("panela");
 			panelB = (FAKE_NoteDataXML_Panel)panel.FindNoteByGuid("panelb");
+
+			Assert.AreEqual (panel.GUID, panelA.GetParent_ParentGuid());
+			Assert.AreEqual (panel.GUID, panelB.GetParent_ParentGuid());
+
 			Assert.AreEqual (2, panelA.CountNotes (), "two notes in panelA");
 			Assert.AreEqual (7, panel.CountNotes (), "total of SEVEN notes");
 			Assert.AreEqual (0, panelB.CountNotes (), "0 count worked?");

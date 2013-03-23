@@ -4,6 +4,7 @@ using Layout;
 using System.IO;
 using CoreUtilities;
 using System.Windows.Forms;
+using System.Collections.Generic;
 namespace Testing
 {
 	[TestFixture]
@@ -23,6 +24,102 @@ namespace Testing
 //			db.DropTableIfExists(Layout.data.dbConstants.table_name);
 //			_w.output ("dropping table " + Layout.data.dbConstants.table_name);
 //		}
+
+		FAKE_LayoutPanel panelAutosave=null;
+		[Test]
+		public void AutosaveThrash()
+		{
+			// just spawna timer and see if I can make it fail
+
+			_TestSingleTon.Instance._SetupForLayoutPanelTests();
+			
+			
+			System.Windows.Forms .Form form = new System.Windows.Forms.Form();
+			
+			
+			
+			
+			panelAutosave = new FAKE_LayoutPanel (CoreUtilities.Constants.BLANK, false);
+			
+			form.Controls.Add (panelAutosave);
+			
+			// needed else DataGrid does not initialize
+			
+			form.Show ();
+			//form.Visible = false;
+			_w.output("boom");
+			// March 2013 -- notelist relies on having this
+			YOM2013.DefaultLayouts.CreateASystemLayout(form,null);
+			
+			
+			//NOTE: For now remember that htis ADDS 1 Extra notes
+			string panelname = System.Guid.NewGuid().ToString();
+			panelAutosave.NewLayout (panelname,true, null);
+			LayoutDetails.Instance.AddToList (typeof(FAKE_NoteDataXML_Panel), "testingpanel");
+			_w.output ("herefirst");
+
+
+			Timer SaveTimer= new Timer();
+			SaveTimer.Interval = 300;
+			SaveTimer.Tick+= HandleSaveTimerTick;
+			SaveTimer.Start ();
+
+			// ADD 1 of each type
+			foreach (Type t in LayoutDetails.Instance.ListOfTypesToStoreInXML()) {
+				for (int i = 0; i < 2; i++) {
+					NoteDataInterface note = (NoteDataInterface)Activator.CreateInstance (t);
+					panelAutosave.AddNote (note);
+					note.CreateParent(panelAutosave);
+					
+					note.UpdateAfterLoad();
+				}
+			}
+
+			panelAutosave.SaveLayout();
+
+
+			//
+			// Second panel
+			//
+
+			string panelname2 = System.Guid.NewGuid().ToString();
+			FAKE_LayoutPanel  PanelOtherGuy= new FAKE_LayoutPanel (CoreUtilities.Constants.BLANK, false);
+			PanelOtherGuy.NewLayout (panelname2,true, null);
+			PanelOtherGuy.SaveLayout();
+			
+			Assert.AreEqual( 2, PanelOtherGuy.CountNotes(), "count1");	
+			
+			// ADD 1 of each type
+			//foreach (Type t in LayoutDetails.Instance.ListOfTypesToStoreInXML())
+			{
+				for (int i = 0; i < 10; i++) {
+
+						NoteDataInterface note = new NoteDataXML_RichText();
+					PanelOtherGuy.AddNote (note);
+					note.CreateParent(PanelOtherGuy);
+					
+					note.UpdateAfterLoad();
+
+				}
+			}
+			Assert.AreEqual( 12, PanelOtherGuy.CountNotes(), "count2");	
+			PanelOtherGuy.SaveLayout();
+			PanelOtherGuy = null;
+			PanelOtherGuy= new FAKE_LayoutPanel (CoreUtilities.Constants.BLANK, false);
+			PanelOtherGuy.LoadLayout(panelname2, false, null);
+			Assert.AreEqual(12, PanelOtherGuy.CountNotes(), "count2");	
+			// add another Layout and do something with it while autosave continues running
+
+
+			SaveTimer.Stop();
+			form.Dispose ();
+		}
+
+		void HandleSaveTimerTick (object sender, EventArgs e)
+		{
+			panelAutosave.SaveLayout();
+		}
+
 		[Test]
 		public void TestExistsByName()
 		{
@@ -675,6 +772,200 @@ namespace Testing
 
 
 			lg.Instance.OutputToConstoleToo = false;
+		}
+		[Test]
+		public void TableSearch()
+		{
+			// the way filters work for tables is weird
+			// and becaue it is weird I might tweak it later and this is a bad idea
+			// so I'm writing this test to stop me from doing that
+
+			_TestSingleTon.Instance._SetupForLayoutPanelTests();
+			
+			
+			System.Windows.Forms .Form form = new System.Windows.Forms.Form();
+			
+			
+			
+		
+			
+		
+			
+			// needed else DataGrid does not initialize
+			
+			form.Show ();
+			//form.Visible = false;
+			_w.output("boom");
+			// March 2013 -- notelist relies on having this
+			YOM2013.DefaultLayouts.CreateASystemLayout(form,null);
+			
+			
+			//NOTE: For now remember that htis ADDS 1 Extra notes
+		
+
+			string panelname2 = System.Guid.NewGuid().ToString();
+			FAKE_LayoutPanel  PanelOtherGuy= new FAKE_LayoutPanel (CoreUtilities.Constants.BLANK, false);
+			PanelOtherGuy.NewLayout (panelname2,true, null);
+			form.Controls.Add (PanelOtherGuy);
+			PanelOtherGuy.SaveLayout();
+			
+			Assert.AreEqual( 2, PanelOtherGuy.CountNotes(), "count1");	
+			
+			// ADD 1 of each type
+			//foreach (Type t in LayoutDetails.Instance.ListOfTypesToStoreInXML())
+
+					
+			NoteDataXML_Table table =  new NoteDataXML_Table(100, 100,new appframe.ColumnDetails[3]{new appframe.ColumnDetails("id",100), 
+				new appframe.ColumnDetails("tables",100),
+				new appframe.ColumnDetails("values",220)} );
+			table.GuidForNote="thetable";
+			table.Caption="thettable2";
+
+
+
+
+			PanelOtherGuy.AddNote (table);
+			table.CreateParent(PanelOtherGuy);
+					
+		//	table.UpdateAfterLoad();
+					
+			table.AddRow(new object[3] {"0", "table1", "value1"});
+			table.AddRow(new object[3] {"0", "table2", "value2"});
+			table.AddRow(new object[3] {"0", "table3", "value3"});
+			table.AddRow(new object[3] {"0", "table4", "value4"});
+
+		
+			PanelOtherGuy.SaveLayout();
+			Assert.AreEqual( 3, PanelOtherGuy.CountNotes(), "count2");	
+			string ToSearchFor = "table3";
+
+			// looks in row 1 for the value and will return the value from row 2
+			List<string> results  = PanelOtherGuy.GetListOfStringsFromSystemTable("thettable2", 2, String.Format ("1|{0}", ToSearchFor));
+			Assert.NotNull(results);
+			Assert.AreEqual (1, results.Count);
+			Assert.AreEqual ("value3", results[0]);
+
+			ToSearchFor ="bacon";
+			results  = PanelOtherGuy.GetListOfStringsFromSystemTable("thettable2", 2, String.Format ("1|{0}", ToSearchFor));
+			Assert.NotNull(results);
+			Assert.AreEqual (0, results.Count);
+
+			ToSearchFor ="0";
+			results  = PanelOtherGuy.GetListOfStringsFromSystemTable("thettable2", 1, String.Format ("0|{0}", ToSearchFor));
+			Assert.NotNull(results);
+			Assert.AreEqual (4, results.Count);
+
+
+
+
+		}
+		[Test]
+		public void GetListOfLayoutTests()
+		{
+			_TestSingleTon.Instance._SetupForLayoutPanelTests();
+			System.Windows.Forms .Form form = new System.Windows.Forms.Form();
+			form.Show ();
+			// March 2013 -- notelist relies on having this
+			YOM2013.DefaultLayouts.CreateASystemLayout(form,null);
+			
+			string panelname2 = System.Guid.NewGuid().ToString();
+			FAKE_LayoutPanel  PanelOtherGuy= new FAKE_LayoutPanel (CoreUtilities.Constants.BLANK, false);
+			PanelOtherGuy.NewLayout (panelname2,true, null);
+			form.Controls.Add (PanelOtherGuy);
+			PanelOtherGuy.SaveLayout();
+			
+			Assert.AreEqual( 2, PanelOtherGuy.CountNotes(), "count1");	
+
+			List<MasterOfLayouts.NameAndGuid> names =  MasterOfLayouts.GetListOfLayouts("WritingProjects");
+
+			Assert.AreEqual (0, names.Count);
+
+			// 1 prtoject
+
+			PanelOtherGuy= new FAKE_LayoutPanel (CoreUtilities.Constants.BLANK, false);
+			PanelOtherGuy.NewLayout ("NextLayout",true, null);
+			PanelOtherGuy.SetCaption("booler");
+			PanelOtherGuy.SetNotebookSection("Writing","Projects");
+			form.Controls.Add (PanelOtherGuy);
+			PanelOtherGuy.SaveLayout();
+
+			names =  MasterOfLayouts.GetListOfLayouts("WritingProjects");
+			
+			Assert.AreEqual (1, names.Count);
+
+			// search LIKE NAME
+
+			PanelOtherGuy= new FAKE_LayoutPanel (CoreUtilities.Constants.BLANK, false);
+			PanelOtherGuy.NewLayout ("NextLayout22",true, null);
+			PanelOtherGuy.SetCaption("boolAt");
+
+			LayoutDetails.Instance.AddToList (typeof(FAKE_NoteDataXML_Text), "textfake");
+
+			FAKE_NoteDataXML_Text richy = new FAKE_NoteDataXML_Text();
+		
+
+			PanelOtherGuy.AddNote(richy);
+			richy.CreateParent(PanelOtherGuy);
+			richy.GetRichTextBox().Text="Hello there";
+
+			PanelOtherGuy.SetNotebookSection("Writing","Projects");
+			form.Controls.Add (PanelOtherGuy);
+			PanelOtherGuy.SaveLayout();
+
+			PanelOtherGuy= new FAKE_LayoutPanel (CoreUtilities.Constants.BLANK, false);
+			PanelOtherGuy.NewLayout ("NextLayout33",true, null);
+			PanelOtherGuy.SetCaption("bolzzz");
+			PanelOtherGuy.SetNotebookSection("Writing","Projects");
+			form.Controls.Add (PanelOtherGuy);
+			PanelOtherGuy.SaveLayout();
+
+
+			names =  MasterOfLayouts.GetListOfLayouts("WritingProjects");
+			
+			Assert.AreEqual (3, names.Count);
+
+			names =  MasterOfLayouts.GetListOfLayouts("WritingProjects","bool",false, null);
+			
+			Assert.AreEqual (2, names.Count);
+
+
+			//
+			// text searching
+			//
+
+			
+			PanelOtherGuy= new FAKE_LayoutPanel (CoreUtilities.Constants.BLANK, false);
+			PanelOtherGuy.NewLayout ("NextLayout55",true, null);
+			PanelOtherGuy.SetCaption("bolzzz222");
+			PanelOtherGuy.SetNotebookSection("Writing","Projects");
+			form.Controls.Add (PanelOtherGuy);
+			PanelOtherGuy.SaveLayout();
+
+
+			richy = new FAKE_NoteDataXML_Text();
+		
+			PanelOtherGuy.AddNote(richy);
+			richy.CreateParent(PanelOtherGuy);
+			richy.GetRichTextBox().Text="Hello there again!";
+			PanelOtherGuy.SaveLayout();
+			richy = new FAKE_NoteDataXML_Text();
+		
+			
+			PanelOtherGuy.AddNote(richy);
+			richy.CreateParent(PanelOtherGuy);
+			richy.GetRichTextBox().Text="Hello the fish are good there";
+			PanelOtherGuy.SaveLayout();
+
+
+			names =  MasterOfLayouts.GetListOfLayouts("All", "fish", true, null);
+			Assert.AreEqual (1, names.Count);
+			// FINAL TEST now count all
+
+
+			names =  MasterOfLayouts.GetListOfLayouts("All");
+			Assert.AreEqual (6, names.Count);
+
+
 		}
 	}
 }

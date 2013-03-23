@@ -99,6 +99,14 @@ namespace LayoutPanels
 			//panelLayout.ParentGUID = Layout.GetAbsoluteParent().GUID;
 
 			if (Layout != null) {
+
+//				if (Layout.GUID != panelLayout.ParentGUID)
+//				{
+//					string message = Loc.Instance.GetStringFmt ("Parent ID is: {0} but this panel parent's ID is set to: {0}", 
+//					                                            this.Layout.GUID, this.panelLayout.ParentGUID);
+//					NewMessage.Show (message);
+//				}
+
 				panelLayout.SetParentFields (Layout.Section, Layout.Keywords, Layout.Subtype, Layout.Notebook);
 				panelLayout.SaveLayout ();
 			} else {
@@ -112,6 +120,12 @@ namespace LayoutPanels
 			base.DoBuildChildren (Layout);
 			ParentNotePanel.BorderStyle = BorderStyle.Fixed3D;
 		CaptionLabel.Dock = DockStyle.Top;
+
+
+			ToolStripButton UpdateGuid = new ToolStripButton();
+			UpdateGuid.Text = Loc.Instance.GetString ("Verify Parent");
+			UpdateGuid.Click+= HandleVerifyParentClick;
+			this.properties.DropDownItems.Add (UpdateGuid);
 
 			panelLayout = new LayoutPanel(Layout.GUID, false);
 			panelLayout.SetSubNoteSaveRequired = Layout.SetSaveRequired;
@@ -137,6 +151,16 @@ namespace LayoutPanels
 			properties.DropDownItems.Add (ShowTabs);
 			*/
 			
+		}
+
+		void HandleVerifyParentClick (object sender, EventArgs e)
+		{
+			string message = Loc.Instance.GetStringFmt ("Parent ID is: {0} but this panel parent's ID is set to: {0}", this.Layout.GUID,
+			                                            this.panelLayout.ParentGUID);
+
+			// issue I do not thik ParentGUID is the same as notes.ParentGuid and why not?
+
+			NewMessage.Show (message);
 		}
 		/// <summary>
 		/// Registers the type.

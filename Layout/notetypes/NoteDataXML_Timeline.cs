@@ -372,6 +372,8 @@ namespace Layout
 		{
 			return Loc.Instance.Cat.GetString("Timeline");
 		}
+
+		private bool errorthrown=false;
 		/// <summary>
 		/// Gets the table for this timeline.
 		/// </summary>
@@ -384,8 +386,11 @@ namespace Layout
 		public NoteDataXML_Table GetTableForThisTimeline (string TimelineTableGuid)
 		{
 			NoteDataXML_Table FoundTable = (NoteDataXML_Table)Layout.FindNoteByGuid (TimelineTableGuid);
-			if (null == FoundTable) {
-				throw new Exception("The table for this Timeline was not found");
+			if (null == FoundTable && false==errorthrown) {
+				// just throw message once.
+				NewMessage.Show (Loc.Instance.GetString ("The table for this Timeline was not found. Probably the guid of it needs to be set to its caption."));
+				errorthrown=true;
+				//throw new Exception("The table for this Timeline was not found");
 			}
 			return FoundTable;
 		}
