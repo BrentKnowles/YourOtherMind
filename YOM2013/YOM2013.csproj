@@ -6,11 +6,12 @@
     <ProductVersion>10.0.0</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{5B046A7A-5C1B-4903-B077-4A6083E2E606}</ProjectGuid>
-    <OutputType>Exe</OutputType>
+    <OutputType>WinExe</OutputType>
     <RootNamespace>YOM2013</RootNamespace>
     <AssemblyName>YOM2013</AssemblyName>
     <ReleaseVersion>1.0.0.0</ReleaseVersion>
     <SynchReleaseVersion>False</SynchReleaseVersion>
+    <ApplicationIcon>..\..\..\yom2.ico</ApplicationIcon>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
     <DebugSymbols>True</DebugSymbols>

@@ -155,12 +155,16 @@ namespace LayoutPanels
 
 		void HandleVerifyParentClick (object sender, EventArgs e)
 		{
-			string message = Loc.Instance.GetStringFmt ("Parent ID is: {0} but this panel parent's ID is set to: {0}", this.Layout.GUID,
-			                                            this.panelLayout.ParentGUID);
+			string message = Loc.Instance.GetStringFmt ("Parent ID is: {0}. Panel Parent ID says {1}.  Panel Parent Notes ID says: {2}", this.Layout.GUID,
+			                                            this.panelLayout.ParentGUID, this.panelLayout.ParentGuidFromNotes);
 
 			// issue I do not thik ParentGUID is the same as notes.ParentGuid and why not?
+			if (NewMessage.Show (Loc.Instance.GetStringFmt ("Set Parent ID of this Panel to {0}?", this.Layout.GUID), 
+			                     Loc.Instance.GetString (message),
+			                     MessageBoxButtons.YesNo, null) == DialogResult.Yes) {
+				this.panelLayout.SetParentGuidForNotesFromExternal(this.Layout.GUID);
+			}
 
-			NewMessage.Show (message);
 		}
 		/// <summary>
 		/// Registers the type.

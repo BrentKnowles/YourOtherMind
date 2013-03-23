@@ -43,7 +43,41 @@ namespace Layout
 		#endregion
 
 
-	
+		/// <summary>
+		/// Gets or sets the parent GUI. (Will be set by NoteDataXML_Panel) and refers to the Layout 
+		/// that owns this layout. That value in turn is used in the MoveNote code
+		/// </summary>
+		/// <value>
+		/// The parent GUI.
+		/// </value>
+//		public override string ParentGUID {
+//			get { return parentGUID;}
+//			set { parentGUID = value;}
+//		}
+		private string parentGUIDz = Constants.BLANK;
+
+		// tried making this send Notes.ParentGUID but therea re too many places
+		// setting this during a load to indicate Child status, that I cannot do this.
+		public override string ParentGUID {
+			get { 
+
+				if (Notes != null && parentGUIDz != Notes.ParentGuid)
+				{
+					lg.Instance.Line("LayoutPanel->ParentGUID", ProblemType.WARNING, String.Format ("LayoutPanel.ParentGuidz {0} does not match Notes.Parent Guid {1}", parentGUIDz,
+					                                                                                Notes.ParentGuid));
+				}
+				return parentGUIDz;}
+			set { parentGUIDz = value;}
+					}
+
+		public override string ParentGuidFromNotes {
+			get { return Notes.ParentGuid;}
+		}
+
+		public override void SetParentGuidForNotesFromExternal (string newGUID)
+		{
+			Notes.ParentGuid = newGUID;
+		}
 	protected override void Dispose (bool disposing)
 		{
 			//Notes=null;
@@ -589,12 +623,14 @@ namespace Layout
 		/// <param name='IsSystem'>
 		/// if true (default is false) means this ist he special one of a kind system layout
 		/// </param>
-		public LayoutPanel (string parentGUID, bool IsSystem)
+		public LayoutPanel (string _parentGUID, bool IsSystem)
 		{
 
 
 		
-			ParentGUID = parentGUID;
+			ParentGUID = _parentGUID; 
+
+
 			GetIsSystemLayout = IsSystem;
 
 
@@ -621,6 +657,7 @@ namespace Layout
 
 			//this.BackColor = Color.Pink;
 			if (!GetIsChild && !GetIsSystemLayout)
+			//if (_parentGUID != Constants.BLANK && !GetIsSystemLayout) did not work
 				BuildFormatToolbar ();
 			if (!GetIsSystemLayout) BuildTabsBar ();
 

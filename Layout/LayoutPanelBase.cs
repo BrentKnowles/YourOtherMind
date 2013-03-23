@@ -48,7 +48,7 @@ namespace Layout
 		#region variables
 		private string _guid = CoreUtilities.Constants.BLANK;
 		protected bool _saverequired = false;
-		private string parentGUID = Constants.BLANK;
+	
 		private bool isDraggingANote=false;
 		/// <summary>
 		/// Is set to true if occupied by dragging a note around
@@ -71,18 +71,11 @@ namespace Layout
 		{
 			IsDraggingANote = false;
 		}
+		public abstract void SetParentGuidForNotesFromExternal(string newGUID);
 
-		/// <summary>
-		/// Gets or sets the parent GUI. (Will be set by NoteDataXML_Panel) and refers to the Layout 
-		/// that owns this layout. That value in turn is used in the MoveNote code
-		/// </summary>
-		/// <value>
-		/// The parent GUI.
-		/// </value>
-		public string ParentGUID {
-			get { return parentGUID;}
-			set { parentGUID = value;}
-		}
+		public abstract string ParentGuidFromNotes { get; }
+		public abstract string ParentGUID { get; set; }
+
 		/// <summary>
 		/// Wraps the lookup to see if I am a child (by checking my parentGUID)
 		/// </summary>
