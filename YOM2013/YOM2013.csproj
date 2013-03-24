@@ -107,6 +107,10 @@
     <EmbeddedResource Include="icons\bullet_black.png">
       <LogicalName>bullet_black.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="..\..\..\yom2.ico">
+      <Link>icons\yom2.ico</Link>
+      <LogicalName>yom2.ico</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="icons\" />

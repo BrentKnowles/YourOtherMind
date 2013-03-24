@@ -70,18 +70,20 @@ namespace Layout
 			}
 			base.OnMouseLeave (e);
 		}
-		
+	
 		protected override void OnMouseDown (MouseEventArgs e)
 		{
 			if (Child.Dock == DockStyle.None) {
 				mDragging = IsOnGrip (e.Location);
 				mDragPos = e.Location;
+			
 			}
 			base.OnMouseDown(e);
 		}
 		
 		protected override void OnMouseUp (MouseEventArgs e)
 		{
+			Child.RespondToNoteSelection();
 			if (Child.Dock == DockStyle.None) {
 				mDragging = false;
 				this.Cursor = Cursors.Default;

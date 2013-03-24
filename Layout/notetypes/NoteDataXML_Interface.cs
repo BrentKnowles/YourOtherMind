@@ -522,6 +522,8 @@ namespace Layout
 
 					}
 				}
+				//MOVE THIS TO BRINGTOFRONT override... basically whenever you want to bring a note to front, if system, we will amke the active note
+				RespondToNoteSelection();
 			}
 		}
 
@@ -812,8 +814,15 @@ namespace Layout
 			
 				EndDrag();
 			}
+
 		}
-	
+		public virtual void RespondToNoteSelection()
+		{
+			// signaleld from NOTEPANEL.cs
+			// intended only for the system note to override
+
+
+		}
 		void HandleMouseDown (object sender, MouseEventArgs e)
 		{
 			// going to try moving Dragging from here, so there's

@@ -740,17 +740,35 @@ namespace Layout
 
 			// Attempt 1
 			//now export any page with the GUId as their ParentGuid
-			List<string> children = MyDatabase.GetBackupRowAsString (dbConstants.table_name, dbConstants.PARENT_GUID, GUID, true);
-			if (children != null && children.Count > 0) {
-				for (int i = 0; i < children.Count; i++)
-				{
-
-					WriteFile (String.Format ("{1}__child{0}.txt", i.ToString (),FileName),children[i]);
-				}
-			}
+			ExportChildLayout (GUID, FileName, MyDatabase);
 
 
 			MyDatabase.Dispose ();
+
+		}
+		static void ExportChildLayout (string GUID, string FileName, BaseDatabase MyDatabase)
+		{
+			List<string> children = MyDatabase.GetBackupRowAsString (dbConstants.table_name, dbConstants.PARENT_GUID, GUID, true);
+			if (children != null && children.Count > 0) {
+				for (int i = 0; i < children.Count; i++) {
+					WriteFile (String.Format ("{1}__child{0}.txt", i.ToString (), FileName), children [i]);
+
+				}
+			}
+			// Nope: Was actually working *but* again the new notes are messed up. All Child Panels are suppose to have the PARENTGUID of the the Master Layout (the absolute parent)
+//			// now we need the GUIDS for each of these children layouts
+//			List<object[]> results = MyDatabase.GetValues(dbConstants.table_name, new string[1]{ dbConstants.GUID}, dbConstants.PARENT_GUID, GUID);
+//			if (results != null)
+//			{
+//				foreach (object[] result in results)
+//				{
+//					if (result.Length > 0)
+//					{
+//						string childGUID = result[0].ToString();
+//						//ExportChildLayout(childGUID
+//					}
+//				}
+//			}
 
 		}
 
@@ -776,6 +794,7 @@ namespace Layout
 			return ResultList;
 		}
 
+	
 		public static void ExportRecent ()
 		{
 			BaseDatabase MyDatabase = CreateDatabase ();

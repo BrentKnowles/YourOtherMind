@@ -58,7 +58,7 @@ namespace Layout
 
 		bool SaveTo ();
 		int CountNotes ();
-
+		bool Count_Warning_ThereAreLessNotesNowThanWhenWeLoaded ();
 		//string Backup();
 
 		bool IsLayoutExists (string GUID);

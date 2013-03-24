@@ -316,8 +316,28 @@ namespace Layout
 		public void UpdateLocation ()
 		{
 			if (ParentNotePanel == null) {
-				throw new Exception("Parent must not be null");
+				throw new Exception ("Parent must not be null");
 			}
+
+			if (Height < 1) {
+				Height = 1;
+
+			}
+			if (Width < 1) {
+				Width = 1;
+			}
+			int newX = Location.X;
+			int newY = Location.Y;
+			if (Location.X < 0) {
+				newX = 1;
+			}
+
+			if (Location.Y < 0) {
+				newY = 1;
+			}
+
+			Location = new Point(newX, newY);
+
 			ParentNotePanel.Location = Location;
 			ParentNotePanel.Height = Height;
 			ParentNotePanel.Width = Width;

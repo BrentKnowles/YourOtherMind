@@ -45,8 +45,8 @@ namespace DiffEngine
                 if (s.Length > MaxLineLength)
                 {
                     throw new InvalidOperationException(
-                        string.Format("File contains a line greater than {0} characters.",
-                        MaxLineLength.ToString()));
+						string.Format("File contains a line greater than {0} characters. That line is {1}",
+                        MaxLineLength.ToString(), s));
                 }
                 _lines.Add(new TextLine(s));
             }
@@ -75,8 +75,8 @@ namespace DiffEngine
 					if (line.Length > MaxLineLength)
 					{
 						throw new InvalidOperationException(
-							string.Format("File contains a line greater than {0} characters.",
-							MaxLineLength.ToString()));
+							string.Format("File contains a line greater than {0} characters. That line is {1}",
+						              MaxLineLength.ToString(), line));
 					}
                     words = words + CountWords1(line);
 					_lines.Add(new TextLine(line));

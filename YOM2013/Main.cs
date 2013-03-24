@@ -15,7 +15,13 @@ namespace YOM2013
 			lg.Instance.Loudness = Loud.CTRIVIAL;
 			//lg.Instance.Loudness = Loud.DOFF;
 			//Application.Init ();
-			MainForm win = new MainForm (LayoutDetails.Instance.Path, LayoutDetails.Instance.DoForceShutDown, LayoutDetails.Instance.YOM_DATABASE,  FileUtils.GetIcon("main.ico"));
+			string icontouse = "yom2.ico";
+
+#if(DEBUG)
+			icontouse = "main.ico";
+#endif
+
+			MainForm win = new MainForm (LayoutDetails.Instance.Path, LayoutDetails.Instance.DoForceShutDown, LayoutDetails.Instance.YOM_DATABASE,  FileUtils.GetIcon(icontouse));
 			win.Name="mainform";
 		//	win.Show ();
 			Application.Run (win);

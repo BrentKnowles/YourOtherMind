@@ -33,10 +33,10 @@
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
     <Compile Include="LayoutPanel.cs" />
-    <Compile Include="NoteDataXML_Panel.cs" />
     <Compile Include="HeaderBar.cs" />
     <Compile Include="GetInformationADDINS.cs" />
     <Compile Include="info_form.cs" />
+    <Compile Include="NoteDataXML_Panel.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Layout\Layout.csproj">

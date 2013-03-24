@@ -812,6 +812,19 @@ namespace Layout
 
 		}
 
+		public bool Count_Warning_ThereAreLessNotesNowThanWhenWeLoaded ()
+		{
+
+			lg.Instance.Line ("LayoutDatabase->CountWarning", ProblemType.MESSAGE, String.Format ("Debugobjectcount {0}, dataForThisLayout.Count {1}", debug_ObjectCount, dataForThisLayout.Count));
+
+			// need to have lost ten notes
+			if (debug_ObjectCount > (dataForThisLayout.Count+10)) {
+				return true;
+			}
+			return false;
+		}
+
+
 		/// <summary>
 		/// Counts the notes. Just the ones in the dataarray (not child notes)
 		/// </summary>
@@ -995,7 +1008,11 @@ namespace Layout
 							}
 							}
 
+				
+						
 						}
+
+
 					debug_ObjectCount = ListAsDataObjectsOfType.Length;
 			
 						System.Xml.Serialization.XmlSerializer x3 = null;

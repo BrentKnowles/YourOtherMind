@@ -38,6 +38,7 @@ namespace Layout
 		bool IsSystemNote{get;}
 		System.Collections.ArrayList   GetChildNotes();
 		string GetStoryboardPreview{get;}
+		void RespondToNoteSelection();
 		#endregion
 
 		void GetStoryboardData (out string sCaption, out string sValue, out int type, out string extraField);

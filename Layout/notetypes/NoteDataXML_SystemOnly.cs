@@ -46,6 +46,46 @@ namespace Layout
 			UpdateLocation();
 		//	Parent.BringToFront();
 		}
+
+		/// <summary>
+		/// Responds to note selection.  If we click on the note it must work very similar to how SELECTING the note in the Windows Menu works
+		/// Especially the setting of the current layout so that findbars and whatnot work.
+		/// </summary>
+		public override void RespondToNoteSelection ()
+		{
+			base.RespondToNoteSelection ();
+			if (this.LayoutAssociatedWithThisSystemNote != null) {
+				bool AlreadyAmCurrent = false;
+				if (LayoutDetails.Instance.CurrentLayout != null) {
+					if (LayoutDetails.Instance.CurrentLayout != this.LayoutAssociatedWithThisSystemNote)
+					{
+					LayoutDetails.Instance.CurrentLayout.SaveLayout ();
+					}
+					else
+					{
+						AlreadyAmCurrent = true;
+					}
+				}
+
+				if (false == AlreadyAmCurrent) {
+					LayoutDetails.Instance.CurrentLayout = this.LayoutAssociatedWithThisSystemNote;
+				}
+			}
+
+
+		}
+		LayoutPanelBase LayoutAssociatedWithThisSystemNote = null;
+		/// <summary>
+		/// Adds A layout reference. This is set in the mainform when a layout is loaded.
+		/// We hold the LayoutPanel for the situation when the user CLICKS on the note
+		/// (instead of moving between notes via a menu
+		/// </summary>
+		public void AddALayout (LayoutPanelBase _LayoutAssociatedWithThisSystemNote)
+		{
+			LayoutAssociatedWithThisSystemNote = _LayoutAssociatedWithThisSystemNote;
+			ParentNotePanel.Controls.Add (LayoutAssociatedWithThisSystemNote);
+		}
+
 		/// <summary>
 		/// Gets the child layout.
 		/// 

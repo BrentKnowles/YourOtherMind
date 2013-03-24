@@ -772,10 +772,15 @@ namespace YOM2013
 			NewMessage.Show ("RANDOM NOTE: " + MasterOfLayouts.GetRandomNoteBy("notebook", "Writing"));
 		}
 
+
+
 		void HandleSaveTimerTick (object sender, EventArgs e)
 		{
 			if (LayoutDetails.Instance.CurrentLayout != null && Settings != null && mutex_IsLoading == false) {
 
+				if (General.SecondsSinceLastInput() >= 5)
+				{
+				//	NewMessage.Show ("You were not busy so I interrupt!");
 				this.Cursor = Cursors.WaitCursor;
 				if (Settings.Autosave == true)
 				{
@@ -784,6 +789,12 @@ namespace YOM2013
 				LayoutDetails.Instance.CurrentLayout.SaveLayout ();
 				}
 				this.Cursor = Cursors.Default;
+				}
+				else
+				{
+					UpdateFooter(FootMessageType.AUTOSAVE, Loc.Instance.GetStringFmt("Autosaved Skipped because you were busy."));
+				//	NewMessage.Show ("You were busy so I NOT interrupt!");
+				}
 			}
 		}
 
@@ -1380,7 +1391,12 @@ namespace YOM2013
 			
 			LayoutPanel newLayout =  new Layout.LayoutPanel (CoreUtilities.Constants.BLANK, false);
 			newLayout.BorderStyle = BorderStyle.Fixed3D;
-			newLayout.Parent = MDIHOST.ParentNotePanel;
+
+			MDIHOST.AddALayout(newLayout);
+
+			//newLayout.Parent = MDIHOST.ParentNotePanel; // This called moved into the AddALayoutCall
+
+
 			newLayout.BackColor = Color.Wheat;
 			newLayout.SystemNote = true;
 			newLayout.Visible = true;

@@ -838,6 +838,21 @@ namespace Layout
 			if (null != Notes) {
 				lg.Instance.Line("LayoutPanel.SaveLayout", ProblemType.MESSAGE, "Saved");
 
+				// arbitrarily choose to check if 10 or more notes are missing
+				if (Notes.Count_Warning_ThereAreLessNotesNowThanWhenWeLoaded() == true)
+				{
+
+					if (NewMessage.Show (Loc.Instance.GetString ("Data loss?"), 
+					                 Loc.Instance.GetString ("There are ten or more notes missing from this page (since the last load). Do you want to stop the Save?"),
+					                 MessageBoxButtons.YesNo, null) == DialogResult.Yes) 
+					{
+						return;
+					}
+
+
+				}
+
+
 				// March 4 2013
 				if (GetIsChild == true && Notes.ParentGuid == Constants.BLANK)
 				{

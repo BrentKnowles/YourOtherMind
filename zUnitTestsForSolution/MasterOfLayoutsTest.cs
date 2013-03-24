@@ -663,6 +663,8 @@ namespace Testing
 			FAKE_NoteDataXML_Panel panelB = new FAKE_NoteDataXML_Panel ();
 			panelB.Caption = "PanelBBBBB2";
 			panelB.GuidForNote = "panelBB";
+
+
 			panelA.AddNote (panelB);
 			panelB.CreateParent (panelA.GetPanelsLayout());
 			FAKE_NoteDataXML_Text textNoteA = new FAKE_NoteDataXML_Text ();

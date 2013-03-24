@@ -3,6 +3,10 @@ using System.Diagnostics;
 using System.IO;
 using System.Windows.Forms;
 using System.Drawing;
+using System.ComponentModel;
+using System.Runtime.InteropServices;
+
+
 namespace CoreUtilities
 {
 	public partial class General
@@ -168,6 +172,31 @@ namespace CoreUtilities
 			}
 			return sPriority.Trim();
 		}
+
+
+		[DllImport("user32.dll")]
+		static extern bool GetLastInputInfo(ref LASTINPUTINFO plii);
+		
+		[StructLayout(LayoutKind.Sequential)]
+		public struct LASTINPUTINFO
+		{
+			public uint cbSize;
+			public uint dwTime;
+		}
+		/// <summary>
+		/// How many seconds since last user input
+		/// Source: http://blog.abodit.com/2011/08/stop-writing-rude-software-use-lastinputinfo-instead/
+		/// </summary>
+		public static double SecondsSinceLastInput()
+		{
+			LASTINPUTINFO lastInPut = new LASTINPUTINFO();
+			lastInPut.cbSize = (uint)System.Runtime.InteropServices.Marshal.SizeOf(lastInPut);
+			GetLastInputInfo(ref lastInPut);
+			
+			uint idle = (uint)Environment.TickCount - lastInPut.dwTime;
+			return idle/1000.0;
+		}
+
 	}
 }
 

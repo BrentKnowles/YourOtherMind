@@ -155,14 +155,26 @@ namespace LayoutPanels
 
 		void HandleVerifyParentClick (object sender, EventArgs e)
 		{
-			string message = Loc.Instance.GetStringFmt ("Parent ID is: {0}. Panel Parent ID says {1}.  Panel Parent Notes ID says: {2}", this.Layout.GUID,
+
+			string GUIDToSetTo = this.Layout.GUID;
+
+			// here is where things get tricky
+			// on a proper Layout ALL the subpanels inherit the ROOT ParentGUID
+			// but the imported data messed this up
+			// So if OUR PARENT has a PARENT then we use the PARENTGUID
+
+			if (this.Layout.GetIsChild == true && this.Layout.ParentGuidFromNotes != Constants.BLANK) {
+				GUIDToSetTo = this.Layout.ParentGuidFromNotes;
+			}
+
+			string message = Loc.Instance.GetStringFmt ("Parent ID is: {0}. Panel Parent ID says {1}.  Panel Parent Notes ID says: {2}", GUIDToSetTo,
 			                                            this.panelLayout.ParentGUID, this.panelLayout.ParentGuidFromNotes);
 
 			// issue I do not thik ParentGUID is the same as notes.ParentGuid and why not?
-			if (NewMessage.Show (Loc.Instance.GetStringFmt ("Set Parent ID of this Panel to {0}?", this.Layout.GUID), 
+			if (NewMessage.Show (Loc.Instance.GetStringFmt ("Set Parent ID of this Panel to {0}?", GUIDToSetTo), 
 			                     Loc.Instance.GetString (message),
 			                     MessageBoxButtons.YesNo, null) == DialogResult.Yes) {
-				this.panelLayout.SetParentGuidForNotesFromExternal(this.Layout.GUID);
+				this.panelLayout.SetParentGuidForNotesFromExternal(GUIDToSetTo);
 			}
 
 		}
