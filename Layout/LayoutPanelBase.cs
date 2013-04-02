@@ -305,6 +305,12 @@ namespace Layout
 				case NoteDataXML_RichText.FormatText.DATE:
 					CurrentTextNote.GetRichTextBox().InsertDate();
 					break;
+				case NoteDataXML_RichText.FormatText.UNDERLINE:
+					CurrentTextNote.Underline();
+					break;
+				case NoteDataXML_RichText.FormatText.ITALIC:
+					CurrentTextNote.Italic();
+					break;
 				}
 			}
 		}

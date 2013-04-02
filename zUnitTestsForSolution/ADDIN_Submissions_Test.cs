@@ -6,6 +6,7 @@ using Submissions;
 
 namespace Testing
 {
+
 	[TestFixture]
 	public class ADDIN_Submissions_Test
 	{

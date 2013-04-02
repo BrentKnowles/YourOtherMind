@@ -226,6 +226,23 @@ namespace CoreUtilities
 		}
 
 		/// <summary>
+		/// Makes the valid filename. Strips invalid characters from it NOTE: This is only for a FILENAME, not a path. It strips the : character out
+		/// </summary>
+		/// <returns>
+		/// The valid filename.
+		/// </returns>
+		/// <param name='OriginalFileName'>
+		/// Original file name.
+		/// </param>
+		public static string MakeValidFilename (string OriginalFileName)
+		{
+			foreach (char c in System.IO.Path.GetInvalidFileNameChars())
+			{
+				OriginalFileName = OriginalFileName.Replace(c, '_');
+			}
+			return OriginalFileName;
+		}
+		/// <summary>
 		/// Defaults to 7 characters
 		/// </summary>
 		/// <param name="sDirectory"></param>

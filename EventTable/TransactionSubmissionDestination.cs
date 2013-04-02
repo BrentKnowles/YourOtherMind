@@ -28,7 +28,12 @@ namespace Transactions
 
 		public override string Display {
 			get {
-				return Loc.Instance.GetString("Desintation: ") + base.Display;
+				return Loc.Instance.GetString("DESTINATION: ") + base.Display;
+			}
+		}
+		public override string DisplayVariant {
+			get {
+				return Loc.Instance.GetString ("DESTINATION: ") + base.DisplayVariant;
 			}
 		}
 	}

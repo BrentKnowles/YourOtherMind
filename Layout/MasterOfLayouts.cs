@@ -30,6 +30,12 @@ namespace Layout
 				}
 			}
 
+			// This is purely a hack because the way I structured automatically generated cover letters. Both the project obect and the market object
+			// had fields named Caption. (see ViewProjectSUbmissions.cs, Generate_CoverLetter()
+			public string ProjectName {
+				get {return Caption;}
+			}
+
 			private string _guid;
 			private string _caption;
 			public string Guid {get {return _guid;}  set {_guid = value;}}
@@ -825,7 +831,10 @@ namespace Layout
 				string THISGUID = guid;
 				THISGUID = guid.Replace ("{","");
 				THISGUID = THISGUID.Replace ("}","");
-				ExportLayout(guid, Path.Combine (exportDirectory,THISGUID + ".txt"));
+				string name = MasterOfLayouts.GetNameFromGuid(THISGUID);
+				string filename = String.Format ("{0}_{1}{2}",name, THISGUID, ".txt");
+				filename = FileUtils.MakeValidFilename(filename);
+				ExportLayout(guid, Path.Combine (exportDirectory,filename));
 
 			}
 			NewMessage.Show (Loc.Instance.GetStringFmt("Exported {0} files", count));

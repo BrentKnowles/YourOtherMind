@@ -242,13 +242,13 @@ namespace YOM2013
 									if (true == bGetWords)
 									{
 										int Words = 
-												LayoutDetails.Instance.WordSystemInUse.CountWords(tempBox.Text);//TODO: Hookup RichTextBoxLinks.RichTextBoxEx.WordCount(tempBox.Text);
+												LayoutDetails.Instance.WordSystemInUse.CountWords(tempBox.Text);
 										TotalWords = TotalWords + Words;
 										
 										
 
 										
-										sWordInformation = sWordInformation + String.Format("{0}: {1}\n", notetoopen, Words.ToString());
+											sWordInformation = sWordInformation + String.Format("{0}: {1}{2}", notetoopen, Words.ToString(), Environment.NewLine);
 									}
 									
 									tempBox.Dispose();
@@ -800,7 +800,9 @@ namespace YOM2013
 
 		void HandleExportRecentClick (object sender, EventArgs e)
 		{
+			this.Cursor = Cursors.WaitCursor;
 			MasterOfLayouts.ExportRecent();
+			this.Cursor = Cursors.Default;
 		}
 
 		void HandleImportCurrentClick (object sender, EventArgs e)
@@ -818,6 +820,7 @@ namespace YOM2013
 
 		void HandleExportCurrentClick (object sender, EventArgs e)
 		{
+			this.Cursor = Cursors.WaitCursor;
 			if (LayoutDetails.Instance.CurrentLayout != null) {
 				SaveFileDialog ExportMe = new SaveFileDialog ();
 				if (ExportMe.ShowDialog () == DialogResult.OK) {
@@ -826,6 +829,7 @@ namespace YOM2013
 			} else {
 				NewMessage.Show (Loc.Instance.GetString ("Please select a layout to export first"));
 			}
+			this.Cursor = Cursors.Default;
 		}
 
 		void HandleAboutClick (object sender, EventArgs e)
@@ -895,6 +899,9 @@ namespace YOM2013
 			}
 			lg.Instance.Dispose();
 		}
+
+
+
 		public override void BuildAndProcessHotKeys (string Storage)
 		{
 			string mainform = "mainform";
@@ -908,6 +915,8 @@ namespace YOM2013
 			Hotkeys.Add (new KeyData(Loc.Instance.GetString ("Bullet, Numbered"), 	BulletNumber, Keys.Control,  Keys.N,mainform, true, "format_bullet_Number"));
 		
 			Hotkeys.Add (new KeyData(Loc.Instance.GetString ("Date"), 	InsertDate, Keys.Control,  Keys.D,mainform, true, "format_date"));
+			Hotkeys.Add (new KeyData(Loc.Instance.GetString ("Underline"), 	Underline, Keys.Control,  Keys.U,mainform, true, "format_underline"));
+			Hotkeys.Add (new KeyData(Loc.Instance.GetString ("Italic"), 	Italic, Keys.Control,  Keys.I,mainform, true, "format_italic"));
 
 
 			Hotkeys.Add (new KeyData(Loc.Instance.GetString ("Highlight Yellow"), 	HighlightYellow, Keys.Control,  Keys.OemOpenBrackets,mainform, true, "highlightyellow"));
@@ -920,6 +929,20 @@ namespace YOM2013
 			base.BuildAndProcessHotKeys(Storage);
 		}
 
+		void Underline (bool obj)
+		{
+			if (LayoutDetails.Instance.CurrentLayout != null) {
+				LayoutDetails.Instance.CurrentLayout.DoFormatOnText(NoteDataXML_RichText.FormatText.UNDERLINE);
+				
+			}
+		}
+		void Italic (bool obj)
+		{
+			if (LayoutDetails.Instance.CurrentLayout != null) {
+				LayoutDetails.Instance.CurrentLayout.DoFormatOnText(NoteDataXML_RichText.FormatText.ITALIC);
+				
+			}
+		}
 		void HighlightPeach (bool obj)
 		{
 			if (LayoutDetails.Instance.CurrentLayout != null) {
@@ -1336,10 +1359,27 @@ namespace YOM2013
 
 				if (null != existing) {
 					lg.Instance.Line ("ToggleCurrentNoteMaximized", ProblemType.MESSAGE, String.Format ("ourGUID = {0} // FoundGUID = {1}", ourGUID, existing.GUID));
+
+					// March 2013
+					// not happy with implementation of it
+					// I think it makes more sense, doesn't it, to hide the System Panel, the subpanel? system_sidedock
+					if (LayoutDetails.Instance.SystemLayout != null)
+					{
+						NoteDataInterface note = LayoutDetails.Instance.SystemLayout.FindNoteByGuid(LayoutDetails.SIDEDOCK);
+						if (note!= null)
+						{
+							note.ToggleTemporaryVisibility();
+						
+
+						}
+					}
+					/* March 2013 commented out, trying a simpler system
 					// We assume we are operating only on the CURRENT Layout
 					existing.Maximized = !existing.Maximized;
 					existing.Container.Maximize(existing.Maximized);
+					*/
 					//Maximize (existing.Maximized);
+					
 				} else {
 					lg.Instance.Line ("MainForm.ToggleCurrentNoteMaximized", ProblemType.WARNING, " never found the note which is odd " + ourGUID);
 				}
@@ -1736,6 +1776,9 @@ namespace YOM2013
 		{
 			switch (typeOfInformationSentBack) {
 			case (int)SetInformationADDINS.REPLACE_SELECTED_TEXT:
+
+				if (LayoutDetails.Instance.CurrentLayout != null && LayoutDetails.Instance.CurrentLayout.CurrentTextNote != null)
+				{
 				if (LayoutDetails.Instance.CurrentLayout.CurrentTextNote.SelectionLength > 0)
 				{
 
@@ -1748,6 +1791,7 @@ namespace YOM2013
 					}
 					LayoutDetails.Instance.CurrentLayout.CurrentTextNote.SelectedText = newword;
 
+				}
 				}
 				break;
 			}

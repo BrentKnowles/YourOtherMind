@@ -62,7 +62,14 @@ namespace appframe
 			if (null == PerformAction) {
 				NewMessage.Show (Loc.Instance.GetStringFmt ("The NoteTextAction '{0}' did not have a method assigned to it")); 
 			} else {
+				try
+				{
 				PerformAction(TextFromNote);
+				}
+				catch (Exception ex)
+				{
+					NewMessage.Show (ex.ToString());
+				}
 			}
 		}
 	}

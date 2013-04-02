@@ -79,6 +79,7 @@
     <Compile Include="notetypes\AppearanceClass.cs" />
     <Compile Include="WordsSystem.cs" />
     <Compile Include="RichText\CursorPositionclass.cs" />
+    <Compile Include="notetypes\timeline\StringListConverter.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

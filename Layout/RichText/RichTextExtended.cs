@@ -142,6 +142,9 @@ namespace Layout
 //			Markuplanguage = _Markup;
 			this.AcceptsTab = true;
 			this.MouseDown+= RichTextBoxEx_MouseDown;
+
+
+			//this.ShortcutsEnabled = false;
 		}
 
 		private bool inhibitPaint = false;

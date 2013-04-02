@@ -29,6 +29,7 @@ namespace Layout
 
 		}
 
+
 		// http://stackoverflow.com/questions/7367152/c-dynamically-assign-method-method-as-variable
 		Func<System.Collections.Generic.List<NoteDataInterface>> GetAvailableFolders;
 		Action<string,string> MoveNote;
@@ -890,6 +891,15 @@ namespace Layout
 		{
 			// some notes will override this.
 			// They also need to add themselves to LayoutDetails.Instance.UpdateAfterLoadList
+		}
+		// for use with the F6 command in mainform (hiding the system panel)
+		public void ToggleTemporaryVisibility ()
+		{
+			// this is NOT the same as the Visiblity propery
+			// it is a temporary (life of application) visiblity instead
+			if (ParentNotePanel != null) {
+				ParentNotePanel.Visible = !ParentNotePanel.Visible;
+			}
 		}
 
 	}

@@ -372,6 +372,10 @@ namespace Layout
 
 		void UpdateLists ()
 		{
+
+			list.BeginUpdate();
+			ParentNotePanel.Cursor = Cursors.WaitCursor;
+
 			switch (_mode) {
 			case Modes.LAYOUTS:
 
@@ -397,7 +401,8 @@ namespace Layout
 				UpdateListOfNotesFromCurrentLayout();
 				break;
 			}
-
+			list.EndUpdate();
+			ParentNotePanel.Cursor = Cursors.Default;
 		
 		}
 

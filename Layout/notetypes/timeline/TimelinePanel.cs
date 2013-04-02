@@ -13,6 +13,9 @@ namespace Timeline
 	public class NotePanelTimeline : Panel
 	{
 		#region variables
+
+		// builds a list of tables in Paint, the first time it is run
+		System.Collections.Generic.List<NoteDataXML_Table> MyTables = new System.Collections.Generic.List<NoteDataXML_Table>();
 		NoteDataXML_Timeline MyTimeline = null;
 
 		private System.ComponentModel.IContainer components = null;
@@ -557,24 +560,45 @@ namespace Timeline
 //								}
 //							}
 //						} // files and dates not null
-						
-						
-						// in addition to notes (May 2012) -- parse an associated DataTable
-						// of the same format as the EVENTTABLE, looking for dates matching
-						// This exact day
-						// Render them.
+
+
+						// build a list of datatables FIRST
+						// so we have access to them later
+						//TODO: Implication. This would mean if you add tables later they won't be refreshed till next load. FAQ or add a refresh option
+
+						if (MyTables.Count <= 0)
+						{
 						foreach (string s in MyTimeline.Listoftableguids)
 						{
 							if ("*" != s)
 							{
+								MyTables.Add (MyTimeline.GetTableForThisTimeline(s));
+							}
+						}
+						}
+					
+						// in addition to notes (May 2012) -- parse an associated DataTable
+						// of the same format as the EVENTTABLE, looking for dates matching
+						// This exact day
+						// Render them.
+						//foreach (string s in MyTimeline.Listoftableguids)
+							foreach (NoteDataXML_Table table in MyTables)
+						{
+							//if ("*" != s)
+							{
+
 								// test if table exists AND is a table
 								try
 								{
 
-									if (CurrentVersionofTableForTHisTimeline == null)
-									{
-										CurrentVersionofTableForTHisTimeline = MyTimeline.GetTableForThisTimeline(s);
-									}
+
+									//had an optimization here to only grab the table when we needed a new one BUT 
+									// this does not work when you have multiple. We need to grab it each time. This will
+									// cause performance hits
+
+
+										CurrentVersionofTableForTHisTimeline = table;//MyTimeline.GetTableForThisTimeline(s);
+
 									if (null==CurrentVersionofTableForTHisTimeline)
 									{
 										return;

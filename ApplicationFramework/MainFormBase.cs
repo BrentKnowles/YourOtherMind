@@ -233,6 +233,8 @@ namespace appframe
 					if (keysy.Key == e.KeyCode)
 					{
 						keysy.Command(keysy.Defaultinput);
+					//	e.Handled = true;
+						e.SuppressKeyPress = true;
 						break;
 					}
 				}

@@ -13,19 +13,28 @@ namespace Testing
 		[Test]
 		public void TestForBlankFile()
 		{
-			Assert.True (CoreUtilities.FileUtils.DoesThisFileHaveErrors(@"C:\Users\BrentK\Documents\Keeper\Files\brokenfiles2012\brokenrtf_dec2012.rtf"));
+			Assert.True (CoreUtilities.FileUtils.DoesThisFileHaveErrors(_TestSingleTon.BlankFileTest1));
 		}
 
 		[Test]
 		public void TestForBlankFileThatIsNotBlank()
 		{
-			Assert.False (CoreUtilities.FileUtils.DoesThisFileHaveErrors(@"C:\Users\BrentK\Documents\Keeper\Files\brokenfiles2012\notbroken.txt"));
+			Assert.False (CoreUtilities.FileUtils.DoesThisFileHaveErrors(_TestSingleTon.BlankFileTest2));
 		}
 
 		[Test]
 		public void TestForHdriveFailure()
 		{
 			Assert.False (CoreUtilities.FileUtils.CheckForFileError());
+		}
+
+
+		[Test]
+		public void TestValidFilename ()
+		{
+			string invalidfilename = @"hello?there.txt";
+			string converted = FileUtils.MakeValidFilename(invalidfilename);
+			Assert.AreEqual (@"hello_there.txt",converted);
 		}
 
 		[Test]

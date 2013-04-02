@@ -109,11 +109,14 @@ namespace Layout
 
 
 			StoryBoard.GetNoteForGroupEmPreview += HandleGetNoteForGroupEmPreview;
-
+			StoryBoard.GroupNameTruncateLength = 15;
 			StoryBoard.ShowToolbar = true;
 			StoryBoard.AddItemFromMenu += HandleAddItemFromMenu;
 			StoryBoard.ClickItem += HandleStoryBoardClickItem;
 			StoryBoard.InitializeGroupEmFromExternal();
+
+			// trying to get htis to work better
+			LayoutDetails.Instance.UpdateAfterLoadList.Add (this);
 
 			// will not add these unless I NEED them (I'm assuming some of this is for selecting things?
 //			((NotePanelStoryboard)note).groupEms1.DragNote += new GroupEm.groupEms.CustomEventHandler2(groupEms1_DragNote);
@@ -122,6 +125,12 @@ namespace Layout
 //     ((NotePanelStoryboard)note).groupEms1.listView.MouseDown += findBar_MouseDown;
 //			
 
+		}
+		public override void UpdateAfterLoad ()
+		{
+			base.UpdateAfterLoad ();
+
+			StoryBoard.HotFix();
 		}
 		/// <summary>
 		/// Handles the story board click item. Goes to the note

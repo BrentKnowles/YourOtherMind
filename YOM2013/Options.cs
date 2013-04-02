@@ -53,7 +53,7 @@ struct checkBoxOptions
 			}
 }
 		checkBoxOptions[] booleanValues = new checkBoxOptions[2] {
-			new checkBoxOptions(Loc.Instance.GetString("Autosave?"), "autosave", "tt", false),
+			new checkBoxOptions(Loc.Instance.GetString("Autosave?"), "autosave", "tt", true),
 			new checkBoxOptions(Loc.Instance.GetString("Multiple Screens - Set Height to Highest?"), "multiscreenhigh", "tt", false)};
 
 		string dataPath = CoreUtilities.Constants.BLANK;

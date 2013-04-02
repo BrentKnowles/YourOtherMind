@@ -196,6 +196,43 @@ namespace CoreUtilities
 			uint idle = (uint)Environment.TickCount - lastInPut.dwTime;
 			return idle/1000.0;
 		}
+		/// <summary>
+		/// Using reflection I return the tag of an object. This was written to make my localization
+		/// routine run a lot faster (in the old versin, not used with YOM2013, though this routine is.
+		/// <param name="obj"> the object to get the field value from</param>
+		/// <param name="sField">the field to test, i.e., "Tag"</param>
+		/// </summary>
+		/// <returns> blank if no value, or no valid value for this filed</returns>
+		static public string GetFieldValue(string sField, object obj)
+		{
+			string sValue = "";
+			if (sField == null || obj == null)
+			{
+				throw new Exception("GetFieldValue passed in null sField or obj");
+			}
+			
+			try
+			{
+				
+				System.Type senderType = obj.GetType();
+				System.Reflection.PropertyInfo property = senderType.GetProperty(sField);
+				if (property != null)
+				{
+					sValue = property.GetValue(obj, null).ToString();
+				}
+				else
+				{
+					lg.Instance.Line("General.GetFieldValue",CoreUtilities.ProblemType.MESSAGE, "property for was null " +sField);
+					
+				}
+			}
+			catch (Exception)
+			{
+				sValue = "";
+				lg.Instance.Line("General.GetFieldValue", ProblemType.MESSAGE, "GetFieldValue Exception on  passing blank string out " + sField);
+			}
+			return sValue;
+		}
 
 	}
 }

@@ -275,7 +275,15 @@ namespace Storyboards
             //listView.Refresh();
 
         }
+	public void HotFix()
+		{
+			// a tes tto see if I can finally resolve the 'list not drawing' issues.
+			// basically call this after called LoadGroupEm
+			View CurrentView = listView.View;
+			listView.View = View.Details;
+			listView.View = CurrentView;
 
+		}
         private void listView_ColumnClick(object sender, ColumnClickEventArgs e)
         {
             // Determine if clicked column is already the column that is being sorted.
@@ -467,66 +475,66 @@ namespace Storyboards
         /// Called both from AddItem and when Items are set
         /// </summary>
         /// <param name="record"></param>
-        private ListViewItem AddRecord(LinkTableRecord record)
-        {
-            // by default using image index 0
-            // a picture will override this
-            int nIdx = 0;
-            string sSubfolder = "Note";
-            bool bFakePic = false;
+        private ListViewItem AddRecord (LinkTableRecord record)
+		{
+			// by default using image index 0
+			// a picture will override this
+			int nIdx = 0;
+			string sSubfolder = "Note";
+			bool bFakePic = false;
 
-            string sThumbnailImage = record.sFileName;
-            string sTitle = record.sText;
+			string sThumbnailImage = record.sFileName;
+			string sTitle = record.sText;
 
-            try
-            {
-                if (record.sText.IndexOf("%") > -1)
-                {
-                    string[] strings  = record.sText.Split('%');
-                    sTitle = strings[0];
+			try {
+				if (record.sText.IndexOf ("%") > -1) {
+					string[] strings = record.sText.Split ('%');
+					sTitle = strings [0];
 
-                    if (strings[1] != "")
-                    {
-                        sThumbnailImage = strings[1];
-                        //record.nBookmarkKey = 1; // temp set to picture so it goes into next part
-                        bFakePic = true;
-                    }
-                }
-            }
-            catch (Exception)
-            {
-            }
+					if (strings [1] != "") {
+						sThumbnailImage = strings [1];
+						//record.nBookmarkKey = 1; // temp set to picture so it goes into next part
+						bFakePic = true;
+					}
+				}
+			} catch (Exception) {
+			}
 
 
-            if (record.nBookmarkKey == 1 || true == bFakePic) // 1 = picutre
-            {
+			if (record.nBookmarkKey == 1 || true == bFakePic) { // 1 = picutre
                 
-                // do special code, assigning 
-                // the image indexes
-                // NO need to store image indexes
+				// do special code, assigning 
+				// the image indexes
+				// NO need to store image indexes
 
              
 
-                // Jan 2010 if the title is parseable with text%link we use link instead
-                // of the otherimage (for character page thumbnails)
+				// Jan 2010 if the title is parseable with text%link we use link instead
+				// of the otherimage (for character page thumbnails)
                 
                
 
 
-                if (File.Exists(sThumbnailImage) == true)
-                {
-                    Image image = Image.FromFile(sThumbnailImage);
-                    imageList.Images.Add(image);
-                    nIdx = imageList.Images.Count - 1;
-                    imageListLarge.Images.Add(image);
+				if (File.Exists (sThumbnailImage) == true) {
+					Image image = Image.FromFile (sThumbnailImage);
+					imageList.Images.Add (image);
+					nIdx = imageList.Images.Count - 1;
+					imageListLarge.Images.Add (image);
 
-                }
+				}
 
-                sSubfolder = "Picture";
+				sSubfolder = "Picture";
 
-            }
-            // add record to arraylist
-            ListViewItem item = listView.Items.Add(record.sFileName, sTitle, nIdx) ;
+			}
+			// add record to arraylist
+			ListViewItem item = listView.Items.Add (record.sFileName, sTitle, nIdx);
+
+
+			// truncate text, so it is never too long (to attempt fixing the losing item error)
+			if (item.Text.Length > 20) {
+				item.Text = item.Text.Substring(0, 20);
+			}
+
             item.Tag =  record;
 
 
@@ -1661,7 +1669,11 @@ namespace Storyboards
 				
 				
 				
-				
+//				if (listView.View != View.Details)
+//				{
+//					listView.Columns.Clear();
+//				}
+//				else
 				// add the columns if not already added
 				if (listView.Columns.Count == 0)
 				{
@@ -1686,7 +1698,7 @@ namespace Storyboards
 					}
 					
 				}
-				
+
 				
 				/* May 2009 
                  * POtential bug?
@@ -1777,18 +1789,28 @@ namespace Storyboards
                  */
 				
 				listView.BeginUpdate();
+				try
+				{
 				
 				// now we add the records we found
 				foreach (LinkTableRecord record in matches)
 				{
 					AddRecord(record);
 				}
-				
-				listView.EndUpdate();
-				
-				group = null;
-				groups = null;
-				matches = null;
+				}
+				catch (Exception ex)
+				{
+					NewMessage.Show (ex.ToString ());
+				}
+				finally{
+					listView.EndUpdate();
+					
+					group = null;
+					groups = null;
+					matches = null;
+				}
+
+			
 				
 				
 				

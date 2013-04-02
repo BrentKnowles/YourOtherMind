@@ -68,6 +68,8 @@ namespace Layout
 		void Minimize();
 		string RegisterType();
 
+		// for use with the F6 command in mainform (hiding the system panel)
+		void ToggleTemporaryVisibility();
 		/// <summary>
 		/// Updates the location, called when location is set outside actual movement.
 		/// </summary>

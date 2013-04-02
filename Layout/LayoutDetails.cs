@@ -13,6 +13,8 @@ namespace Layout
 	/// </summary>
 	public class LayoutDetails
 	{
+		public static  string  SIDEDOCK = "system_sidedock";
+
 		// the list of events (deleting, submissions, worklogs)
 		private List<Type> transactionsLIST = new List<Type>();
 
@@ -106,7 +108,7 @@ namespace Layout
 				{
 				if (UpdateTitle != null )
 				{
-					//currentLayout
+						//currentLayout
 					UpdateTitle(currentLayout.Caption);
 				}
 				lg.Instance.Line ("LayoutDetails->CurrentLayout", ProblemType.MESSAGE, "Setting Layout to " + currentLayout.GUID);
@@ -186,6 +188,19 @@ namespace Layout
 
 		public Func<System.Collections.Generic.List<string>> GetListOfAppearancesDelegate=null;
 		#endregion
+
+		public void WaitCursor (bool b)
+		{
+			if (LayoutDetails.Instance.CurrentLayout != null) {
+				if (true == b)
+				{
+				LayoutDetails.Instance.CurrentLayout.Cursor = Cursors.WaitCursor;
+				}
+				else{
+					LayoutDetails.Instance.CurrentLayout.Cursor = Cursors.Default;
+				}
+			}
+		}
 
 		/// <summary>
 		/// Clears the dragging of notes on A layout. If stuck in dragmode

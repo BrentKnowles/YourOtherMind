@@ -199,27 +199,38 @@ namespace Transactions
 //				                                 RowData[TransactionsTable.DATA7.Index], RowData[TransactionsTable.DATA8.Index], 
 //				                                 RowData[TransactionsTable.DATA9.Index]);
 
+
+			//	string debug = String.Format ("DEBUGGUID :[{0}]", RowData[TransactionsTable.DATA2.Index].ToString());
+
+
+
 				string dataToAdd =Loc.Instance.GetStringFmt 
-					("Submitted to {0} on {1} [{2}] DEBUGGUID :[{3}]",  RowData[TransactionsTable.DATA10.Index], DateAsFriendlyString(), RowData[TransactionsTable.DATA7.Index],
-					 RowData[TransactionsTable.DATA2.Index].ToString()
+					("Submitted to {0} on {1} [{2}] ",  RowData[TransactionsTable.DATA10.Index], GetFriendlyDateForMostRecentDate (), RowData[TransactionsTable.DATA7.Index]
 					 );
 				return Loc.Instance.GetStringFmt("Submission {0}", dataToAdd);
 			}
 		}
 
 		// For when a market is viewing a project
-		public virtual string DisplayVariant {
+		public override string DisplayVariant {
 			get {
 				string ProjectName = Loc.Instance.GetString ("Unknown Project");
 
 				if (GetProjectFromGUID != null)
 				{
+					try
+					{
 					// if we have provided a lookup function then use it
 					ProjectName = GetProjectFromGUID(ProjectGUID);
+					}
+					catch (Exception)
+					{
+						ProjectName = "error";
+					}
 				}
-
+				string date = GetFriendlyDateForMostRecentDate ();
 				string dataToAdd =Loc.Instance.GetStringFmt 
-					("{0} was submitted here on  {1} [{2}]",  ProjectName, DateAsFriendlyString(), RowData[TransactionsTable.DATA7.Index]);
+					("{0} was submitted here on  {1} [{2}]",  ProjectName, date, RowData[TransactionsTable.DATA7.Index]);
 				return Loc.Instance.GetStringFmt("Submission {0}", dataToAdd);
 			}
 		}

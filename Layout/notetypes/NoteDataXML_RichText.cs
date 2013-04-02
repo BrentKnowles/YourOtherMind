@@ -7,7 +7,7 @@ namespace Layout
 {
 	public class NoteDataXML_RichText : NoteDataXML
 	{
-		public enum FormatText {BOLD, STRIKETHRU, ZOOM, LINE, BULLET, BULLETNUMBER, DEFAULTFONT, DATE};
+		public enum FormatText {BOLD, STRIKETHRU, ZOOM, LINE, BULLET, BULLETNUMBER, DEFAULTFONT, DATE, UNDERLINE, ITALIC};
 		// if this is the value set on the dropdown then we use the defined default in OPTIONS
 		const string defaultmarkup = "Default"; 
 		#region XML
@@ -240,6 +240,7 @@ namespace Layout
 		protected void SetThisTextNoteAsActive()
 		{
 			Layout.CurrentTextNote = (NoteDataXML_RichText)this;
+			if (Layout.GetFindbar() != null) Layout.GetFindbar().ResetSearch();
 		}
 		/// <summary>
 		/// Handles the rich box enter. Sets the active richtext box
@@ -299,7 +300,16 @@ namespace Layout
 		//	richBox.SelectionFont = new System.Drawing.Font(richBox.SelectionFont.FontFamily, richBox.SelectionFont.Size, System.Drawing.FontStyle.Bold);
 			General.FormatRichText(richBox, FontStyle.Bold);
 		}
-
+		public void Italic()
+		{
+			//	richBox.SelectionFont = new System.Drawing.Font(richBox.SelectionFont.FontFamily, richBox.SelectionFont.Size, System.Drawing.FontStyle.Bold);
+			General.FormatRichText(richBox, FontStyle.Italic);
+		}
+		public void Underline()
+		{
+			//	richBox.SelectionFont = new System.Drawing.Font(richBox.SelectionFont.FontFamily, richBox.SelectionFont.Size, System.Drawing.FontStyle.Bold);
+			General.FormatRichText(richBox, FontStyle.Underline);
+		}
 		public void Strike()
 		{
 			General.FormatRichText(richBox, FontStyle.Strikeout);

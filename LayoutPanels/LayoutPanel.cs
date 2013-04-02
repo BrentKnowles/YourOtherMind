@@ -218,8 +218,19 @@ namespace Layout
 			DefaultText.Text = "default";
 			DefaultText.Click+= (object sender, EventArgs e) => DoFormatOnText(NoteDataXML_RichText.FormatText.DEFAULTFONT);
 
+
+			ToolStripButton UnderlineText = new ToolStripButton();
+			UnderlineText.Text = "underline";
+			UnderlineText.Click+= (object sender, EventArgs e) => DoFormatOnText(NoteDataXML_RichText.FormatText.UNDERLINE);
+
+			ToolStripButton ItalicText = new ToolStripButton();
+			ItalicText.Text = "italic";
+			ItalicText.Click+= (object sender, EventArgs e) => DoFormatOnText(NoteDataXML_RichText.FormatText.ITALIC);
+
 			//	Bullets.Click+= (object sender, EventArgs e) => DoFormatOnText(NoteDataXML_RichText.FormatText.ZOOM);
 			formatBar.Items.Add (DefaultText);
+			formatBar.Items.Add (UnderlineText);
+			formatBar.Items.Add (ItalicText);
 
 		}
 
@@ -501,6 +512,7 @@ namespace Layout
 		/// </returns>
 		string GetRandomTableDetails(string identifier)
 		{
+			this.Cursor = Cursors.WaitCursor;
 			try
 			{
 				string[] pars = identifier.Split(new char[1] {'|'});
@@ -531,12 +543,20 @@ namespace Layout
 				tableString = tableString.ToLower();
 					NoteDataInterface table = temporaryLayoutPanel.FindNoteByName(tableString);
 				
-
+					bool found = false;
 					if (table != null && table is NoteDataXML_Table)
 					{
-						return 	((NoteDataXML_Table)table).GetRandomTableResults ();
+						// now convert the note to a proper object (with a layout to reference, which is needed when looking for notes on a SUBPANEL)
+						table = temporaryLayoutPanel.GoToNote(table);
+						if (table != null)
+						{
+							found = true;
+							return 	((NoteDataXML_Table)table).GetRandomTableResults ();
+						}
 					}
-					else
+
+
+					if (false == found)
 					{
 						NewMessage.Show (Loc.Instance.GetStringFmt("This was not a valid table. Is there a table named {0} on the layout {1}?", tableString,LayoutName));
 					}
@@ -553,6 +573,7 @@ namespace Layout
 			{
 				NewMessage.Show(ex.ToString());
 			}
+			this.Cursor = Cursors.Default;
 			return Constants.BLANK;
 		}
 

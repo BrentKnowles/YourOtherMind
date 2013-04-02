@@ -3,15 +3,21 @@ using System.Windows.Forms;
 using System.Drawing;
 using System.Collections.Generic;
 using CoreUtilities;
+using System.ComponentModel;
 
 namespace Layout
 {
 	public class info_form : Form
 	{
-		TableLayoutPanel layPanel;
+
 		string GUID= Constants.BLANK;
 
+		#region gui
+		TableLayoutPanel layPanel;
 		ListBox ListOfEvents = null;
+	
+		Button refresh = null;
+		#endregion
 
 		public info_form (string infoText, string _GUID)
 		{
@@ -32,7 +38,7 @@ namespace Layout
 			infohead.ReadOnly = true;
 			infohead.Dock = DockStyle.Top;
 
-			Button refresh = new Button();
+			refresh = new Button();
 			refresh.Text = Loc.Instance.GetString("Update Reciprocal Links");
 			refresh.Dock = DockStyle.Top;
 			refresh.Click+= HandleRefreshClick;
@@ -62,7 +68,88 @@ namespace Layout
 				ListOfEvents.DataSource = LayoutEvents;
 				ListOfEvents.DisplayMember = "Display";
 			}
+			BuildReciprocaInBackground();
 		}
+		void BuildReciprocaInBackground()
+		{
+			List<string> ListOfItems = null;
+			//from:  http://stackoverflow.com/questions/363377/c-sharp-how-do-i-run-a-simple-bit-of-code-in-a-new-thread
+			BackgroundWorker bw = new BackgroundWorker();
+			
+			// this allows our worker to report progress during work
+			bw.WorkerReportsProgress = false;
+			
+			// what to do in the background thread
+			bw.DoWork += new DoWorkEventHandler(
+				delegate(object o, DoWorkEventArgs args)
+				{refresh.Enabled = false;
+				BackgroundWorker b = o as BackgroundWorker;
+			//	LinkProgressLabel = new Label();
+				refresh.Text = Loc.Instance.GetString("Loading Reciprocal Links...");
+//				this.Controls.Add (LinkProgressLabel);
+//				LinkProgressLabel.Left = this.Width / 2;
+//				LinkProgressLabel.Top = this.Height / 2;
+				ListOfItems = BuildLinkList();
+
+				// do some simple processing for 10 seconds
+//				for (int i = 1; i <= 10; i++)
+//				{
+//					// report the progress in percent
+//					b.ReportProgress(i * 10);
+//					Thread.Sleep(1000);
+//				}
+				
+			});
+			
+			// what to do when progress changed (update the progress bar for example)
+//			bw.ProgressChanged += new ProgressChangedEventHandler(
+//				delegate(object o, ProgressChangedEventArgs args)
+//				{
+//				label1.Text = string.Format("{0}% Completed", args.ProgressPercentage);
+//			});
+			
+			// what to do when worker completes its task (notify the user)
+			bw.RunWorkerCompleted += new RunWorkerCompletedEventHandler(
+				delegate(object o, RunWorkerCompletedEventArgs args)
+				{
+				//label1.Text = "Finished!";
+				//this.Controls.Remove (LinkProgressLabel);
+				if (null != ListOfItems)
+				{
+				RefreshReciprocalLinks(ListOfItems);
+				}
+				refresh.Text = Loc.Instance.GetString("Update Reciprocal Links");
+				refresh.Enabled = true;
+			});
+			
+			bw.RunWorkerAsync();
+		}
+
+		List<string> BuildLinkList()
+		{
+			return MasterOfLayouts.ReciprocalLinks (GUID);
+		}
+		void RefreshReciprocalLinks (List<string> connections )
+		{
+			// splitting this so that the Threaded version can still perform the heavy listing while we update the UI at the end
+			// moving connections out
+			layPanel.ColumnCount = 2;
+			layPanel.Controls.Clear ();
+			foreach (string s in connections) {
+				string[] data = s.Split (new char[1] {
+					'.'
+				});
+				if (data != null && data.Length == 2) {
+					LinkLabel link = new LinkLabel ();
+					link.Tag = data [1];
+					link.Text = data [0];
+					link.LinkBehavior = LinkBehavior.AlwaysUnderline;
+					link.LinkClicked += HandleLinkClicked;
+					layPanel.Controls.Add (link);
+				}
+			}
+		}
+
 		/// <summary>
 		/// Handles the refresh click for REDRAWING RECIPROCAL LINKS
 		/// </summary>
@@ -76,23 +163,9 @@ namespace Layout
 		{
 
 			this.Cursor = Cursors.WaitCursor;
-			List<string> connections = MasterOfLayouts.ReciprocalLinks (GUID);
+			RefreshReciprocalLinks (BuildLinkList());
 
-			layPanel.ColumnCount = 2;
-			layPanel.Controls.Clear ();
 
-			foreach (string s in connections) {
-				string[] data = s.Split (new char[1]{'.'});
-				if (data != null && data.Length == 2) {
-					LinkLabel link = new LinkLabel ();
-					link.Tag = data [1];
-					link.Text = data [0];
-				
-					link.LinkBehavior = LinkBehavior.AlwaysUnderline;
-					link.LinkClicked += HandleLinkClicked;
-					layPanel.Controls.Add (link);
-				}
-			}
 
 
 

@@ -23,10 +23,10 @@ namespace YOM2013
 			SystemLayout.Parent = parent;
 			SystemLayout.Visible = true;
 
-		
+
 
 			NoteDataXML_Panel sidedockpanel = new NoteDataXML_Panel(800,300);
-			sidedockpanel.GuidForNote = "system_sidedock";
+			sidedockpanel.GuidForNote = LayoutDetails.SIDEDOCK; //"system_sidedock";
 			SystemLayout.AddNote(sidedockpanel);
 			sidedockpanel.CreateParent(SystemLayout);
 
@@ -254,6 +254,7 @@ namespace YOM2013
 			randomTables.AddRow(new object[2]{"2", Loc.Instance.GetString("None")});
 			randomTables.AddRow(new object[2]{"3", Loc.Instance.GetString("Semi-Pro")});
 			randomTables.AddRow(new object[2]{"4", Loc.Instance.GetString("Small Press (Token)")});
+			randomTables.AddRow(new object[2]{"5", Loc.Instance.GetString("Pro Market")});
 
 			SystemLayout.SaveLayout ();
 			// note list needs to be at the end March 2013 but creatio happens earlier so it is the defautl viewed note

@@ -27,6 +27,10 @@ namespace Layout
 		/// <value>
 		/// The listoftableguids.
 		/// </value>
+		[Editor(@"System.Windows.Forms.Design.StringCollectionEditor," +
+		        "System.Design, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a",
+		        typeof(System.Drawing.Design.UITypeEditor))]
+		[TypeConverter(typeof(Layout.StringListConverter))]
 		public List<string> Listoftableguids {
 			get {
 				return listoftableguids;
@@ -386,6 +390,10 @@ namespace Layout
 		public NoteDataXML_Table GetTableForThisTimeline (string TimelineTableGuid)
 		{
 			NoteDataXML_Table FoundTable = (NoteDataXML_Table)Layout.FindNoteByGuid (TimelineTableGuid);
+
+			// April 1 2013 - this may make things TOO SLOW
+			// but only way to guarantee al ive connection when the TIMELINE is not in the same panel as the TABLES
+			FoundTable = (NoteDataXML_Table)Layout.GoToNote(FoundTable);
 			if (null == FoundTable && false==errorthrown) {
 				// just throw message once.
 				NewMessage.Show (Loc.Instance.GetString ("The table for this Timeline was not found. Probably the guid of it needs to be set to its caption."));

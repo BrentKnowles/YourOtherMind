@@ -92,10 +92,45 @@ namespace Transactions
 
 		}
 
+		/// <summary>
+		/// Gets the friendly date for most recent date.
+		/// 
+		/// Picks between the most recent of dates and returns its strings 
+		/// </summary>
+		/// <returns>
+		/// The friendly date for most recent date.
+		/// </returns>
+		protected string GetFriendlyDateForMostRecentDate ()
+		{
+		
+			DateTime date1 = DateTime.Now;
+			DateTime date2 = DateTime.Now;
+
+			DateTime.TryParse (RowData [TransactionsTable.DATE.Index].ToString (), out date1);
+			DateTime.TryParse (RowData [TransactionsTable.DATE2.Index].ToString (), out date2);
+
+			if (date1 > date2) {
+				return DateAsFriendlyString();
+			}
+
+			return Date2AsFriendlyString();
+		}
+		public virtual string DisplayVariant {
+			get {
+				return Loc.Instance.GetString ("undefined");
+			}
+		}
 		protected string DateAsFriendlyString()
 		{
 			DateTime dateValue = DateTime.Parse (RowData[TransactionsTable.DATE.Index].ToString());
 						string dateAsString = dateValue.ToShortDateString();
+			return dateAsString;
+		}
+
+		protected string Date2AsFriendlyString()
+		{
+			DateTime dateValue = DateTime.Parse (RowData[TransactionsTable.DATE2.Index].ToString());
+			string dateAsString = dateValue.ToShortDateString();
 			return dateAsString;
 		}
 

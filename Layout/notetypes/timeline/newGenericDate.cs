@@ -5,26 +5,44 @@ namespace Timeline
 {
 	public struct newGenericDate
 	{
-		
+		public static bool WarnedAlready;
 		
 		public int Year;
 		public int Month;
 		public int Day;
 		public newGenericDate(int nYear, int nMonth, int nDay)
 		{
+		
 			Year = nYear;
 			Month = nMonth;
 			Day = nDay;
 		}
 		public newGenericDate(DateTime date)
 		{
+		
 			Year = date.Year;
 			Month = date.Month;
 			Day = date.Day;
 		}
+
 		public DateTime AsDate
 		{
-			get {return new DateTime(Year, Month, Day);}
+			get {
+				DateTime DateToReturn = DateTime.Now;
+				try
+				{
+					DateToReturn = new DateTime(Year, Month, Day);
+				}
+				catch (Exception)
+				{
+					DateToReturn = DateTime.Now;
+					if (false == WarnedAlready)
+					{
+						NewMessage.Show (Loc.Instance.GetStringFmt ("The date with day {0} and month {0} and year {0} was invalid. Setting to today.", Day, Month, Year));
+						WarnedAlready = true;
+					}
+				}
+				return DateToReturn;}
 		}
 		public string AsString
 		{
@@ -59,7 +77,7 @@ namespace Timeline
 						// found a line, grab day
 						string sDay= sDateString.Substring(0, nIdx);
 						sDay = sDay.Trim();
-						Day = Int32.Parse(sDay);
+						Int32.TryParse(sDay, out Day);
 						sDateString = sDateString.Substring(nIdx+1, sDateString.Length - nIdx-1);
 					}
 					nIdx = sDateString.IndexOf("/");
@@ -68,7 +86,7 @@ namespace Timeline
 						// found a line, grab month
 						string sMonth = sDateString.Substring(0, nIdx);
 						sMonth = sMonth.Trim();
-						Month = Int32.Parse(sMonth);
+						Int32.TryParse(sMonth, out Month);
 						sDateString = sDateString.Substring(nIdx + 1, sDateString.Length - nIdx - 1);
 					}
 					// there is no / after date
@@ -79,7 +97,7 @@ namespace Timeline
 						// found a line, grab month
 						string sYear = sDateString.Substring(0, nIdx);
 						sYear = sYear.Trim();
-						Year = Int32.Parse(sYear);
+						Int32.TryParse(sYear, out Year);
 						sDateString = sDateString.Substring(nIdx + 1, sDateString.Length - nIdx - 1);
 					}
 					// if we did not find a year, in the case of Newer daes that just go day/month/year with not 
@@ -88,7 +106,8 @@ namespace Timeline
 					{
 						string sYear = sDateString;
 						sYear = sYear.Trim();
-						Year = Int32.Parse(sYear);
+						Int32.TryParse(sYear, out Year);
+						//Year = Int32.Parse(sYear);
 					}
 				}
 			}

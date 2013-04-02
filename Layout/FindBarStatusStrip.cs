@@ -64,6 +64,15 @@ namespace Layout
 			return FindMenu;
 
 		}
+
+		/// <summary>
+		/// Resets the search. Called when setting a new text note to clear the search (to force it to search in the new note)
+		/// </summary>
+		public void ResetSearch()
+		{
+			PositionsFound = null;
+			Position = 0;
+		}
 		/// <summary>
 		/// Updates the search after editing interruption.
 		/// 

@@ -717,22 +717,20 @@ namespace Transactions
 		/// <param name="nYear"></param>
 		/// <param name="sExtraFilter"></param>
 		/// <returns>-1 if no event table found</returns>
-		public string QueryMax(int nYear, string sExtraFilter, bool bAllYears, string maxcol)
+		public string QueryMax (int nYear, string sExtraFilter, bool bAllYears, string maxcol)
 		{
 			string sValue = "error";
-			try
-			{
+			try {
 
 				
 				//string sCalcString1 = String.Format("Max({0})", maxcol);
-				DateTime newDateStart=DateTime.Now;
-				DateTime newDateEnd=DateTime.Now;
+				DateTime newDateStart = DateTime.Now;
+				DateTime newDateEnd = DateTime.Now;
 				//newDate
 //				string sCalcString2 = "";
-				if (bAllYears == false)
-				{
-					 newDateStart = new DateTime(nYear, 1, 1).Date;
-					 newDateEnd = new DateTime(nYear + 1, 1, 1).Date;
+				if (bAllYears == false) {
+					newDateStart = new DateTime (nYear, 1, 1).Date;
+					newDateEnd = new DateTime (nYear + 1, 1, 1).Date;
 					
 					//sCalcString2 = String.Format("({0} >= #{1}#) AND ({0} < #{2}#)", DATE, newDateStart, newDateEnd);
 				}
@@ -750,11 +748,12 @@ namespace Transactions
 				//  Messa geBox.Show(String.Format("{0} -- {1}", sCalcString1, sCalcString2));
 				//Messa geBox.Show(table.Compute(sCalcString1, sCalcString2).GetType().ToString());
 				//sValue = ((int)(table.Compute(sCalcString1, sCalcString2))).ToString();
-				sValue = QueryValueForTimePeriod(maxcol, sExtraFilter, newDateStart, newDateEnd, 1,bAllYears);
+				sValue = QueryValueForTimePeriod (maxcol, sExtraFilter, newDateStart, newDateEnd, 1, bAllYears);
+			} catch (Exception ex) {
+				lg.Instance.Line ("TransactionsTable->QueryMax", ProblemType.EXCEPTION, ex.ToString ());
 			}
-			catch (Exception ex)
-			{
-				lg.Instance.Line("TransactionsTable->QueryMax", ProblemType.EXCEPTION, ex.ToString());
+			if (Constants.BLANK == sValue) {
+				sValue = "0";
 			}
 			return sValue;
 			
@@ -769,6 +768,30 @@ namespace Transactions
 			string result = ThisDatabase.ExecuteCommand(str, DateTime.Now, DateTime.Now, true);
 			Int32.TryParse(result, out output);
 			return output;
+		}
+		/// <summary>
+		/// Sum the specified projectGUID, SumColumn and sumFilter.
+		/// </summary>
+		/// <param name='projectGUID'>
+		/// Project GUI.
+		/// </param>
+		/// <param name='SumColumn'>
+		/// Sum column.
+		/// </param>
+		/// <param name='sumFilter'>
+		/// Sum filter.
+		/// </param>
+		public float Sum (string projectGUID, string SumColumn, string sumFilter)
+		{
+
+			string sValue =  ThisDatabase.ExecuteCommand(String.Format ("Select Sum({0}) from {1} where {2}", SumColumn, table_name, sumFilter),
+			                                             DateTime.Now, DateTime.Now, true);
+			float returnValue =0.0f;
+			float.TryParse(sValue, out returnValue);
+			return returnValue;
+
+
+
 		}
 	} // class
 
