@@ -614,13 +614,19 @@ namespace YOM2013
 				//	((ToolStripMenuItem)MainMenu.Items [0]).DropDownItems.Add (Save);
 				Save.Click += HandleSaveClick;
 
-				ToolStripMenuItem Backup = new ToolStripMenuItem (Loc.Instance.Cat.GetString ("Backup"));
-				Backup.Click += HandleBackupClick;
-				file.DropDownItems.Add (Backup);
+//				ToolStripMenuItem Backup = new ToolStripMenuItem (Loc.Instance.Cat.GetString ("Backup"));
+//				Backup.Click += HandleBackupClick;
+//				file.DropDownItems.Add (Backup);
+
+
+				ToolStripMenuItem Random = new ToolStripMenuItem(Loc.Instance.GetString ("Random Layout"));
+				Random.Click+= HandleRandomClick;
+				GetFileMenu().DropDownItems.Add (Random);
 
 				ToolStripMenuItem Exit = new ToolStripMenuItem(Loc.Instance.GetString ("Exit"));
 				Exit.Click+= HandleExitClick;
 				file.DropDownItems.Add (Exit);
+
 			}
 
 			ToolStripSeparator sep = new ToolStripSeparator ();
@@ -672,9 +678,8 @@ namespace YOM2013
 
 
 
-			ToolStripMenuItem Random = new ToolStripMenuItem(Loc.Instance.GetString ("Random Layout"));
-			Random.Click+= HandleRandomClick;
-			GetNoteMenu().DropDownItems.Add (Random);
+		
+
 
 			// Add option panels to options menu
 			Settings = new Options(LayoutDetails.Instance.YOM_DATABASE);
