@@ -24,8 +24,8 @@
 // or other general information/
 // 
 // Author information available at http://www.brentknowles.com or http://www.amazon.com/Brent-Knowles/e/B0035WW7OW
-//
-//
+// Full source code: https://github.com/BrentKnowles/YourOtherMind
+//###
 
 using System;
 using System.Windows.Forms;
@@ -1511,6 +1511,13 @@ namespace YOM2013
 		/// <param name="childGUID"> If a guid is specified this note will be GONE to once the load is compete</param>
 		void LoadLayout (string guidtoload, string childGuid)
 		{
+
+
+			if (System.Diagnostics.Process.GetCurrentProcess ().PrivateMemorySize64 > 500000000) {
+				NewMessage.Show (Loc.Instance.GetString ("You have many layouts open and your memory use is growing too high. Please close some layouts before opening new."));
+				return;
+			}
+
 			// force a save before opening or reloading a note
 			Save (true);
 
