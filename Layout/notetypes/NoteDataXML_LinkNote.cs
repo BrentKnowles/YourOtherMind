@@ -338,6 +338,14 @@ namespace Layout
 				// intentionally you cannot change the readonly setting
 			}
 		}
+		public NoteDataXML_LinkNote(NoteDataInterface Note) : base(Note)
+		{
+			
+		}
+		public override void CopyNote (NoteDataInterface Note)
+		{
+			base.CopyNote (Note);
+		}
 	}
 }
 

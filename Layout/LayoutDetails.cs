@@ -33,6 +33,7 @@ using CoreUtilities;
 using System.Windows.Forms;
 using System.Drawing;
 using Transactions;
+using System.IO;
 
 namespace Layout
 {
@@ -78,6 +79,24 @@ namespace Layout
 		public const string SYSTEM_GRAMMAR="list_grammar";
 #endregion
 		#region variables
+
+
+		public NoteDataInterface currentCopiedNote=null;
+		/// <summary>
+		/// Gets or sets the current copied note.
+		/// </summary>
+		/// <value>
+		/// The current copied note.
+		/// </value>
+		public NoteDataInterface CurrentCopiedNote {
+			get {
+				return currentCopiedNote;
+			}
+			set {
+				currentCopiedNote = value;
+			}
+		}
+
 		protected static volatile LayoutDetails instance;
 		protected static object syncRoot = new Object();
 	
@@ -662,6 +681,153 @@ namespace Layout
 			//e.SuppressKeyPress = true;
 			e.Handled = true;
 		}
+
+		/// <summary>
+		/// called from SaveTextLineToFile
+		/// </summary>
+		/// <param name="NoteToOpen">if present and we encounter [[title]] we replace [[title]] with NoteToOpen   ///  </param>
+		/// <param name="sText"></param>
+		void SaveTextLineByLine (StreamWriter writer, string[] linesOfText, string empty)
+		{
+			foreach (string s in linesOfText)
+			{
+				writer.WriteLine(s);
+			}
+		}
+		
+		/// <summary>
+		/// Goes through rich edit line by line saving to a plain text file
+		/// 
+		/// December 2009
+		///  Here we need to do a redesign.
+		/// 
+		/// If we encounter [[index]] on the first line we know that we have an index page. So instead we need to do the following:
+		/// 
+		/// Each line is either a NOTE NAME to add to the text file (which will be parsed line by line and converted to plain text)
+		/// 
+		/// OR
+		/// 
+		/// It returns a list of names that are then parsed line by line as above, in the order of the list
+		///   
+		/// An example index would be
+		/// [[index]]
+		/// _Header [[words]]
+		/// [[Group,Storyboard,Chapter*,words]         !- This returns an array of note names that match the criteria (i.e., Chapter 01, Chapter 02)
+		/// _Footer
+		/// 
+		/// 
+		/// 
+		/// * Note: Choose not to let the groups handl
+		/// </summary>
+		/// <param name="sFile"></param>
+		public void SaveTextLineToFile (string[] LinesOfText, string sFilepath)
+		{
+			string sWordInformation = "";
+			int TotalWords = 0;
+			
+			
+			// certain Addins like spellchecking won't both writing a file out
+			if (sFilepath != Constants.BLANK) {
+				
+				
+				try {
+					StreamWriter writer = new StreamWriter (sFilepath);
+					
+					//
+					//					if (LayoutDetails.Instance.CurrentLayout != null && LayoutDetails.Instance.CurrentLayout.CurrentTextNote != null)
+					//					{
+					//						NewMessage.Show (Loc.Instance.GetString ("The current markup does not support Sending-Away files correctly. Did you forget to set the current markup in the Options menu?"));
+					//												if (LayoutDetails.Instance.CurrentLayout.CurrentTextNote is NoteData
+					//					}
+					
+					if (LayoutDetails.Instance.GetCurrentMarkup().IsIndex(LinesOfText [0].ToLower ()) == true)
+					{
+						//if (LinesOfText [0].ToLower () == "[[index]]") {
+						// we are actually an index note
+						// which will instead list a bunch of other pages to use
+						// we now iterate through LinesOfText[1] to end and parse those instead
+						for (int i = 1; i < LinesOfText.Length; i++) {
+							string sLine = LinesOfText [i];
+							bool bGetWords = false;
+							ArrayList ListOfParsePages = new ArrayList ();
+							
+							//TODO hook up to Custom Scripting Language system
+							if (sLine.IndexOf ("[[words]]") > -1) {
+								
+								// if we have the words keyword we know we want to display some word info at the end
+								sLine = sLine.Replace ("[[words]]", "").Trim ();
+								
+								bGetWords = true;
+							}
+							//TODO hook up to Custom Scripting Language system
+							if (sLine.IndexOf ("[[Group") > -1) {
+								
+								ListOfParsePages = LayoutDetails.Instance.GetCurrentMarkup().GetListOfPages(sLine, ref bGetWords);
+								
+								// we have a group
+								
+							} else {
+								ListOfParsePages.Add (sLine);
+							}
+							
+							if (ListOfParsePages != null)
+							{
+								// Now we go through the pages and write them into the text file
+								// feb 19 2010 - added because chapter notes were not coming out in alphaetical
+								ListOfParsePages.Sort ();
+								
+								foreach (string notetoopen in ListOfParsePages) {
+									//	DrawingTest.NotePanel panel = ((mdi)_CORE_GetActiveChild()).page_Visual.GetPanelByName(notetoopen);
+									NoteDataInterface note = LayoutDetails.Instance.CurrentLayout.FindNoteByName(notetoopen);	
+									
+									//TODO hook up to Custom Scripting Language system and make more efficient
+									if (note != null && (note is NoteDataXML_RichText))
+									{
+										RichTextBox tempBox = new RichTextBox();
+										tempBox.Rtf = note.Data1;
+										SaveTextLineByLine(writer, tempBox.Lines, notetoopen);
+										
+										if (true == bGetWords)
+										{
+											int Words = 
+												LayoutDetails.Instance.WordSystemInUse.CountWords(tempBox.Text);
+											TotalWords = TotalWords + Words;
+											
+											
+											
+											
+											sWordInformation = sWordInformation + String.Format("{0}: {1}{2}", notetoopen, Words.ToString(), Environment.NewLine);
+										}
+										
+										tempBox.Dispose();
+									}
+								} //open each note list
+							}//list not nulls
+							//                            panel.Dispose(); Don't think I can do this becauseit would dlette hte note, benig an ojbect
+							ListOfParsePages = null;
+							
+						}
+					} else {
+						SaveTextLineByLine (writer, LinesOfText, "");
+					}
+					
+					writer.Close ();
+					writer.Dispose ();
+					if (sWordInformation != "") {
+						string sResult = Loc.Instance.GetStringFmt ("Total Words:{0}\n{1}", TotalWords.ToString (), sWordInformation);
+						Clipboard.SetText (sResult);
+						NewMessage.Show (Loc.Instance.GetString ("Your Text Has Been Sent! Press Ctrl + V to paste word count information into current note."));
+						//NewMessage.Show(sResult);
+					}
+				} catch (Exception) {
+					NewMessage.Show (Loc.Instance.GetStringFmt ("Unable to write to {0} please shut down and try again", sFilepath));
+				}
+			}
+			LinesOfText = null;
+			
+			
+		}
+
 	}
 }
 

@@ -31,6 +31,11 @@ using System.Windows.Forms;
 
 namespace CoreUtilities
 {
+	/// <summary>
+	/// Form_ add text string.
+	/// 
+	/// This is a simple text box for entering a single string. Pretty simple.
+	/// </summary>
 	public class form_AddTextString : Form
 	{
 
@@ -112,7 +117,7 @@ namespace CoreUtilities
 			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
 			this.Name = "fAddTextString";
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
-			this.Text = "Add Text";
+			this.Text = Loc.Instance.GetString ("Add Text");
 			this.ResumeLayout(false);
 			this.PerformLayout();
 			

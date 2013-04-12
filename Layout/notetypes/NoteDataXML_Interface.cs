@@ -350,6 +350,11 @@ namespace Layout
 
 			}
 
+			ToolStripButton copyNote = new ToolStripButton();
+			copyNote.Text = Loc.Instance.GetString ("Copy Note");
+			properties.DropDownItems.Add (copyNote);
+			copyNote.Click+= (object sender, EventArgs e) => Layout.CopyNote(this);
+
 			properties.DropDownItems.Add (new ToolStripSeparator());
 			ToolStripButton menuProperties = new ToolStripButton();
 			menuProperties.Text = Loc.Instance.Cat.GetString ("Properties");
@@ -592,6 +597,12 @@ namespace Layout
 			                     MessageBoxButtons.YesNo, null) == DialogResult.Yes) {
 				if (DeleteNote != null) {
 					DeleteNote(this);
+					if (Layout != null)
+					{
+						// getting tabs to update when the label is changed
+						Layout.RefreshTabs();
+						SetSaveRequired(true);
+					}
 				}
 			}
 		
@@ -606,11 +617,16 @@ namespace Layout
 				}
 				else
 				{
-				// commit the change to the caption
-				Caption = (sender as ToolStripTextBox).Text;
-				SetSaveRequired (true);
-				// so we don't need to call update for such a simple change
-				captionLabel.Text = Caption; 
+					// commit the change to the caption
+					Caption = (sender as ToolStripTextBox).Text;
+					SetSaveRequired (true);
+					// so we don't need to call update for such a simple change
+					captionLabel.Text = Caption; 
+					if (Layout != null)
+					{
+						// getting tabs to update when the label is changed
+						Layout.RefreshTabs();
+					}
 				}
 				// supress key beep from pressing enter
 				e.SuppressKeyPress = true;

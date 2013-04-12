@@ -366,6 +366,9 @@ namespace Layout
 		/// <param name="bSlowRefresh">if true there will only be a random chance of updating -- a cheap speed improvement</param>
 		public void UpdateSelection (string sSelection, bool bSlowRefresh)
 		{
+
+		//	return; // testing if disabling this improves speed of large pages
+			//if (General.SecondsSinceLastInput() >= 1)
 			if (LayoutDetails.Instance.CurrentLayout != null && LayoutDetails.Instance.CurrentLayout.CurrentTextNote != null) {
 				//if (RichText.bSuspendUpdateSelection == true) return;
 				//   if (DoNotUpdateSelection == true) return;
@@ -385,13 +388,15 @@ namespace Layout
 				int nSelection = 0;
 			
 				// March 9 2009 - only update 25% of the time?
-				if ((bSlowRefresh == false) || (new Random ().Next (1, 100) > 75)) {
+				//if ((bSlowRefresh == false) || (new Random ().Next (1, 100) > 75)) 
+				{
 					nWords = WordCount (LayoutDetails.Instance.CurrentLayout.CurrentTextNote.GetAsText());
 					nSelection = WordCount (sSelection);
 				
 				
 					// we seldom update the current page count
-					if (bSlowRefresh == false || new Random ().Next (1, 100) > 94) {
+					//if (bSlowRefresh == false || new Random ().Next (1, 100) > 94)
+					{
 						nCurrentPageNumberWords = 1;
 						// grab the number of words to the current selection?
 						// to get current page number

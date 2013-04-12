@@ -15,8 +15,12 @@ Details forthcoming. Package should compile as is but there are issues with the 
 Contact
 =======
 Brent Knowles
-* www.yourothermind.com (software site)
-* www.brentknowles.com (author site)
+
+Review documentation at http://www.yourothermind.com for updated implementation notes, license updates
+or other general information/
+ 
+Author information available at http://www.brentknowles.com or http://www.amazon.com/Brent-Knowles/e/B0035WW7OW
+Full source code: https://github.com/BrentKnowles/YourOtherMind
 
 License
 =======

@@ -332,7 +332,9 @@ namespace Layout
 			AddNote.DropDownOpening += HandleAddNoteDropDownOpening;
 
 			
-			
+			ToolStripButton PasteNote = new ToolStripButton(Loc.Instance.GetString("Paste Note"));
+			PasteNote.Click+= (object sender, EventArgs e) =>  this.PasteNote();;
+
 			ToolStripDropDownButton RandomTables = new ToolStripDropDownButton(Loc.Instance.GetString("Random"));
 			RandomTables.ToolTipText = Loc.Instance.GetString("Generate a random result from a table. The list of tables can be changed by modifying the RandomTables table on the System layout");
 			RandomTables.DropDownOpening += HandleDropDownRandomTablesOpening;
@@ -369,6 +371,7 @@ namespace Layout
 
 			//ToolStripLabel CurrentNote
 			bar.Items.Add (AddNote);
+			bar.Items.Add (PasteNote);
 			bar.Items.Add (RandomTables);
 			bar.Items.Add (tabMenu);
 
@@ -383,6 +386,11 @@ namespace Layout
 			this.header.SendToBack();
 
 		}
+
+
+	
+
+	
 		void HandleCheckedChanged (object sender, EventArgs e)
 		{
 			Notes.ShowTabs = (sender as ToolStripButton).Checked;
@@ -1796,6 +1804,91 @@ namespace Layout
 		public override void BringNoteToFront(string guid)
 		{
 			GetNoteOnSameLayout(guid, true);
+		}
+		/// <summary>
+		/// Copies the note. Invoked from a menu but here to be accessed by a unit test
+		/// </summary>
+		/// <param name='Note'>
+		/// Note.
+		/// </param>
+		public override void CopyNote (NoteDataInterface Note)
+		{
+
+			if (null != Notebook) {
+				// hold this note in memory on layoutdetails
+				LayoutDetails.Instance.CurrentCopiedNote = Note;
+			}
+		}
+		/// <summary>
+		/// Pastes the note that has been previously copied
+		/// 
+		/// We return the note for the unit testing to do stuff with.
+		/// </summary>
+		public NoteDataInterface PasteNote ()
+		{
+			NoteDataInterface Copied = null;
+			// pastes the current copied note
+			// on the Layout calling this routine
+			if (LayoutDetails.Instance.CurrentCopiedNote != null) {
+//				if (LayoutDetails.Instance.CurrentCopiedNote is NoteDataXML_RichText)
+//				{
+//					NoteDataXML_RichText CopiedA = new NoteDataXML_RichText(10,10);
+//					CopiedA.CopyNote(LayoutDetails.Instance.CurrentCopiedNote);
+//					CopiedA.GuidForNote = Guid.NewGuid().ToString ();
+//
+//
+//					AddNote(CopiedA);
+//				}
+//				else
+//				{
+
+				Type TypeTest = LayoutDetails.Instance.CurrentCopiedNote.GetType();
+				if (TypeTest != null )
+				    {
+					try
+					{
+				Copied = (NoteDataInterface)Activator.CreateInstance (TypeTest, LayoutDetails.Instance.CurrentCopiedNote);
+					}
+					catch (Exception ex)
+					{
+						//NewMessage.Show (ex.ToString ());
+						//rever to a basic copy
+						lg.Instance.Line("LayoutPanel->PasteNote", ProblemType.MESSAGE, ex.ToString());
+						Copied = new NoteDataXML(LayoutDetails.Instance.CurrentCopiedNote);
+					}
+				}
+				else
+				{
+					Copied = new NoteDataXML(LayoutDetails.Instance.CurrentCopiedNote);
+				}
+
+//				if (LayoutDetails.Instance.CurrentCopiedNote is NoteDataXML_RichText)
+//				{
+//					Copied = new NoteDataXML_RichText(LayoutDetails.Instance.CurrentCopiedNote);
+//				}
+//				else
+//				if (LayoutDetails.Instance.CurrentCopiedNote is NoteDataXML_Table)
+//				{
+//					Copied = new NoteDataXML_Table(LayoutDetails.Instance.CurrentCopiedNote);
+//				}
+//				else
+//				{
+//					Copied = new NoteDataXML(LayoutDetails.Instance.CurrentCopiedNote);
+//				}
+				if (null != Copied)
+				{
+					Copied.Location = new Point(10,10);
+					Copied.GuidForNote = Guid.NewGuid().ToString ();
+					AddNote(Copied);
+				}
+				//}
+
+			
+			
+			
+
+			}
+			return Copied;
 		}
 	}
 }

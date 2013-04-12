@@ -145,6 +145,7 @@ namespace Testing
 
 		void HandleSaveTimerTick (object sender, EventArgs e)
 		{
+			if (panelAutosave != null)
 			panelAutosave.SaveLayout();
 		}
 
@@ -996,6 +997,132 @@ namespace Testing
 			Assert.AreEqual (6, names.Count);
 
 
+		}
+
+
+		[Test]
+		public void CopyNoteTest()
+		{
+			_TestSingleTon.Instance._SetupForLayoutPanelTests();
+			
+			
+			System.Windows.Forms .Form form = new System.Windows.Forms.Form();
+			
+			
+			
+			
+			FAKE_LayoutPanel panelToUse = new FAKE_LayoutPanel (CoreUtilities.Constants.BLANK, false);
+			
+			form.Controls.Add (panelToUse);
+			
+			// needed else DataGrid does not initialize
+			
+			form.Show ();
+			//form.Visible = false;
+			_w.output("boom");
+			// March 2013 -- notelist relies on having this
+			YOM2013.DefaultLayouts.CreateASystemLayout(form,null);
+			
+			
+			//NOTE: For now remember that htis ADDS 1 Extra notes
+			string panelname = System.Guid.NewGuid().ToString();
+			panelToUse.NewLayout (panelname,true, null);
+			LayoutDetails.Instance.AddToList (typeof(FAKE_NoteDataXML_Panel), "testingpanel");
+			_w.output ("herefirst");
+			
+			
+			Timer SaveTimer= new Timer();
+			SaveTimer.Interval = 300;
+			SaveTimer.Tick+= HandleSaveTimerTick;
+			SaveTimer.Start ();
+			
+			// ADD 1 of each type
+			foreach (Type t in LayoutDetails.Instance.ListOfTypesToStoreInXML()) {
+				for (int i = 0; i < 2; i++) {
+					NoteDataInterface note = (NoteDataInterface)Activator.CreateInstance (t);
+					panelToUse.AddNote (note);
+					note.CreateParent(panelToUse);
+
+					note.UpdateAfterLoad();
+					panelToUse.CopyNote(note);
+					panelToUse.PasteNote();
+				}
+			}
+			panelToUse.SaveLayout();
+			//int propercount= 4 * LayoutDetails.Instance.ListOfTypesToStoreInXML().Length;
+			Assert.AreEqual (46, panelToUse.CountNotes());
+
+
+
+			//
+			// Now we test pasting one of our notes onto another Layout
+			//
+
+			string panelname2 = System.Guid.NewGuid().ToString();
+			FAKE_LayoutPanel  PanelOtherGuy= new FAKE_LayoutPanel (CoreUtilities.Constants.BLANK, false);
+			PanelOtherGuy.NewLayout (panelname2,true, null);
+			PanelOtherGuy.SaveLayout();
+
+			form.Controls.Add(PanelOtherGuy);
+
+			Assert.AreEqual( 2, PanelOtherGuy.CountNotes(), "count1");	
+			
+			// ADD 1 of each type
+			//foreach (Type t in LayoutDetails.Instance.ListOfTypesToStoreInXML())
+			{
+				for (int i = 0; i < 10; i++) {
+					
+					NoteDataInterface note = new NoteDataXML_RichText();
+					PanelOtherGuy.AddNote (note);
+					note.CreateParent(PanelOtherGuy);
+					
+					note.UpdateAfterLoad();
+					
+				}
+			}
+			Assert.AreEqual( 12, PanelOtherGuy.CountNotes(), "count2");	
+			PanelOtherGuy.PasteNote();
+			Assert.AreEqual( 13, PanelOtherGuy.CountNotes(), "count2");	
+			PanelOtherGuy.SaveLayout();
+
+
+			FAKE_NoteDataXML_Text Noter = new FAKE_NoteDataXML_Text();
+			Noter.Caption ="Hello there";
+
+			PanelOtherGuy.AddNote (Noter);
+
+			Noter.GetRichTextBox().Text ="bear";
+			PanelOtherGuy.SaveLayout ();
+
+			PanelOtherGuy.CopyNote(Noter);
+			NoteDataXML_RichText CopyOfTextNote = (NoteDataXML_RichText)PanelOtherGuy.PasteNote();
+			Assert.AreEqual ("Hello there",CopyOfTextNote.Caption);
+			Assert.AreEqual ("bear", CopyOfTextNote.GetRichTextBox().Text);
+
+			//
+			//
+			// Table Copy Test
+			//
+			//
+
+			NoteDataXML_Table randomTables = new NoteDataXML_Table(100, 100,new appframe.ColumnDetails[2]{new appframe.ColumnDetails("id",100), new appframe.ColumnDetails("tables",100)} );
+			randomTables.Caption = LayoutDetails.SYSTEM_RANDOM_TABLES;
+			//	randomTables.Columns = new appframe.ColumnDetails[2]{new appframe.ColumnDetails("id",100), new appframe.ColumnDetails("tables",100)};
+			
+			
+			
+			PanelOtherGuy.AddNote(randomTables);
+			//randomTables.CreateParent(PanelOtherGuy);
+			
+			
+			randomTables.AddRow(new object[2]{"1", "example|colors"});
+			randomTables.AddRow(new object[2]{"2", "example|colorPROMPTS"});
+			PanelOtherGuy.SaveLayout ();
+
+
+			PanelOtherGuy.CopyNote(randomTables);
+			NoteDataXML_Table CopyOfTable = (NoteDataXML_Table)PanelOtherGuy.PasteNote();
+			Assert.AreEqual (2, CopyOfTable.RowCount());
 		}
 	}
 }

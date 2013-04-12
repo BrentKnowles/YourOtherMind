@@ -52,7 +52,7 @@ namespace appframe
 	/// </summary>
 	public class TablePanel : Panel
 	{
-
+	
 
 		#region constant
 
@@ -152,8 +152,11 @@ namespace appframe
 				for (int i = 0 ; i < IncomingColumns.Length ; i++) {
 					if (i >= dataGrid1.Columns.Count)
 					{
-						NewMessage.Show (Loc.Instance.GetStringFmt("(Jan 16 2013) Import Only Error? There are more IncomingColumns than columns in the datagrid? Datagrid has {0} columns, Incoming has {1}. They can be ignored. Just means non standard tables",
-						                                           dataGrid1.Columns.Count, IncomingColumns.Length));
+						Console.Beep ();
+						// this message was annoying during tests
+					//		NewMessage.Show (Loc.Instance.GetStringFmt("(Jan 16 2013) Import Only Error? There are more IncomingColumns than columns in the datagrid? Datagrid has {0} columns, Incoming has {1}. They can be ignored. Just means non standard tables",
+					//	                                           dataGrid1.Columns.Count, IncomingColumns.Length));
+
 					}
 					else
 					dataGrid1.Columns[i].Width = IncomingColumns[i].ColumnWidth;

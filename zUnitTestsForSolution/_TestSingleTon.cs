@@ -40,8 +40,8 @@ namespace Testing
 		protected static volatile _TestSingleTon instance;
 		protected static object syncRoot = new Object();
 		public static string PathToSendAwayEPUBTemplates = @"C:\Users\BrentK\Documents\Keeper\SendTextAwayControlFiles\epubfiles";
-		public static string BlankFileTest2 = @"C:\Users\BrentK\Documents\YourOtherMind\YourOtherMind\Files\brokenfiles2012\notbroken.txt";
-		public static string BlankFileTest1 = @"C:\Users\BrentK\Documents\YourOtherMind\YourOtherMind\Files\brokenfiles2012\brokenrtf_dec2012.rtf";
+		public static string BlankFileTest2 = @"C:\Users\Public\Documents\YourOtherMind\YourOtherMind\Files\brokenfiles2012\notbroken.txt";
+		public static string BlankFileTest1 = @"C:\Users\Public\Documents\YourOtherMind\YourOtherMind\Files\brokenfiles2012\brokenrtf_dec2012.rtf";
 		public static string Zipper = @"C:\Program Files\7-Zip\";
         #endregion;
 		public _TestSingleTon ()

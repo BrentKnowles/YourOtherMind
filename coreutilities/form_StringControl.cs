@@ -32,6 +32,12 @@ using System.Drawing;
 
 namespace CoreUtilities
 {
+
+	/// <summary>
+	/// Form_ string control.
+	/// 
+	/// Allow user to enter strings in a particular order.
+	/// </summary>
 	public class form_StringControl :Form
 	{
 		#region interfaceelements

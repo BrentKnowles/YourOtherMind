@@ -390,6 +390,14 @@ namespace Layout
 		{
 			StoryBoard.AddItemAndToGroup(sTitle, sLinkUrl, 0, sGroup);
 		}
+		public NoteDataXML_GroupEm(NoteDataInterface Note) : base(Note)
+		{
+			
+		}
+		public override void CopyNote (NoteDataInterface Note)
+		{
+			base.CopyNote (Note);
+		}
 	}
 }
 

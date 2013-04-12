@@ -80,7 +80,7 @@ namespace YOM2013
 		private Options Settings ;
 		private Options_InterfaceElements SettingsInterfaceOptions;
 		private TransactionsTable Transaction;
-
+		bool NagMode = false;
 
 		#endregion
 		#region delegates
@@ -134,152 +134,7 @@ namespace YOM2013
 		}
 
 
-		/// <summary>
-		/// called from SaveTextLineToFile
-		/// </summary>
-		/// <param name="NoteToOpen">if present and we encounter [[title]] we replace [[title]] with NoteToOpen   ///  </param>
-		/// <param name="sText"></param>
-		void SaveTextLineByLine (StreamWriter writer, string[] linesOfText, string empty)
-		{
-			foreach (string s in linesOfText)
-			{
-				writer.WriteLine(s);
-			}
-		}
 
-		/// <summary>
-		/// Goes through rich edit line by line saving to a plain text file
-		/// 
-		/// December 2009
-		///  Here we need to do a redesign.
-		/// 
-		/// If we encounter [[index]] on the first line we know that we have an index page. So instead we need to do the following:
-		/// 
-		/// Each line is either a NOTE NAME to add to the text file (which will be parsed line by line and converted to plain text)
-		/// 
-		/// OR
-		/// 
-		/// It returns a list of names that are then parsed line by line as above, in the order of the list
-		///   
-		/// An example index would be
-		/// [[index]]
-		/// _Header [[words]]
-		/// [[Group,Storyboard,Chapter*,words]         !- This returns an array of note names that match the criteria (i.e., Chapter 01, Chapter 02)
-		/// _Footer
-		/// 
-		/// 
-		/// 
-		/// * Note: Choose not to let the groups handl
-		/// </summary>
-		/// <param name="sFile"></param>
-		public void SaveTextLineToFile (string[] LinesOfText, string sFilepath)
-		{
-			string sWordInformation = "";
-			int TotalWords = 0;
-				
-
-			// certain Addins like spellchecking won't both writing a file out
-			if (sFilepath != Constants.BLANK) {
-				
-				
-				try {
-					StreamWriter writer = new StreamWriter (sFilepath);
-
-//
-//					if (LayoutDetails.Instance.CurrentLayout != null && LayoutDetails.Instance.CurrentLayout.CurrentTextNote != null)
-//					{
-//						NewMessage.Show (Loc.Instance.GetString ("The current markup does not support Sending-Away files correctly. Did you forget to set the current markup in the Options menu?"));
-//												if (LayoutDetails.Instance.CurrentLayout.CurrentTextNote is NoteData
-//					}
-
-					if (LayoutDetails.Instance.GetCurrentMarkup().IsIndex(LinesOfText [0].ToLower ()) == true)
-					{
-					//if (LinesOfText [0].ToLower () == "[[index]]") {
-						// we are actually an index note
-						// which will instead list a bunch of other pages to use
-						// we now iterate through LinesOfText[1] to end and parse those instead
-						for (int i = 1; i < LinesOfText.Length; i++) {
-							string sLine = LinesOfText [i];
-							bool bGetWords = false;
-							ArrayList ListOfParsePages = new ArrayList ();
-							
-							//TODO hook up to Custom Scripting Language system
-							if (sLine.IndexOf ("[[words]]") > -1) {
-								
-								// if we have the words keyword we know we want to display some word info at the end
-								sLine = sLine.Replace ("[[words]]", "").Trim ();
-								
-								bGetWords = true;
-							}
-							//TODO hook up to Custom Scripting Language system
-							if (sLine.IndexOf ("[[Group") > -1) {
-
-								ListOfParsePages = LayoutDetails.Instance.GetCurrentMarkup().GetListOfPages(sLine, ref bGetWords);
-							
-								// we have a group
-								
-							} else {
-								ListOfParsePages.Add (sLine);
-							}
-
-							if (ListOfParsePages != null)
-							{
-							// Now we go through the pages and write them into the text file
-							// feb 19 2010 - added because chapter notes were not coming out in alphaetical
-							ListOfParsePages.Sort ();
-							
-							foreach (string notetoopen in ListOfParsePages) {
-							//	DrawingTest.NotePanel panel = ((mdi)_CORE_GetActiveChild()).page_Visual.GetPanelByName(notetoopen);
-								NoteDataInterface note = LayoutDetails.Instance.CurrentLayout.FindNoteByName(notetoopen);	
-								
-							//TODO hook up to Custom Scripting Language system and make more efficient
-								if (note != null && (note is NoteDataXML_RichText))
-								{
-									RichTextBox tempBox = new RichTextBox();
-									tempBox.Rtf = note.Data1;
-								SaveTextLineByLine(writer, tempBox.Lines, notetoopen);
-									
-									if (true == bGetWords)
-									{
-										int Words = 
-												LayoutDetails.Instance.WordSystemInUse.CountWords(tempBox.Text);
-										TotalWords = TotalWords + Words;
-										
-										
-
-										
-											sWordInformation = sWordInformation + String.Format("{0}: {1}{2}", notetoopen, Words.ToString(), Environment.NewLine);
-									}
-									
-									tempBox.Dispose();
-								}
-							} //open each note list
-							}//list not nulls
-							//                            panel.Dispose(); Don't think I can do this becauseit would dlette hte note, benig an ojbect
-							ListOfParsePages = null;
-							
-						}
-					} else {
-							SaveTextLineByLine (writer, LinesOfText, "");
-					}
-					
-					writer.Close ();
-					writer.Dispose ();
-					if (sWordInformation != "") {
-						string sResult = Loc.Instance.GetStringFmt ("Total Words:{0}\n{1}", TotalWords.ToString (), sWordInformation);
-						Clipboard.SetText (sResult);
-						NewMessage.Show (Loc.Instance.GetString ("Your Text Has Been Sent! Press Ctrl + V to paste word count information into current note."));
-						//NewMessage.Show(sResult);
-					}
-				} catch (Exception) {
-					NewMessage.Show (Loc.Instance.GetStringFmt ("Unable to write to {0} please shut down and try again", sFilepath));
-				}
-			}
-				LinesOfText = null;
-
-				
-		}
-			
 
 		// hook
 		private void RunAsBatchFile (object FileToProcess)
@@ -426,7 +281,7 @@ namespace YOM2013
 			if (LayoutDetails.Instance.CurrentLayout.CurrentTextNote != null) {
 				(sender as ContextMenuStrip).Items.Clear ();
 				string sFoundWord = LayoutDetails.Instance.CurrentLayout.CurrentTextNote.GetRichTextBox ().SelectedText.Trim ();
-				string[] items = LayoutDetails.Instance.WordSystemInUse.SpellingSuggestions (sFoundWord);
+				string[] items =LayoutDetails.Instance.WordSystemInUse.SpellingSuggestions (sFoundWord);
 				if (items != null) {
 					foreach (string s in items) {
 						ToolStripMenuItem newItem = new ToolStripMenuItem ();
@@ -468,7 +323,7 @@ namespace YOM2013
 					string[] lines = LayoutDetails.Instance.CurrentLayout.CurrentTextNote.Lines ();
 					if (lines.Length > 0) {
 						string FileName = ((NoteTextAction)(sender as ToolStripButton).Tag).BuildTheFileName();
-						SaveTextLineToFile (lines, FileName);
+						LayoutDetails.Instance.SaveTextLineToFile (lines, FileName);
 
 						((NoteTextAction)(sender as ToolStripButton).Tag).RunAction (FileName);
 					} 
@@ -641,6 +496,15 @@ namespace YOM2013
 			GetToolMenu().DropDownItems.Add (Monitor_OneScreen);
 			Monitor_OneScreen.Click += HandleMonitorOneScreenClick;
 
+			ToolStripMenuItem NagMenu = new ToolStripMenuItem(Loc.Instance.GetString ("Nag"));
+			NagMenu.CheckOnClick = true;
+			NagMenu.Checked = false;
+		
+			NagMenu.Click+= HandleNagClick;;
+			
+			GetToolMenu().DropDownItems.Add (NagMenu);
+
+
 			ToolStripMenuItem ExportCurrent = new ToolStripMenuItem(Loc.Instance.GetString ("Export Current Layout"));
 			ToolStripMenuItem ImportToCurrent = new ToolStripMenuItem(Loc.Instance.GetString ("Import Layout"));
 			ToolStripMenuItem ExportRecent = new ToolStripMenuItem(Loc.Instance.GetString ("Export Recently Modified"));
@@ -672,7 +536,7 @@ namespace YOM2013
 			MainMenu.Items.Add (Help);
 			// DELEGATES
 			LayoutDetails.Instance.UpdateTitle = UpdateTitle;
-			ToolStripMenuItem EXPORTTEMP = BuildTempExportMenu();
+		//	ToolStripMenuItem EXPORTTEMP = BuildTempExportMenu();
 
 
 
@@ -703,9 +567,19 @@ namespace YOM2013
 
 
 			SaveTimer= new Timer();
-			SaveTimer.Interval = 300000;
+			//SaveTimer.Interval = 300000;
+			SaveTimer.Interval = 1000;// 1 sec //5000; // 5 sec. I am experimenting with using the timer for multiple functions. It checks status update every 5 sconds
 			SaveTimer.Tick+= HandleSaveTimerTick;
 			SaveTimer.Start ();
+		}
+
+		void HandleNagClick (object sender, EventArgs e)
+		{
+			NagMode = !NagMode;
+			if (true == NagMode && LayoutDetails.Instance.CurrentLayout != null)
+			{
+				LayoutDetails.Instance.TransactionsList.AddEvent (new TransactionNagStarted(DateTime.Now, LayoutDetails.Instance.CurrentLayout.GUID));
+			}
 		}
 
 		void HandleTest2Click (object sender, EventArgs e)
@@ -778,27 +652,57 @@ namespace YOM2013
 		}
 
 
-
+		const int SaveTimeIntervalConstant = 300;
+		int SaveTimerInterval = SaveTimeIntervalConstant;//60; // every 60 checks we check for autosave
 		void HandleSaveTimerTick (object sender, EventArgs e)
 		{
+			bool AutoSaveTime = false;
+
+			if (SaveTimerInterval == 0) {
+				AutoSaveTime = true;
+				// we do not start over unless we were able to perform the autosave.
+			} else {
+				SaveTimerInterval--;
+			}
 			if (LayoutDetails.Instance.CurrentLayout != null && Settings != null && mutex_IsLoading == false) {
 
-				if (General.SecondsSinceLastInput() >= 5)
-				{
-				//	NewMessage.Show ("You were not busy so I interrupt!");
-				this.Cursor = Cursors.WaitCursor;
-				if (Settings.Autosave == true)
-				{
-					UpdateFooter(FootMessageType.AUTOSAVE, Loc.Instance.GetStringFmt("Autosaved {0} at {1}", LayoutDetails.Instance.CurrentLayout.Caption, DateTime.Now));
-				                                                            
-				LayoutDetails.Instance.CurrentLayout.SaveLayout ();
+				double SecondSinceLastInput = General.SecondsSinceLastInput ();
+				if (LayoutDetails.Instance.CurrentLayout.NeedsTextBoxUpdate) {
+					// 
+					if (SecondSinceLastInput >= 1) {
+						LayoutDetails.Instance.CurrentLayout.NeedsTextBoxUpdate = false;
+						if (LayoutDetails.Instance.CurrentLayout.GetFindbar () != null) {
+							string selection = "";
+							if (LayoutDetails.Instance.CurrentLayout.CurrentTextNote != null) {
+								selection = LayoutDetails.Instance.CurrentLayout.CurrentTextNote.GetRichTextBox ().SelectedText;
+							}
+							LayoutDetails.Instance.CurrentLayout.GetFindbar ().UpdateSelection (selection, false);
+						}
+					}
 				}
-				this.Cursor = Cursors.Default;
-				}
-				else
-				{
-					UpdateFooter(FootMessageType.AUTOSAVE, Loc.Instance.GetStringFmt("Autosaved Skipped because you were busy."));
-				//	NewMessage.Show ("You were busy so I NOT interrupt!");
+
+
+				if (Settings.Autosave == true && true == AutoSaveTime) {
+					if (SecondSinceLastInput >= 5) {
+						//	NewMessage.Show ("You were not busy so I interrupt!");
+						this.Cursor = Cursors.WaitCursor;
+						//if (Settings.Autosave == true) 
+						{
+							// start over
+							SaveTimerInterval = SaveTimeIntervalConstant;
+							UpdateFooter (FootMessageType.AUTOSAVE, Loc.Instance.GetStringFmt ("Autosaved {0} at {1}", LayoutDetails.Instance.CurrentLayout.Caption, DateTime.Now));
+					                                                            
+							LayoutDetails.Instance.CurrentLayout.SaveLayout ();
+
+						}
+						this.Cursor = Cursors.Default;
+					} else {
+
+						// start over (without this here it does not start over)
+						SaveTimerInterval = SaveTimeIntervalConstant;
+						UpdateFooter (FootMessageType.AUTOSAVE, Loc.Instance.GetStringFmt ("Autosaved Skipped because you were busy."));
+						//	NewMessage.Show ("You were busy so I NOT interrupt!");
+					}
 				}
 			}
 		}
@@ -893,7 +797,8 @@ namespace YOM2013
 		}
 		void HandleFormClosing (object sender, FormClosingEventArgs e)
 		{
-
+			SaveTimer.Stop ();
+			SaveTimer.Dispose ();
 
 			if (false == LayoutDetails.Instance.ForceShutdown) {
 				TestAndSaveIfNecessary ();
@@ -1807,6 +1712,29 @@ namespace YOM2013
 				}
 				break;
 			}
+		}
+		protected override void WndProc (ref Message m)
+		{
+			const int WM_ACTIVATEAPP = 0x001C;
+			switch (m.Msg) {
+			case WM_ACTIVATEAPP:
+				bool appActive = ((int)m.WParam != 0);
+				
+				if (false == appActive && true == NagMode && LayoutDetails.Instance.CurrentLayout != null)
+				{
+					//EventTable.Add("", "", 0, 0, EventTable.T_NAGINTERRUPTED);
+					LayoutDetails.Instance.TransactionsList.AddEvent (new TransactionNagInterrupted(DateTime.Now, LayoutDetails.Instance.CurrentLayout.GUID));
+					string sMessage = Loc.Instance.GetString ("Back to work!");
+//					string sMessage2 = UserInfo.LoadUserInfo().DistractionNote;
+//					if (sMessage2 != "")
+//					{
+//						sMessage = sMessage2;
+//					}
+					NewMessage.Show(Loc.Instance.GetString ("Nag!"), sMessage, true);
+				}
+				break;
+			}
+			base.WndProc(ref m);
 		}
 
 	}

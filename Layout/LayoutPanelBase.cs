@@ -103,7 +103,7 @@ namespace Layout
 
 		public abstract string ParentGuidFromNotes { get; }
 		public abstract string ParentGUID { get; set; }
-
+		public abstract void CopyNote (NoteDataInterface Note);
 		/// <summary>
 		/// Wraps the lookup to see if I am a child (by checking my parentGUID)
 		/// </summary>
@@ -159,6 +159,14 @@ namespace Layout
 		abstract public string Keywords { get; }
 		abstract public string Subtype { get; }
 		abstract public string Notebook { get; }
+
+		// set when a richtext box has been updated so that when the mainform update timer runs
+		// we know to update the word count and such on the findbar
+		private bool needsTextBoxUpdate = false;
+		public bool NeedsTextBoxUpdate {
+			get { return needsTextBoxUpdate;}
+			set { needsTextBoxUpdate = value;}
+		}
 
 		abstract public void SetParentFields (string section, string keywords, string subtype, string notebook);
 
@@ -341,7 +349,11 @@ namespace Layout
 					break;
 				}
 			}
+
 		}
+	
 	}
+
+
 }
 

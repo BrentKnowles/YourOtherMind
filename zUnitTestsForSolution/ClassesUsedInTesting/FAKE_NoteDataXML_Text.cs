@@ -43,7 +43,9 @@ namespace Testing
 		{
 			SetThisTextNoteAsActive();
 		}
-
+		public FAKE_NoteDataXML_Text (NoteDataInterface Note) : base (Note)
+		{
+		}
 	}
 }
 

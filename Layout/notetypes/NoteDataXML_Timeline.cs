@@ -443,5 +443,13 @@ namespace Layout
 
 			return Layout.IsLoaded;
 		}
+		public NoteDataXML_Timeline(NoteDataInterface Note) : base(Note)
+		{
+			
+		}
+		public override void CopyNote (NoteDataInterface Note)
+		{
+			base.CopyNote (Note);
+		}
 	}
 }

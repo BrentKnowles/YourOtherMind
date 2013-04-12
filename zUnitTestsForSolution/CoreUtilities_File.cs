@@ -43,7 +43,12 @@ namespace Testing
 		{
 			Assert.True (CoreUtilities.FileUtils.DoesThisFileHaveErrors(_TestSingleTon.BlankFileTest1));
 		}
-
+		[Test]
+		public static void testNotAGraphicFile()
+		{
+			Assert.False(General.IsGraphicFile("micky.txt"));
+			Assert.False(General.IsGraphicFile("micky.tga"));
+		}
 		[Test]
 		public void TestForBlankFileThatIsNotBlank()
 		{
@@ -65,6 +70,36 @@ namespace Testing
 			Assert.AreEqual (@"hello_there.txt",converted);
 		}
 
+		[Test]
+		public void InvokeMinorForms ()
+		{
+			form_AddTextString AddString = new form_AddTextString(null);
+			AddString.Show();
+
+//			form_StringControl Stringer = new form_StringControl(null);
+//			Stringer.Show();
+
+			form_NewMessage mess = new form_NewMessage();
+			mess.Show();
+
+		}
+		[Test]
+		public static void testGraphicFiles()
+		{
+			Assert.True(General.IsGraphicFile("micky.jpg"));
+			Assert.True(General.IsGraphicFile("micky.JPg"));
+			Assert.True(General.IsGraphicFile("micky.JPeg"));
+			Assert.True(General.IsGraphicFile("micky.bmp"));
+			Assert.True(General.IsGraphicFile("micky.gif"));
+			Assert.True(General.IsGraphicFile("micky.png"));
+			
+		}
+		[Test]
+		[ExpectedException("System.Exception")]
+		public static void testNullGraphicsFile()
+		{
+			General.IsGraphicFile(null);
+		}
 		[Test]
 		[Ignore]
 		public void TestEveryThingInCoreUtilities ()
@@ -121,29 +156,8 @@ namespace TesterAppFrame2010
             Assert.True(General.FixLink("http://www.yourothermind.com") == "http://www.yourothermind.com", "yourothermind.com");
         }
 
-        [Test]
-        public static void testNotAGraphicFile()
-        {
-            Assert.False(General.IsGraphicFile("micky.txt"));
-            Assert.False(General.IsGraphicFile("micky.tga"));
-        }
-        [Test]
-        public static void testGraphicFiles()
-        {
-            Assert.True(General.IsGraphicFile("micky.jpg"));
-            Assert.True(General.IsGraphicFile("micky.JPg"));
-            Assert.True(General.IsGraphicFile("micky.JPeg"));
-            Assert.True(General.IsGraphicFile("micky.bmp"));
-            Assert.True(General.IsGraphicFile("micky.gif"));
-            Assert.True(General.IsGraphicFile("micky.png"));
 
-        }
-        [Test]
-        [ExpectedException("System.Exception")]
-        public static void testNullGraphicsFile()
-        {
-            General.IsGraphicFile(null);
-        }
+
         [Test]
         [ExpectedException("System.Exception")]
         public static void testNullGetFieldValue()

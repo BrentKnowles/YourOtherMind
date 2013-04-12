@@ -31,6 +31,7 @@ using System.Windows.Forms;
 using CoreUtilities;
 using System.Xml.Serialization;
 using System.Drawing;
+using System.Reflection;
 namespace Layout
 {
 	public class NoteDataXML_RichText : NoteDataXML
@@ -92,7 +93,16 @@ namespace Layout
 				return returnvalue;
 			}
 		}
+		public override void CopyNote (NoteDataInterface Note)
+		{
+			base.CopyNote (Note);
 
+			// I moved the data1 copying into NoteDataXML for more flexibility
+		}
+		public NoteDataXML_RichText(NoteDataInterface Note) : base(Note)
+		{
+
+		}
 		public NoteDataXML_RichText(int height, int width) : base(height, width)
 		{
 			//Caption = Loc.Instance.Cat.GetString("Text Note");
@@ -231,9 +241,11 @@ namespace Layout
 
 		void HandleRichTextSelectionChanged (object sender, EventArgs e)
 		{
-			if (Layout.GetFindbar () != null) {
-				Layout.GetFindbar ().UpdateSelection (richBox.SelectedText, false);
-			}
+			LayoutDetails.Instance.CurrentLayout.NeedsTextBoxUpdate = true;
+			// moving this to a timer
+//			if (Layout.GetFindbar () != null) {
+//				Layout.GetFindbar ().UpdateSelection (richBox.SelectedText, false);
+//			}
 		}
 
 		void HandleSelectedIndexChanged (object sender, EventArgs e)

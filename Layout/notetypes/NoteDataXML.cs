@@ -33,6 +33,7 @@ using System.Drawing;
 using System.Windows.Forms;
 using CoreUtilities;
 using System.ComponentModel;
+using System.Reflection;
 
 namespace Layout
 {
@@ -82,6 +83,49 @@ namespace Layout
 			Caption = Loc.Instance.Cat.GetString("Blank Note");
 			GuidForNote = System.Guid.NewGuid().ToString();
 		}
+		/// <summary>
+		/// http://www.johnsadventures.com/archives/2006/07/an_intelligent_copy_constructor_in_c_usi/
+		/// 
+		/// Copy 
+		/// 
+		/// Used ONLY for the 'copy' manual command initated by end user
+		/// 
+		/// Provided here not because we use it but because child classes might find it convenient for SUBobjects
+		/// 
+		/// </summary>
+		/// <param name="source"></param>
+		public void  CopyObject (object source, object copyittome)
+		{
+			if (source.GetType () == copyittome.GetType ()) {
+				// get all the fields in the class
+				FieldInfo[] fields_of_class = source.GetType ().GetFields (
+			                                                       BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance);
+			
+				// copy each value over to 'this'
+				foreach (FieldInfo fi in fields_of_class) {
+					fi.SetValue (copyittome, fi.GetValue (source));
+				}
+			}
+		}
+
+
+		public NoteDataXML (NoteDataInterface Note)
+		{
+
+
+			CopyNote(Note);
+		}
+		public virtual void CopyNote(NoteDataInterface Note)
+		{
+
+			// Any child will need to set the fields they want copied 
+			// LayoutPanel PasteNote also needs a If-Then added for this TYPE
+
+			this.Caption = Note.Caption;
+			this.Data1 = Note.Data1;
+
+		}
+
 		public NoteDataXML () 
 		{
 			CommonConstructorBehavior ();

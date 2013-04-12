@@ -112,6 +112,7 @@ namespace CoreUtilities
 				return (lg)instance;
 			}
 		}
+		bool writinglog = false;
 		/// <summary>
 		/// Writes the log. Called after the buffer reaches a certain size
 		/// </summary>
@@ -120,8 +121,11 @@ namespace CoreUtilities
 			if (null == logWriter) {
 				throw new Exception("LogWriter was never initialized");
 			}
-			// *TODO: Change this text writing later
-			foreach (string log in LogLines) {
+			if (true == writinglog) return;
+
+			writinglog = true;
+			// We copy this to an array to try to prevent any collection modified by writing errors
+			foreach (string log in LogLines.ToArray ()) {
 				//Console.WriteLine (log);
 			try
 				{
@@ -134,6 +138,7 @@ namespace CoreUtilities
 				}
 			}
 			LogLines = new List<string>();
+			writinglog = false;
 		}
 		//[Conditional("SHOWLOGS")]
 		public void Line(string Routine, ProblemType Problem, string Details)

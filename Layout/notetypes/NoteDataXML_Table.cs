@@ -201,6 +201,10 @@ namespace Layout
 			CommonConstructor();
 
 		}
+		public NoteDataXML_Table(NoteDataInterface Note):base(Note)
+		{
+			CommonConstructor();
+		}
 
 		public override void Save ()
 		{
@@ -920,7 +924,16 @@ namespace Layout
 			//Parent = null;
 			CreateParent(Layout);
 		}
+		public override void CopyNote (NoteDataInterface Note)
+		{
+			base.CopyNote (Note);
+			if (Note is NoteDataXML_Table) {
+				this.dataSource = ((NoteDataXML_Table)Note).dataSource.Copy ();
+				this.TableCaption = ((NoteDataXML_Table)Note).TableCaption ;
+				this.NextTable = ((NoteDataXML_Table)Note).NextTable;
+			}
 
+		}
 //		public void AddRow(DataRow row)
 //		{
 //

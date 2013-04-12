@@ -365,7 +365,7 @@ namespace Layout
 								// clear
 								currentword = "";
 								startofcurrentword = GetPositionFromCharIndex(i);
-								
+							
 							}
 						}
 					}

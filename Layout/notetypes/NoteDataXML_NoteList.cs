@@ -531,8 +531,14 @@ namespace Layout
 		{
 			return Loc.Instance.Cat.GetString("List");
 		}
-		
-	
+		public NoteDataXML_NoteList(NoteDataInterface Note) : base(Note)
+		{
+			
+		}
+		public override void CopyNote (NoteDataInterface Note)
+		{
+			base.CopyNote (Note);
+		}	
 	}
 
 }
