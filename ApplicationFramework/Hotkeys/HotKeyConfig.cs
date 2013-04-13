@@ -59,10 +59,15 @@ namespace appframe
 		
 		Panel configPanel;
 		
-#endregion
+		#endregion
+
+		#region delegates
+		MainFormBase.GetAValidDatabase GetBaseDatabase=null;
+		#endregion
+
 		#region interface
 
-#endregion
+		#endregion
 		public void Dispose ()
 		{
 			if (configPanel != null) {
@@ -70,9 +75,10 @@ namespace appframe
 			}
 		}
 
-		static BaseDatabase CreateDatabase (string DatabaseName)
+		 BaseDatabase CreateDatabase (string DatabaseName)
 		{
-			BaseDatabase db = new SqlLiteDatabase (DatabaseName);
+			BaseDatabase db = GetBaseDatabase(DatabaseName);
+		//	BaseDatabase db = new SqlLiteDatabase (DatabaseName);
 			//BaseDatabase db = Layout.MasterOfLayouts.GetDatabaseType(DatabaseName);
 			
 			
@@ -88,7 +94,7 @@ namespace appframe
 			return db;
 		}
 
-		public static List<KeyData> GetListOfModifiedKeys (string DatabaseName)
+		public  List<KeyData> GetListOfModifiedKeys (string DatabaseName)
 		{
 			
 			BaseDatabase db = CreateDatabase (DatabaseName);
@@ -121,7 +127,7 @@ namespace appframe
 		/// 
 		/// THIS Will override any TEMPORARY modifications made by RebuildListOfKeys (as long as it is called when the form is closed)
 		/// </summary>
-		public static void UpdateKeys (List<KeyData> HotKeys, string DatabaseName)
+		public  void UpdateKeys (List<KeyData> HotKeys, string DatabaseName)
 		{	List<KeyData> ModifiedKeys = GetListOfModifiedKeys (DatabaseName);
 			foreach (KeyData keysy in HotKeys) {
 				KeyData keyModified = ModifiedKeys.Find (KeyData => KeyData.GetGUID () == keysy.GetGUID ());
@@ -263,7 +269,7 @@ namespace appframe
 
 			return configPanel;
 		}
-		public HotKeyConfig (string storage,  ref List<KeyData> _HotKeys)
+		public HotKeyConfig (string storage,  ref List<KeyData> _HotKeys, MainFormBase.GetAValidDatabase _GetBaseDatabase)
 		{
 			HotKeys = _HotKeys;
 
@@ -271,7 +277,7 @@ namespace appframe
 			if (Constants.BLANK == storage) {
 				throw new Exception("must specify a nonBlank database name to store the HotKeyModifications inside of.");
 			}
-
+			GetBaseDatabase = _GetBaseDatabase;
 			DatabaseName = storage;
 			
 	

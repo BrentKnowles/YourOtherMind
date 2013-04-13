@@ -54,8 +54,8 @@ namespace YOM2013
 		// the position of the label that is used to display the FooterMessages
 		const int MAIN_MESSAGE_INDEX = 0;
 
-
-		Timer SaveTimer = null;
+		// used for testing for autosaves as well as other timed update events
+		Timer UpdateTimer = null;
 
 		#region gui
 		ToolStripMenuItem Windows;
@@ -392,7 +392,7 @@ namespace YOM2013
 /// <param name='storage'>
 /// Storage.
 /// </param>
-		public MainForm (string _path, Action<bool>ForceShutDownMethod, string storage, Icon mainIcon) : base (_path,ForceShutDownMethod,storage, mainIcon)
+		public MainForm (string _path, Action<bool>ForceShutDownMethod, string storage, Icon mainIcon, MainFormBase.GetAValidDatabase _GetValidDatabase) : base (_path,ForceShutDownMethod,storage, mainIcon, _GetValidDatabase)
 		{
 
 			LayoutDetails.Instance.MainFormIcon = mainIcon;
@@ -566,11 +566,11 @@ namespace YOM2013
 			LayoutDetails.Instance.TransactionsList = Transaction;
 
 
-			SaveTimer= new Timer();
+			UpdateTimer= new Timer();
 			//SaveTimer.Interval = 300000;
-			SaveTimer.Interval = 1000;// 1 sec //5000; // 5 sec. I am experimenting with using the timer for multiple functions. It checks status update every 5 sconds
-			SaveTimer.Tick+= HandleSaveTimerTick;
-			SaveTimer.Start ();
+			UpdateTimer.Interval = 1000;// 1 sec //5000; // 5 sec. I am experimenting with using the timer for multiple functions. It checks status update every 5 sconds
+			UpdateTimer.Tick+= HandleUpdateTimerTick;
+			UpdateTimer.Start ();
 		}
 
 		void HandleNagClick (object sender, EventArgs e)
@@ -654,7 +654,7 @@ namespace YOM2013
 
 		const int SaveTimeIntervalConstant = 300;
 		int SaveTimerInterval = SaveTimeIntervalConstant;//60; // every 60 checks we check for autosave
-		void HandleSaveTimerTick (object sender, EventArgs e)
+		void HandleUpdateTimerTick (object sender, EventArgs e)
 		{
 			bool AutoSaveTime = false;
 
@@ -797,8 +797,8 @@ namespace YOM2013
 		}
 		void HandleFormClosing (object sender, FormClosingEventArgs e)
 		{
-			SaveTimer.Stop ();
-			SaveTimer.Dispose ();
+			UpdateTimer.Stop ();
+			UpdateTimer.Dispose ();
 
 			if (false == LayoutDetails.Instance.ForceShutdown) {
 				TestAndSaveIfNecessary ();

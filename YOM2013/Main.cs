@@ -49,7 +49,7 @@ namespace YOM2013
 			icontouse = "main.ico";
 #endif
 
-			MainForm win = new MainForm (LayoutDetails.Instance.Path, LayoutDetails.Instance.DoForceShutDown, LayoutDetails.Instance.YOM_DATABASE,  FileUtils.GetIcon(icontouse));
+			MainForm win = new MainForm (LayoutDetails.Instance.Path, LayoutDetails.Instance.DoForceShutDown, LayoutDetails.Instance.YOM_DATABASE,  FileUtils.GetIcon(icontouse), MasterOfLayouts.GetDatabaseType);
 			win.Name="mainform";
 		//	win.Show ();
 			Application.Run (win);

@@ -197,69 +197,104 @@ namespace Layout
 			formatBar.Dock = DockStyle.Top;
 
 			ToolStripButton bold = new ToolStripButton();
-			bold.Text = Loc.Instance.GetString ("BOLD");
+			bold.Text = Loc.Instance.GetString ("Bold");
 			bold.Click+= HandleBoldClick;
-			formatBar.Items.Add (bold);
+			bold.DisplayStyle = ToolStripItemDisplayStyle.Image;
+			bold.Image = FileUtils.GetImage_ForDLL("text_bold.png");
+		
 
 
 			ToolStripButton strike = new ToolStripButton();
-			strike.Text = Loc.Instance.GetString ("STRIKE");
-			strike.Click+= HandleStrikeClick;;
-			formatBar.Items.Add (strike);
+			strike.Text = Loc.Instance.GetString ("Strikethru");
+			strike.Click+= HandleStrikeClick;
+			strike.Image = FileUtils.GetImage_ForDLL("text_strikethrough.png");
+			strike.DisplayStyle = ToolStripItemDisplayStyle.Image;
+		
 
 			ToolStripButton zoom = new ToolStripButton();
-			zoom.Text = Loc.Instance.GetString ("ZOOM");
+			zoom.Text = Loc.Instance.GetString ("Zoom");
 			zoom.Click+= (object sender, EventArgs e) => DoFormatOnText(NoteDataXML_RichText.FormatText.ZOOM);
-			formatBar.Items.Add (zoom);
+			zoom.DisplayStyle = ToolStripItemDisplayStyle.Image;
+			zoom.Image = FileUtils.GetImage_ForDLL("zoom.png");
+		
 
 
 			ToolStripButton line = new ToolStripButton();
-			line.Text = Loc.Instance.GetString ("LINE");
+			line.Text = Loc.Instance.GetString ("Line");
+			line.Image = FileUtils.GetImage_ForDLL("shape_square.png");
 			line.Click+= (object sender, EventArgs e) => DoFormatOnText(NoteDataXML_RichText.FormatText.LINE);
-			formatBar.Items.Add (line);
+			line.DisplayStyle= ToolStripItemDisplayStyle.Image;
+		
 
 
 			ToolStripButton InsertDate = new ToolStripButton();
-			InsertDate.Text = Loc.Instance.GetString ("INSERT DATE");
+			InsertDate.Text = Loc.Instance.GetString ("Date");
+			InsertDate.DisplayStyle = ToolStripItemDisplayStyle.Image;
+			InsertDate.Image = FileUtils.GetImage_ForDLL("date.png");
 			InsertDate.Click+= HandleInsertDateClick;
 
 
 			ToolStripSplitButton Bullets = new ToolStripSplitButton();
-			Bullets.Text = Loc.Instance.GetString ("BULLETS");
+			Bullets.DisplayStyle = ToolStripItemDisplayStyle.Image;
+			Bullets.Text = Loc.Instance.GetString ("Bullets");
+			Bullets.Image = FileUtils.GetImage_ForDLL("text_list_bullets.png");
 
 			ToolStripButton BulletNormal = new ToolStripButton();
 			BulletNormal.Click+= (object sender, EventArgs e) => DoFormatOnText(NoteDataXML_RichText.FormatText.BULLET);
-			BulletNormal.Text = "bullet";
-
-			Bullets.DropDownItems.Add (BulletNormal);
+			BulletNormal.DisplayStyle = ToolStripItemDisplayStyle.Image;
+			BulletNormal.Text = Loc.Instance.GetString ("Normal Bullets");
+			BulletNormal.Image = FileUtils.GetImage_ForDLL("text_list_bullets.png");
+		
 
 
 			ToolStripButton BulletNumber = new ToolStripButton();
-			BulletNumber.Text = "number";
+			BulletNumber.Text = Loc.Instance.GetString ("Numbers");
+			BulletNumber.DisplayStyle= ToolStripItemDisplayStyle.Image;
+			BulletNumber.Image = FileUtils.GetImage_ForDLL("text_list_numbers.png");
 			BulletNumber.Click+= (object sender, EventArgs e) => DoFormatOnText(NoteDataXML_RichText.FormatText.BULLETNUMBER);
-			Bullets.DropDownItems.Add (BulletNumber);
+		
 		//	Bullets.Click+= (object sender, EventArgs e) => DoFormatOnText(NoteDataXML_RichText.FormatText.ZOOM);
-			formatBar.Items.Add (Bullets);
+		
 
 
 			ToolStripButton DefaultText = new ToolStripButton();
-			DefaultText.Text = "default";
+			DefaultText.Text = Loc.Instance.GetString ("Default Text");
 			DefaultText.Click+= (object sender, EventArgs e) => DoFormatOnText(NoteDataXML_RichText.FormatText.DEFAULTFONT);
+			DefaultText.DisplayStyle = ToolStripItemDisplayStyle.Image;
+			DefaultText.Image = FileUtils.GetImage_ForDLL("text_heading_5.png");
+
 
 
 			ToolStripButton UnderlineText = new ToolStripButton();
-			UnderlineText.Text = "underline";
+			UnderlineText.Text = Loc.Instance.GetString ("Underline");
 			UnderlineText.Click+= (object sender, EventArgs e) => DoFormatOnText(NoteDataXML_RichText.FormatText.UNDERLINE);
+			UnderlineText.DisplayStyle = ToolStripItemDisplayStyle.Image;
+			UnderlineText.Image = FileUtils.GetImage_ForDLL("text_underline.png");
 
 			ToolStripButton ItalicText = new ToolStripButton();
-			ItalicText.Text = "italic";
+			ItalicText.Text =  Loc.Instance.GetString ("Italic");
+			ItalicText.Image = FileUtils.GetImage_ForDLL("text_italic.png");
 			ItalicText.Click+= (object sender, EventArgs e) => DoFormatOnText(NoteDataXML_RichText.FormatText.ITALIC);
-
+			ItalicText.DisplayStyle = ToolStripItemDisplayStyle.Image;
 			//	Bullets.Click+= (object sender, EventArgs e) => DoFormatOnText(NoteDataXML_RichText.FormatText.ZOOM);
-			formatBar.Items.Add (DefaultText);
-			formatBar.Items.Add (UnderlineText);
-			formatBar.Items.Add (ItalicText);
 
+			formatBar.Items.Add (bold);
+
+			formatBar.Items.Add (ItalicText);
+			formatBar.Items.Add (UnderlineText);
+			formatBar.Items.Add (strike);
+
+		
+
+
+			formatBar.Items.Add (Bullets);
+			formatBar.Items.Add (DefaultText);
+			formatBar.Items.Add (line);
+			formatBar.Items.Add (zoom);
+
+
+			Bullets.DropDownItems.Add (BulletNormal);
+			Bullets.DropDownItems.Add (BulletNumber);
 		}
 
 		void HandleInsertDateClick (object sender, EventArgs e)

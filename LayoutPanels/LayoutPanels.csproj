@@ -32,11 +32,11 @@
   </PropertyGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
-    <Compile Include="LayoutPanel.cs" />
     <Compile Include="HeaderBar.cs" />
     <Compile Include="GetInformationADDINS.cs" />
     <Compile Include="info_form.cs" />
     <Compile Include="NoteDataXML_Panel.cs" />
+    <Compile Include="LayoutPanel.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Layout\Layout.csproj">
@@ -69,5 +69,40 @@
     </Reference>
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="resources\" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="resources\text_bold.png">
+      <LogicalName>text_bold.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="resources\date.png">
+      <LogicalName>date.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="resources\text_italic.png">
+      <LogicalName>text_italic.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="resources\text_list_bullets.png">
+      <LogicalName>text_list_bullets.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="resources\text_list_numbers.png">
+      <LogicalName>text_list_numbers.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="resources\text_strikethrough.png">
+      <LogicalName>text_strikethrough.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="resources\text_underline.png">
+      <LogicalName>text_underline.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="resources\zoom.png">
+      <LogicalName>zoom.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="resources\shape_square.png">
+      <LogicalName>shape_square.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="resources\text_heading_5.png">
+      <LogicalName>text_heading_5.png</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
 </Project>

@@ -63,12 +63,17 @@ namespace appframe
 		#region interface
 		CheckedListBox checkers ;
 		#endregion
+
+		#region delegates
+		MainFormBase.GetAValidDatabase GetBaseDatabase=null;
+		#endregion
 	
-		public AddIns (string path, string storage)
+		public AddIns (string path, string storage, MainFormBase.GetAValidDatabase _GetBaseDatabase)
 		{
 			if (Constants.BLANK == path || Constants.BLANK == storage) {
 				throw new Exception("must define a vaild path to search for AddIns and a storage location where their activte status is stored");
 			}
+			GetBaseDatabase = _GetBaseDatabase;
 			dataPath = path;
 			DatabaseName = storage;
 
@@ -262,9 +267,12 @@ namespace appframe
 			return newList;
 		}
 
-		private BaseDatabase CreateAddInDatabase()
+		private BaseDatabase CreateAddInDatabase ()
 		{
-			BaseDatabase db = new SqlLiteDatabase (DatabaseName);
+			if (GetBaseDatabase == null) {
+				throw new Exception("A valid base database delegated needs to be provided for this ADDIN to work.");
+			}
+			BaseDatabase db = GetBaseDatabase(DatabaseName);// new SqlLiteDatabase (DatabaseName);
 
 
 

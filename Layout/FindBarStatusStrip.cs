@@ -214,10 +214,14 @@ namespace Layout
 
 			ToolStripButton Prev  =new ToolStripButton();
 			Prev.Text = "<";
+			Prev.Image = FileUtils.GetImage_ForDLL("arrow_left.png");
+			Prev.DisplayStyle = ToolStripItemDisplayStyle.Image;
 			Prev.Click += HandlePreviousClick;
 
 			ToolStripButton Next= new ToolStripButton();
 			Next.Text = ">";
+			Next.Image = FileUtils.GetImage_ForDLL("arrow_right.png");
+			Next.DisplayStyle = ToolStripItemDisplayStyle.Image;
 			Next.Click += HandleNextClick;
 
 			SearchMatchesFound = new ToolStripLabel();

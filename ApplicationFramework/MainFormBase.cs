@@ -35,6 +35,8 @@ using CoreUtilities;
 using System.Collections;
 using System.Collections.Generic;
 using HotKeys;
+using database;
+
 
 namespace appframe
 {
@@ -84,6 +86,12 @@ namespace appframe
 		}
 		#endregion
 
+		#region delegates
+		public delegate BaseDatabase GetAValidDatabase(string name);
+		private GetAValidDatabase GetValidDatabase;
+
+		#endregion
+
 		#region gui
 		protected MenuStrip MainMenu;
 		protected StatusStrip FooterStatus; 
@@ -118,9 +126,9 @@ namespace appframe
 		
 			Hotkeys.Add (new KeyData ("Dual Screen", Test, Keys.Control, Keys.W, Constants.BLANK, false, "dualscreenguid"));
 			
-			HotKeyConfig hotKeyConfig = new HotKeyConfig(Storage, ref Hotkeys);
+			HotKeyConfig hotKeyConfig = new HotKeyConfig(Storage, ref Hotkeys, GetValidDatabase);
 			optionPanels.Add(hotKeyConfig);
-			HotKeyConfig.UpdateKeys(Hotkeys, Storage);
+			hotKeyConfig.UpdateKeys(Hotkeys, Storage);
 
 
 		}
@@ -137,8 +145,9 @@ namespace appframe
 		/// <param name='Storage'>
 		/// Name of a database or other file source where any CORE iConfig components should store there data (currently only AddIns)
 		/// </param>
-		public MainFormBase (string _path, Action<bool> _ForceShutDownMethod, string Storage, Icon mainFormIcon)
+		public MainFormBase (string _path, Action<bool> _ForceShutDownMethod, string Storage, Icon mainFormIcon, GetAValidDatabase _GetValidDatabase)
 		{
+			GetValidDatabase = _GetValidDatabase;
 			this.KeyPreview = true;
 			_Storage = Storage;
 			Hotkeys = new List<KeyData> ();
@@ -202,7 +211,7 @@ namespace appframe
 		
 
 
-			addIns = new AddIns (System.IO.Path.Combine (Path, "plugins"), Storage);
+			addIns = new AddIns (System.IO.Path.Combine (Path, "plugins"), Storage, GetValidDatabase);
 			optionPanels = new List<iConfig> ();
 
 			// Register Option Panels
@@ -429,10 +438,10 @@ namespace appframe
 						if (myList.Contains (addin.CalledFrom.GUID) == false) {
 							// we are NOT in the list but we exist in the active list
 							// this means we must be destroyed!!
-							NewMessage.Show ("Destroy : " + addin.CalledFrom.GUID);
+						//	NewMessage.Show ("Destroy : " + addin.CalledFrom.GUID);
 
 							foreach (IDisposable connection in addin.Hookups) {
-								NewMessage.Show ("Removing " + connection.ToString());
+							//	NewMessage.Show ("Removing " + connection.ToString());
 								connection.Dispose ();
 							}
 							if (addin.DeregisterType() == true)
@@ -570,6 +579,10 @@ namespace appframe
 				foreach (iConfig addIn in optionPanels)
 				{
 					addIn.SaveRequested();
+					if (addIn is HotKeyConfig)
+					{
+						(addIn as HotKeyConfig).UpdateKeys(Hotkeys, _Storage);
+					}
 				}
 				StartAndStopPlugIns();
 
@@ -577,7 +590,7 @@ namespace appframe
 			}
 
 			//regardless of OK or cancel we need to ensure Hotkeys are not contamianted
-			HotKeyConfig.UpdateKeys(Hotkeys, _Storage);
+		//	HotKeyConfig.UpdateKeys(Hotkeys, _Storage);
 
 
 		}
