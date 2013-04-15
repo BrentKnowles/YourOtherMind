@@ -278,6 +278,14 @@ namespace Layout
 			/// 
 		public static List<NameAndGuid> GetListOfLayouts (string filter, string likename, bool FullTextSearch, LayoutPanelBase OverrideLayoutToUseToFindTable)
 		{
+
+			// cleanup on likename (can't have apostophes
+			if (likename.IndexOf ("\"") > 0) {
+				likename = likename.Replace("\"", "");
+			}
+			if (likename.IndexOf ("'") > 0) {
+				likename = likename.Replace("'", "");
+			}
 			
 			BaseDatabase MyDatabase = CreateDatabase ();
 			List<NameAndGuid> result = new List<NameAndGuid> ();

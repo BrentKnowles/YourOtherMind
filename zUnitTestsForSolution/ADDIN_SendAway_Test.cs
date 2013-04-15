@@ -46,7 +46,7 @@ namespace Testing
 		}
 
 		// each test should hapepn in its own otuput directory
-		public ControlFile Setup (string uniquetestdirectory)
+		public ControlFile Setup (string uniquetestdirectory, ControlFile overrideControl)
 		{
 			// deletes contents of the output folder
 			string path = Environment.CurrentDirectory;
@@ -72,11 +72,18 @@ namespace Testing
 
 			// Sets up a proper epub control file
 			ControlFile result =  ControlFile.Default;
+
+
+
+			result.ListOfTags=new string[1]{"game|''"};
 			result.ConverterType = ControlFile.convertertype.epub;
-			result.OutputDirectory = PathToOutput;
+			result.MultiLineFormats= new string[1]{"past"};
+			result.MultiLineFormatsValues = new string[1]{"blockquote2"};
 			result.Zipper =_TestSingleTon.Zipper;
+
+			if (overrideControl != null) result = overrideControl;
+			result.OutputDirectory = PathToOutput;
 			result.TemplateDirectory = PathToSendTextAwayFiles;
-			
 			return result;
 
 		}
@@ -127,8 +134,53 @@ namespace Testing
 			_w.output("Lines read " + linescounted.ToString());
 			return differences;
 		}
-
+	
 		// keep each test small so its easier to track down where the failur ehappened
+		[Test]
+		public void Fancy()
+		{
+			ControlFile result =  ControlFile.Default;
+			
+			
+			
+			result.ListOfTags=new string[1]{"game|''"};
+			result.ConverterType = ControlFile.convertertype.epub;
+			result.MultiLineFormats= new string[1]{"past"};
+			result.MultiLineFormatsValues = new string[1]{"blockquote2"};
+			result.Zipper =_TestSingleTon.Zipper;
+			result.FancyCharacters = true;
+			PerformTest("fancycharacters.txt", result);
+		}
+		[Test]
+		public void Bug001()
+		{
+			
+
+			PerformTest("bug001.txt");
+		}
+
+		[Test]
+		public void Emdash()
+		{
+			ControlFile result =  ControlFile.Default;
+			
+			
+			
+			result.ListOfTags=new string[1]{"game|''"};
+			result.ConverterType = ControlFile.convertertype.epub;
+			result.MultiLineFormats= new string[1]{"past"};
+			result.MultiLineFormatsValues = new string[1]{"blockquote2"};
+			result.Zipper =_TestSingleTon.Zipper;
+			result.FancyCharacters = false;
+			result.ConvertToEmDash = true;
+			PerformTest("emdash.txt", result);
+		}
+		[Test]
+		public void Bug002()
+		{
+			// could not actually replicate the bug but figured I'd leave this in as a baseline.
+			PerformTest("bug002.txt");
+		}
 
 		[Test]
 		public void TestHeadings()
@@ -154,15 +206,45 @@ namespace Testing
 			PerformTest("numberbullet.txt");
 		}
 
+
+		[Test]
+		public void TestInlineFormat()
+		{
+			// <game</game> on an individual line
+			PerformTest("inlineformat.txt");
+		}
+		[Test]
+		public void TestStrikeAndSuper()
+		{
+			PerformTest("strikeandsuper.txt");
+		}
+		[Test]
+		public void TestAnchorLink ()
+		{
+			PerformTest("anchor.txt");
+		}
+
+		[Test]
+		public void TestVariable()
+		{
+			PerformTest ("variable.txt");
+		}
+
 		[Test]
 		public void SectionFormat()
 		{
 			// this is <past> </past> across multiple lines
+			PerformTest ("sectionformat.txt");
 		}
+
 
 		void PerformTest (string simpletxt)
 		{
-			ControlFile Controller = Setup (simpletxt);
+			PerformTest (simpletxt, null);
+		}
+		void PerformTest (string simpletxt, ControlFile overrideControl)
+		{
+			ControlFile Controller = Setup (simpletxt, overrideControl);
 			string Incoming = simpletxt;
 			string FileToTest = Path.Combine (PathToSendAwayUnitTestingFIles, Incoming);
 			
