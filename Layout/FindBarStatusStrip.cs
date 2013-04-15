@@ -498,9 +498,15 @@ namespace Layout
 			}
 			if (PositionsFound != null && Position >-1  && PositionsFound.Count >= Position ) {
 				int PositionToGoTo = PositionsFound [Position];
+
+				// We do not set the Caret yet, because we will fake set
+				// it in the following route to a position higher up in the text.
+				LastRichText.ScrollNearPosition(PositionToGoTo);
+
 				LastRichText.SelectionStart = PositionToGoTo;
 				LastRichText.SelectionLength = Searchbox.Text.Length;
-				LastRichText.ScrollToCaret();
+
+			//	LastRichText.ScrollToCaret();
 				UpdateSearchMatches(Position+1, PositionsFound.Count);
 			}
 		}

@@ -390,8 +390,12 @@ namespace Layout
 
 		[DllImport("user32.dll", CharSet = CharSet.Auto)]
 		private static extern IntPtr SendMessage(IntPtr hWnd, int msg, IntPtr wParam, IntPtr lParam);
+
 		[System.Runtime.InteropServices.DllImport("user32.dll", CharSet = System.Runtime.InteropServices.CharSet.Auto)]
 		public static extern IntPtr SendMessage(System.Runtime.InteropServices.HandleRef hWnd, int msg, int wParam, [In, Out, MarshalAs(UnmanagedType.LPStruct)] PARAFORMAT2 lParam);
+
+//		[DllImport("user32.dll", CharSet = CharSet.Auto)]
+//		public static extern IntPtr SendMessage(System.Runtime.InteropServices.HandleRef hWnd, int msg, int wParam, int lParam);
 		/// <summary>
 		/// Flicker resistance
 		/// http://social.msdn.microsoft.com/Forums/en-US/winforms/thread/a6abf4e1-e502-4988-a239-a082afedf4a7
@@ -686,6 +690,24 @@ namespace Layout
 				this.SelectionFont = currentFont;
 			}
 		}
+
+		public void ScrollNearPosition(int Position)
+		{
+			// we want to scroll fruther up
+			if (Position > 200) Position = Position - 200;
+			this.SelectionStart = Position;
+
+			// attempts to scroll to text, but keeping 2 blank lines above the indicated position (so user does not have to scroll up)
+			// to see context.
+//			int Line = GetLineFromCharIndex (Position);
+//			if (Line > 4 Line 
+//		//	NewMessage.Show (Line.ToString ());
+//			const int EM_LINESCROLL = 0x00B6;
+//			SendMessage( this.Handle, EM_LINESCROLL, new IntPtr(0), new IntPtr(Line) );
+			this.ScrollToCaret();
+		}
+
+
 		/// <summary>
 		/// pastes the current text from the clipboard to match current selection formatting
 		/// </summary>
