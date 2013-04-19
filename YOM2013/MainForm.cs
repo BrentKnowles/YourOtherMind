@@ -691,8 +691,9 @@ namespace YOM2013
 							// start over
 							SaveTimerInterval = SaveTimeIntervalConstant;
 							UpdateFooter (FootMessageType.AUTOSAVE, Loc.Instance.GetStringFmt ("Autosaved {0} at {1}", LayoutDetails.Instance.CurrentLayout.Caption, DateTime.Now));
-					                                                            
-							LayoutDetails.Instance.CurrentLayout.SaveLayout ();
+							if (true == CurrentLayout.GetSaveRequired) {                                             
+								LayoutDetails.Instance.CurrentLayout.SaveLayout ();
+							}
 
 						}
 						this.Cursor = Cursors.Default;
@@ -797,6 +798,11 @@ namespace YOM2013
 		}
 		void HandleFormClosing (object sender, FormClosingEventArgs e)
 		{
+			if (LayoutDetails.Instance.SystemLayout != null) {
+				LayoutDetails.Instance.SystemLayout.SaveLayout ();
+			}
+
+
 			UpdateTimer.Stop ();
 			UpdateTimer.Dispose ();
 
@@ -1255,34 +1261,39 @@ namespace YOM2013
 			return existing;
 		}
 
+		private void ToggleSidedock()
+		{
+			// March 2013
+			// not happy with implementation of it
+			// I think it makes more sense, doesn't it, to hide the System Panel, the subpanel? system_sidedock
+			if (LayoutDetails.Instance.SystemLayout != null) {
+				NoteDataInterface note = LayoutDetails.Instance.SystemLayout.FindNoteByGuid (LayoutDetails.SIDEDOCK);
+				if (note != null) {
+					note.ToggleTemporaryVisibility ();
+					
+					
+				}
+			}
+
+		}
 		/// <summary>
 		/// Toggles the current note maximized. (responds to the F6 key (default) raised in main form
 		/// </summary>
 		void ToggleCurrentNoteMaximized (bool b)
 		{
+
+
 			if (CurrentLayout != null) {
 				string ourGUID = CurrentLayout.GUID;
 
 				// find the Layout with this GUID, so we can reference the maximized state
-				lg.Instance.Line("TogguleCurrentNoteMaximized", ProblemType.TEMPORARY, String.Format ("Searching for GUID:<{0} >", ourGUID));
-				LayoutsInMemory existing = IsLayoutPresent(ourGUID);
+				lg.Instance.Line ("TogguleCurrentNoteMaximized", ProblemType.TEMPORARY, String.Format ("Searching for GUID:<{0} >", ourGUID));
+				LayoutsInMemory existing = IsLayoutPresent (ourGUID);
 
 				if (null != existing) {
 					lg.Instance.Line ("ToggleCurrentNoteMaximized", ProblemType.MESSAGE, String.Format ("ourGUID = {0} // FoundGUID = {1}", ourGUID, existing.GUID));
-
-					// March 2013
-					// not happy with implementation of it
-					// I think it makes more sense, doesn't it, to hide the System Panel, the subpanel? system_sidedock
-					if (LayoutDetails.Instance.SystemLayout != null)
-					{
-						NoteDataInterface note = LayoutDetails.Instance.SystemLayout.FindNoteByGuid(LayoutDetails.SIDEDOCK);
-						if (note!= null)
-						{
-							note.ToggleTemporaryVisibility();
-						
-
-						}
-					}
+					ToggleSidedock();
+				
 					/* March 2013 commented out, trying a simpler system
 					// We assume we are operating only on the CURRENT Layout
 					existing.Maximized = !existing.Maximized;
@@ -1293,6 +1304,10 @@ namespace YOM2013
 				} else {
 					lg.Instance.Line ("MainForm.ToggleCurrentNoteMaximized", ProblemType.WARNING, " never found the note which is odd " + ourGUID);
 				}
+			} else {
+				//
+				// we do this here too because we might close the layout and need to bring the sidedock back up!
+				ToggleSidedock();
 			}
 			/*
 			if (CurrentLayout.Parent.Dock != DockStyle.Fill) {
@@ -1574,7 +1589,9 @@ namespace YOM2013
 
 		void GotoExistingLayout (NoteDataXML_SystemOnly panel, LayoutPanel layoutPanel)
 		{
-			Save(true);
+			TestAndSaveIfNecessary();
+
+			//Save(true);
 				// in case minimized we make it visible
 				panel.ParentNotePanel.Visible = true;
 				panel.ParentNotePanel.BringToFront ();
@@ -1614,8 +1631,10 @@ namespace YOM2013
 		{
 			this.Cursor = Cursors.WaitCursor;
 
-
-			LayoutDetails.Instance.SystemLayout.SaveLayout ();
+			// I removed teh System layout save from here and attached it manually to CLOSE and to Manual saves
+			// WHY? Because of null CurrentLayout tests, it often would not come in here and save the system layout
+			// anyways.
+		
 			if (CurrentLayout != null) {
 				CurrentLayout.SaveLayout ();
 				if (user == true)
@@ -1633,6 +1652,14 @@ namespace YOM2013
 
 		void HandleSaveClick (object sender, EventArgs e)
 		{
+
+			if (LayoutDetails.Instance.SystemLayout != null) {
+				LayoutDetails.Instance.SystemLayout.SaveLayout ();
+			}
+
+			// I intentionally do not test to see if any changes are made just in case
+			// there are fields that are not yet setting the flag appropriately. This is a manual
+			// fail-safe save.
 			Save (true);
 		}
 		/// <summary>
@@ -1645,7 +1672,9 @@ namespace YOM2013
 		/// </returns>
 		void TestAndSaveIfNecessary ()
 		{
-			if (CurrentLayout != null) {
+
+			if (CurrentLayout != null)
+			{
 				if (true == CurrentLayout.GetSaveRequired) {
 					//NewMessage.Show ("Should have saved says Layout=" + CurrentLayout.Caption);
 					Save (true);

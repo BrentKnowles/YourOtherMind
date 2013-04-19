@@ -320,6 +320,8 @@ namespace appframe
 			this.toolStripButtonEditMode.Size = new System.Drawing.Size(23, 22);
 			this.toolStripButtonEditMode.Text = Loc.Instance.GetString ("Toggle Safe Edit Mode ** REMOVE? **");
 			this.toolStripButtonEditMode.Click += new System.EventHandler(this.toggleSafeEditModeClick);
+			// does not appear necessary now that we use a GridView instead of a grid
+			this.toolStripButtonEditMode.Visible = false;
 			// 
 			// toolStripSeparator2
 			// 

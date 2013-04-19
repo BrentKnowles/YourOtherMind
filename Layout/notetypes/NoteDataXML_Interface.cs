@@ -499,7 +499,7 @@ namespace Layout
 		void HandleCaptionLabelDoubleClick (object sender, EventArgs e)
 		{
 
-			Maximize(false);
+			Maximize(!IsMaximized);
 		}
 
 	

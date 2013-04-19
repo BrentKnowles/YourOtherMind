@@ -432,17 +432,20 @@ namespace Layout
 			this.Visible = false;
 			UpdateLocation ();
 		}
+
+		// a temp field, for maximigin temporarily
+		bool IsMaximized = false;
 /// <summary>
-/// Maximize the specified Maximize.
+/// Maximize the specified Maximize. This is a temporarly VALUE only. Meant to faciliate editing.
 /// </summary>
 /// <param name='Maximize'>
 /// If set to <c>true</c> maximize.
 /// </param>
-		public void Maximize (bool Maximize)
+		public void Maximize (bool Maximized)
 		{
 			lg.Instance.Line("Maximize", ProblemType.MESSAGE, String.Format ("Calling Maximize for note with GUID = {0} and Parent LayoutPanel GUID Of {1}",this.GuidForNote, Layout.GUID ));
 			// is this actually dock=none/bringtofront, full width?
-			if (true == Maximize) {
+			if (true == Maximized) {
 				ParentNotePanel.Dock = DockStyle.None;
 //				Dock = System.Windows.Forms.DockStyle.None;
 				// temporary size change (change the form, not the XML)
@@ -450,11 +453,13 @@ namespace Layout
 				ParentNotePanel.Height = Layout.Height - 15;
 				ParentNotePanel.Width = Layout.Width - 15;
 				ParentNotePanel.BringToFront ();
+				IsMaximized = true;
 			} else {
 				// restore defaults
 				this.Dock = DockStyle.None;
 			//	ParentNotePanel.Dock = DockStyle.Fill;
 				UpdateLocation ();
+				IsMaximized = false;
 			}
 
 			//UpdateLocation ();
