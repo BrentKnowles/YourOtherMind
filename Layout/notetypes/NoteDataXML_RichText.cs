@@ -241,7 +241,9 @@ namespace Layout
 
 		void HandleRichTextSelectionChanged (object sender, EventArgs e)
 		{
-			LayoutDetails.Instance.CurrentLayout.NeedsTextBoxUpdate = true;
+			if (LayoutDetails.Instance.CurrentLayout != null) {
+				LayoutDetails.Instance.CurrentLayout.NeedsTextBoxUpdate = true;
+			}
 			// moving this to a timer
 //			if (Layout.GetFindbar () != null) {
 //				Layout.GetFindbar ().UpdateSelection (richBox.SelectedText, false);

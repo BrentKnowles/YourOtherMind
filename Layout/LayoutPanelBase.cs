@@ -243,7 +243,7 @@ namespace Layout
 		public abstract List<string> GetListOfStringsFromSystemTable (string tableName, int Column, string filter, bool sort);
 		public abstract List<string> GetListOfStringsFromSystemTable (string tableName, int Column, string filter);
 		public abstract List<string> GetListOfStringsFromSystemTable (string tableName, int Column);
-		public abstract NoteDataXML_SystemOnly GetSystemPanel ();
+		public abstract NoteDataXML_SystemOnly CreateSystemPanel ();
 		public abstract void NewLayout (string _GUID, bool AddDefaultNote, ContextMenuStrip textEditorContextStrip);
 		public abstract CoreUtilities.Links.LinkTable GetLinkTable ();
 		public abstract int CountNotes();

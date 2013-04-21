@@ -1293,6 +1293,32 @@ namespace YOM2013
 				if (null != existing) {
 					lg.Instance.Line ("ToggleCurrentNoteMaximized", ProblemType.MESSAGE, String.Format ("ourGUID = {0} // FoundGUID = {1}", ourGUID, existing.GUID));
 					ToggleSidedock();
+					// force current layout NOT TO BE maximized (else we won't see the F6 panel, when it returns.
+
+
+
+					// find system
+					foreach (LayoutsInMemory memory in LayoutsOpen)
+					{
+						// this is to fix the situation if a user double clicks on a layout
+						// which then hides the System panel no matter what you do.
+						// pressing F6 would then *fix* things by restoring the system panel and un-maximizing things
+						if (memory.GUID == CurrentLayout.GUID)
+						{
+							if (memory.Container.IsMaximizedWindow())
+							{
+								memory.Container.Maximize(false);
+								memory.Container.Dock = DockStyle.Fill;
+								memory.Container.UpdateLocation();
+
+								//memory.LayoutPanel.Dock = DockStyle.Fill;
+								//memory.LayoutPanel.BringToFront();
+							}
+						}
+					}
+
+
+				
 				
 					/* March 2013 commented out, trying a simpler system
 					// We assume we are operating only on the CURRENT Layout
@@ -1337,7 +1363,7 @@ namespace YOM2013
 		/// </summary>
 		LayoutPanel CreateLayoutContainer(string guid)
 		{
-			MDIHOST = LayoutDetails.Instance.SystemLayout.GetSystemPanel ();
+			MDIHOST = LayoutDetails.Instance.SystemLayout.CreateSystemPanel ();
 			if (MDIHOST == null) {
 				NewMessage.Show ("no system panel was found on system layout");
 				Application.Exit ();

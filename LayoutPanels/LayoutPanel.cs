@@ -329,6 +329,10 @@ namespace Layout
 		
 		}
 		/// <summary>
+		///  DO NOT USE THIS FOR QUERYING!!!
+		/// 
+		/// THIS ACTUALLY CREATES A NEW SYSTEM NOTE !!
+		/// 
 		/// Returns the system panel for a system page.
 		/// This is only relevant for the guid=system page (the main interface)
 		/// and is called from the mainform
@@ -336,7 +340,7 @@ namespace Layout
 		/// <value>
 		/// The get system panel.
 		/// </value>
-		public override NoteDataXML_SystemOnly GetSystemPanel ()
+		public override NoteDataXML_SystemOnly CreateSystemPanel ()
 		{
 			// changing things so that we CREATE a new system panel as needed.
 			return Notes.GetAvailableSystemNote(this);

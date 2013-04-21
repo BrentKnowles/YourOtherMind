@@ -443,6 +443,7 @@ namespace Layout
 /// </param>
 		public void Maximize (bool Maximized)
 		{
+
 			lg.Instance.Line("Maximize", ProblemType.MESSAGE, String.Format ("Calling Maximize for note with GUID = {0} and Parent LayoutPanel GUID Of {1}",this.GuidForNote, Layout.GUID ));
 			// is this actually dock=none/bringtofront, full width?
 			if (true == Maximized) {
@@ -464,6 +465,10 @@ namespace Layout
 
 			//UpdateLocation ();
 
+		}
+		public bool IsMaximizedWindow ()
+		{
+			return IsMaximized;
 		}
 		/// <summary>
 		/// Compares to.

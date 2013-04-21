@@ -57,6 +57,9 @@ namespace Layout
 		public override bool IsSystemNote{
 			get {return true;}
 		}
+
+	
+
 		protected override void DoBuildChildren (LayoutPanelBase Layout)
 		{
 			//Width = 500;
