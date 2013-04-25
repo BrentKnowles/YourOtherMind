@@ -88,9 +88,11 @@ namespace YOM2013
 		#endregion
 	
 	
-		private void UpdateTitle(string newTitle)
+		private void UpdateTitle (string newTitle)
 		{
-			this.Text = newTitle;
+			if (newTitle != this.Text) {
+				this.Text = newTitle;
+			}
 		}
 
 		private void SetupMessageBox ()
@@ -833,7 +835,7 @@ namespace YOM2013
 			Hotkeys.Add (new KeyData(Loc.Instance.GetString ("Date"), 	InsertDate, Keys.Control,  Keys.D,mainform, true, "format_date"));
 			Hotkeys.Add (new KeyData(Loc.Instance.GetString ("Underline"), 	Underline, Keys.Control,  Keys.U,mainform, true, "format_underline"));
 			Hotkeys.Add (new KeyData(Loc.Instance.GetString ("Italic"), 	Italic, Keys.Control,  Keys.I,mainform, true, "format_italic"));
-
+			Hotkeys.Add (new KeyData(Loc.Instance.GetString ("Paste To Match"), 	PasteTomatch, Keys.Alt,  Keys.P,mainform, true, "paste2match"));
 
 			Hotkeys.Add (new KeyData(Loc.Instance.GetString ("Highlight Yellow"), 	HighlightYellow, Keys.Control,  Keys.OemOpenBrackets,mainform, true, "highlightyellow"));
 			Hotkeys.Add (new KeyData(Loc.Instance.GetString ("Highlight Red"), 	HighlightRed, Keys.Control,  Keys.OemCloseBrackets,mainform, true, "highlightred"));
@@ -843,6 +845,13 @@ namespace YOM2013
 			// temporary to test the form thing
 			//Hotkeys.Add (new KeyData(Loc.Instance.GetString ("test"),Test , Keys.Control, Keys.Q, "optionform", true, "testguid"));
 			base.BuildAndProcessHotKeys(Storage);
+		}
+
+		void PasteTomatch(bool obj)
+		{
+			if (LayoutDetails.Instance.CurrentLayout != null && LayoutDetails.Instance.CurrentLayout.CurrentTextNote != null) {
+				LayoutDetails.Instance.CurrentLayout.CurrentTextNote.GetRichTextBox().PasteToMatch();
+			}
 		}
 
 		void Underline (bool obj)
@@ -1084,10 +1093,27 @@ namespace YOM2013
 
 			ContextMenus.Add (TextEditContextStrip);
 
+			ToolStripMenuItem CutMenu = new ToolStripMenuItem();
+			CutMenu.Text = Loc.Instance.GetString ("Cut");
+			CutMenu.Click += HandleCutClick;
+
+			ToolStripMenuItem CopyMenu = new ToolStripMenuItem();
+			CopyMenu.Text = Loc.Instance.GetString ("Copy");
+			CopyMenu.Click+= HandleCopyClick;
+			ToolStripMenuItem PasteMenu = new ToolStripMenuItem();
+			PasteMenu.Text = Loc.Instance.GetString ("Paste");
+			PasteMenu.Click+= HandlePasteClick;
+
 
 			ToolStripMenuItem PasteToMatch = new ToolStripMenuItem();
 			PasteToMatch.Text = Loc.Instance.GetString ("Paste To Match");
 			PasteToMatch.Click+= HandlePasteToMatchClick;;
+
+
+
+			TextEditContextStrip.Items.Add(CutMenu);
+			TextEditContextStrip.Items.Add(CopyMenu);
+			TextEditContextStrip.Items.Add(PasteMenu);
 			TextEditContextStrip.Items.Add (PasteToMatch);
 
 
@@ -1108,11 +1134,34 @@ namespace YOM2013
 			TextEditContextStrip.Opening+= HandleTextEditOpening;
 		}
 
-		void HandlePasteToMatchClick (object sender, EventArgs e)
+		void HandlePasteClick (object sender, EventArgs e)
 		{
 			if (LayoutDetails.Instance.CurrentLayout != null && LayoutDetails.Instance.CurrentLayout.CurrentTextNote != null) {
-				LayoutDetails.Instance.CurrentLayout.CurrentTextNote.GetRichTextBox().PasteToMatch();
+
+				LayoutDetails.Instance.CurrentLayout.CurrentTextNote.GetRichTextBox().Paste ();
+
 			}
+		}
+
+		void HandleCopyClick (object sender, EventArgs e)
+		{
+			if (LayoutDetails.Instance.CurrentLayout != null && LayoutDetails.Instance.CurrentLayout.CurrentTextNote != null) {
+				LayoutDetails.Instance.CurrentLayout.CurrentTextNote.GetRichTextBox().Copy ();
+				//LayoutDetails.Instance.CurrentLayout.CurrentTextNote.GetRichTextBox().SelectedText = "";
+			}
+		}
+
+		void HandleCutClick (object sender, EventArgs e)
+		{
+			if (LayoutDetails.Instance.CurrentLayout != null && LayoutDetails.Instance.CurrentLayout.CurrentTextNote != null) {
+				
+						LayoutDetails.Instance.CurrentLayout.CurrentTextNote.GetRichTextBox().Cut ();
+			}
+		}
+
+		void HandlePasteToMatchClick (object sender, EventArgs e)
+		{
+			PasteTomatch(true);
 		}
 
 		void HandleTextEditOpening (object sender, System.ComponentModel.CancelEventArgs e)
