@@ -557,6 +557,7 @@ namespace Layout
 		public void CreateLinkTableIfNecessary (NoteDataXML_Table table, LayoutPanelBase LayoutPanelToLoadNoteOnto)
 		{
 			MyLinkTable = new LinkTable ();
+			bool creatednew = false;
 			// either no note was in data or it came out wrong, we build a new LinkTable
 			if (table.GuidForNote != LinkTable.STICKY_TABLE) {
 
@@ -570,25 +571,32 @@ namespace Layout
 				table.GuidForNote = LinkTable.STICKY_TABLE;
 				table.dataSource = MyLinkTable.BuildNewTable ().Copy ();
 				((System.Data.DataTable)table.dataSource).TableName = CoreUtilities.Tables.TableWrapper.TablePageTableName;
-				
+			///	table.Minimize();
 				// Note Table must AddToStart so that it is instantiated Before any other notes
 				
 				// if we have to create a table we Assume that we can do a Convert too
 				//newTableNeeded = true;
 				
 				//SaveTo ();
-				
+				creatednew = true;
 			}
 
 			AddToStart (table);
+
 			if (null == LayoutPanelToLoadNoteOnto) {
 				NewMessage.Show ("LayoutPanel was null 456 LayoutDatabase");
 			}
 			table.CreateParent(LayoutPanelToLoadNoteOnto);
+
 			MyLinkTable.SetTable (table.dataSource);
 
 			MyLinkTableNote = table;
 			if (null == MyLinkTableNote) NewMessage.Show ("CreateLinkTable LinkTable Note is null");
+
+
+			
+			if (true == creatednew)
+				table.Minimize();
 		}
 		public override string ToString ()
 		{

@@ -78,6 +78,7 @@ namespace Layout
 			ListOfEvents = new ListBox();
 			ListOfEvents.Height = 300;
 			ListOfEvents.Dock = DockStyle.Bottom;
+			ListOfEvents.DoubleClick+= HandleDoubleClick;
 
 
 			this.Controls.Add (layPanel);
@@ -97,6 +98,16 @@ namespace Layout
 				ListOfEvents.DisplayMember = "Display";
 			}
 			BuildReciprocaInBackground();
+		}
+
+		void HandleDoubleClick (object sender, EventArgs e)
+		{
+			if (ListOfEvents.SelectedItem != null) {
+				GenericTextForm TextForm = new GenericTextForm();
+				TextForm.GetRichTextBox().Text = ((Transactions.TransactionBase)ListOfEvents.SelectedItem).ExpandedDescription();
+				TextForm.ShowDialog();
+			}
+
 		}
 		void BuildReciprocaInBackground()
 		{

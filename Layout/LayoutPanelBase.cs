@@ -352,6 +352,9 @@ namespace Layout
 
 		}
 	
+		// looks for a notelist and will filter that notelist by the specified text
+		public abstract void FilterByKeyword (string text);
+
 	}
 
 

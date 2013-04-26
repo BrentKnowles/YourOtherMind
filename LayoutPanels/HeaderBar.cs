@@ -393,7 +393,9 @@ namespace LayoutPanels
 
 		void HandleKeyLabelClick (object sender, EventArgs e)
 		{
-			NewMessage.Show ("Filter me");
+			LayoutDetails.Instance.FilterByKeyword ((sender as ToolStripLabel).Text);
+		
+//			NewMessage.Show ("Filter me");
 		}
 
 		/// <summary>

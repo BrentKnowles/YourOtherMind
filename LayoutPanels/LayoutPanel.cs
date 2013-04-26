@@ -1929,6 +1929,18 @@ namespace Layout
 			}
 			return Copied;
 		}
+		public override void FilterByKeyword (string text)
+		{
+			NoteDataXML_NoteList List = (NoteDataXML_NoteList) FindNoteByName ("Note List");
+			if (List != null) {
+				List = (NoteDataXML_NoteList)GetNote(List);
+				// we found a list
+				if (null != List)
+				{
+				List.FilterByKeyword(text);
+				}
+			}
+		}
 	}
 }
 

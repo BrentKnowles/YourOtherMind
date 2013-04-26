@@ -827,6 +827,20 @@ namespace Layout
 			
 			
 		}
+		/// <summary>
+		/// Filters the by keyword.
+		/// 
+		/// Will *attempt* to find a Note List on the System Page and ask it to filter by the specified keyword
+		/// </summary>
+		/// <param name='text'>
+		/// Text.
+		/// </param>
+		public void FilterByKeyword (string text)
+		{
+			if (LayoutDetails.Instance.SystemLayout != null) {
+				LayoutDetails.Instance.SystemLayout.FilterByKeyword (text);
+			}
+		}
 
 	}
 }

@@ -278,13 +278,27 @@ namespace Layout
 			/// 
 		public static List<NameAndGuid> GetListOfLayouts (string filter, string likename, bool FullTextSearch, LayoutPanelBase OverrideLayoutToUseToFindTable)
 		{
+			string test = Constants.BLANK;
+			if (filter.IndexOf ("CODE_KEYWORD_AUTO") > -1) {
+				// a keyword was clicked on the interface
+				// we now extract it from
+				//CODE_KEYWORD_AUTO, KEYWORD
+				string[] items = filter.Split (new char[1] {','});
+				if (items != null && items.Length == 2) {
+					string value = items [1];
+
+					test = String.Format ("{0} LIKE '%{1}%'",dbConstants.KEYWORDS, value);
+					//NewMessage.Show (test);
+				}
+			}
+
 
 			// cleanup on likename (can't have apostophes
 			if (likename.IndexOf ("\"") > 0) {
-				likename = likename.Replace("\"", "");
+				likename = likename.Replace ("\"", "");
 			}
 			if (likename.IndexOf ("'") > 0) {
-				likename = likename.Replace("'", "");
+				likename = likename.Replace ("'", "");
 			}
 			
 			BaseDatabase MyDatabase = CreateDatabase ();
@@ -293,7 +307,12 @@ namespace Layout
 				throw new Exception ("Unable to create database in LoadFrom");
 			}
 
-			string test = LookupFilter (filter, OverrideLayoutToUseToFindTable); //"and notebook='Writing' ";
+
+
+			// it may be blank if we have done a Keyword click filter, from above
+			if (Constants.BLANK == test) {
+				test = LookupFilter (filter, OverrideLayoutToUseToFindTable); //"and notebook='Writing' ";
+			}
 			if (test != Constants.BLANK) {
 				// initial implementation influenced by needs of SUbmission list
 				// always has an existing Where clause (no subpanels) so we need to 
@@ -909,6 +928,7 @@ namespace Layout
 			NewMessage.Show (resultnames);
 			MyDatabase.Dispose();
 		}
+
 	}
 }
 

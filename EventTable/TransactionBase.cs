@@ -120,6 +120,11 @@ namespace Transactions
 
 		}
 
+		public virtual string ExpandedDescription ()
+		{
+			return string.Format ("[TransactionBase: GetTypeCode={0}, Date1={1}, LayoutGuid={2}, ID={3}, Display={4}, DisplayVariant={5}]", GetTypeCode, Date1, LayoutGuid, ID, Display, DisplayVariant);
+		}
+
 		/// <summary>
 		/// Gets the friendly date for most recent date.
 		/// 

@@ -282,7 +282,7 @@ namespace Layout
 				UpdateListOfNotesOnLayout ();
 			} else
 			if (Modes.LAYOUTS == _mode) {
-				UpdateListOfLayouts ();
+				UpdateListOfLayouts (CurrentFilterName);
 				
 			} else
 				if (Modes.LAYOUTSONCURRENTLAYOUT == _mode) {
@@ -355,7 +355,7 @@ namespace Layout
 			}
 		}
 
-		void UpdateListOfLayouts ()
+		void UpdateListOfLayouts (string _CurrentFilter)
 		{
 			this.list.DataSource = null;
 			this.list.Items.Clear ();
@@ -372,7 +372,7 @@ namespace Layout
 				OverridePanelToUse = Layout;
 			}
 
-			List<MasterOfLayouts.NameAndGuid> ListOfItems = MasterOfLayouts.GetListOfLayouts (CurrentFilterName, TextEditor.Text, FullTextSearch.Checked, OverridePanelToUse);
+			List<MasterOfLayouts.NameAndGuid> ListOfItems = MasterOfLayouts.GetListOfLayouts (_CurrentFilter, TextEditor.Text, FullTextSearch.Checked, OverridePanelToUse);
 //			for (int i = ListOfItems.Count - 1; i >= 0; i--)
 //			{
 //				if (TextEditor.Text != Constants.BLANK)
@@ -410,7 +410,7 @@ namespace Layout
 				FullTextSearch.Visible = true;
 				CurrentFilterDropDown.Visible = true;
 
-				UpdateListOfLayouts ();
+				UpdateListOfLayouts (CurrentFilterName);
 
 				break;
 			case Modes.NOTES: 
@@ -539,6 +539,14 @@ namespace Layout
 		{
 			base.CopyNote (Note);
 		}	
+
+		public void FilterByKeyword (string text)
+		{
+			mode.SelectedIndex = 1;
+			string tempfilter=String.Format("CODE_KEYWORD_AUTO,{0}", text);
+			UpdateListOfLayouts(tempfilter);
+		}
+
 	}
 
 }
