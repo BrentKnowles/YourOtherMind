@@ -220,7 +220,7 @@ namespace Transactions
 					
 						Type returnValueType = Type.GetType (objArray[TYPE_OF_OBJECT.Index].ToString());
 						returnValue = (TransactionBase)Activator.CreateInstance(returnValueType, objArray.Clone());
-
+						break;
 						//Type TypeTest = Type.GetType (((Type)(sender as ToolStripButton).Tag).AssemblyQualifiedName);
 					}
 
