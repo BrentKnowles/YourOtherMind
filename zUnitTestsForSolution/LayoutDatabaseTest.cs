@@ -663,7 +663,10 @@ namespace Testing
 			// but we check that the flag was set correclty -- i..e, nothing improtant changes, nothing needs tob e saved
 			//	layout.SaveTo(); 
 			//layoutPanel.SaveLayout();
-			Assert.False (layoutPanel.GetSaveRequired);	
+
+			// April 2013 - This test was flagged as Assert.False but I don't understand
+			// We WANT the flag to say we need a save, no?
+			Assert.True (layoutPanel.GetSaveRequired);	
 			
 		}
 
