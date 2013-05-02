@@ -67,8 +67,8 @@ namespace Layout
 
 		private object[] data= null;
 		public string Status {
-			get { return data [0].ToString();}
-			set { data[0] = value;}
+			get { return data [dbConstants.STATUS.LayoutIndex].ToString();}
+			set { data[dbConstants.STATUS.LayoutIndex] = value;}
 		}
 		/// <summary>
 		/// Gets or sets the name for this Layout.
@@ -77,13 +77,13 @@ namespace Layout
 		/// The name.
 		/// </value>
 		public string Name {
-			get { return data [1].ToString ();}
-			set { data [1] = value;}
+			get { return data [dbConstants.NAME.LayoutIndex].ToString ();}
+			set { data [dbConstants.NAME.LayoutIndex] = value;}
 		}
 
 		public bool ShowTabs {
-			get { return (bool)data [2];}
-			set { data [2] = value;}
+			get { return (bool)data [dbConstants.SHOWTABS.LayoutIndex];}
+			set { data [dbConstants.SHOWTABS.LayoutIndex] = value;}
 		}
 
 		/// <summary>
@@ -700,7 +700,7 @@ namespace Layout
 
 					time = CoreUtilities.TimerCore.Time (() => {
 						// Fill in LAYOUT specific details
-						Status = result [3].ToString ();
+						Status = result [dbConstants.STATUS.Index].ToString ();
 						Name = result [dbConstants.NAME.Index].ToString ();
 						if (result [dbConstants.SHOWTABS.Index].ToString () != Constants.BLANK) {
 							ShowTabs = (bool)result [dbConstants.SHOWTABS.Index];

@@ -491,9 +491,11 @@ namespace Storyboards
             // will only call this ONE time
             if (bOneSafeRefresh == false)
             {
-                LoadGroupEm();
+               // LoadGroupEm();
+
                 bOneSafeRefresh = true;
             }
+
             return item;
 
         }
@@ -555,7 +557,8 @@ namespace Storyboards
 
 			}
 			// add record to arraylist
-			ListViewItem item = listView.Items.Add (record.sFileName, sTitle, nIdx);
+			ListViewItem item = null;
+			item = listView.Items.Add (record.sFileName, sTitle, nIdx);
 
 
 			// truncate text, so it is never too long (to attempt fixing the losing item error)
@@ -571,12 +574,13 @@ namespace Storyboards
             //this will only happen on Load
             if (record.sExtra != null && record.sExtra != " " && record.sExtra != "")
             {
-                
+               // This is the offending Member (May 2013) 
                 AddItemToGroup(item, record.sExtra);
             }
             // May 2012 -- add group to the Details view (the subitems)
             if (item.Group != null && item.Group.Name != "")
             {
+				// May 2013 - commenting these OUT DID NOT fix the 'missing item' issue.
                 item.SubItems.Add(item.Group.Name);
             }
             else
@@ -587,6 +591,8 @@ namespace Storyboards
             // may 2012 - wanted to return the listview item so got rid of the item = null line that was here
             return item;
         } 
+
+
         /// <summary>
         /// edits the item in the linktable
         /// </summary>
@@ -798,52 +804,51 @@ namespace Storyboards
         /// </summary>
         /// <param name="item"></param>
         /// <param name="sGroup"></param>
-        private void AddItemToGroup(ListViewItem item, string sGroup)
-        {
-            ListViewGroup group = null;
+        private void AddItemToGroup (ListViewItem item, string sGroup)
+		{
+			ListViewGroup group = null;
 
-
+			// This is the offending Member (May 2013) 
         
 
-            // look for existing group
-            if (listView.Groups[sGroup] != null)
-            {
-                group = listView.Groups[sGroup];
-            }
-            else
-            {
-                group = new ListViewGroup(sGroup);
-                group.Name = sGroup;
-            }
+			// look for existing group
+			if (listView.Groups [sGroup] != null) {
+				group = listView.Groups [sGroup];
+			} else {
+				group = new ListViewGroup (sGroup);
+				group.Name = sGroup;
+			}
 
 
 
-            listView.Items.Remove(item);
-            item.Group = group;
+			listView.Items.Remove (item);
+			item.Group = group;
 
-            /// If name too long then truncate it to last 30 characters
-            if (group.Name.Length > groupNameTruncateLength)
-            {
-                int nIndexLastSlash = group.Name.LastIndexOf("\\");
-                int nLengthToCopy = 10;
+			/// If name too long then truncate it to last 30 characters
+			if (group.Name.Length > groupNameTruncateLength) {
+				int nIndexLastSlash = group.Name.LastIndexOf ("\\");
+				int nLengthToCopy = 10;
 
-                // if no directory slash then just last 10 digits
-                if (nIndexLastSlash <= -1)
-                {
-                    nIndexLastSlash = group.Name.Length - groupNameTruncateLength;
-                }
-                else
-                {
-                    nIndexLastSlash++;
-                    // we found a directory
-                    nLengthToCopy = group.Name.Length - nIndexLastSlash ;
-                }
+				// if no directory slash then just last 10 digits
+				if (nIndexLastSlash <= -1) {
+					nIndexLastSlash = group.Name.Length - groupNameTruncateLength;
+				} else {
+					nIndexLastSlash++;
+					// we found a directory
+					nLengthToCopy = group.Name.Length - nIndexLastSlash;
+				}
 
 
-                group.Header = group.Name.Substring(nIndexLastSlash, nLengthToCopy);
-            }
-            listView.Items.Add(item);
-            listView.Groups.Add(group);
+				group.Header = group.Name.Substring (nIndexLastSlash, nLengthToCopy);
+			}
+			listView.Items.Add (item);
+
+
+			if (listView.Groups.IndexOf (group) > -1) {
+				// may 2013 - do not add a group unless needed.
+			} else {
+				listView.Groups.Add (group);
+			}
             
 
 

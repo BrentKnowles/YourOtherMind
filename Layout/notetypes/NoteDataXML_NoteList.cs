@@ -71,6 +71,17 @@ namespace Layout
 			set { _mode = value;}
 		}
 
+		List<string> history = new List<string>();
+		// Limited list of history items
+		public List<string> History {
+			get {
+				return history;
+			}
+			set {
+				history = value;
+			}
+		}
+
 		// this is the INDEX (name column) into the system table that contains the queries
 		// it will then lookup the appropriate query as required
 		private string currentFilterName = Constants.BLANK;
@@ -90,7 +101,7 @@ namespace Layout
 		ListBox list;
 		Label count;
 		Label blurb;
-		TextBox TextEditor = null;
+		ComboBox TextEditor = null;
 		ComboBox  CurrentFilterDropDown  = null;
 		CheckBox FullTextSearch = null;
 		Panel SearchDetails = null;
@@ -113,7 +124,7 @@ namespace Layout
 			base.DoBuildChildren (Layout);
 			CaptionLabel.Dock = DockStyle.Top;
 
-			 mode = new ComboBox ();
+			mode = new ComboBox ();
 			mode.Parent = ParentNotePanel;
 			mode.DropDownStyle = ComboBoxStyle.DropDownList;
 			mode.Dock = DockStyle.Top;
@@ -127,11 +138,11 @@ namespace Layout
 			mode.SelectedIndexChanged += HandleDropDownSelectedIndexChanged;
 		
 
-			SearchDetails = new Panel();
+			SearchDetails = new Panel ();
 			SearchDetails.Dock = DockStyle.Bottom;
 
 
-			CurrentFilterDropDown = new ComboBox();
+			CurrentFilterDropDown = new ComboBox ();
 			CurrentFilterDropDown.Dock = DockStyle.Bottom;
 
 			// because we need the tables to be loaded we CANNOT load this data now
@@ -142,10 +153,24 @@ namespace Layout
 
 
 
-			TextEditor = new TextBox();
+			TextEditor = new ComboBox ();
 			TextEditor.Dock = DockStyle.Bottom;
-			TextEditor.KeyPress+= HandleTextEditKeyPress;
-						TextEditor.KeyUp+= HandleKeyUp;
+			TextEditor.KeyPress += HandleTextEditKeyPress;
+			TextEditor.KeyUp += HandleKeyUp;
+
+			// Do some cleanup on history item to keep the list reasonable.
+			// This happens only on load to keep things simple
+			if (History.Count > 10) {
+				History.RemoveRange(9, (History.Count)-9);
+			}
+
+
+			foreach (string s in History) {
+				TextEditor.Items.Add (s);
+			}
+
+
+			TextEditor.SelectedIndexChanged+= (object sender, EventArgs e) => 	Refresh ();;
 		
 			FullTextSearch = new CheckBox();
 			FullTextSearch.Checked = false;
@@ -192,11 +217,14 @@ namespace Layout
 		}
 
 		void HandleTextEditKeyPress (object sender, KeyPressEventArgs e)
-										{
-											if (e.KeyChar == (char)Keys.Enter) {
+		{
+			if (e.KeyChar == (char)Keys.Enter) {
 				Refresh ();
-												LayoutDetails.SupressBeep (e);
-											}
+				LayoutDetails.SupressBeep (e);
+				if (TextEditor.Text != Constants.BLANK) {
+					TextEditor.Items.Insert (0,(TextEditor.Text));
+				}
+			}
 		}
 
 		void HandleKeyUp (object sender, KeyEventArgs e)
@@ -453,7 +481,8 @@ namespace Layout
 			{
 				_mode = Modes.LAYOUTSONCURRENTLAYOUT;
 			}
-		
+			// blank the search text when switching modes. Just confusing otherwise. May 2013
+			TextEditor.Text = Constants.BLANK;
 			UpdateLists ();
 			AdjustHeightOfLayoutSearchPanel();
 		}
@@ -546,7 +575,14 @@ namespace Layout
 			string tempfilter=String.Format("CODE_KEYWORD_AUTO,{0}", text);
 			UpdateListOfLayouts(tempfilter);
 		}
-
+		public override void Save ()
+		{
+			base.Save ();
+			History = new List<string>();
+			foreach (string s in TextEditor.Items) {
+				History.Add (s);
+			}
+		}
 	}
 
 }

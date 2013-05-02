@@ -250,7 +250,7 @@ namespace Layout
 					linkpicker.GetNote.GetStoryboardData(out sCaption, out sValue, out type, out extraField);
 				
 					StoryBoard.AddItem (sCaption, sValue, type, extraField);
-				StoryBoard.InitializeGroupEmFromExternal();
+			//	StoryBoard.InitializeGroupEmFromExternal();
 				}
 
 //				if (tempPanel != null) {

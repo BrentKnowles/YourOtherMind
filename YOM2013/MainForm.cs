@@ -846,7 +846,7 @@ namespace YOM2013
 			Hotkeys.Add (new KeyData(Loc.Instance.GetString ("Date"), 	InsertDate, Keys.Control,  Keys.D,mainform, true, "format_date"));
 			Hotkeys.Add (new KeyData(Loc.Instance.GetString ("Underline"), 	Underline, Keys.Control,  Keys.U,mainform, true, "format_underline"));
 			Hotkeys.Add (new KeyData(Loc.Instance.GetString ("Italic"), 	Italic, Keys.Control,  Keys.I,mainform, true, "format_italic"));
-			Hotkeys.Add (new KeyData(Loc.Instance.GetString ("Paste To Match"), 	PasteTomatch, Keys.Alt,  Keys.P,mainform, true, "paste2match"));
+			Hotkeys.Add (new KeyData(Loc.Instance.GetString ("Paste To Match"), 	PasteTomatch, Keys.Alt,  Keys.V,mainform, true, "paste2match"));
 
 			Hotkeys.Add (new KeyData(Loc.Instance.GetString ("Highlight Yellow"), 	HighlightYellow, Keys.Control,  Keys.OemOpenBrackets,mainform, true, "highlightyellow"));
 			Hotkeys.Add (new KeyData(Loc.Instance.GetString ("Highlight Red"), 	HighlightRed, Keys.Control,  Keys.OemCloseBrackets,mainform, true, "highlightred"));

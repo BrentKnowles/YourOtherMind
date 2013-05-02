@@ -287,7 +287,7 @@ namespace Layout
 				if (items != null && items.Length == 2) {
 					string value = items [1];
 
-					test = String.Format ("{0} LIKE '%{1}%'",dbConstants.KEYWORDS, value);
+					test = String.Format ("{0} LIKE '%{1}%'", dbConstants.KEYWORDS, value);
 					//NewMessage.Show (test);
 				}
 			}
@@ -322,6 +322,10 @@ namespace Layout
 			if (Constants.BLANK == filter)
 				test = "";
 
+			List<object[]> mySubpanellist = null;
+
+
+
 
 			// Add a name filter
 			if (false == FullTextSearch && Constants.BLANK != likename) {
@@ -329,6 +333,12 @@ namespace Layout
 			} else if (true == FullTextSearch) {
 				// modify the query to handle full text searching
 				test = String.Format ("and xml like '%{0}%'", likename);
+
+				// we need to find subpanel items too
+				// this is, text stored in subpanel needs to register too, though this will be tricky.
+				mySubpanellist = MyDatabase.GetValues (dbConstants.table_name, new string[4] {dbConstants.GUID, dbConstants.NAME, dbConstants.BLURB
+					,dbConstants.WORDS},
+				dbConstants.SUBPANEL, 1, String.Format (" order by {0} COLLATE NOCASE", dbConstants.NAME), test);
 			}
 
 
@@ -336,24 +346,42 @@ namespace Layout
 
 			List<object[]> myList = MyDatabase.GetValues (dbConstants.table_name, new string[4] {dbConstants.GUID, dbConstants.NAME, dbConstants.BLURB
 			,dbConstants.WORDS},
-			dbConstants.SUBPANEL , 0,String.Format(" order by {0} COLLATE NOCASE", dbConstants.NAME),test);
+			dbConstants.SUBPANEL, 0, String.Format (" order by {0} COLLATE NOCASE", dbConstants.NAME), test);
 			
 
 			if (myList != null && myList.Count > 0) {
 				
-				foreach (object[] o in myList)
-				{
-					NameAndGuid record = new NameAndGuid();
-					record.Guid = o[0].ToString();
-					record.Caption = o [1].ToString();
-					record.Blurb = o [2].ToString();
+				foreach (object[] o in myList) {
+					NameAndGuid record = new NameAndGuid ();
+					record.Guid = o [0].ToString ();
+					record.Caption = o [1].ToString ();
+					record.Blurb = o [2].ToString ();
 					int Words = 0;
-					Int32.TryParse(o[3].ToString(), out Words);
+					Int32.TryParse (o [3].ToString (), out Words);
 					record.Words = Words;
-					lg.Instance.Line("MasterOfLayouts->GetListOfLayouts", ProblemType.MESSAGE, "adding to ListOfLayouts " + record.Caption);
+					lg.Instance.Line ("MasterOfLayouts->GetListOfLayouts", ProblemType.MESSAGE, "adding to ListOfLayouts " + record.Caption);
 					result.Add (record);
 				}
 			}
+
+			if (mySubpanellist != null && mySubpanellist.Count > 0) {
+				//NewMessage.Show ("Some search terms were found on subpanels");
+				foreach (object[] o in mySubpanellist)
+				{
+					if (o[0].ToString() != Constants.BLANK)
+					{
+						NameAndGuid record = new NameAndGuid ();
+						record.Guid = GetSubpanelsParent(o[0].ToString());
+						record.Caption = GetNameFromGuid(record.Guid);
+						record.Words = 0;
+						record.Blurb = "";
+						result.Add(record);
+					}
+
+				}
+
+			}
+
 			MyDatabase.Dispose();
 			return result;
 		}
