@@ -35,6 +35,7 @@ using LayoutPanels;
 namespace Testing
 {
 	[TestFixture]
+	[Ignore]
 	public class LayoutDatabaseTest
 	{
 		public LayoutDatabaseTest ()

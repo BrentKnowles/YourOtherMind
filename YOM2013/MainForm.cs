@@ -1532,7 +1532,12 @@ namespace YOM2013
 		/// <param name="childGUID"> If a guid is specified this note will be GONE to once the load is compete</param>
 		void LoadLayout (string guidtoload, string childGuid)
 		{
-
+			if (LayoutDetails.Instance.SystemLayout != null) {
+				if (LayoutDetails.Instance.SystemLayout.GetSaveRequired == true)
+				{
+					LayoutDetails.Instance.SystemLayout.SaveLayout ();
+				}
+			}
 
 			if (System.Diagnostics.Process.GetCurrentProcess ().PrivateMemorySize64 > 500000000) {
 				NewMessage.Show (Loc.Instance.GetString ("You have many layouts open and your memory use is growing too high. Please close some layouts before opening new."));

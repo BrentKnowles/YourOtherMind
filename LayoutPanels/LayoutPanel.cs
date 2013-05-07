@@ -58,6 +58,7 @@ namespace Layout
 
 		protected LayoutInterface Notes = null;
 		#region gui
+		ToolStrip bar = null;
 		private Panel noteCanvas;
 		override public Panel NoteCanvas {
 			get { return noteCanvas;}
@@ -358,7 +359,7 @@ namespace Layout
 
 		public void BuildLayoutToolbar ()
 		{
-			ToolStrip bar = new ToolStrip ();
+			 bar = new ToolStrip ();
 			bar.Parent = this;
 			bar.Visible = true;
 			bar.Dock = DockStyle.Top;
@@ -1985,6 +1986,20 @@ namespace Layout
 				}
 			}
 			return null;
+		}
+		public override void ColorToolBars (AppearanceClass app)
+		{
+			if (bar != null) {
+				bar.BackColor = app.captionBackground;
+				bar.ForeColor = app.captionForeground;
+
+
+			}
+			if (tabsBar != null) {
+				tabsBar.BackColor = app.captionBackground;
+				tabsBar.ForeColor = app.captionForeground;
+			}
+
 		}
 	}
 }

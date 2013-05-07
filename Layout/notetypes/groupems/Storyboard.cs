@@ -93,6 +93,9 @@ namespace Storyboards
 #region privatevariables
        // private ArrayList items; choose not to use this, Just use the listview list
         private ListViewColumnSorter lvwColumnSorter;
+
+		Color ForeColorFromAppearance;
+
         private string sSource; // GUID of current page
 #endregion privatevariables
 
@@ -702,10 +705,11 @@ namespace Storyboards
                             textBoxPreview.Visible = true;
                             textBoxPreview.Dock = DockStyle.Fill;
                             textBoxPreview.Rtf = OnGetNoteForGroupEmPreview(record.sFileName);
+							textBoxPreview.ForeColor = ForeColorFromAppearance;
 
-                            // force black for text color
+                            // force APPEARANCE TYPE for text color -- 
                             textBoxPreview.SelectAll();
-                            textBoxPreview.SelectionColor = Color.Black;
+							textBoxPreview.SelectionColor = ForeColorFromAppearance;
                             textBoxPreview.SelectionLength = 0;
 
                           //  pictureBox.Refresh();
@@ -1844,7 +1848,7 @@ namespace Storyboards
 				}
 
 			
-				
+
 				
 				
 			} // linktable not null
@@ -1852,5 +1856,29 @@ namespace Storyboards
 			this.Cursor = Cursors.Default;
 		}
 
+		public void ColorControls (Layout.AppearanceClass app)
+		{
+			if (app != null) {
+				listView.BackColor = app.mainBackground;
+				textBoxPreview.BackColor = app.mainBackground;
+				toolStrip1.BackColor = app.mainBackground;
+
+				viewLabel.ForeColor = app.captionForeground;
+
+			
+
+				listView.Font = app.captionFont;
+				textBoxPreview.Font = app.captionFont;
+
+				listView.ForeColor = app.captionForeground;
+				// not sufficient
+				//textBoxPreview.Text = "boo";
+				textBoxPreview.ForeColor = app.captionForeground;
+
+				listView.BorderStyle = app.HeaderBorderStyle;
+				ForeColorFromAppearance = app.captionForeground;
+
+			}
+		}
     }// class
 }// namespace

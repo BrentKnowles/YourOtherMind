@@ -75,6 +75,7 @@ namespace Layout
 
 		protected virtual AppearanceClass UpdateAppearance ()
 		{
+
 			// This is the slow operation - removing it gives us 3 seconds back
 
 			// takes the current appearance and adjusts it.
@@ -82,6 +83,12 @@ namespace Layout
 
 			AppearanceClass app = LayoutDetails.Instance.GetAppearanceByName (this.Appearance);
 			if (null != app) {
+				this.SetSaveRequired(true);
+
+				// I was adding this to all children anyways, so figured I'd try it out in the base
+				// REJECTED: This is too ugly
+				//ParentNotePanel.BackColor = app.captionBackground;
+
 				//Layout.AppearanceClass app = AppearanceClass.SetAsProgrammer();
 				CaptionLabel.SuspendLayout (); //minor, fraction of a second savings
 				CaptionLabel.Font = app.captionFont;   //1

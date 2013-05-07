@@ -42,11 +42,18 @@ namespace Testing
 		public ADDIN_Submissions_Test ()
 		{
 		}
-
+		[TearDown] public void Cleanup()
+		{
+			// remove the submission type from the list to prevent failures down the line
+			LayoutDetails.Instance.RemoveFromList(typeof(NoteDataXML_Submissions));
+		}
 		public void SetupForSubmissionTest()
 		{
 			_TestSingleTon.Instance._SetupForLayoutPanelTests();
 			LayoutDetails.Instance.AddToList(typeof(NoteDataXML_Submissions), "submissionsfromtest");
+		
+
+
 		}
 
 		[Test]
@@ -54,6 +61,7 @@ namespace Testing
 		{
 
 			SetupForSubmissionTest();
+		
 		
 
 
@@ -64,9 +72,20 @@ namespace Testing
 			form.Show ();
 			//form.Visible = false;
 			_w.output("boom");
+		
+
+
 			// March 2013 -- notelist relies on having this
 			YOM2013.DefaultLayouts.CreateASystemLayout(form,null);
-			
+			LayoutDetails.Instance.SystemLayout = new Layout.LayoutPanel (CoreUtilities.Constants.BLANK, true);
+			LayoutDetails.Instance.SystemLayout.LoadLayout (LayoutPanel.SYSTEM_LAYOUT, false, null); 
+			form.Controls.Add (LayoutDetails.Instance.SystemLayout);
+
+			// we need to force a registeration event (may 2013) after I restructued how the 
+			// default tables are created
+			MefAddIns.Addin_Submissions FAKESUBAddIn = new MefAddIns.Addin_Submissions();
+			FAKESUBAddIn.RegisterType();
+
 			
 			//NOTE: For now remember that htis ADDS 1 Extra notes
 			string panelname = System.Guid.NewGuid().ToString();

@@ -29,6 +29,7 @@
 using System;
 using System.Data;
 using System.Text.RegularExpressions;
+using System.Drawing;
 
 namespace CoreUtilities
 {
@@ -164,6 +165,11 @@ namespace CoreUtilities
 			oObjectBeingUsed2 = o2;
 			oObjectBeingUsed3 = o3;
 			return RegRow(sText);
+		}
+		public static Color InvertColor(Color ColourToInvert)
+		{const int RGBMAX = 255;
+			return Color.FromArgb(RGBMAX - ColourToInvert.R, 
+			                      RGBMAX - ColourToInvert.G, RGBMAX - ColourToInvert.B);
 		}
 	}
 }

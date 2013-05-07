@@ -170,7 +170,7 @@ namespace LayoutPanels
 
 		void HandleBackColorChanged (object sender, EventArgs e)
 		{
-			(sender as ToolStripButton).ForeColor = InvertColor((sender as ToolStripButton).BackColor);
+			(sender as ToolStripButton).ForeColor = TextUtils.InvertColor((sender as ToolStripButton).BackColor);
 		}
 
 		void HandleBackGroundColorClick (object sender, EventArgs e)
@@ -192,11 +192,7 @@ namespace LayoutPanels
 				Notes.Blurb = tablecaption;
 
 		}
-		Color InvertColor(Color ColourToInvert)
-		{const int RGBMAX = 255;
-			return Color.FromArgb(RGBMAX - ColourToInvert.R, 
-			                      RGBMAX - ColourToInvert.G, RGBMAX - ColourToInvert.B);
-		}
+	
 		void HandleWordsKeyDown (object sender, KeyEventArgs e)
 		{
 			if (e.KeyData == Keys.Enter) {

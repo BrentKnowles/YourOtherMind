@@ -398,6 +398,15 @@ namespace Layout
 		{
 			base.CopyNote (Note);
 		}
+		protected override AppearanceClass UpdateAppearance ()
+		{
+			AppearanceClass app = base.UpdateAppearance ();
+			if (app != null) {
+				ParentNotePanel.BackColor = app.mainBackground;
+				StoryBoard.ColorControls(app);
+			}
+			return app;
+		}
 	}
 }
 

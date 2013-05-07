@@ -106,6 +106,7 @@ namespace Layout
 		CheckBox FullTextSearch = null;
 		Panel SearchDetails = null;
 		ComboBox mode = null;
+		Button  refresh = null;
 		#endregion
 
 		public NoteDataXML_NoteList () : base()
@@ -203,7 +204,7 @@ namespace Layout
 			blurb.Dock = DockStyle.Bottom;
 
 
-			Button refresh = new Button();
+			refresh = new Button();
 			refresh.Text = Loc.Instance.GetString("Refresh");
 			refresh.Dock = DockStyle.Bottom;
 			refresh.Parent = ParentNotePanel;
@@ -590,6 +591,25 @@ namespace Layout
 
 			base.Save ();
 		
+		}
+
+		protected override AppearanceClass UpdateAppearance ()
+		{
+			AppearanceClass app = base.UpdateAppearance ();
+			if (null != app) {
+				ParentNotePanel.BackColor = app.mainBackground;
+				count.ForeColor = app.captionForeground;
+				blurb.ForeColor = app.captionForeground;
+				refresh.ForeColor = app.captionForeground;
+				FullTextSearch.ForeColor = app.captionForeground;
+
+
+				count.Font = app.captionFont;
+				blurb.Font = app.captionFont;
+				refresh.Font = app.captionFont;
+				FullTextSearch.Font = app.captionFont;
+			}
+			return app;
 		}
 	}
 

@@ -1136,7 +1136,32 @@ namespace appframe
 		}
 	
 
+		/// <summary>
+		/// Setups the colors.
+		/// Used for customizing the Appearance.
+		/// We can't pass actual object in here because that exists outside
+		/// the scope of this class
+		/// </summary>
+		/// <param name='Primary'>
+		/// Primary.
+		/// </param>
+		/// <param name='Secondary'>
+		/// Secondary.
+		/// </param>
+		public void SetupColors (Color Primary, Color Secondary, Color Third, Font font)
+		{
+			// we don't want to use the size specified by the incoming font as some of them are huge
+			dataGrid1.Font = new Font(font.FontFamily, 10);
 
+			dataGrid1.AlternatingRowsDefaultCellStyle.BackColor = Primary;
+			dataGrid1.AlternatingRowsDefaultCellStyle.ForeColor = Secondary;
+
+
+			dataGrid1.RowsDefaultCellStyle.BackColor =Third;
+			dataGrid1.RowsDefaultCellStyle.ForeColor =  TextUtils.InvertColor(Third);
+
+
+		}
 	}
 }
 

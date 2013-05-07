@@ -230,6 +230,16 @@ namespace LayoutPanels
 		{
 			panelLayout.ClearDrag();
 		}
+		protected override AppearanceClass UpdateAppearance ()
+		{
+			AppearanceClass app = base.UpdateAppearance ();
+
+			if (null != app) {
+				ParentNotePanel.BackColor = app.captionBackground;
+				panelLayout.ColorToolBars(app);
+			}
+			return app;
+		}
 	}
 }
 

@@ -334,6 +334,12 @@ namespace Layout
 			}
 
 		}
+		public void RemoveFromList (Type newType)
+		{
+			if (TypeList.IndexOf (newType) > -1) {
+				TypeList.Remove(newType);
+			}
+		}
 		/// <summary>
 		/// Gets the type of the name from.
 		/// Assumes namelist and typelist are equal at all times

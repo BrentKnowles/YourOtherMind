@@ -240,7 +240,7 @@ namespace Layout
 
 
 			} else {
-				NewMessage.Show ("CreateParent: You have a null datasource");
+				NewMessage.Show (Loc.Instance.GetString ("CreateParent: You have a null datasource"));
 				lg.Instance.Line("NoteDataXML_Table->CreateParent", ProblemType.WARNING, Loc.Instance.GetString("You have a null table which should not happen. This usually occurs only during UNIT TESTING because proper create constructor is not used"));
 				BuildDefaultColumns();
 			}
@@ -933,6 +933,15 @@ namespace Layout
 				this.NextTable = ((NoteDataXML_Table)Note).NextTable;
 			}
 
+		}
+		protected override AppearanceClass UpdateAppearance ()
+		{
+			AppearanceClass app = base.UpdateAppearance ();
+			if (app != null) {
+				ParentNotePanel.BackColor = app.mainBackground;
+				Table.SetupColors(app.captionBackground, app.captionForeground, app.mainBackground, app.captionFont);
+			}
+			return app;
 		}
 //		public void AddRow(DataRow row)
 //		{
