@@ -239,6 +239,7 @@ namespace Layout
 			this.richBox.Text = "";
 			Layout.SaveLayout();
 			Update(Layout);
+			BringToFrontAndShow();
 
 		}
 

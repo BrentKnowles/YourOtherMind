@@ -38,7 +38,9 @@ namespace CoreUtilities
 		public form_NewMessage()
 		{
 			InitializeComponent();
-			labelMessage.Dock = DockStyle.Top;
+			labelMessage.Dock = DockStyle.Fill;
+			//labelMessage.AutoEllipsis = true;
+
 			labelMessage.BringToFront();
 		}
 		int dwidth = 400;

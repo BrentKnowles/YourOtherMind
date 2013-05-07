@@ -999,6 +999,9 @@ namespace Layout
 	/// <param name='IsSubPanel'>
 	/// If set to <c>true</c> is sub panel.
 	/// </param>
+	///<param name="textEditorContextStrip">
+    ///Specifies the toolbar to use
+	///</param>
 		public override void LoadLayout (string _GUID, bool IsSubPanel, ContextMenuStrip textEditorContextStrip)
 		{
 			TextEditContextStrip = textEditorContextStrip;
@@ -1059,7 +1062,7 @@ namespace Layout
 			foreach (NoteDataInterface note in LayoutDetails.Instance.UpdateAfterLoadList) {
 
 				note.UpdateAfterLoad();
-			//TODO: do speed testing of this aftewreards
+			
 			}
 
 			LayoutDetails.Instance.UpdateAfterLoadList = new List<NoteDataInterface>();
@@ -1940,6 +1943,48 @@ namespace Layout
 				List.FilterByKeyword(text);
 				}
 			}
+		}
+
+		public static  NoteDataXML_Panel GetPanelToAddTableTo(string TableName )
+		{
+			if (LayoutDetails.Instance.SystemLayout != null) {
+				if (LayoutDetails.Instance.SystemLayout.FindNoteByName(TableName) != null)
+				{
+					//	NewMessage.Show("Found");
+				}
+				else
+				{
+
+					//	randomTables.Columns = new appframe.ColumnDetails[2]{new appframe.ColumnDetails("id",100), 
+					//		new appframe.ColumnDetails("category",100)};
+					
+					
+					LayoutPanels.NoteDataXML_Panel PanelContainingTables = (LayoutPanels.NoteDataXML_Panel)LayoutDetails.Instance.SystemLayout.FindNoteByGuid(LayoutDetails.TABLEGUID);
+					
+					
+					if (PanelContainingTables != null)
+					{
+						// now we grab a useable version of it
+						PanelContainingTables = (LayoutPanels.NoteDataXML_Panel)LayoutDetails.Instance.SystemLayout.GoToNote(PanelContainingTables);
+						if (PanelContainingTables != null)
+						{
+							return PanelContainingTables;
+
+						
+
+						}
+						else
+						{
+							//NewMessage.Show ("Panel Containing tables not found. (GOTO)");
+						}
+					}
+					else
+					{
+						//	NewMessage.Show ("Panel Containing tables not found.");
+					}
+				}
+			}
+			return null;
 		}
 	}
 }

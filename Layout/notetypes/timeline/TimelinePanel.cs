@@ -41,7 +41,9 @@ namespace Timeline
 	public class NotePanelTimeline : Panel
 	{
 		#region variables
-
+		public	Color GradientColor1 = Color.Pink;
+		public	Color GradientColor2 = Color.Green;
+		public LinearGradientMode GradientMode= LinearGradientMode.Horizontal;
 		// builds a list of tables in Paint, the first time it is run
 		System.Collections.Generic.List<NoteDataXML_Table> MyTables = new System.Collections.Generic.List<NoteDataXML_Table>();
 		NoteDataXML_Timeline MyTimeline = null;
@@ -592,7 +594,7 @@ namespace Timeline
 
 						// build a list of datatables FIRST
 						// so we have access to them later
-						//TODO: Implication. This would mean if you add tables later they won't be refreshed till next load. FAQ or add a refresh option
+
 
 						if (MyTables.Count <= 0)
 						{
@@ -841,12 +843,15 @@ namespace Timeline
 					int nCaretX = nMidPoint - (nCaretWidth/2);
 					Rectangle rect = new Rectangle(nCaretX, 0, dayPanelWidth/2, thisPanel.Height);
 
-					//TODO: Hook this up but should be part of new appearance system
-//					Brush caretBrush = new LinearGradientBrush(rect, appearance.TimelineGradient.Color1,
+
+//					Brush caretBrush = new LinearGradientBrush(rect, appearance.TimelineGradient.Color1, PINK THEN GREEN THEN HORIZONTOAL
 //					                                           appearance.TimelineGradient.Color2, appearance.TimelineGradient.GradientMode);
 
-					Brush caretBrush = new LinearGradientBrush(rect, Color.Pink,
-					                                                Color.Green, LinearGradientMode.Horizontal);
+
+		
+
+					Brush caretBrush = new LinearGradientBrush(rect, GradientColor1,
+					                                           GradientColor2, LinearGradientMode.Horizontal);
 
 					//				LinearGradientBrush lgBrush = new LinearGradientBrush(rect,Color.Black,Color.White,LinearGradientMode.Horizontal);			
 					e.Graphics.DrawRectangle(caretPen, nCaretX, 0, dayPanelWidth/2, thisPanel.Height);

@@ -313,7 +313,7 @@ namespace Layout
 			if (start >= end) return; // don't paint if there's no size here
 
 
-			//TODO: Move this into a custom richedit used in proofing system instead??
+		
 
 			if (showPartsOfSpeechMode == true)
 			{

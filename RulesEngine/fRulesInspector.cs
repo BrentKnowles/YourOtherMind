@@ -85,7 +85,7 @@ namespace RulesMess
             // building teh columns based on rules
             Relationship temp = new Relationship();
 
-			//TODO: The commented out line worked in previous version but would not compile here so I had to 
+			// The commented out line worked in previous version but would not compile here so I had to 
 			// change it, to the following, which I'm not sure if it is correct.
 			System.Reflection.PropertyInfo[] names = typeof(Relationship).GetProperties (BindingFlags.Public| BindingFlags.Static);
 

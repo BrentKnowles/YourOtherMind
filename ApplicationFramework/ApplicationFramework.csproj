@@ -40,7 +40,6 @@
     <Compile Include="TablePanel.cs" />
     <Compile Include="TablePanel_Form_ImportList.cs" />
     <Compile Include="Stars.cs" />
-    <Compile Include="ColumnDetails.cs" />
     <Compile Include="NoteTextAction.cs" />
     <Compile Include="Hotkeys\HotKeyConfig.cs" />
   </ItemGroup>

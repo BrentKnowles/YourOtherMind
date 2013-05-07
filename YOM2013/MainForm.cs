@@ -812,7 +812,12 @@ namespace YOM2013
 		void HandleFormClosing (object sender, FormClosingEventArgs e)
 		{
 			if (LayoutDetails.Instance.SystemLayout != null) {
-				LayoutDetails.Instance.SystemLayout.SaveLayout ();
+				// changing the System will overwrite any system changes made 
+				// if the page has actually been loaded
+				if (LayoutDetails.Instance.SystemLayout.GetSaveRequired == true)
+				{
+					LayoutDetails.Instance.SystemLayout.SaveLayout ();
+				}
 			}
 
 
@@ -853,10 +858,21 @@ namespace YOM2013
 			Hotkeys.Add (new KeyData(Loc.Instance.GetString ("Highlight Green"), 	HighlightGreen, Keys.Control,  Keys.OemMinus,mainform, true, "highlightgreen"));
 			Hotkeys.Add (new KeyData(Loc.Instance.GetString ("Highlight Light Blue"), 	HighlightLightBlue, Keys.Control,  Keys.D1,mainform, true, "highlightlightblue"));
 			Hotkeys.Add (new KeyData(Loc.Instance.GetString ("Highlight Peach"), 	HighlightPeach, Keys.Control,  Keys.D2,mainform, true, "highlightpeach"));
+
+
+
+		//	Hotkeys.Add (new KeyData(Loc.Instance.GetString ("ZZZ"), 	ReloadSystem, Keys.Control,  Keys.D3,mainform, true, "reloadsystem"));
 			// temporary to test the form thing
 			//Hotkeys.Add (new KeyData(Loc.Instance.GetString ("test"),Test , Keys.Control, Keys.Q, "optionform", true, "testguid"));
 			base.BuildAndProcessHotKeys(Storage);
 		}
+
+//		void ReloadSystem (bool obj)
+//		{
+//			SystemLayout.LoadLayout (LayoutPanel.SYSTEM_LAYOUT, false, TextEditContextStrip);
+//		}
+
+	
 
 		void PasteTomatch(bool obj)
 		{
@@ -993,8 +1009,8 @@ namespace YOM2013
 		public void Strike (bool b)
 		{
 			
-			//TODO: do properly, just got this in to test hotkeys acting on a textbox
-			// WHEN: I do this, I want a FormatBar class or something
+
+
 			if (LayoutDetails.Instance.CurrentLayout != null) {
 				LayoutDetails.Instance.CurrentLayout.DoFormatOnText(NoteDataXML_RichText.FormatText.STRIKETHRU);
 				
@@ -1235,14 +1251,13 @@ namespace YOM2013
 			// march 2013 - had to add this because I needed to create notelists 
 			// *later* because they rely on Tables loaded (the list of queries)
 			// hence, they must be come in last but we actually want them on front
-			// TODO: This might work better as an option because some people might want to decide which note takes precedence.
 			SystemLayout.BringNoteToFront("notelist");
 			
 			// now load the table layout which is a subnote of System (For FASTER lookups)
 			// we REBUILD this if necessary, above
 			LayoutDetails.Instance.TableLayout=new Layout.LayoutPanel(Constants.BLANK, false);
 			//Jan 14 2013 - did not know if it this is intentional but I'm trying to set tables to be 'SubNote' so they don't get LinkTables
-			LayoutDetails.Instance.TableLayout.LoadLayout ("tables", true, TextEditContextStrip);
+			LayoutDetails.Instance.TableLayout.LoadLayout (LayoutDetails.TABLEGUID, true, TextEditContextStrip);
 
 
 			// this is Causing Latest Crash
@@ -1531,8 +1546,11 @@ namespace YOM2013
 			// happens that kept items on the list (occurred int he unit testing)
 			LayoutDetails.Instance.UpdateAfterLoadList.Clear ();
 			if (guidtoload == LayoutPanel.SYSTEM_LAYOUT) {
-				NewMessage.Show (Loc.Instance.GetString ("You are not permitted to load the SYSTEM layout directly but you can make edits to it as it is."));
-			} else {
+				//NewMessage.Show (Loc.Instance.GetString ("You are not permitted to load the SYSTEM layout directly but you can make edits to it as it is."));
+				NewMessage.Show (Loc.Instance.GetString ("You are loading a second copy of the SYSTEM LAYOUT. Keep in mind that any changes made to the first instance of the layout will override the changes you make now. You must reload to see your changes."));
+			}
+			//else
+			{
 				if (MasterOfLayouts.ExistsByGUID (guidtoload) == true) {
 
 				
@@ -1653,7 +1671,7 @@ namespace YOM2013
 			Windows.Width = 200;
 			Windows.AutoSize = true;
 */
-			//HACK: If you do not do this then text is truncated on the buttons! http://stackoverflow.com/questions/1550077/toolstripbutton-text-gets-cut-off-in-contextmenustrip
+			// If you do not do this then text is truncated on the buttons! http://stackoverflow.com/questions/1550077/toolstripbutton-text-gets-cut-off-in-contextmenustrip
 			Windows.DropDownItems.Remove (Windows.DropDownItems.Add ("empty"));
 
 		}
@@ -1749,7 +1767,6 @@ namespace YOM2013
 			Save (true);
 		}
 		/// <summary>
-		/// TODO: Finish properly
 		/// 
 		/// - test if Autosave is on and does a save (if needed)
 		/// </summary>

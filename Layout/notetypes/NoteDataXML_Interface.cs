@@ -73,7 +73,7 @@ namespace Layout
 		protected delegate void delegate_UpdateListOfNotes();
 
 
-		protected void UpdateAppearance ()
+		protected virtual AppearanceClass UpdateAppearance ()
 		{
 			// This is the slow operation - removing it gives us 3 seconds back
 
@@ -98,16 +98,10 @@ namespace Layout
 
 			}
 			AppearanceSet.Text = Loc.Instance.GetStringFmt ("Appearance: {0}", this.Appearance);
-			// NOT BEING USED YET
-			//this.CaptionLabel.Bord = app.HeaderBorderStyle;  //6
-			// TODO: RichEdit would use the Mainbackground on the TExt box (i.e., fantasy looks like a  single note, caption and text the same. //7 
 
-			//mmainBackground = -984833;
-			//UseBackgroundColor = true;
+			// we pass this out so inherited methods do not need to make a second load of this resource
+			return app;
 
-			// Children can override this to tweak parameters.
-
-			// remember caching trcik from previous version
 		}
 		 
 		// this is overrideen by children to updat their own controls colors
@@ -826,7 +820,7 @@ namespace Layout
 			} else {
 
 
-				//TODO: UPDATE: We can't actually clear this because we do not have a reference to it!
+				//UPDATE: We can't actually clear this because we do not have a reference to it!
 
 				// Not a big deal. When we clear the drag state we don't actually load the 
 				// child notes (not fully).

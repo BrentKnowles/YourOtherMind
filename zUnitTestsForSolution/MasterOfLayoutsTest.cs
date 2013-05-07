@@ -846,9 +846,9 @@ namespace Testing
 			//foreach (Type t in LayoutDetails.Instance.ListOfTypesToStoreInXML())
 
 					
-			NoteDataXML_Table table =  new NoteDataXML_Table(100, 100,new appframe.ColumnDetails[3]{new appframe.ColumnDetails("id",100), 
-				new appframe.ColumnDetails("tables",100),
-				new appframe.ColumnDetails("values",220)} );
+			NoteDataXML_Table table =  new NoteDataXML_Table(100, 100,new ColumnDetails[3]{new ColumnDetails("id",100), 
+				new ColumnDetails("tables",100),
+				new ColumnDetails("values",220)} );
 			table.GuidForNote="thetable";
 			table.Caption="thettable2";
 
@@ -996,7 +996,22 @@ namespace Testing
 			names =  MasterOfLayouts.GetListOfLayouts("All");
 			Assert.AreEqual (6, names.Count);
 
+			// now test to see if text in a subpanel is found correct
+			FAKE_NoteDataXML_Panel subpanel = new FAKE_NoteDataXML_Panel();
+			PanelOtherGuy.AddNote(subpanel);
+			subpanel.CreateParent(PanelOtherGuy);
 
+			names =  MasterOfLayouts.GetListOfLayouts("All", "sharks", true, null);
+			Assert.AreEqual (0, names.Count);
+
+			FAKE_NoteDataXML_Text Rich2 = new FAKE_NoteDataXML_Text();
+			subpanel.AddNote(Rich2);
+			Rich2.GetRichTextBox().Text = "Sharks";
+
+			PanelOtherGuy.SaveLayout ();
+
+			names =  MasterOfLayouts.GetListOfLayouts("All", "sharks", true, null);
+			Assert.AreEqual (1, names.Count);
 		}
 
 
@@ -1105,7 +1120,7 @@ namespace Testing
 			//
 			//
 
-			NoteDataXML_Table randomTables = new NoteDataXML_Table(100, 100,new appframe.ColumnDetails[2]{new appframe.ColumnDetails("id",100), new appframe.ColumnDetails("tables",100)} );
+			NoteDataXML_Table randomTables = new NoteDataXML_Table(100, 100,new ColumnDetails[2]{new ColumnDetails("id",100), new ColumnDetails("tables",100)} );
 			randomTables.Caption = LayoutDetails.SYSTEM_RANDOM_TABLES;
 			//	randomTables.Columns = new appframe.ColumnDetails[2]{new appframe.ColumnDetails("id",100), new appframe.ColumnDetails("tables",100)};
 			

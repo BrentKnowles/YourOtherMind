@@ -221,8 +221,12 @@ namespace Layout
 			if (e.KeyChar == (char)Keys.Enter) {
 				Refresh ();
 				LayoutDetails.SupressBeep (e);
-				if (TextEditor.Text != Constants.BLANK) {
-					TextEditor.Items.Insert (0,(TextEditor.Text));
+				string Value = TextEditor.Text;
+				if (Value != Constants.BLANK) {
+					// we do not add if the text is already there
+					if (TextEditor.Items.IndexOf(Value) == -1)
+						TextEditor.Items.Insert (0,(Value));
+					SetSaveRequired(true);
 				}
 			}
 		}
@@ -577,11 +581,15 @@ namespace Layout
 		}
 		public override void Save ()
 		{
-			base.Save ();
+
 			History = new List<string>();
 			foreach (string s in TextEditor.Items) {
 				History.Add (s);
 			}
+		
+
+			base.Save ();
+		
 		}
 	}
 

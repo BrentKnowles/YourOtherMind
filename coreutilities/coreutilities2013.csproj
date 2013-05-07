@@ -66,6 +66,7 @@
     <Compile Include="TypeConverterYesNo.cs" />
     <Compile Include="TypeConverterGenericListConverter.cs" />
     <Compile Include="TextUtils.cs" />
+    <Compile Include="ColumnDetails.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

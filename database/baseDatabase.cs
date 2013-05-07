@@ -137,7 +137,7 @@ namespace database
 				{
 					result =  result + ",";
 				}
-				// TODO Make this better. For NULL we do not wrap in quotes
+
 				if (s.ToString()=="NULL")
 				{
 					result = result + String.Format ("{0}",s.ToString());

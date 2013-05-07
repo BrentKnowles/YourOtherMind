@@ -152,7 +152,7 @@ namespace Storyboards
                 }
                 else
                 {
-                    // TODO: Add setScrollPosition if ShowGroups == false
+                  
                 }
 
                 SendMessage(this.Handle, LVM_SCROLL, (IntPtr)0, (IntPtr)scrollVal);

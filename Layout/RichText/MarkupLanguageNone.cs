@@ -66,6 +66,19 @@ namespace Layout
 		{
 			// do nothing
 		}
+		public bool IsWordRequest(string incoming)
+		{
+			return false;
+		}
+		public string CleanWordRequest(string incoming)
+		{
+			return incoming;
+		}
+		
+		public bool IsGroupRequest(string incoming)
+		{
+			return false;
+		}
 	}
 }
 

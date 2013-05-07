@@ -38,7 +38,10 @@ namespace Layout
 		string NameAndIdentifier { get; set; }
 	
 		bool IsIndex(string incoming);
+		bool IsWordRequest(string incoming);
+		string CleanWordRequest(string incoming);
 
+		bool IsGroupRequest(string incoming);
 		ArrayList GetListOfPages(string sLine, ref bool bGetWords);
 
 		void DoPaint(PaintEventArgs e, int Start, int End, RichTextBox RichText);

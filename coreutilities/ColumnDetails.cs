@@ -28,7 +28,8 @@
 //###
 using System;
 
-namespace appframe
+// May 2013 - moved from ApplicationFrameworkintoCoreutiliites
+namespace CoreUtilities
 {
 	/// <summary>
 	/// Column details.

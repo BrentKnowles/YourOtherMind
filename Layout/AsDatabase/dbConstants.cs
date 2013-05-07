@@ -33,6 +33,9 @@ namespace Layout.data
 
 	public static class dbConstants
 	{
+		static public ColumnConstant ID = new ColumnConstant("id", 0, 	"INTEGER", -3);
+		static public ColumnConstant GUID = new ColumnConstant("guid", 1, 	"TEXT UNIQUE", -2);
+		static public ColumnConstant XML = new ColumnConstant("xml", 2, 	"LONGTEXT", -1);
 		static public ColumnConstant STATUS = new ColumnConstant("status", 3, 	"TEXT", 0);
 		static public ColumnConstant NAME = new ColumnConstant("name", 4, "VARCHAR(50)", 1);
 		static public ColumnConstant SHOWTABS = new ColumnConstant("showtabs", 5, "boolean", 2);
@@ -62,10 +65,10 @@ namespace Layout.data
 		// The number of columns in the array being stoed
 		public  const int LayoutCount = 19 ; // 11 - 3
 
-		static public string[] Columns = new string[ColumnCount]{"id",     "guid",        "xml",      STATUS.Name, NAME.Name, SHOWTABS.Name, SUBPANEL.Name,
+		static public string[] Columns = new string[ColumnCount]{ID.Name,   GUID.Name ,        XML.Name,      STATUS.Name, NAME.Name, SHOWTABS.Name, SUBPANEL.Name,
 			MAXIMIZETABS.Name, STARS.Name, HITS.Name, DATECREATED.Name, DATEEDITED.Name, NOTEBOOK.Name, SECTION.Name, TYPE.Name, SOURCE.Name, WORDS.Name, KEYWORDS.Name,
 			LINKTABLE.Name, BACKGROUNDCOLOR.Name, BLURB.Name, PARENT_GUID.Name};
-		static public string[] Types   = new string[ColumnCount]{"INTEGER","TEXT UNIQUE",	"LONGTEXT",STATUS.Type,  NAME.Type, SHOWTABS.Type, SUBPANEL.Type,
+		static public string[] Types   = new string[ColumnCount]{ID.Type,GUID.Type,	XML.Type,STATUS.Type,  NAME.Type, SHOWTABS.Type, SUBPANEL.Type,
 			MAXIMIZETABS.Type, STARS.Type, HITS.Type, DATECREATED.Type, DATEEDITED.Type, NOTEBOOK.Type, SECTION.Type, TYPE.Type, SOURCE.Type, WORDS.Type, KEYWORDS.Type,
 		    LINKTABLE.Type, BACKGROUNDCOLOR.Type, BLURB.Type, PARENT_GUID.Type};
 
@@ -74,9 +77,9 @@ namespace Layout.data
 
 
 		// COLUMN constants (OLD WAY, will convert over) TO DO
-		static public string ID = Columns[0];//"id";
-		static 	public string GUID = Columns[1];
-		static public string XML =Columns[2];
+	//	static public string ID = Columns[0];//"id";
+	//	static 	public string GUID = Columns[1];
+	//	static public string XML =Columns[2];
 	//	static public string STATUS =Columns[3];
 	//	static public string NAME=Columns[4];
 		//static public string SHOWTABS=Columns[5];

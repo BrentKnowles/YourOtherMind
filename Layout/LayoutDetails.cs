@@ -43,6 +43,7 @@ namespace Layout
 	public class LayoutDetails
 	{
 		public static  string  SIDEDOCK = "system_sidedock";
+		public static string TABLEGUID = "tables"; // name of panel containing the tables on the system note
 
 		// the list of events (deleting, submissions, worklogs)
 		private List<Type> transactionsLIST = new List<Type>();
@@ -70,13 +71,13 @@ namespace Layout
 
 		// March 2013
 		// these two tables need to be in System because of the way I'm storing and loading them from the serialized market table
-		public const  string SYSTEM_PUBLISHTYPES ="list_publishtypes";
-		public const  string SYSTEM_MARKETTYPES ="list_markettypes";
+		//public const  string SYSTEM_PUBLISHTYPES ="list_publishtypes";
+		//public const  string SYSTEM_MARKETTYPES ="list_markettypes";
 
 		
 
-		public const string SYSTEM_WORKLOGCATEGORY="list_worklogcategory";
-		public const string SYSTEM_GRAMMAR="list_grammar";
+		//public const string SYSTEM_WORKLOGCATEGORY="list_worklogcategory";
+		//public const string SYSTEM_GRAMMAR="list_grammar";
 #endregion
 		#region variables
 
@@ -751,16 +752,18 @@ namespace Layout
 							bool bGetWords = false;
 							ArrayList ListOfParsePages = new ArrayList ();
 							
-							//TODO hook up to Custom Scripting Language system
-							if (sLine.IndexOf ("[[words]]") > -1) {
-								
+
+
+							if (LayoutDetails.Instance.GetCurrentMarkup().IsWordRequest(sLine))
+							 {
+
 								// if we have the words keyword we know we want to display some word info at the end
-								sLine = sLine.Replace ("[[words]]", "").Trim ();
+								sLine = LayoutDetails.Instance.GetCurrentMarkup().CleanWordRequest(sLine);
 								
 								bGetWords = true;
 							}
-							//TODO hook up to Custom Scripting Language system
-							if (sLine.IndexOf ("[[Group") > -1) {
+
+							if (LayoutDetails.Instance.GetCurrentMarkup().IsGroupRequest(sLine)) {
 								
 								ListOfParsePages = LayoutDetails.Instance.GetCurrentMarkup().GetListOfPages(sLine, ref bGetWords);
 								
@@ -780,7 +783,7 @@ namespace Layout
 									//	DrawingTest.NotePanel panel = ((mdi)_CORE_GetActiveChild()).page_Visual.GetPanelByName(notetoopen);
 									NoteDataInterface note = LayoutDetails.Instance.CurrentLayout.FindNoteByName(notetoopen);	
 									
-									//TODO hook up to Custom Scripting Language system and make more efficient
+
 									if (note != null && (note is NoteDataXML_RichText))
 									{
 										RichTextBox tempBox = new RichTextBox();
@@ -841,6 +844,8 @@ namespace Layout
 				LayoutDetails.Instance.SystemLayout.FilterByKeyword (text);
 			}
 		}
+
+
 
 	}
 }

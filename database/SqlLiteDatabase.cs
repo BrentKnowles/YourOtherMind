@@ -149,7 +149,8 @@ namespace database
 		///   *      To get all values then use columnToTest=any, test="*"
 		/// 
 		/// 
-		/// TODO: Document sorting
+		/// SORTING EXAMPLE
+		/// This is what would be based into the Sorting field, if required, otherwise "" :: String.Format (" order by {0} COLLATE NOCASE", dbConstants.NAME)
 		/// </summary>
 		/// <returns>
 		/// The values.

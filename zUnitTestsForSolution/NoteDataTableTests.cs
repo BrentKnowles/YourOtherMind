@@ -127,10 +127,10 @@ namespace Testing
 			test.GuidForNote = "thisguid1";
 			test.Caption = "note1";
 			
-			test.Columns = new appframe.ColumnDetails[3] {
-				new appframe.ColumnDetails ("snakes", 109),
-				new appframe.ColumnDetails ("fish", 90),
-				new appframe.ColumnDetails ("goobers", 11111)
+			test.Columns = new ColumnDetails[3] {
+				new ColumnDetails ("snakes", 109),
+				new ColumnDetails ("fish", 90),
+				new ColumnDetails ("goobers", 11111)
 			};
 			test.AddRow(new object[3] {"1", "value1", "testA"});
 			test.AddRow(new object[3] {"2", "value2", "testB"});

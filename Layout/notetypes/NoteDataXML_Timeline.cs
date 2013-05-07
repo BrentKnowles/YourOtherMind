@@ -210,14 +210,14 @@ namespace Layout
 				TimelineStartDate = DateTime.Today;
 
 				// A. Create the Table
-				NoteDataXML_Table myTable = new NoteDataXML_Table (100, 100, new appframe.ColumnDetails[7]{
-					new appframe.ColumnDetails ("Date", 50),
-					new appframe.ColumnDetails ("Type", 50),
-					new appframe.ColumnDetails ("Data", 50),
-					new appframe.ColumnDetails ("Data2", 50),
-					new appframe.ColumnDetails ("Data3", 50),
-					new appframe.ColumnDetails ("Data4", 50),
-					new appframe.ColumnDetails ("icon", 50)});
+				NoteDataXML_Table myTable = new NoteDataXML_Table (100, 100, new ColumnDetails[7]{
+					new ColumnDetails ("Date", 50),
+					new ColumnDetails ("Type", 50),
+					new ColumnDetails ("Data", 50),
+					new ColumnDetails ("Data2", 50),
+					new ColumnDetails ("Data3", 50),
+					new ColumnDetails ("Data4", 50),
+					new ColumnDetails ("icon", 50)});
 				string GuidOfTable = this.GuidForNote + "table";
 				myTable.GuidForNote = GuidOfTable;
 
@@ -450,6 +450,16 @@ namespace Layout
 		public override void CopyNote (NoteDataInterface Note)
 		{
 			base.CopyNote (Note);
+		}
+		protected override AppearanceClass UpdateAppearance ()
+		{
+			AppearanceClass app = base.UpdateAppearance ();
+			if (Timeline != null) {
+				Timeline.GradientColor1 = app.captionBackground;
+				Timeline.GradientColor2 = app.captionForeground;
+				Timeline.GradientMode = System.Drawing.Drawing2D.LinearGradientMode.Horizontal;
+			}
+			return app;
 		}
 	}
 }

@@ -364,22 +364,42 @@ namespace Layout
 				}
 			}
 
+
+			//
+			// Search in Subpanels too
+			//
+
 			if (mySubpanellist != null && mySubpanellist.Count > 0) {
 				//NewMessage.Show ("Some search terms were found on subpanels");
-				foreach (object[] o in mySubpanellist)
-				{
-					if (o[0].ToString() != Constants.BLANK)
-					{
+				foreach (object[] o in mySubpanellist) {
+					if (o [0].ToString () != Constants.BLANK) {
 						NameAndGuid record = new NameAndGuid ();
-						record.Guid = GetSubpanelsParent(o[0].ToString());
-						record.Caption = GetNameFromGuid(record.Guid);
-						record.Words = 0;
-						record.Blurb = "";
-						result.Add(record);
+						record.Guid = GetSubpanelsParent (o [0].ToString ());
+						if (record.Guid != Constants.BLANK) {
+
+							// we look for the master parent,
+							// if we have nested children
+							while (IsSubpanel(record.Guid) == true) {
+								record.Guid = GetSubpanelsParent (record.Guid);
+							}
+
+							if (ExistsByGUID (record.Guid) == false) {
+								NewMessage.Show (Loc.Instance.GetStringFmt ("Does not exist: {0} ", record.Guid));
+							}
+
+							record.Caption = GetNameFromGuid (record.Guid);
+							// don't bother adding if blank
+							if (record.Caption != Constants.BLANK) {
+								// also don't bother adding if already exists
+								record.Words = 0;
+								record.Blurb = "";
+								result.Add (record);
+							}
+						
+						}
+
 					}
-
 				}
-
 			}
 
 			MyDatabase.Dispose();
@@ -487,9 +507,9 @@ namespace Layout
 
 			return null;
 		}
-		//TODO: This is just a hack to prove a deeper system. Will need to be done properly
+		//This is just proves a deeper system. Will need to be done properly, probably via an AddIn
 		//right now the context is GetLayoutBy("section", "writing")
-		//returns a random NOTE  matching context INCLUDING notes on subpanels (once subpanels able to inherit Details of their Parents)
+		//returns a random NOTE  matching context INCLUDING notes on subpanels 
 		public static string GetRandomNoteBy (string typeofsearch, string param)
 		{
 
@@ -935,27 +955,27 @@ namespace Layout
 		/// <param name='fish'>
 		/// Fish.
 		/// </param>
-		public static void SearchFor (string search_phrase)
-		{
-
-			// I think this is good enough, I don't need full text search
-
-			BaseDatabase MyDatabase = CreateDatabase ();
-			List<object[]> results = MyDatabase.GetValues (dbConstants.table_name, dbConstants.Columns, "any", "*", "", String.Format ("and xml like '%{0}%'", search_phrase));
-			string resultnames = Constants.BLANK;
-			if (results != null) {
-				if (results.Count > 0)
-				{
-					foreach (object[] objectAray in results)
-					{
-						resultnames = resultnames +  " " + objectAray[dbConstants.NAME.Index].ToString ();
-					}
-				}
-			}
-
-			NewMessage.Show (resultnames);
-			MyDatabase.Dispose();
-		}
+//		public static void SearchFor (string search_phrase)
+//		{
+//
+//			// I think this is good enough, I don't need full text search
+//
+//			BaseDatabase MyDatabase = CreateDatabase ();
+//			List<object[]> results = MyDatabase.GetValues (dbConstants.table_name, dbConstants.Columns, "any", "*", "", String.Format ("and xml like '%{0}%'", search_phrase));
+//			string resultnames = Constants.BLANK;
+//			if (results != null) {
+//				if (results.Count > 0)
+//				{
+//					foreach (object[] objectAray in results)
+//					{
+//						resultnames = resultnames +  " " + objectAray[dbConstants.NAME.Index].ToString ();
+//					}
+//				}
+//			}
+//
+//			NewMessage.Show (resultnames);
+//			MyDatabase.Dispose();
+//		}
 
 	}
 }

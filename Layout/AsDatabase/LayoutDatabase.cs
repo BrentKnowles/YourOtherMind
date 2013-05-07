@@ -771,13 +771,13 @@ namespace Layout
 					List<NoteDataXML> ListAsDataObjectsOfType = null;
 					time = CoreUtilities.TimerCore.Time (() => {
 						//dataForThisLayout
-						System.IO.StringReader reader = new System.IO.StringReader (result [2].ToString ());
+						System.IO.StringReader reader = new System.IO.StringReader (result [dbConstants.XML.Index].ToString ());
 						System.Xml.Serialization.XmlSerializer test = new System.Xml.Serialization.XmlSerializer (typeof(System.Collections.Generic.List<NoteDataXML>),
 					                                                                                         LayoutDetails.Instance.ListOfTypesToStoreInXML ());
 				
 						try {
 							// have to load it in an as array of target type and then convert
-							if (result [2].ToString () != Constants.BLANK) {
+							if (result [dbConstants.XML.Index].ToString () != Constants.BLANK) {
 								ListAsDataObjectsOfType = (System.Collections.Generic.List<NoteDataXML>)test.Deserialize (reader);
 							} else {
 								lg.Instance.Line ("LayoutDatabase->LoadFrom", ProblemType.ERROR, String.Format ("For note '{0}' the XML was blank! This happens when there is a panel with no note in it. Not serious", Name));
