@@ -160,6 +160,14 @@ namespace Transactions
 			return dateAsString;
 		}
 
+		protected int DaysInBetween()
+		{
+			DateTime dateValue = DateTime.Parse (RowData[TransactionsTable.DATE.Index].ToString());
+			DateTime dateValue2 = DateTime.Parse (RowData[TransactionsTable.DATE2.Index].ToString());
+			int Days = (dateValue2 - dateValue).Days;
+			return Days;
+		}
+
 		protected string Date2AsFriendlyString()
 		{
 			DateTime dateValue = DateTime.Parse (RowData[TransactionsTable.DATE2.Index].ToString());

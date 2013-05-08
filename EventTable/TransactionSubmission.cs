@@ -259,7 +259,9 @@ namespace Transactions
 				string date = GetFriendlyDateForMostRecentDate ();
 				string dataToAdd =Loc.Instance.GetStringFmt 
 					("{0} was submitted here on  {1} [{2}]",  ProjectName, date, RowData[TransactionsTable.DATA7.Index]);
-				return Loc.Instance.GetStringFmt("Submission {0}", dataToAdd);
+
+				int DaysBetween =  this.DaysInBetween();
+				return Loc.Instance.GetStringFmt("Submission {0} ({1} days out)", dataToAdd, DaysBetween);
 			}
 		}
 
