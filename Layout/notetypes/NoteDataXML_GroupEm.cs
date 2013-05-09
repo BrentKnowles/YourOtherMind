@@ -109,7 +109,7 @@ namespace Layout
 
 			ParentNotePanel.Controls.Add (StoryBoard);
 			StoryBoard.BringToFront();
-		
+			StoryBoard.Enter+= (object sender, EventArgs e) => 	BringToFrontAndShow();;
 
 		
 			StoryBoard.FactMode(this.Factmode);

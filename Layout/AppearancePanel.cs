@@ -59,7 +59,7 @@ namespace Layout
 			CaptionBar = new ToolStrip ();
 			CaptionBar.AutoSize = false;
 			ToolStripLabel CaptionLabel = new ToolStripLabel ();
-			CaptionLabel.Text = Loc.Instance.GetString ("Example");
+			CaptionLabel.Text = Loc.Instance.GetString ("EXAMPLE");
 			CaptionBar.GripStyle = ToolStripGripStyle.Hidden;
 
 			//(readonlyunlessvalidtext
@@ -89,7 +89,8 @@ namespace Layout
 			
 			CaptionBar.BackColor = app.captionBackground; //[x]
 			CaptionBar.ForeColor = app.captionForeground; //[x]
-			NameField.ForeColor = app.captionForeground;
+
+			NameField.ForeColor = app.secondaryForeground;
 			try {
 				NameField.BackColor = app.mainBackground; //[x]
 
@@ -136,7 +137,11 @@ namespace Layout
 
 				ToolStripButton OtherBackColor = new ToolStripButton();
 				OtherBackColor.Text= Loc.Instance.GetString ("Secondary Back Color");
-				OtherBackColor.Click+= HandleSecondaryBackColorClick1;;
+				OtherBackColor.Click+= HandleSecondaryBackColorClick1;
+
+				ToolStripButton OtherForeColor = new ToolStripButton();
+				OtherForeColor.Text= Loc.Instance.GetString ("Secondary Fore Color");
+				OtherForeColor.Click+= HandleSecondaryForeColorClick;;
 
 				ToolStripComboBox BorderStyleSet = new ToolStripComboBox();
 				BorderStyleSet.DropDownStyle = ComboBoxStyle.DropDownList;
@@ -169,10 +174,21 @@ namespace Layout
 				CaptionBar.Items.Add (CaptionBackColor);
 				CaptionBar.Items.Add (CaptionFont);
 				CaptionBar.Items.Add (OtherBackColor);
+				CaptionBar.Items.Add (OtherForeColor);
 				CaptionBar.Items.Add (BorderStyleSet);
 				CaptionBar.Items.Add (numbersHost);
 
 
+			}
+		}
+
+		void HandleSecondaryForeColorClick (object sender, EventArgs e)
+		{
+			ColorDialog colorPick = new ColorDialog();
+			colorPick.Color = NameField.ForeColor;
+			if (colorPick.ShowDialog() == DialogResult.OK)
+			{
+				NameField.ForeColor = colorPick.Color;
 			}
 		}
 
@@ -252,6 +268,7 @@ namespace Layout
 			ThisAppearance.captionForeground=CaptionBar.ForeColor;
 
 			ThisAppearance.mainBackground = NameField.BackColor;
+			ThisAppearance.secondaryForeground = NameField.ForeColor;
 				//this.CaptionLabel.Bord = app.HeaderBorderStyle;  //6
 				
 

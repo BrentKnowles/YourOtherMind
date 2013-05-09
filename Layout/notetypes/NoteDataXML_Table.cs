@@ -939,7 +939,7 @@ namespace Layout
 			AppearanceClass app = base.UpdateAppearance ();
 			if (app != null) {
 				ParentNotePanel.BackColor = app.mainBackground;
-				Table.SetupColors(app.captionBackground, app.captionForeground, app.mainBackground, app.captionFont);
+				Table.SetupColors(app.captionBackground, app.captionForeground, app.mainBackground, app.secondaryForeground, app.captionFont);
 			}
 			return app;
 		}

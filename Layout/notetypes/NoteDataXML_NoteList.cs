@@ -598,16 +598,20 @@ namespace Layout
 			AppearanceClass app = base.UpdateAppearance ();
 			if (null != app) {
 				ParentNotePanel.BackColor = app.mainBackground;
-				count.ForeColor = app.captionForeground;
-				blurb.ForeColor = app.captionForeground;
-				refresh.ForeColor = app.captionForeground;
-				FullTextSearch.ForeColor = app.captionForeground;
+				count.ForeColor = app.secondaryForeground;
+				blurb.ForeColor = app.secondaryForeground;
+				refresh.ForeColor = app.secondaryForeground;
+				FullTextSearch.ForeColor = app.secondaryForeground;
 
 
 				count.Font = app.captionFont;
 				blurb.Font = app.captionFont;
 				refresh.Font = app.captionFont;
 				FullTextSearch.Font = app.captionFont;
+
+				list.BackColor = app.mainBackground;
+				list.ForeColor = app.secondaryForeground;
+				list.Font = app.captionFont;
 			}
 			return app;
 		}

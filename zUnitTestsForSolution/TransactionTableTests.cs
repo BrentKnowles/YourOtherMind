@@ -165,6 +165,10 @@ namespace Testing
 		public void QueryTests()
 		{
 			TransactionsTable eventTable = SetupForEventTests();
+			LayoutDetails.Instance.TransactionsList = eventTable;
+
+			Worklog.JournalPanel Journal = new Worklog.JournalPanel("A", null);
+
 			Assert.NotNull(eventTable);
 
 			// Add a Really Old Task (20 days ago)
@@ -172,18 +176,18 @@ namespace Testing
 
 
 			Add (new TransactionWorkLog(DateTime.Now,"BOOM", "", 100, 200, "Writing"), eventTable);
-			string value = eventTable.GetWeekStats(DateTime.Now);
+			string value = Journal.GetWeekStats(DateTime.Now);
 			Assert.True (value.IndexOf("100") > -1, "Found Words");
 			Assert.True (value.IndexOf ("200")> -1, "Found Minutes");
 
 			// add a task for another entity
 
 			Add (new TransactionWorkLog(DateTime.Now,"BOOM2", "", 50, 50, "Writing"), eventTable);
-			value = eventTable.GetWeekStats(DateTime.Now);
+			value = Journal.GetWeekStats(DateTime.Now);
 			Assert.True (value.IndexOf("150") > -1, "Found Words2");
 			Assert.True (value.IndexOf ("250")> -1, "Found Minutes2");
 			// now look 'a week ago' should find none
-			value = eventTable.GetWeekStats(DateTime.Now.AddDays(-10));
+			value = Journal.GetWeekStats(DateTime.Now.AddDays(-10));
 			Assert.False (value.IndexOf("100") > -1, "Found Words3");
 			Assert.False (value.IndexOf ("200")> -1, "Found Minutes3");
 			Assert.False (value.IndexOf("150") > -1, "Found Words3");
@@ -192,11 +196,11 @@ namespace Testing
 
 			// Now Layout Specific Tests
 
-			value = eventTable.GetWorkStats_SpecificLayout(DateTime.Now, "BOOM2");
+			value = Journal.GetWorkStats_SpecificLayout(DateTime.Now, "BOOM2");
 			Assert.True (value.IndexOf("50") > -1, "Found Words2");
 			Assert.False (value.IndexOf ("250")> -1, "Found Minutes2");
 
-			value = eventTable.GetWorkStats_SpecificLayout(DateTime.Now, "BOOM");
+			value = Journal.GetWorkStats_SpecificLayout(DateTime.Now, "BOOM");
 			Assert.True (value.IndexOf("100") > -1, "Found WordsBOOMSPECIFIC");
 			Assert.True (value.IndexOf ("200")> -1, "Found MinutesBOOMSPECIFIC");
 			Assert.False (value.IndexOf ("250")> -1, "Found Minutes2");

@@ -1863,20 +1863,20 @@ namespace Storyboards
 				textBoxPreview.BackColor = app.mainBackground;
 				toolStrip1.BackColor = app.mainBackground;
 
-				viewLabel.ForeColor = app.captionForeground;
+				viewLabel.ForeColor = app.secondaryForeground;
 
 			
 
 				listView.Font = app.captionFont;
 				textBoxPreview.Font = app.captionFont;
 
-				listView.ForeColor = app.captionForeground;
+				listView.ForeColor = app.secondaryForeground;
 				// not sufficient
 				//textBoxPreview.Text = "boo";
-				textBoxPreview.ForeColor = app.captionForeground;
+				textBoxPreview.ForeColor = app.secondaryForeground;
 
 				listView.BorderStyle = app.HeaderBorderStyle;
-				ForeColorFromAppearance = app.captionForeground;
+				ForeColorFromAppearance = app.secondaryForeground;
 
 			}
 		}

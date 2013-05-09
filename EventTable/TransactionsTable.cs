@@ -439,71 +439,13 @@ namespace Transactions
 			}
 			return sValue;
 		}
-		/// <summary>
-		///  get week states for current week
-		/// </summary>
-		/// <param name="daytouse">Will build the week based off of this date</param>
-		/// <returns></returns>
-		public  string GetWeekStats(DateTime daytouse)
-		{
-			//DateTime todaysDate = DateTime.Today();
-			
-			string nMinutes = QueryLastWeek(daytouse, DATA3, String.Format("{0}='{1}'", TYPE, T_USER),false);
-			
-			int minutes = 0;
-			int hours = 0;
-			GetHoursAndMinutes(nMinutes, out minutes, out hours);
-			nMinutes = Loc.Instance.GetStringFmt("{0} (~{1} hours)", minutes.ToString(), hours.ToString());
-			
-			string Words = QueryLastWeek(daytouse, DATA4, String.Format("{0}='{1}'", TYPE, T_USER),false);
-			if (Words.IndexOf("null") > -1) Words = "0"; // sometimes they show null compute
-			
-			string sResult = Loc.Instance.GetStringFmt("WORKLOG - ALL LAYOUTS (THIS WEEK){1}Minutes Worked: {0} {1}Words Written: {2}", nMinutes, Environment.NewLine, Words);
-			return sResult;
-			
-		}
-		private void GetHoursAndMinutes(string Minutes, out int minutes, out int hours)
+	
+		public void GetHoursAndMinutes(string Minutes, out int minutes, out int hours)
 		{
 			Int32.TryParse(Minutes, out minutes);
 			hours = (int)(minutes / 60);
 		}
-		// These are specific to a GUID, but still time-limited
-		public  string GetWorkStats_SpecificLayout(DateTime daytouse, string GUID)
-		{
-			//DateTime todaysDate = DateTime.Today();
 
-
-			string ExtraFilter =  String.Format("{0}='{1}' and {2}='{3}'", TYPE, T_USER, DATA1_LAYOUTGUID, GUID);
-
-			string nMinutes = QueryLastWeek(daytouse, DATA3, ExtraFilter,false);
-			
-			int minutes = 0;
-			int hours = 0;
-			GetHoursAndMinutes(nMinutes, out minutes, out hours);
-			nMinutes = Loc.Instance.GetStringFmt("{0} (~{1} hours)", minutes.ToString(), hours.ToString());
-			
-			string Words = QueryLastWeek(daytouse, DATA4, ExtraFilter,false);
-			if (Words.IndexOf("null") > -1) Words = "0"; // sometimes they show null compute
-
-
-
-
-			string sResult = Loc.Instance.GetStringFmt("WORKLOG - THIS LAYOUT (THIS WEEK){1}Minutes Worked: {0} {1}Words Written: {2}", nMinutes, Environment.NewLine, Words);
-
-
-			// Now Get 'All Time Stats' for this layout
-			nMinutes = QueryLastWeek(daytouse, DATA3, ExtraFilter, true);
-			GetHoursAndMinutes(nMinutes, out minutes, out hours);
-			nMinutes = Loc.Instance.GetStringFmt("{0} (~{1} hours)", minutes.ToString(), hours.ToString());
-			Words = QueryLastWeek(daytouse, DATA4, ExtraFilter,true);
-			if (Words.IndexOf("null") > -1) Words = "0"; // sometimes they show null compute
-
-			sResult = String.Format ("{0}{1}THIS LAYOUT (ALL TIME){1}Minutes Worked: {2} {1}Words Written: {3}", sResult, Environment.NewLine, nMinutes, Words);
-
-
-			return sResult;
-			
-		}
 
 
 		/// </summary>

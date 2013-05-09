@@ -190,7 +190,7 @@ namespace Layout
 
 
 			richBox.BackColor = app.mainBackground;
-			richBox.ForeColor = app.captionForeground;
+			richBox.ForeColor = app.secondaryForeground;
 		}
 		protected override void DoBuildChildren (LayoutPanelBase Layout)
 		{

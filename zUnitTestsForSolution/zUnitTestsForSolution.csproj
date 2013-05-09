@@ -128,6 +128,10 @@
       <Project>{C78868AA-CE73-4D41-88FA-DFDF90EC872F}</Project>
       <Name>Addin_Submissions</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\Addins\Addin_Worklog\Addin_Worklog.csproj">
+      <Project>{9FF7431C-7CEC-4806-8242-7766EFB8DF5D}</Project>
+      <Name>Addin_Worklog</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="ClassesUsedInTesting\" />

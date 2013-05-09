@@ -1148,7 +1148,7 @@ namespace appframe
 		/// <param name='Secondary'>
 		/// Secondary.
 		/// </param>
-		public void SetupColors (Color Primary, Color Secondary, Color Third, Font font)
+		public void SetupColors (Color Primary, Color Secondary, Color Third, Color Four, Font font)
 		{
 			// we don't want to use the size specified by the incoming font as some of them are huge
 			dataGrid1.Font = new Font(font.FontFamily, 10);
@@ -1158,7 +1158,7 @@ namespace appframe
 
 
 			dataGrid1.RowsDefaultCellStyle.BackColor =Third;
-			dataGrid1.RowsDefaultCellStyle.ForeColor =  TextUtils.InvertColor(Third);
+			dataGrid1.RowsDefaultCellStyle.ForeColor =  Four;
 
 
 		}

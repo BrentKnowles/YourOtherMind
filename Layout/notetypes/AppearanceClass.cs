@@ -190,6 +190,20 @@ namespace Layout
 				mainBackground = Color.FromArgb(value); ;
 			}
 		}
+
+		[XmlIgnore]
+		public Color secondaryForeground;
+		public int SecondaryForeground
+		{
+			get
+			{
+				return secondaryForeground.ToArgb(); ;
+			}
+			set
+			{
+				secondaryForeground = Color.FromArgb(value); ;
+			}
+		}
 		
 //		[XmlIgnore]
 //		public  Color textColor;
@@ -331,6 +345,7 @@ namespace Layout
 			newApp.mmainBackground =-663885;  //7
 		
 			newApp.UseBackgroundColor = true;
+			newApp.SecondaryForeground  = newApp.mcaptionForeground;
 			return newApp;
 		}
 
@@ -351,6 +366,7 @@ namespace Layout
 			newApp.mmainBackground = -2894893;
 
 			newApp.UseBackgroundColor = true;
+			newApp.SecondaryForeground  = newApp.mcaptionForeground;
 			return newApp;
 		}
 		public static AppearanceClass SetAsResearch()
@@ -368,6 +384,7 @@ namespace Layout
 			newApp.mmainBackground =-984833;
 
 			newApp.UseBackgroundColor = true;
+			newApp.SecondaryForeground  = newApp.mcaptionForeground;
 			return newApp;
 		}
 		public static AppearanceClass SetAsClassic()
@@ -385,6 +402,7 @@ namespace Layout
 			newApp.mmainBackground = Color.White.ToArgb();
 
 			newApp.UseBackgroundColor = true;
+			newApp.SecondaryForeground  = newApp.mcaptionForeground;
 			return newApp;
 
 			// February 2013
@@ -419,6 +437,7 @@ newApp.mcaptionBackground =-16777216;
 			newApp.mmainBackground =-16777216;
 
 			newApp.UseBackgroundColor = true;
+			newApp.SecondaryForeground  = newApp.mcaptionForeground;
 			return newApp;
 		}
 		public static AppearanceClass SetAsNote()
@@ -436,6 +455,7 @@ newApp.mcaptionBackground =-16777216;
 			newApp.mmainBackground =-128;
 
 			newApp.UseBackgroundColor = true;
+			newApp.SecondaryForeground  = newApp.mcaptionForeground;
 			return newApp;
 		}
 		public static AppearanceClass SetAsModern()
@@ -453,6 +473,7 @@ newApp.mcaptionBackground =-16777216;
 			newApp.mmainBackground =-1468806;
 
 			newApp.UseBackgroundColor = true;
+			newApp.SecondaryForeground  = newApp.mcaptionForeground;
 			return newApp;
 		}
 		public static AppearanceClass SetAsBlue()
@@ -468,8 +489,11 @@ newApp.mcaptionBackground =-16777216;
 			newApp.mcaptionBackground =-12490271;
 			newApp.mcaptionForeground = -657931;
 			newApp.mmainBackground =-12490271;
-		
+
 			newApp.UseBackgroundColor = true;
+
+
+			newApp.SecondaryForeground  = newApp.mcaptionForeground;
 			return newApp;
 		}
 	}
