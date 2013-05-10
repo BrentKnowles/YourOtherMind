@@ -238,8 +238,9 @@ namespace Layout
 				// B. Populate it with example Row
 			}
 			Timeline = new NotePanelTimeline (this);
-			ParentNotePanel.Controls.Add (Timeline);
 			Timeline.Dock = DockStyle.Fill;
+			ParentNotePanel.Controls.Add (Timeline);
+
 			Timeline.BringToFront ();
 
 			ToolStripMenuItem RowFilterStrip = 

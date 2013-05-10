@@ -1428,7 +1428,8 @@ namespace Layout
 		{
 			lg.Instance.Line ("SetSaveRequired", ProblemType.MESSAGE, this.GUID + "Value of _savequired BEFORE SET is " + _saverequired, Loud.CTRIVIAL);
 			_saverequired = NeedSave;
-			if (true == NeedSave) {
+			// May 2013 - we only want caption to change if a Main panel changes
+			if (true == NeedSave && this.Notes.IsSubPanel == false) {
 				LayoutDetails.Instance.DoUpdateTitle (this.Caption+"*");
 			} else {
 				LayoutDetails.Instance.DoUpdateTitle (this.Caption);

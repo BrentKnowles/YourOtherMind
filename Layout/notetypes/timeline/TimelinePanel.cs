@@ -28,6 +28,7 @@
 //###
 using System;
 using System.Collections;
+
 using System.ComponentModel;
 using System.Drawing;
 using System.Drawing.Drawing2D;
@@ -600,11 +601,15 @@ namespace Timeline
 						{
 						foreach (string s in MyTimeline.Listoftableguids)
 						{
-							if ("*" != s)
+							if ("*" != s && "" != s && " " != s)
 							{
-								MyTables.Add (MyTimeline.GetTableForThisTimeline(s));
+								NoteDataXML_Table AlreadyPresent=	(NoteDataXML_Table)MyTables.Find (NoteDataXML_Table=>NoteDataXML_Table.GuidForNote == s );
+									if (null == AlreadyPresent)
+									{
+										MyTables.Add (MyTimeline.GetTableForThisTimeline(s));
+									}
 							}
-						}
+							}
 						}
 					
 						// in addition to notes (May 2012) -- parse an associated DataTable
@@ -612,8 +617,23 @@ namespace Timeline
 						// This exact day
 						// Render them.
 						//foreach (string s in MyTimeline.Listoftableguids)
+						string GuidsAdded="";
 							foreach (NoteDataXML_Table table in MyTables)
 						{
+
+							// There is an issue where somehow this is called twice, simulatenous
+							// and regardless of the checks above (May 2013) it still adds 
+							// the same thing twice to MyTables.\
+							if (GuidsAdded.IndexOf(table.GuidForNote) > -1)
+							{
+								// don't draw this NOTE again
+								break;
+							}
+
+							GuidsAdded = GuidsAdded + table.GuidForNote;
+
+
+
 							//if ("*" != s)
 							{
 
