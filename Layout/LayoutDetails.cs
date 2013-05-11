@@ -236,6 +236,15 @@ namespace Layout
 
 		public Func<System.Collections.Generic.List<string>> GetListOfAppearancesDelegate=null;
 		#endregion
+		// other PLACES will modify this list, when registering new types
+		//private ArrayList TypeList = null;
+		//private ArrayList NameList = null;
+		
+		private List<NoteTypeDetails> ListOfNoteTypes = new List<NoteTypeDetails>();
+		public List<NoteTypeDetails> GetListOfNoteTypeDetails ()
+		{
+			return ListOfNoteTypes;
+		}
 
 		public void WaitCursor (bool b)
 		{
@@ -266,8 +275,8 @@ namespace Layout
 			RandomNumbers = new Random();
 
 			//TypeList = new Type[4] {typeof(NoteDataXML), typeof(NoteDataXML_RichText), typeof(NoteDataXML_NoteList), typeof(NoteDataXML_SystemOnly)};
-			TypeList = new ArrayList();
-			NameList = new ArrayList();
+//			TypeList = new ArrayList();
+//			NameList = new ArrayList();
 
 			AddToList(typeof(NoteDataXML),new NoteDataXML().RegisterType());
 			AddToList(typeof(NoteDataXML_RichText),new NoteDataXML_RichText().RegisterType ());
@@ -312,9 +321,7 @@ namespace Layout
 				throw new Exception("A reference needs to be set in the MainForm to the method to use when loading a new method. That did not happen today.");
 			}
 		}
-		// other PLACES will modify this list, when registering new types
-		private ArrayList TypeList = null;
-		private ArrayList NameList = null;
+
 
 		/// <summary>
 		/// Adds to both lists.
@@ -328,17 +335,47 @@ namespace Layout
 		/// </param>
 		public void AddToList (Type newType, string name)
 		{
-			if (TypeList.IndexOf (newType) == -1) {
-				TypeList.Add (newType);
-				NameList.Add (name);
-			}
+			AddToList (newType, name, Constants.BLANK);
+		}
 
+		public void AddToList (Type newType, string name, string folder)
+		{
+//			if (TypeList.IndexOf (newType) == -1) {
+//				TypeList.Add (newType);
+//				NameList.Add (name);
+//
+//			}
+		
+			if (Constants.BLANK == folder) {
+				// probably do nothing
+			}
+			if (ListOfNoteTypes.Find (NoteTypeDetails=>NoteTypeDetails.TypeOfNote == newType) != null)
+			{
+			}
+			else
+			{
+				// A new one. Let us add it.
+				NoteTypeDetails newNoteType = new NoteTypeDetails();
+				newNoteType.TypeOfNote = newType;
+				newNoteType.NameOfNote = name;
+
+
+				newNoteType.Folder = folder;
+				ListOfNoteTypes.Add(newNoteType);
+			}
+			 
+			
 		}
 		public void RemoveFromList (Type newType)
 		{
-			if (TypeList.IndexOf (newType) > -1) {
-				TypeList.Remove(newType);
+			NoteTypeDetails newNoteType = ListOfNoteTypes.Find (NoteTypeDetails => NoteTypeDetails.TypeOfNote == newType);
+			if (null != newNoteType) {
+				ListOfNoteTypes.Remove (newNoteType);
 			}
+
+//			if (TypeList.IndexOf (newType) > -1) {
+//				TypeList.Remove(newType);
+//			}
 		}
 		/// <summary>
 		/// Gets the type of the name from.
@@ -352,19 +389,32 @@ namespace Layout
 		/// </param>
 		public string GetNameFromType (Type lookupType)
 		{
-			if (NameList.Count != TypeList.Count) {
-				throw new Exception("Must be same number of type names as types");
+
+			NoteTypeDetails newNoteType = ListOfNoteTypes.Find (NoteTypeDetails => NoteTypeDetails.TypeOfNote == lookupType);
+			if (newNoteType != null) {
+				return newNoteType.NameOfNote;
 			}
-			int index = TypeList.IndexOf (lookupType);
-			if (index >= 0) {
-				return NameList[index].ToString ();
-			}
+
 			return Constants.ERROR;
+
+//			if (NameList.Count != TypeList.Count) {
+//				throw new Exception("Must be same number of type names as types");
+//			}
+//			int index = TypeList.IndexOf (lookupType);
+//			if (index >= 0) {
+//				return NameList[index].ToString ();
+//			}
+//			return Constants.ERROR;
 		}
 		public Type[] ListOfTypesToStoreInXML ()
 		{
-			Type[] ArrayOfTypes = new Type[TypeList.Count];
-			TypeList.CopyTo(ArrayOfTypes);
+			ArrayList TypesA = new ArrayList ();
+			foreach (NoteTypeDetails nd in ListOfNoteTypes) {
+				TypesA.Add (nd.TypeOfNote);
+			}
+
+			Type[] ArrayOfTypes = new Type[ListOfNoteTypes.Count];
+			TypesA.CopyTo(ArrayOfTypes);
 			return ArrayOfTypes;
 		}
 

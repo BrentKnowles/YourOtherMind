@@ -811,13 +811,39 @@ namespace Layout
 		{
 			(sender as ToolStripDropDownButton).DropDownItems.Clear ();
 
-			foreach (Type t in LayoutDetails.Instance.ListOfTypesToStoreInXML()) {
-				ToolStripButton AddNote = new ToolStripButton(String.Format ("{0}",LayoutDetails.Instance.GetNameFromType(t)));
+			foreach (NoteTypeDetails nd in LayoutDetails.Instance.GetListOfNoteTypeDetails()) {
+				ToolStripButton AddNote = new ToolStripButton(String.Format ("{0}",nd.NameOfNote));
 
-				AddNote.Tag = t;
+				AddNote.Tag = nd.TypeOfNote;
 
 				AddNote.Click += HandleAddNoteClick;
-				(sender as ToolStripDropDownButton).DropDownItems.Add (AddNote);
+
+				// check to see if we need to build a folder for this note type
+				if (nd.Folder != Constants.BLANK)
+				{
+					// try to locate this menu
+					ToolStripItem[] found = (sender as ToolStripDropDownButton).DropDownItems.Find(nd.Folder, true);
+					if (found != null && found.Length > 0)
+					{
+						if (found[0] is ToolStripMenuItem)
+						{
+							(found[0] as ToolStripMenuItem).DropDownItems.Add (AddNote);
+						}
+					}
+					else
+					{
+					// if the menu does not exist then we create it
+						ToolStripMenuItem newMenu = new ToolStripMenuItem();
+						newMenu.Text = nd.Folder;
+						newMenu.Name = nd.Folder;
+						(sender as ToolStripDropDownButton).DropDownItems.Add (newMenu);
+						newMenu.DropDownItems.Add (AddNote);
+					}
+				}
+				else
+				{
+					(sender as ToolStripDropDownButton).DropDownItems.Add (AddNote);
+				}
 
 			}
 

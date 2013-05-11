@@ -34,6 +34,9 @@ namespace MefAddIns
 	// Does not Use the Interface! This is intentional.
 	public class PlugInBase
 	{
+		// for a consistent folder name for AddIns
+		public const string AddInFolderName = "AddIns";
+
 		public PlugInBase ()
 		{
 		}
