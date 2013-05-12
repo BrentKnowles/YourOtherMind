@@ -939,6 +939,7 @@ namespace Incentives
 			return sResult;
 			
 		}
+		/*
 		public static void ConvertToYom2013_FromYom2013 (TransactionsTable TransactionT)
 		{
 
@@ -1147,7 +1148,7 @@ namespace Incentives
 
 			NewMessage.Show (String.Format("Added {0} entries", Added));
 		}
-
+*/
 		/// <summary>
 		/// returns a plain text string of all of the day's stats
 		/// 

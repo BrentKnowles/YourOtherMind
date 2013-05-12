@@ -52,8 +52,12 @@ namespace Layout
 		public List<NoteDataInterface> UpdateAfterLoadList = new List<NoteDataInterface>();
 		public void AddTo_TransactionsLIST (Type newType)
 		{
-			transactionsLIST.Add(newType);
-			//NewMessage.Show (((TransactionBase)Activator.CreateInstance (newType, DateTime.Now, "Boo", "Boo2")).Display);
+			try {
+				transactionsLIST.Add (newType);
+			} catch (Exception ex) {
+				NewMessage.Show (ex.ToString());
+			}
+		//	NewMessage.Show (((TransactionBase)Activator.CreateInstance (newType)).Display);
 		}
 			
 

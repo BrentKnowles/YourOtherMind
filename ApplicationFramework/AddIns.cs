@@ -362,10 +362,14 @@ namespace appframe
 			var i = 0;
 
 			AddInsList = new List<MefAddIns.Extensibility.mef_IBase> ();
-//			foreach (var transaction in bootStrapper.Transactions) {
+		
+			//var bootStrapper = new MefAddIns.Terminal.Bootstrapper ();
+			// May 2013 _ I was able to load in transactions but was still unable to get them to work properly, in all cases
+			// hence Submission and Destination will need to remain in Transactions base class
+
+//			foreach (var transaction in bootStrapper.tbase) {
 //				NewMessage.Show (transaction.ToString());
 //			}
-
 
 			foreach (var language in bootStrapper.Base) {
 			

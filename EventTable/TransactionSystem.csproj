@@ -35,7 +35,6 @@
     <Compile Include="TransactionBase.cs" />
     <Compile Include="TransactionsTable.cs" />
     <Compile Include="TransactionNewLayout.cs" />
-    <Compile Include="TransactionSubmission.cs" />
     <Compile Include="TransactionImportLayout.cs" />
     <Compile Include="TransactionDeleteLayout.cs" />
     <Compile Include="TransactionWorkLog.cs" />
@@ -43,8 +42,9 @@
     <Compile Include="TransactionFinishedLayout.cs" />
     <Compile Include="TransactionNagStarted.cs" />
     <Compile Include="TransactionNagInterrupted.cs" />
-    <Compile Include="TransactionSubmissionDestination.cs" />
     <Compile Include="TransactionGenericStatus.cs" />
+    <Compile Include="TransactionSubmission.cs" />
+    <Compile Include="TransactionSubmissionDestination.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\database\database.csproj">
@@ -55,10 +55,15 @@
       <Project>{6EAA0B60-70E3-49FB-88E9-272D2719CECF}</Project>
       <Name>coreutilities2013</Name>
     </ProjectReference>
+    <ProjectReference Include="..\MEF_Interfaces\MEF_Interfaces.csproj">
+      <Project>{2E366A51-224A-4C3B-90D6-FE8C81C9EB78}</Project>
+      <Name>MEF_Interfaces</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System.Data" />
     <Reference Include="System" />
     <Reference Include="System.Xml" />
+    <Reference Include="System.ComponentModel.Composition" />
   </ItemGroup>
 </Project>

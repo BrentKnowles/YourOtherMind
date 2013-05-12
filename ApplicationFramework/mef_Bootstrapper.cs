@@ -39,8 +39,8 @@ namespace MefAddIns.Terminal
 		/// </summary>
 		[ImportMany]
 		public IEnumerable<mef_IBase> Base { get; set; }
-//		[Import] 
-//		public Transactions.TransactionBase tbase;
+		[ImportMany] 
+		public IEnumerable<Transactions.TransactionBase> tbase;
 //		[ImportMany]
 //		public List<Transactions.TransactionBase> Transactions { get; set; }
 

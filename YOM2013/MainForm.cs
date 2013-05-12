@@ -791,12 +791,12 @@ namespace YOM2013
 
 		void HandleImportEventClick (object sender, EventArgs e)
 		{
-			if (MasterOfLayouts.ExistsByGUID ("example") == false) {
-				NewMessage.Show("You must create a page with GUID and name = example for the oprhans before importing events");
-			}
-			else
-			// temp code to import events
-			Incentives.EventTable.ConvertToYom2013_FromYom2013(Transaction);
+//			if (MasterOfLayouts.ExistsByGUID ("example") == false) {
+//				NewMessage.Show("You must create a page with GUID and name = example for the oprhans before importing events");
+//			}
+//			else
+//			// temp code to import events
+//			Incentives.EventTable.ConvertToYom2013_FromYom2013(Transaction);
 
 		}
 		protected override void OptionsClosed ()

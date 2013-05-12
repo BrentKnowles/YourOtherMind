@@ -28,12 +28,15 @@
 //###
 using System;
 using CoreUtilities;
-
+using System.ComponentModel.Composition;
 namespace Transactions
 {
+	//[Export(typeof(TransactionBase))]
 	// will be moved to an AddIn
 	public class TransactionSubmission : TransactionBase
 	{
+			public const int T_SUBMISSION = 1001; 
+			public const int T_SUBMISSION_DESTINATION= 1005;
 		/* Mapping Musing - Submissions
 		 * 
 		 * date = date sent
@@ -63,7 +66,7 @@ namespace Transactions
 		// using this so I can simply have destinations inherit TransactionSubmission
 		protected virtual void SetType()
 		{
-			RowData[TransactionsTable.TYPE.Index] = TransactionsTable.T_SUBMISSION.ToString ();
+			RowData[TransactionsTable.TYPE.Index] = TransactionSubmission.T_SUBMISSION.ToString ();
 		}
 	
 		public TransactionSubmission (DateTime dateSubmitted, string ProjectGUID, string MarketGUID, int Priority,
@@ -101,7 +104,9 @@ namespace Transactions
 		{
 			RowData[TransactionsTable.ID.Index ] = iD;
 		}
-
+		public TransactionSubmission()
+		{
+		}
 		public TransactionSubmission(object[] items): base(items)
 		{
 			// all children need this form of the constructor
@@ -264,6 +269,9 @@ namespace Transactions
 				return Loc.Instance.GetStringFmt("Submission {0} ({1} days out)", dataToAdd, DaysBetween);
 			}
 		}
+
+
+
 
 
 	}

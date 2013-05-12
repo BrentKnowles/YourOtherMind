@@ -32,6 +32,8 @@ using System.Collections.Generic;
 using CoreUtilities;
 using System.Data;
 using System.Collections;
+using System.ComponentModel.Composition;
+using System.ComponentModel.Composition.Hosting;
 namespace Transactions
 
 {
@@ -67,8 +69,8 @@ namespace Transactions
 		//		public const int T_WORDCOUNT = 12;
 
 
-		public const int T_SUBMISSION = 1001;
-		public const int T_SUBMISSION_DESTINATION= 1005;
+	//	public const int T_SUBMISSION = 1001; in addin
+	//	public const int T_SUBMISSION_DESTINATION= 1005;
 
 		public const int T_GENERIC_STATUS_UPDATE = 1200;
 
@@ -114,7 +116,7 @@ namespace Transactions
 			MONEY1.Type, MONEY2.Type, DATE2.Type, NOTES.Type, DATA5.Type, DATA6.Type, DATA7.Type, DATA8.Type, DATA9.Type, TYPE_OF_OBJECT.Type, DATA10.Type};
 
 		BaseDatabase ThisDatabase=null;
-
+	
 		/// <summary>
 		/// Initializes a new instance of the <see cref="EventTable.EventTable"/> class.
 		/// </summary>
@@ -127,6 +129,8 @@ namespace Transactions
 
 			ThisDatabase = _Database;
 			CreateDatabase();
+
+		
 		}
 
 		void CreateDatabase()
@@ -484,71 +488,7 @@ namespace Transactions
 			
 		}
 		
-		/// <summary>
-		/// returns a month by month breakdown of progress
-		/// 
-		/// will include both Hours, Words, FInished and retired, formatted like
-		/// 
-		///   January 2008
-		///     Minutes: 203  (F_DATA3)
-		///     Words: 1200 (F_DATA4)
-		///     Finished: 0
-		///     Retired: 1
-		///  
-		/// Example usage
-		/// </summary>
-		/// <param name="nYear"></param>
-		/// <returns></returns>
-		 public string QueryMonthsInYearReport(int nYear, int nMonth)
-		{
-			//
-			string nMinutes = QueryMonthInYear(DATA3, nYear, String.Format("{0}='{1}'", TYPE, T_USER), nMonth,0);
-			string Words = "0";
-			string Added = "0";
-			string AddedSub = "0";
-			string Finished = "0";
-			string Retired = "0";
-			string Nag = "0";
-			string MaxWords = "0";
-			int minutes = 0;
-			int hours = 0;
-			
-			try
-			{
-				minutes = Int32.Parse(nMinutes);
-				hours = (int)(minutes / 60);
-				nMinutes = String.Format("{0} (~{1} hours)", nMinutes, hours.ToString());
-				
-				
-				
-				Words = QueryMonthInYear(DATA4, nYear, String.Format("{0}='{1}'", TYPE, T_USER), nMonth,0);
-				Added = QueryMonthInYear(DATA1_LAYOUTGUID, nYear, String.Format("{0}={1}", TYPE, T_ADDED), nMonth,0);
-				
-				AddedSub = QueryMonthInYear(DATA1_LAYOUTGUID, nYear, String.Format("{0}={1}", TYPE, T_SUBMISSION), nMonth,0);
-				
-				Finished = QueryMonthInYear(DATA1_LAYOUTGUID, nYear, String.Format("{0}={1}", TYPE, T_FINISHED), nMonth,0);
-				
-				Retired = QueryMonthInYear(DATA1_LAYOUTGUID, nYear, String.Format("{0}={1}", TYPE, T_RETIRED), nMonth,0);
-				Nag = QueryMonthInYear(DATA1_LAYOUTGUID, nYear, String.Format("{0}={1}", TYPE, T_NAGINTERRUPTED), nMonth,0);
-				MaxWords = QueryMonthInYear(DATA4, nYear, String.Format("{0}={1}", TYPE, T_USER), nMonth, 1);
-			}
-			catch (Exception)
-			{
-				minutes = 0;
-				hours = 0;
-				nMinutes = "0";
-			}
-			
-			
-			DateTime date = new DateTime(nYear, nMonth, 1);
-			
-			
-			string sValue =
-				String.Format("{0}\r\nMinutes: {1} \r\nWords: {2}\r\nFinished: {3}\r\nRetired: {4}\r\nAdded: {5} \r\nSubmissions: {6} \r\nMax Words in One Day: {7} \r\nDistracted: {8}",
-				              date.ToString("MMMM"), nMinutes, Words, Finished, Retired, Added, AddedSub, MaxWords, Nag);
-			return sValue;
-			
-		}
+
 		
 		/// <summary>
 		/// returns an array of the year in which subs happened

@@ -51,7 +51,7 @@ namespace Transactions
 		}
 		protected override void SetType ()
 		{
-			RowData[TransactionsTable.TYPE.Index] = TransactionsTable.T_SUBMISSION_DESTINATION.ToString ();
+			RowData[TransactionsTable.TYPE.Index] = TransactionSubmission.T_SUBMISSION_DESTINATION.ToString ();
 		}
 
 		public override string Display {
