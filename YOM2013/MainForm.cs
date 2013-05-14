@@ -380,7 +380,11 @@ namespace YOM2013
 
 			return exporter;
 		}
-
+		public Font GetDefaultFont ()
+		{
+			Font font = SettingsInterfaceOptions.GetDefaultFont;
+			return font;
+		}
 /// <summary>
 /// Initializes a new instance of the <see cref="YOM2013.MainForm"/> class.
 /// </summary>
@@ -411,7 +415,7 @@ namespace YOM2013
 				lg.Instance.Line("MainForm.MainForm", ProblemType.ERROR, "Sparkle was unable to find the update file " + ex.ToString());
 			}
 
-
+			LayoutDetails.Instance.GetDefaultFont+= GetDefaultFont;
 			
 
 			this.Load += HandleFormLoad;

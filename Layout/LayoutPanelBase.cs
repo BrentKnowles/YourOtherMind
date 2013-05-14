@@ -336,7 +336,11 @@ namespace Layout
 					CurrentTextNote.GetRichTextBox().Bullet(true);
 					break;
 				case NoteDataXML_RichText.FormatText.DEFAULTFONT:
-					CurrentTextNote.GetRichTextBox().SelectionFont = new System.Drawing.Font("Courier New", 12);
+					if (LayoutDetails.Instance.GetDefaultFont != null)
+					{
+						CurrentTextNote.GetRichTextBox().SelectionFont = LayoutDetails.Instance.GetDefaultFont();
+					}
+
 					break;
 				case NoteDataXML_RichText.FormatText.DATE:
 					CurrentTextNote.GetRichTextBox().InsertDate();

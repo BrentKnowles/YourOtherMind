@@ -904,7 +904,8 @@ namespace Layout
 				LayoutDetails.Instance.SystemLayout.FilterByKeyword (text);
 			}
 		}
-
+		// used as an accessor to get the default font set in options
+		public Func<Font> GetDefaultFont = null;
 
 
 	}

@@ -53,11 +53,13 @@ namespace YOM2013
 
 		const string KEY_formsize="formsize";
 		const string KEY_markup="markup";
+		const string KEY_font="defaultfont";
 		//formsize blah
 		#region variables
 		
 		#endregion
 		#region gui
+		Label DefaultFont=null;
 		ComboBox TextSizeCombo ;
 		ComboBox MarkupCombo;
 		GroupBox AppearanceGroup ;
@@ -110,7 +112,22 @@ namespace YOM2013
 
 				return returnvalue;}
 		}
-	
+	public System.Drawing.Font GetDefaultFont {
+			get {
+				System.Drawing.Font value_as = new System.Drawing.Font("Courier New", 12.0f);
+				BaseDatabase db = CreateDatabase ();
+				if (db.Exists (TableName, columnKey, KEY_font)) {
+					string value = db.GetValues(TableName, new string[1] {columnValue}, columnKey, KEY_font)[0][0].ToString();
+					if (value != null)
+					{
+						value_as = General.StringToFont (value);
+					}
+				}
+				db.Dispose();
+				return value_as;
+			}
+
+		}
 		// public acesssor
 		public CoreUtilities.FormUtils.FontSize FontSizeForForm {
 			get {
@@ -276,10 +293,14 @@ namespace YOM2013
 				return configPanel;
 			
 			PanelWasMade = true;
-			
+
 			configPanel = new Panel ();
 
-			
+			DefaultFont = new Label();
+			DefaultFont.Text = Loc.Instance.GetString ("Default Font (click to edit)");
+			DefaultFont.Font = GetDefaultFont;
+			DefaultFont.Click+= HandleDefaultFontClick;
+			 
 		
 
 			Button buttonResetSystem = new Button ();
@@ -314,6 +335,7 @@ namespace YOM2013
 			TextSizePanel.Controls.Add (TextSizeCombo);
 			TextSizePanel.Controls.Add (TextSizeLabel);
 
+
 			TextSizeCombo.Dock = DockStyle.Top;
 			TextSizePanel.Dock = DockStyle.Top;
 
@@ -335,8 +357,11 @@ namespace YOM2013
 			// we need items to prepopulate this and we refill later too
 			LayoutDetails.Instance.BuildMarkupComboBox (MarkupCombo);
 
+		
 			MarkupPanel.Controls.Add (MarkupCombo);
 			MarkupPanel.Controls.Add (MarkupPanelLabel);
+			DefaultFont.Dock = DockStyle.Top;
+
 
 			MarkupPanel.Dock = DockStyle.Top;
 			MarkupPanelLabel.Dock = DockStyle.Top;
@@ -380,6 +405,7 @@ namespace YOM2013
 
 
 			configPanel.Controls.Add (buttonResetSystem);
+			configPanel.Controls.Add (DefaultFont);
 			configPanel.Controls.Add (TextSizePanel);
 			configPanel.Controls.Add (MarkupPanel);
 			configPanel.Controls.Add (AppearanceGroup);
@@ -391,6 +417,16 @@ namespace YOM2013
 		
 			return configPanel;
 			
+		}
+
+		void HandleDefaultFontClick (object sender, EventArgs e)
+		{
+			FontDialog fontd = new FontDialog ();
+			fontd.Font = DefaultFont.Font;
+			fontd.ShowColor = true;
+			if (fontd.ShowDialog () == DialogResult.OK) {
+				DefaultFont.Font = fontd.Font;
+			}
 		}
 		AppearancePanel lastAppPanel = null;
 		void HandleAppearanceSelectedIndexChanged (object sender, EventArgs e)
@@ -466,7 +502,7 @@ namespace YOM2013
 			);
 			return db;
 		}
-
+		// type 1 = xml?
 		void Store (BaseDatabase db, string key, string text, int type)
 		{
 		
@@ -496,8 +532,9 @@ namespace YOM2013
 			if (MarkupCombo.SelectedItem != null) {
 				Store (db, KEY_markup, MarkupCombo.SelectedItem.GetType ().AssemblyQualifiedName.ToString (),0);
 			}
-
-
+			System.Drawing.FontConverter fc = new System.Drawing.FontConverter();
+			string fontString = (string)fc.ConvertTo(DefaultFont.Font, typeof(string));
+			Store (db, KEY_font, fontString, 0);
 			
 			db.Dispose();
 
