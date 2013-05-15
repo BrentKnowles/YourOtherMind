@@ -302,7 +302,7 @@ namespace Layout
 		}
 		protected override void OnPaint (PaintEventArgs e)
 		{
-			base.OnPaint(e);
+
 
 			if (ShowMarkup == false) return;
 
@@ -386,6 +386,10 @@ namespace Layout
 			}
 			else
 				LayoutDetails.Instance.GetCurrentMarkup().DoPaint(e, start, end, this);
+
+
+			base.OnPaint(e);
+
 		}
 
 		[DllImport("user32.dll", CharSet = CharSet.Auto)]

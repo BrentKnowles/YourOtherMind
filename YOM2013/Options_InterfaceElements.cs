@@ -423,7 +423,7 @@ namespace YOM2013
 		{
 			FontDialog fontd = new FontDialog ();
 			fontd.Font = DefaultFont.Font;
-			fontd.ShowColor = true;
+		//	fontd.ShowColor = true;
 			if (fontd.ShowDialog () == DialogResult.OK) {
 				DefaultFont.Font = fontd.Font;
 			}

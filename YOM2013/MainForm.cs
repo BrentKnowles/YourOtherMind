@@ -543,12 +543,16 @@ namespace YOM2013
 			ToolStripMenuItem Author = new ToolStripMenuItem(Loc.Instance.GetString ("Developer Website"));
 			Author.Click+= (object sender, EventArgs e) => General.OpenDocument("http://www.brentknowles.com","");
 
+			ToolStripMenuItem ReportABug = new ToolStripMenuItem(Loc.Instance.GetString ("Report a Bug"));
+			ReportABug.Click+= (object sender, EventArgs e) => General.OpenDocument("https://github.com/BrentKnowles/YourOtherMind/issues","");
+
 			ToolStripMenuItem About = new ToolStripMenuItem(Loc.Instance.GetString ("About"));
 			About.Click+= HandleAboutClick;
 
 
 			Help.DropDownItems.Add (Site);
 			Help.DropDownItems.Add (Author);
+			Help.DropDownItems.Add (ReportABug);
 			Help.DropDownItems.Add (About);
 			MainMenu.Items.Add (Help);
 			// DELEGATES
