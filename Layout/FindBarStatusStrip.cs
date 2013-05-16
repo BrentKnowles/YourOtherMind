@@ -609,11 +609,19 @@ namespace Layout
 			SearchPhrase  = sFind.ToLower();
 			
 			////// Exact /////////////
-			if (bExact == true)
-			{
-				// pad the word so only ones with whitespace come up
-				SearchPhrase = " " + SearchPhrase + " ";
-			}
+			/// trying to handle EXACT in the loop. This was easy but it missed \tfish or fish. when searching fish
+//			if (bExact == true)
+//			{
+//				if (TextUtils.IsPunctuation(SearchPhrase[SearchPhrase.Length-1]) == true ||
+//				                            TextUtils.IsTab(SearchPhrase[0]))
+//				    {
+//				}
+//				else
+//				{
+//				// pad the word so only ones with whitespace come up
+//				SearchPhrase = " " + SearchPhrase + " ";
+//				}
+//			}
 
 
 
@@ -654,16 +662,44 @@ namespace Layout
 						
 					}
 				}
-				
-				
-				if (nCount > -1)
+				bool reject = false;
+				// filter out exact matches
+				if (true == bExact)
 				{
-					// add word position
-					positionList.Add(nCount);
+					// we accept matches where
+					// a. Letter BEFORE  is a SPACE or PUNCTUATIOn
+					// b. Letter AFTER is a SPACE or Punctuation
+					if (nCount >0)
+					{
+						char test = TextToSearch[nCount-1];
+						if ( !Char.IsSeparator(test) && !Char.IsPunctuation(test) && test != '\t')
+						{
+							reject = true;
+						}
+					}
+					int LengthOfStringToSearch = sFind.Length;
+					if (nCount+LengthOfStringToSearch < TextToSearch.Length-1)
+					{
+						char test = TextToSearch[nCount+LengthOfStringToSearch];
+						if ( !Char.IsSeparator(test) && !Char.IsPunctuation(test) && test != '\t')
+						{
+							reject = true;
+						}
+					}
+				}
+
+				
+				if (nCount > -1 )
+				{
+					if (false == reject)
+					{
+						// add word position
+						positionList.Add(nCount);
+					}
 					nCount++;
 					
 				}
-				else
+				else 
 				{
 					done = true;
 				}

@@ -171,6 +171,19 @@ namespace CoreUtilities
 			return Color.FromArgb(RGBMAX - ColourToInvert.R, 
 			                      RGBMAX - ColourToInvert.G, RGBMAX - ColourToInvert.B);
 		}
+		// return true if indicated character is a tab space
+		public static bool IsTab (char ch)
+		{
+			if (ch == '\t') {
+				return true;
+			}
+			return false;
+		}
+		// returns true if the char is consider punctuation
+		public static bool IsPunctuation (char ch)
+		{
+			return Char.IsPunctuation(ch);
+		}
 	}
 }
 

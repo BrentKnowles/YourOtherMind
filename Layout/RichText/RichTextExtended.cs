@@ -302,7 +302,7 @@ namespace Layout
 		}
 		protected override void OnPaint (PaintEventArgs e)
 		{
-
+			base.OnPaint(e);
 
 			if (ShowMarkup == false) return;
 
@@ -388,7 +388,7 @@ namespace Layout
 				LayoutDetails.Instance.GetCurrentMarkup().DoPaint(e, start, end, this);
 
 
-			base.OnPaint(e);
+		
 
 		}
 
