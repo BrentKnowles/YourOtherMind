@@ -380,13 +380,17 @@ namespace Layout
 			}
 
 
-
+			// May 2013 - Optimization
+			// only markup the active text box
+			//if (LayoutDetails.Instance.CurrentLayout != null && LayoutDetails.Instance.CurrentLayout.CurrentTextNote != null && 
+			if (this.Focused == true)
+			{
 			if (null != markupOverride) {
 				markupOverride.DoPaint(e, start, end, this);
 			}
 			else
 				LayoutDetails.Instance.GetCurrentMarkup().DoPaint(e, start, end, this);
-
+			}
 
 		
 
@@ -710,7 +714,7 @@ namespace Layout
 //			SendMessage( this.Handle, EM_LINESCROLL, new IntPtr(0), new IntPtr(Line) );
 			this.ScrollToCaret();
 		}
-
+		
 
 		/// <summary>
 		/// pastes the current text from the clipboard to match current selection formatting

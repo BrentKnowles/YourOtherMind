@@ -39,6 +39,7 @@ namespace Testing
 
 		protected static volatile _TestSingleTon instance;
 		protected static object syncRoot = new Object();
+		public static string PATH_TO_SpeedTestFiles = @"C:\Users\Public\Documents\YourOtherMind\YourOtherMind\files\yomspeedtests2013\";
 		public static string PathToSendAwayEPUBTemplates = @"C:\Users\Public\Documents\YourOtherMind\YourOtherMind\Files\SendTextAwayControlFiles\epubfiles";
 		public static string BlankFileTest2 = @"C:\Users\Public\Documents\YourOtherMind\YourOtherMind\Files\brokenfiles2012\notbroken.txt";
 		public static string BlankFileTest1 = @"C:\Users\Public\Documents\YourOtherMind\YourOtherMind\Files\brokenfiles2012\brokenrtf_dec2012.rtf";

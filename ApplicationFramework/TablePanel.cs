@@ -1151,14 +1151,18 @@ namespace appframe
 		public void SetupColors (Color Primary, Color Secondary, Color Third, Color Four, Font font)
 		{
 			// we don't want to use the size specified by the incoming font as some of them are huge
-			dataGrid1.Font = new Font(font.FontFamily, 10);
+			dataGrid1.Font = new Font (font.FontFamily, 10);
 
 			dataGrid1.AlternatingRowsDefaultCellStyle.BackColor = Primary;
 			dataGrid1.AlternatingRowsDefaultCellStyle.ForeColor = Secondary;
 
 
-			dataGrid1.RowsDefaultCellStyle.BackColor =Third;
-			dataGrid1.RowsDefaultCellStyle.ForeColor =  Four;
+			dataGrid1.RowsDefaultCellStyle.BackColor = Third;
+			dataGrid1.RowsDefaultCellStyle.ForeColor = Four;
+
+			foreach (DataGridViewColumn column in dataGrid1.Columns) {
+				column.DefaultCellStyle.WrapMode = DataGridViewTriState.True;
+			}
 
 
 		}

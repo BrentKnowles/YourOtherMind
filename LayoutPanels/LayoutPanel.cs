@@ -1558,15 +1558,17 @@ namespace Layout
 
 			return note;
 		}
-		private void ShowAndFlash(NoteDataInterface note)
+		private void ShowAndFlash (NoteDataInterface note)
 		{
-			if (note.ParentNotePanel != null) {
-				// if we ever go to a note we make it visisble
-				note.Visible = true;
-				note.BringToFrontAndShow ();
-				note.Flash ();
-			} else {
-				lg.Instance.Line("LayoutPanel->GoToNote", ProblemType.MESSAGE, "Even with advanced search we did not find note");
+			if (note != null) {
+				if (note.ParentNotePanel != null) {
+					// if we ever go to a note we make it visisble
+					note.Visible = true;
+					note.BringToFrontAndShow ();
+					note.Flash ();
+				} else {
+					lg.Instance.Line ("LayoutPanel->GoToNote", ProblemType.MESSAGE, "Even with advanced search we did not find note");
+				}
 			}
 		}
 
@@ -1610,10 +1612,12 @@ namespace Layout
 			// at this point if the note does not have a parent (because it is a subnote and this is not instantiated when 
 			// searching
 			// then we need to search for it, to find it
-			if (note.ParentNotePanel == null && this.Controls != null && this.Controls.Count > 0) {
-				note = FindSubpanelNote(note);
+			if (note != null) {
+				if (note.ParentNotePanel == null && this.Controls != null && this.Controls.Count > 0) {
+					note = FindSubpanelNote (note);
 				
 				
+				}
 			}
 			
 			

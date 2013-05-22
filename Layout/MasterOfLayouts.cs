@@ -278,131 +278,138 @@ namespace Layout
 			/// 
 		public static List<NameAndGuid> GetListOfLayouts (string filter, string likename, bool FullTextSearch, LayoutPanelBase OverrideLayoutToUseToFindTable)
 		{
-			string test = Constants.BLANK;
-			if (filter.IndexOf ("CODE_KEYWORD_AUTO") > -1) {
-				// a keyword was clicked on the interface
-				// we now extract it from
-				//CODE_KEYWORD_AUTO, KEYWORD
-				string[] items = filter.Split (new char[1] {','});
-				if (items != null && items.Length == 2) {
-					string value = items [1];
-
-					test = String.Format ("{0} LIKE '%{1}%'", dbConstants.KEYWORDS, value);
-					//NewMessage.Show (test);
-				}
-			}
-
-
-			// cleanup on likename (can't have apostophes
-			if (likename.IndexOf ("\"") > 0) {
-				likename = likename.Replace ("\"", "");
-			}
-			if (likename.IndexOf ("'") > 0) {
-				likename = likename.Replace ("'", "");
-			}
-			
-			BaseDatabase MyDatabase = CreateDatabase ();
 			List<NameAndGuid> result = new List<NameAndGuid> ();
-			if (MyDatabase == null) {
-				throw new Exception ("Unable to create database in LoadFrom");
-			}
+			try {
+				string test = Constants.BLANK;
+				if (filter.IndexOf ("CODE_KEYWORD_AUTO") > -1) {
+					// a keyword was clicked on the interface
+					// we now extract it from
+					//CODE_KEYWORD_AUTO, KEYWORD
+					string[] items = filter.Split (new char[1] {','});
+					if (items != null && items.Length == 2) {
+						string value = items [1];
+
+						test = String.Format ("{0} LIKE '%{1}%'", dbConstants.KEYWORDS, value);
+						//NewMessage.Show (test);
+					}
+				}
+
+
+				// cleanup on likename (can't have apostophes
+				if (likename.IndexOf ("\"") > 0) {
+					likename = likename.Replace ("\"", "");
+				}
+				if (likename.IndexOf ("'") > 0) {
+					likename = likename.Replace ("'", "");
+				}
+			
+				BaseDatabase MyDatabase = CreateDatabase ();
+			
+				if (MyDatabase == null) {
+					throw new Exception ("Unable to create database in LoadFrom");
+				}
 
 
 
-			// it may be blank if we have done a Keyword click filter, from above
-			if (Constants.BLANK == test) {
-				test = LookupFilter (filter, OverrideLayoutToUseToFindTable); //"and notebook='Writing' ";
-			}
-			if (test != Constants.BLANK) {
-				// initial implementation influenced by needs of SUbmission list
-				// always has an existing Where clause (no subpanels) so we need to 
-				// predicate with an AND
-				test = String.Format ("and {0}", test);
-			}
-			if (Constants.BLANK == filter)
-				test = "";
+				// it may be blank if we have done a Keyword click filter, from above
+				if (Constants.BLANK == test) {
+					test = LookupFilter (filter, OverrideLayoutToUseToFindTable); //"and notebook='Writing' ";
+				}
+				if (test != Constants.BLANK) {
+					// initial implementation influenced by needs of SUbmission list
+					// always has an existing Where clause (no subpanels) so we need to 
+					// predicate with an AND
+					test = String.Format ("and {0}", test);
+				}
+				if (Constants.BLANK == filter)
+					test = "";
 
-			List<object[]> mySubpanellist = null;
-
-
+				List<object[]> mySubpanellist = null;
 
 
-			// Add a name filter
-			if (false == FullTextSearch && Constants.BLANK != likename) {
-				test = String.Format ("and name like '%{0}%'", likename);
-			} else if (true == FullTextSearch) {
-				// modify the query to handle full text searching
-				test = String.Format ("and xml like '%{0}%'", likename);
 
-				// we need to find subpanel items too
-				// this is, text stored in subpanel needs to register too, though this will be tricky.
-				mySubpanellist = MyDatabase.GetValues (dbConstants.table_name, new string[4] {dbConstants.GUID, dbConstants.NAME, dbConstants.BLURB
+
+				// Add a name filter
+				if (false == FullTextSearch && Constants.BLANK != likename) {
+					test = String.Format ("and name like '%{0}%'", likename);
+				} else if (true == FullTextSearch) {
+					// modify the query to handle full text searching
+					test = String.Format ("and xml like '%{0}%'", likename);
+
+					// we need to find subpanel items too
+					// this is, text stored in subpanel needs to register too, though this will be tricky.
+					mySubpanellist = MyDatabase.GetValues (dbConstants.table_name, new string[4] {dbConstants.GUID, dbConstants.NAME, dbConstants.BLURB
 					,dbConstants.WORDS},
 				dbConstants.SUBPANEL, 1, String.Format (" order by {0} COLLATE NOCASE", dbConstants.NAME), test);
-			}
+				}
 
 
 		
 
-			List<object[]> myList = MyDatabase.GetValues (dbConstants.table_name, new string[4] {dbConstants.GUID, dbConstants.NAME, dbConstants.BLURB
+				List<object[]> myList = MyDatabase.GetValues (dbConstants.table_name, new string[4] {dbConstants.GUID, dbConstants.NAME, dbConstants.BLURB
 			,dbConstants.WORDS},
 			dbConstants.SUBPANEL, 0, String.Format (" order by {0} COLLATE NOCASE", dbConstants.NAME), test);
 			
 
-			if (myList != null && myList.Count > 0) {
+				if (myList != null && myList.Count > 0) {
 				
-				foreach (object[] o in myList) {
-					NameAndGuid record = new NameAndGuid ();
-					record.Guid = o [0].ToString ();
-					record.Caption = o [1].ToString ();
-					record.Blurb = o [2].ToString ();
-					int Words = 0;
-					Int32.TryParse (o [3].ToString (), out Words);
-					record.Words = Words;
-					lg.Instance.Line ("MasterOfLayouts->GetListOfLayouts", ProblemType.MESSAGE, "adding to ListOfLayouts " + record.Caption);
-					result.Add (record);
-				}
-			}
-
-
-			//
-			// Search in Subpanels too
-			//
-
-			if (mySubpanellist != null && mySubpanellist.Count > 0) {
-				//NewMessage.Show ("Some search terms were found on subpanels");
-				foreach (object[] o in mySubpanellist) {
-					if (o [0].ToString () != Constants.BLANK) {
+					foreach (object[] o in myList) {
 						NameAndGuid record = new NameAndGuid ();
-						record.Guid = GetSubpanelsParent (o [0].ToString ());
-						if (record.Guid != Constants.BLANK) {
-
-							// we look for the master parent,
-							// if we have nested children
-							while (IsSubpanel(record.Guid) == true) {
-								record.Guid = GetSubpanelsParent (record.Guid);
-							}
-
-							if (ExistsByGUID (record.Guid) == false) {
-								NewMessage.Show (Loc.Instance.GetStringFmt ("Does not exist: {0} ", record.Guid));
-							}
-
-							record.Caption = GetNameFromGuid (record.Guid);
-							// don't bother adding if blank
-							if (record.Caption != Constants.BLANK) {
-								// also don't bother adding if already exists
-								record.Words = 0;
-								record.Blurb = "";
-								result.Add (record);
-							}
-						
-						}
-
+						record.Guid = o [0].ToString ();
+						record.Caption = o [1].ToString ();
+						record.Blurb = o [2].ToString ();
+						int Words = 0;
+						Int32.TryParse (o [3].ToString (), out Words);
+						record.Words = Words;
+						lg.Instance.Line ("MasterOfLayouts->GetListOfLayouts", ProblemType.MESSAGE, "adding to ListOfLayouts " + record.Caption);
+						result.Add (record);
 					}
 				}
-			}
 
-			MyDatabase.Dispose();
+
+				//
+				// Search in Subpanels too
+				//
+
+				if (mySubpanellist != null && mySubpanellist.Count > 0) {
+					//NewMessage.Show ("Some search terms were found on subpanels");
+					foreach (object[] o in mySubpanellist) {
+						if (o [0].ToString () != Constants.BLANK) {
+							NameAndGuid record = new NameAndGuid ();
+							record.Guid = GetSubpanelsParent (o [0].ToString ());
+							string nameofsubpanel = o [1].ToString ();
+							if (record.Guid != Constants.BLANK) {
+
+								// we look for the master parent,
+								// if we have nested children
+								while (IsSubpanel(record.Guid) == true && Constants.BLANK != record.Guid) {
+									record.Guid = GetSubpanelsParent (record.Guid);
+								}
+
+
+
+								record.Caption = GetNameFromGuid (record.Guid);
+								if (ExistsByGUID (record.Guid) == false) {
+									NewMessage.Show (Loc.Instance.GetStringFmt ("Does not exist: {0} Name: {1} Name of Subpanel: {2}", record.Guid, record.Caption, nameofsubpanel));
+								}
+								// don't bother adding if blank
+								if (record.Caption != Constants.BLANK) {
+									// also don't bother adding if already exists
+									record.Words = 0;
+									record.Blurb = "";
+									result.Add (record);
+								}
+						
+							}
+
+						}
+					}
+				}
+
+				MyDatabase.Dispose ();
+			} catch (Exception ex) {
+				NewMessage.Show (ex.ToString());
+			}
 			return result;
 		}
 		/// <summary>

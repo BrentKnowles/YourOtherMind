@@ -181,7 +181,7 @@ namespace Testing
 				stringoftypes = stringoftypes + " " + t.ToString();
 			}
 			panel.SaveLayout();
-			string base_path = @"C:\Users\BrentK\Documents\Keeper\Files\yomspeedtests2013\";
+			string base_path = _TestSingleTon.PATH_TO_SpeedTestFiles;//@"C:\Users\BrentK\Documents\Keeper\Files\yomspeedtests2013\";
 			_w.output ("here");
 			NoteDataXML_RichText richy;
 			for (int i = 0; i < 20; i ++) {
