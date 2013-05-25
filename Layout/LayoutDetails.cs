@@ -755,6 +755,32 @@ namespace Layout
 				writer.WriteLine(s);
 			}
 		}
+
+		int WriteANote (NoteDataInterface note, bool bGetWords, ref string sWordInformation, StreamWriter writer)
+		{
+			int words = 0;
+			if (note != null && (note is NoteDataXML_RichText))
+			{
+				RichTextBox tempBox = new RichTextBox();
+				tempBox.Rtf = note.Data1;
+				SaveTextLineByLine(writer, tempBox.Lines, note.Caption);
+				
+				if (true == bGetWords)
+				{
+					int Words = 
+						LayoutDetails.Instance.WordSystemInUse.CountWords(tempBox.Text);
+					words = Words;//TotalWords = TotalWords + Words;
+
+					
+					
+					
+					sWordInformation = sWordInformation + String.Format("{0}: {1}{2}", note.Caption, Words.ToString(), Environment.NewLine);
+				}
+				
+				tempBox.Dispose();
+			}
+			return words;
+		}
 		
 		/// <summary>
 		/// Goes through rich edit line by line saving to a plain text file
@@ -785,7 +811,7 @@ namespace Layout
 		{
 			string sWordInformation = "";
 			int TotalWords = 0;
-			
+			bool bGetWords = false;
 			
 			// certain Addins like spellchecking won't both writing a file out
 			if (sFilepath != Constants.BLANK) {
@@ -809,11 +835,11 @@ namespace Layout
 						// we now iterate through LinesOfText[1] to end and parse those instead
 						for (int i = 1; i < LinesOfText.Length; i++) {
 							string sLine = LinesOfText [i];
-							bool bGetWords = false;
+						
 							ArrayList ListOfParsePages = new ArrayList ();
 							
 
-
+							bool WordCountRequested = false;
 							if (LayoutDetails.Instance.GetCurrentMarkup().IsWordRequest(sLine))
 							 {
 
@@ -821,6 +847,7 @@ namespace Layout
 								sLine = LayoutDetails.Instance.GetCurrentMarkup().CleanWordRequest(sLine);
 								
 								bGetWords = true;
+								WordCountRequested  = true;
 							}
 
 							if (LayoutDetails.Instance.GetCurrentMarkup().IsGroupRequest(sLine)) {
@@ -830,7 +857,11 @@ namespace Layout
 								// we have a group
 								
 							} else {
+								if (false == WordCountRequested)
+								{
+									// at any point we encounter [[words]] we switch to counting words
 								ListOfParsePages.Add (sLine);
+								}
 							}
 							
 							if (ListOfParsePages != null)
@@ -842,27 +873,33 @@ namespace Layout
 								foreach (string notetoopen in ListOfParsePages) {
 									//	DrawingTest.NotePanel panel = ((mdi)_CORE_GetActiveChild()).page_Visual.GetPanelByName(notetoopen);
 									NoteDataInterface note = LayoutDetails.Instance.CurrentLayout.FindNoteByName(notetoopen);	
-									
 
-									if (note != null && (note is NoteDataXML_RichText))
+									if (note != null)
 									{
-										RichTextBox tempBox = new RichTextBox();
-										tempBox.Rtf = note.Data1;
-										SaveTextLineByLine(writer, tempBox.Lines, notetoopen);
-										
-										if (true == bGetWords)
+
+									// may 2013
+									// if a panel is specified then we open each note on that panel?
+										if (note.ListOfSubnotes() != null)
 										{
-											int Words = 
-												LayoutDetails.Instance.WordSystemInUse.CountWords(tempBox.Text);
-											TotalWords = TotalWords + Words;
-											
-											
-											
-											
-											sWordInformation = sWordInformation + String.Format("{0}: {1}{2}", notetoopen, Words.ToString(), Environment.NewLine);
+											// we don't know about panels directly at this level
+											// so we query if there are subnotes
+											// IF SO: then we parse them
+											foreach (string s in note.ListOfSubnotes())
+											{
+												NoteDataInterface subnote = LayoutDetails.Instance.CurrentLayout.FindNoteByName(s);	
+											//	subnote = LayoutDetails.Instance.CurrentLayout.GoToNote(subnote);
+												if (null != subnote)
+												{
+													TotalWords = TotalWords + WriteANote(subnote, bGetWords, ref sWordInformation, writer);
+												}
+											}
 										}
-										
-										tempBox.Dispose();
+										else
+										{
+											// just a normal note
+											TotalWords = TotalWords + WriteANote(note, bGetWords, ref sWordInformation, writer);
+										}
+
 									}
 								} //open each note list
 							}//list not nulls

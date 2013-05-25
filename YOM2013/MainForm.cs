@@ -347,39 +347,39 @@ namespace YOM2013
 		//	NewMessage.Show ("RANDOM NOTE: " + MasterOfLayouts.GetRandomNoteBy("notebook", "Writing"));
 		}
 
-		ToolStripMenuItem BuildTempExportMenu ()
-		{
-
-			ToolStripMenuItem exporter = new ToolStripMenuItem();
-			exporter.Text = Loc.Instance.GetString ("Import To New Version (TEMP)");
-			MainMenu.Items.Add (exporter);
-
-			ToolStripButton import = new ToolStripButton ("Import");
-			import.Click += HandleImportOldFilesClick;
-			exporter.DropDownItems.Add (import);
-			
-			
-			ToolStripButton ImportAllFromTempDirectory = new ToolStripButton("IMPORT DIrECTORY");
-			ImportAllFromTempDirectory.Click+= HandleImportAllFromDirectoryOfOldFilesCLICK;
-			exporter.DropDownItems.Add(ImportAllFromTempDirectory);
-			ToolStripButton importEvents = new ToolStripButton("import events");
-			importEvents.Click+= HandleImportEventClick;
-			exporter.DropDownItems.Add (importEvents);
-			
-			
-			
-			ToolStripMenuItem Test = new ToolStripMenuItem (Loc.Instance.GetString ("Delete Transaction Table"));
-			exporter.DropDownItems.Add (Test);
-			//	((ToolStripMenuItem)MainMenu.Items [0]).DropDownItems.Add (Save);
-			Test.Click += HandleTestClick;
-			
-			ToolStripMenuItem Test2 = new ToolStripMenuItem (Loc.Instance.GetString ("Run Through All Pages"));
-			exporter.DropDownItems.Add (Test2);
-			//	((ToolStripMenuItem)MainMenu.Items [0]).DropDownItems.Add (Save);
-			Test2.Click+= HandleTest2Click; ;
-
-			return exporter;
-		}
+//		ToolStripMenuItem BuildTempExportMenu ()
+//		{
+//
+//			ToolStripMenuItem exporter = new ToolStripMenuItem();
+//			exporter.Text = Loc.Instance.GetString ("Import To New Version (TEMP)");
+//			MainMenu.Items.Add (exporter);
+//
+//			ToolStripButton import = new ToolStripButton ("Import");
+//			import.Click += HandleImportOldFilesClick;
+//			exporter.DropDownItems.Add (import);
+//			
+//			
+//			ToolStripButton ImportAllFromTempDirectory = new ToolStripButton("IMPORT DIrECTORY");
+//			ImportAllFromTempDirectory.Click+= HandleImportAllFromDirectoryOfOldFilesCLICK;
+//			exporter.DropDownItems.Add(ImportAllFromTempDirectory);
+//			ToolStripButton importEvents = new ToolStripButton("import events");
+//			importEvents.Click+= HandleImportEventClick;
+//			exporter.DropDownItems.Add (importEvents);
+//			
+//			
+//			
+//			ToolStripMenuItem Test = new ToolStripMenuItem (Loc.Instance.GetString ("Delete Transaction Table"));
+//			exporter.DropDownItems.Add (Test);
+//			//	((ToolStripMenuItem)MainMenu.Items [0]).DropDownItems.Add (Save);
+//			Test.Click += HandleTestClick;
+//			
+//			ToolStripMenuItem Test2 = new ToolStripMenuItem (Loc.Instance.GetString ("Run Through All Pages"));
+//			exporter.DropDownItems.Add (Test2);
+//			//	((ToolStripMenuItem)MainMenu.Items [0]).DropDownItems.Add (Save);
+//			Test2.Click+= HandleTest2Click; ;
+//
+//			return exporter;
+//		}
 		public Font GetDefaultFont ()
 		{
 			Font font = SettingsInterfaceOptions.GetDefaultFont;
@@ -615,57 +615,57 @@ namespace YOM2013
 			}
 		}
 
-		void HandleImportAllFromDirectoryOfOldFilesCLICK (object sender, EventArgs e)
-		{
-			int count  = 0;
-			int countsubpanels = 0;
-			string directory = @"C:\temppicdirectory\importfiles";
-			string[] files = System.IO.Directory.GetFiles (directory);
-
-			//if (open.ShowDialog () == DialogResult.OK) {
-				TestAndSaveIfNecessary ();
-//			NewMessage.Show ("Count " + files.Length.ToString ());
-				foreach (string thefile in files)
-				{
-					if (thefile.IndexOf("panel") > -1)
-				{countsubpanels++;
-					//break; // we skip subpanels, they get imported implicitly.
-				     }
-				else
-				{
-				UpdateFooter(FootMessageType.LOAD, "Importing " + thefile);
-				FooterStatus.Invalidate();
-				count++;
-					
-					string guid = System.Guid.NewGuid().ToString();
-					//CurrentLayout = new LayoutPanel(Constants.BLANK);
-					
-					LayoutPanel newLayout = CreateLayoutContainer(guid);
-					newLayout.NewLayoutFromOldFile (guid, thefile, false);
-					
-					//newLayout.Dispose();
-				try
-				{
-					newLayout.SaveLayout();
-					MDIHOST.DoCloseNote(false);
-				}
-				catch (Exception ex)
-				{
-					NewMessage.Show ("Skipping" + ex.ToString ());
-				}
-				}	
-					
-					// not sure why this was set. We closeit, why would we have a pointer to it??
-					// Feb 2013 - THis line (once I added automatic saving) actually caused a blank version 
-					// of the Layout to be saved (presumably because it was CLOSED and then a save happened that 
-					// blanked the XML portions! [TODO: Can I replicate this to create a catch for this happening for real?]
-					//LayoutDetails.Instance.CurrentLayout = newLayout;
-				}
-				
-				
-				
-			NewMessage.Show (String.Format ("Imported {0} notes with {1} subpanels skipped from direct import with {2} files in fulll list", count, countsubpanels, files.Length));
-		}
+//		void HandleImportAllFromDirectoryOfOldFilesCLICK (object sender, EventArgs e)
+//		{
+//			int count  = 0;
+//			int countsubpanels = 0;
+//			string directory = @"C:\temppicdirectory\importfiles";
+//			string[] files = System.IO.Directory.GetFiles (directory);
+//
+//			//if (open.ShowDialog () == DialogResult.OK) {
+//				TestAndSaveIfNecessary ();
+////			NewMessage.Show ("Count " + files.Length.ToString ());
+//				foreach (string thefile in files)
+//				{
+//					if (thefile.IndexOf("panel") > -1)
+//				{countsubpanels++;
+//					//break; // we skip subpanels, they get imported implicitly.
+//				     }
+//				else
+//				{
+//				UpdateFooter(FootMessageType.LOAD, "Importing " + thefile);
+//				FooterStatus.Invalidate();
+//				count++;
+//					
+//					string guid = System.Guid.NewGuid().ToString();
+//					//CurrentLayout = new LayoutPanel(Constants.BLANK);
+//					
+//					LayoutPanel newLayout = CreateLayoutContainer(guid);
+//					newLayout.NewLayoutFromOldFile (guid, thefile, false);
+//					
+//					//newLayout.Dispose();
+//				try
+//				{
+//					newLayout.SaveLayout();
+//					MDIHOST.DoCloseNote(false);
+//				}
+//				catch (Exception ex)
+//				{
+//					NewMessage.Show ("Skipping" + ex.ToString ());
+//				}
+//				}	
+//					
+//					// not sure why this was set. We closeit, why would we have a pointer to it??
+//					// Feb 2013 - THis line (once I added automatic saving) actually caused a blank version 
+//					// of the Layout to be saved (presumably because it was CLOSED and then a save happened that 
+//					// blanked the XML portions! [TODO: Can I replicate this to create a catch for this happening for real?]
+//					//LayoutDetails.Instance.CurrentLayout = newLayout;
+//				}
+//				
+//				
+//				
+//			NewMessage.Show (String.Format ("Imported {0} notes with {1} subpanels skipped from direct import with {2} files in fulll list", count, countsubpanels, files.Length));
+//		}
 
 		void HandleRandomClick (object sender, EventArgs e)
 		{

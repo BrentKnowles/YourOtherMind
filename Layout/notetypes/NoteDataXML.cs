@@ -504,7 +504,10 @@ namespace Layout
 			}
 			return result;
 		}
-
+		public virtual System.Collections.Generic.List<string> ListOfSubnotes ()
+		{
+			return null;
+		}
 	
 
 #endregion;

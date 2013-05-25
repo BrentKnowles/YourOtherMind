@@ -95,6 +95,24 @@ namespace LayoutPanels
 			return layout.GetAllNotes();
 
 		}
+		// names of subnotes, if a panel or equivalent notes (used for accessiblity as NoteDataXML_Panel not alwasy available)
+		/// <summary>
+		/// Lists the of subnotes. JUST THE NAMES
+		/// 
+		/// </summary>
+		/// <returns>
+		/// The of subnotes.
+		/// </returns>
+		public override System.Collections.Generic.List<string> ListOfSubnotes ()
+		{
+			System.Collections.Generic.List<string> output = new System.Collections.Generic.List<string> ();
+			LayoutDatabase layout = new LayoutDatabase(this.GuidForNote);
+			layout.LoadFrom(null);
+			foreach (NoteDataInterface note in layout.GetAllNotes()) {
+				output.Add(note.Caption);
+			}
+			return output;
+		}
 		/// <summary>
 		/// Adds the note. (during a move operation. Called from LayoutPanel)
 		/// </summary>

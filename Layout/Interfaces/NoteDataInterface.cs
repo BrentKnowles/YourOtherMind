@@ -107,7 +107,8 @@ namespace Layout
 		string GetAbsoluteParent();
 		void EndDrag ();
 		void UpdateAfterLoad();
-
+		// names of subnotes, if a panel or equivalent notes (used for accessiblity as NoteDataXML_Panel not alwasy available)
+		System.Collections.Generic.List<string> ListOfSubnotes();
 		#endregion;
 	}
 
