@@ -458,7 +458,21 @@ namespace Layout
 
 		void HandleLinkNoteClick (object sender, EventArgs e)
 		{
-			LayoutDetails.Instance.PushLink(String.Format (CoreUtilities.Links.LinkTableRecord.PageLinkFormatString, Layout.GUID, GuidForNote));
+			string SourceContainerGUIDToUse = Layout.GUID;
+
+			// - Shouldn't the notes store the GUID of the Master Note (not the panel? they are in?) May 2013
+			//cannot use Layout.ParentGUIDFromNote -- it was blank
+			// OK: I was testing on a non-panel. So the issue becomes, can I use
+			// one of these with a panel and fall back when not?
+			if (Layout.ParentGuidFromNotes != Constants.BLANK)
+			{
+
+				SourceContainerGUIDToUse = Layout.ParentGuidFromNotes;
+			}
+			//NewMessage.Show(Layout.ParentGUID + " - " + Layout.GUID);
+
+			// May 2013 - adding the caption to the string encoding. This is pulled off of with SetLink
+			LayoutDetails.Instance.PushLink(String.Format (CoreUtilities.Links.LinkTableRecord.PageLinkFormatString, SourceContainerGUIDToUse, GuidForNote)+"*"+this.Caption);
 		}
 
 

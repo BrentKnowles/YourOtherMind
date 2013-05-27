@@ -126,6 +126,33 @@ namespace Layout
 			return result;
 		}
 		/// <summary>
+		/// Gets the list of children for the layoutGuid. (i.e., subpanels)
+		/// </summary>
+		/// <returns>
+		/// The list of children.
+		/// </returns>
+		/// <param name='layoutGuid'>
+		/// Layout GUID.
+		/// </param>/
+		public static List<string> GetListOfChildren (string layoutGuid)
+		{
+			List<string> children = new List<string>();
+			BaseDatabase MyDatabase = CreateDatabase ();
+			string sresult = Constants.BLANK;
+			
+			List<object[]> result = MyDatabase.GetValues(dbConstants.table_name, new string[1] {dbConstants.GUID}, dbConstants.PARENT_GUID, layoutGuid);
+			if (result != null && result.Count > 0)
+			{
+				foreach (object[] child in result)
+				{
+					children.Add(child[0].ToString ());
+				}
+			}
+			MyDatabase.Dispose();
+			return children;
+		}
+
+		/// <summary>
 		/// Gets the subpanels parent. Assumes is a subpanel.
 		/// </summary>
 		/// <returns>
@@ -712,6 +739,17 @@ namespace Layout
 						string guid = guids[0];
 					
 					string name = GetNameFromGuid(guid);
+
+					if (IsSubpanel(guid) == true)
+						{
+							// if we are a subpanel
+							string parentGuid = GetSubpanelsParent(guid);
+							if (ExistsByGUID(parentGuid) == true)
+							{
+								name = GetNameFromGuid(parentGuid);
+							}
+						}
+
 					result.Add (String.Format("{0}.{1}", name, guid));
 					}
 				}

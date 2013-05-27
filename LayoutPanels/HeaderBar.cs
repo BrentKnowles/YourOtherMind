@@ -564,7 +564,7 @@ namespace LayoutPanels
 		}
 		void GetInfo()
 		{
-			string messagestring = String.Format ("DateCreated={0}, DateEdited={1}, Hits={2}, Guid={3}", Notes.DateCreated,Notes.DateEdited,Notes.Hits, Layout.GUID);
+			string messagestring = Loc.Instance.GetStringFmt ("Created On={0}{4}Last Edited={1}{4}Visited={2}{4}ID={3}", Notes.DateCreated,Notes.DateEdited,Notes.Hits, Layout.GUID, Environment.NewLine);
 			info_form info = new info_form(messagestring, Layout.GUID);
 			info.ShowDialog();
 

@@ -519,11 +519,11 @@ namespace Layout
 			this.list.DataSource = null;
 			this.list.Items.Clear ();
 			
-		
+			string textToLookFor = TextEditor.Text.ToLower();
 			for (int i = Notes.Count - 1; i >= 0; i--) {
 				if (TextEditor.Text != Constants.BLANK) {
-					if (((NoteDataInterface)Notes [i]).Caption.IndexOf (TextEditor.Text) > -1) {
-						
+					if (((NoteDataInterface)Notes [i]).Caption.ToLower ().IndexOf (textToLookFor) > -1) {
+						// keeping
 					} else {
 						Notes.Remove (Notes [i]);
 					}

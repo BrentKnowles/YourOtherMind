@@ -181,6 +181,8 @@ namespace Layout
 				if (data != null && data.Length == 2) {
 					LinkLabel link = new LinkLabel ();
 					link.Tag = data [1];
+					link.Dock = DockStyle.Fill;
+					link.AutoSize = true;
 					link.Text = data [0];
 					link.LinkBehavior = LinkBehavior.AlwaysUnderline;
 					link.LinkClicked += HandleLinkClicked;

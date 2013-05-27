@@ -112,6 +112,22 @@ namespace Layout
 					{
 						// now retrieve parent
 						NoteDataInterface note = MasterOfLayouts.GetNoteFromInsideLayout(LayoutGuid, ChildGuid);
+
+						// TODO: if null then iterate through all CHILDREN PANELS???
+							if (null == note)
+							{
+							System.Collections.Generic.List<string> children = MasterOfLayouts.GetListOfChildren(LayoutGuid);
+								foreach (string child in children)
+								{
+									note = MasterOfLayouts.GetNoteFromInsideLayout(child, ChildGuid);
+									if (note != null)
+									{
+										break;
+									}
+								}
+							}
+
+
 						if (note != null)
 						{
 							if (true == note.IsLinkable)
@@ -270,8 +286,28 @@ namespace Layout
 			if (result == null) {
 				// add new
 				result = new LinkTableRecord();
+				string newCaption = Constants.BLANK;
+				// may 2013 - if we have a * it means we have a caption encoded at end of string and this neesd to be removed.
+				if (file.IndexOf("*") > -1)
+				{
+					string[] details = file.Split(new char[1]{'*'});
+					if (details != null && details.Length == 2)
+					{
+						file = details[0];
+						newCaption = details[1];
+						this.Caption = newCaption;
+					}
+				}
+
 				result.sFileName = file;
-				result.sExtra = String.Format (CoreUtilities.Links.LinkTableRecord.PageLinkFormatString, Layout.GUID, this.GuidForNote);
+
+
+				string SourceContainerGUIDToUse = Layout.GUID;
+			
+
+
+
+				result.sExtra = String.Format (CoreUtilities.Links.LinkTableRecord.PageLinkFormatString, SourceContainerGUIDToUse, this.GuidForNote);
 				result.sText = this.Caption;
 				
 				Layout.GetLinkTable ().Add (result);
