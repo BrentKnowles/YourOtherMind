@@ -53,6 +53,11 @@ namespace Layout
 				nameAndIdentifier = value;
 			}
 		}
+		public bool IsOver (string incoming)
+		{
+			return false;
+		}
+
 		public bool IsIndex (string incoming)
 		{
 			return false;

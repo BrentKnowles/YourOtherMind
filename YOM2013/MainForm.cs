@@ -385,6 +385,27 @@ namespace YOM2013
 			Font font = SettingsInterfaceOptions.GetDefaultFont;
 			return font;
 		}
+		private void CheckForUpdates ()
+		{
+			//Check for updates
+			string sparkupdatefile = "http://www.yourothermind.com/yomcast.xml";//update.applimit.com/netsparkle/versioninfo.xml
+
+			if (Settings.Betaupdates == true) {
+				sparkupdatefile = "http://www.yourothermind.com/yomcast_beta.xml";
+			}
+
+			try {
+				_sparkle = new Sparkle (sparkupdatefile); 
+				//_sparkle.ShowDiagnosticWindow = true;
+				_sparkle.StartLoop (true); 
+				
+				
+				lg.Instance.Line("MainForm.MainForm", ProblemType.MESSAGE, "Loading appcast: " + sparkupdatefile);
+			} catch (Exception ex) {
+				lg.Instance.Line("MainForm.MainForm", ProblemType.ERROR, "Sparkle was unable to find the update file " + ex.ToString());
+			}
+
+		}
 /// <summary>
 /// Initializes a new instance of the <see cref="YOM2013.MainForm"/> class.
 /// </summary>
@@ -402,18 +423,7 @@ namespace YOM2013
 		{
 
 			LayoutDetails.Instance.MainFormIcon = mainIcon;
-			//Check for updates
-			string sparkupdatefile = "http://www.yourothermind.com/yomcast.xml";//update.applimit.com/netsparkle/versioninfo.xml
-			try {
-				_sparkle = new Sparkle (sparkupdatefile); 
-				//_sparkle.ShowDiagnosticWindow = true;
-				_sparkle.StartLoop (true); 
-				
-				
-				lg.Instance.Line("MainForm.MainForm", ProblemType.MESSAGE, "Loading appcast: " + sparkupdatefile);
-			} catch (Exception ex) {
-				lg.Instance.Line("MainForm.MainForm", ProblemType.ERROR, "Sparkle was unable to find the update file " + ex.ToString());
-			}
+		
 
 			LayoutDetails.Instance.GetDefaultFont+= GetDefaultFont;
 			
@@ -575,6 +585,9 @@ namespace YOM2013
 			LayoutDetails.Instance.GetListOfAppearancesDelegate+=SettingsInterfaceOptions.GetListOfAppearances;
 		    optionPanels.Add(Settings);
 			optionPanels.Add (SettingsInterfaceOptions);
+
+
+			CheckForUpdates();
 
 
 			FontSizeChanged ();
@@ -1515,7 +1528,12 @@ namespace YOM2013
 				if (LayoutsOpen.Count>0)
 				{
 //					LayoutDetails.Instance.CurrentLayout=LayoutsOpen[0].LayoutPanel;
-					GotoExistingLayout( LayoutsOpen[0].Container,LayoutsOpen[0].LayoutPanel);
+
+					// June 2013 - want it to open to the last open instead of the first
+					// just makes more sense if we have a lot of layouts open, generally you want to close the newer ones down
+
+
+					GotoExistingLayout( LayoutsOpen[LayoutsOpen.Count-1].Container,LayoutsOpen[LayoutsOpen.Count-1].LayoutPanel);
 
 				}
 				else

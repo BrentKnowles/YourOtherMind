@@ -80,9 +80,11 @@ struct checkBoxOptions
 				defaultValue =defaultvalue;
 			}
 }
-		checkBoxOptions[] booleanValues = new checkBoxOptions[2] {
+		checkBoxOptions[] booleanValues = new checkBoxOptions[3] {
 			new checkBoxOptions(Loc.Instance.GetString("Autosave?"), "autosave", "tt", true),
-			new checkBoxOptions(Loc.Instance.GetString("Multiple Screens - Set Height to Highest?"), "multiscreenhigh", "tt", false)};
+			new checkBoxOptions(Loc.Instance.GetString("Multiple Screens - Set Height to Highest?"), "multiscreenhigh", "tt", false),
+			new checkBoxOptions(Loc.Instance.GetString ("Beta Updates (allows updating to beta versions)"), "betaversions","tt", false)
+		};
 
 		string dataPath = CoreUtilities.Constants.BLANK;
 		#endregion
@@ -98,6 +100,12 @@ struct checkBoxOptions
 
 		public void Dispose ()
 		{
+		}
+		public bool Betaupdates {
+			get {
+				checkBoxOptions defaultValue = Array.Find (booleanValues, checkBoxOptions => checkBoxOptions.columnKey == "betaversions");
+				return GetOption ("betaversions", defaultValue.defaultValue);
+			}
 		}
 
 		public bool Autosave {
@@ -212,7 +220,7 @@ struct checkBoxOptions
 				"TEXT",
 				"TEXT"
 					
-			}, "id"
+			}, columnID
 			);
 			return db;
 		}
@@ -228,7 +236,9 @@ struct checkBoxOptions
 		
 
 			BaseDatabase db = CreateDatabase ();
-
+//			string result = (db as SqlLiteDatabase).BackupTable("",TableName ,null); 
+//			NewMessage.Show (result);
+			//return;
 
 			foreach (checkBoxOptions option in booleanValues) {
 
@@ -241,13 +251,24 @@ struct checkBoxOptions
 			
 					string key = option.columnKey;
 					bool booleanvalue = checker.Checked;
+					try
+					{
 					if (!db.Exists (TableName, columnKey, key)) {
+
+							// if we were updating multiple AND we have to add a new key, we need to terminate the multiple update
+							if (db.IsInMultipleUpdateMode() == true) db.UpdateMultiple_End();
+
 						db.InsertData (TableName, new string[2]{columnKey, columnValue}, new object[2] {key, booleanvalue});
 					}
 					else
 					{
 						if (db.IsInMultipleUpdateMode() == false) db.UpdateMultiple_Start ();
 						db.UpdateDataMultiple (TableName, new string[1] {columnValue}, new object[1] {booleanvalue}, columnKey, key);
+					}
+					}
+					catch (Exception ex)
+					{
+						NewMessage.Show ("Are we in the middle of updating one value while inserting a new value? " + ex.ToString());
 					}
 
 

@@ -505,7 +505,22 @@ namespace Testing
 			Assert.AreEqual (true,MasterOfLayouts.IsSubpanel("panela"),"2");
 			Assert.AreEqual (true,MasterOfLayouts.ExistsByGUID("mynewpanel"),"3");
 			Assert.AreEqual (false,MasterOfLayouts.IsSubpanel("mynewpanel"),"4");
-				
+
+			System.Collections.Generic.List<string> children = MasterOfLayouts.GetListOfChildren("mynewpanel");
+			Assert.AreEqual(1, children.Count);
+
+			FAKE_NoteDataXML_Panel panelB = new FAKE_NoteDataXML_Panel ();
+			panelB.Caption = "PanelB";
+			panelB.GuidForNote = "panelB";
+			panel.AddNote (panelB);
+			panelB.CreateParent (panel);
+			
+			panel.SaveLayout ();
+
+			children = MasterOfLayouts.GetListOfChildren("mynewpanel");
+			Assert.AreEqual(2, children.Count);
+			Assert.AreEqual ("panela", children[0]);
+			Assert.AreEqual ("panelB", children[1]);
 
 		}
 		/// <summary>

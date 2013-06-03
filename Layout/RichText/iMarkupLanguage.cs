@@ -40,7 +40,7 @@ namespace Layout
 		bool IsIndex(string incoming);
 		bool IsWordRequest(string incoming);
 		string CleanWordRequest(string incoming);
-
+		bool IsOver(string incoming);
 		bool IsGroupRequest(string incoming);
 		ArrayList GetListOfPages(string sLine, ref bool bGetWords);
 

@@ -211,7 +211,7 @@ namespace database
 		/// File.
 		/// </param>
 		public abstract string BackupDatabase();
-		
+
 
 		/// <summary>
 		/// Creates the table if does not exist.

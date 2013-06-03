@@ -438,6 +438,8 @@ namespace database
 				SQLiteConnection sqliteCon =updateMultiple_sqlTransaction.Connection;
 				updateMultiple_sqlTransaction.Commit ();
 				sqliteCon.Close ();
+				// may 2013 - we need to ensure we don't try to updatemultiple end twice!
+				updateMultiple_sqlTransaction = null;
 			} catch (Exception ex) {
 				throw new Exception(ex.ToString ());
 				//NewMessage.Show (ex.ToString());
@@ -1024,6 +1026,46 @@ namespace database
 			return ListOfTables;
 		}
 
+		public  string BackupTable (string result, string Table, object sqliteCon)
+		{
+			bool MadeMyOwnConnection = false;
+			if (null == sqliteCon) {
+				sqliteCon = new SQLiteConnection (Connection_String);
+				MadeMyOwnConnection = true;
+				(sqliteCon as SQLiteConnection).Open ();
+			}
+			result = result + ("Writing Table = " + Table) + Environment.NewLine;
+			// Now write individual tables
+			string selectSQL = String.Format ("SELECT * from {0}", Table);
+			
+			SQLiteCommand selectCommand = new SQLiteCommand (selectSQL , (sqliteCon as SQLiteConnection));
+			SQLiteDataReader dataReader = selectCommand.ExecuteReader ();
+
+
+			// Iterate every record in the AppUser table
+			while (dataReader.Read()) {
+				
+				for (int i = 0; i < dataReader.FieldCount; i++) {
+					result = result + (dataReader.GetName (i) + " |" + dataReader [i].ToString ()) + Environment.NewLine;
+					//	Console.WriteLine ("");
+				}
+				result = result + ("*******************") + Environment.NewLine;
+				/*Console.WriteLine("**Reading a line**");
+					string id = dataReader["id"].ToString();
+					string guid = dataReader["guid"].ToString();
+					string xml = dataReader["xml"].ToString().Substring (0, Math.Min (25, dataReader["xml"].ToString().Length)); //dataReader["xml"].ToString();
+					string status = dataReader["status"].ToString();//.Substring (0, Math.Min (25, dataReader["xml"].ToString().Length)); //dataReader["xml"].ToString();
+					Console.WriteLine (String.Format ("id={0} | guid={1} |xml= {2}|status = {3}", id, guid, xml,status));
+					//Console.WriteLine ("Name: " + dataReader.GetString (0)					                   + " Username: " + dataReader.GetString (1));
+					*/
+			}
+			if (MadeMyOwnConnection) {
+				(sqliteCon as SQLiteConnection).Close ();
+			}
+
+			return result;
+		}
+
 //		public override List<DataRow> GetRowsChangedSince (DateTime Since)
 //		{
 //			// only write out 'master rows'
@@ -1066,32 +1108,12 @@ ORDER BY name;
 
 				foreach (string Table in ListOfTables)
 				{
-					result = result + ("Writing Table = " + Table)+ Environment.NewLine;;
 
-				// Now write individual tables
-					string selectSQL = String.Format ("SELECT * from {0}", Table);
+					result = BackupTable (result, Table, sqliteCon);
 
-				selectCommand = new SQLiteCommand (selectSQL, sqliteCon);
-				dataReader = selectCommand.ExecuteReader ();
 			
-				// Iterate every record in the AppUser table
-				while (dataReader.Read()) {
-
-					for (int i = 0 ; i < dataReader.FieldCount; i++)
-					{
-							result = result +  (dataReader.GetName(i) + " |" +   dataReader[i].ToString())+ Environment.NewLine;
-					//	Console.WriteLine ("");
-					}
-					result = result + ("*******************") + Environment.NewLine;
-					/*Console.WriteLine("**Reading a line**");
-					string id = dataReader["id"].ToString();
-					string guid = dataReader["guid"].ToString();
-					string xml = dataReader["xml"].ToString().Substring (0, Math.Min (25, dataReader["xml"].ToString().Length)); //dataReader["xml"].ToString();
-					string status = dataReader["status"].ToString();//.Substring (0, Math.Min (25, dataReader["xml"].ToString().Length)); //dataReader["xml"].ToString();
-					Console.WriteLine (String.Format ("id={0} | guid={1} |xml= {2}|status = {3}", id, guid, xml,status));
-					//Console.WriteLine ("Name: " + dataReader.GetString (0)					                   + " Username: " + dataReader.GetString (1));
-					*/
-				}
+			
+				
 				
 				} // Writing out tables
 				dataReader.Close ();

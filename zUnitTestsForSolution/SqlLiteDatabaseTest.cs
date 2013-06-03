@@ -105,11 +105,14 @@ namespace Testing
 		/// </summary>
 		[Test()]
 		[ExpectedException]
-		public void AddingToUniqueColumn()
+		public void AddingToUniqueColumn ()
 		{
 			// Create a test database
-			FAKE_SqlLiteDatabase db =CreateTestDatabase(String.Format ("{0}", dbConstants.GUID));
-		Console.WriteLine("First insert should work");
+			FAKE_SqlLiteDatabase db = CreateTestDatabase (String.Format ("{0}", dbConstants.GUID));
+			Console.WriteLine ("First insert should work");
+			if (db.Exists ("boo", dbConstants.XML, "z")) {
+			};
+
 			db.InsertData (dbConstants.table_name, new string[3] {
 				dbConstants.STATUS,
 				dbConstants.XML,

@@ -826,9 +826,10 @@ namespace Layout
 					//						NewMessage.Show (Loc.Instance.GetString ("The current markup does not support Sending-Away files correctly. Did you forget to set the current markup in the Options menu?"));
 					//												if (LayoutDetails.Instance.CurrentLayout.CurrentTextNote is NoteData
 					//					}
-					
+					ArrayList ListOfParsePages = new ArrayList ();
 					if (LayoutDetails.Instance.GetCurrentMarkup().IsIndex(LinesOfText [0].ToLower ()) == true)
 					{
+
 						//if (LinesOfText [0].ToLower () == "[[index]]") {
 						// we are actually an index note
 						// which will instead list a bunch of other pages to use
@@ -836,10 +837,17 @@ namespace Layout
 						for (int i = 1; i < LinesOfText.Length; i++) {
 							string sLine = LinesOfText [i];
 						
-							ArrayList ListOfParsePages = new ArrayList ();
+
 							
 
 							bool WordCountRequested = false;
+							if (LayoutDetails.Instance.GetCurrentMarkup().IsOver(sLine))
+							{
+								// if we hit a manual terminate then we exit adding pages
+								// this is used if we want notes on an index page but
+								// don't want to waste time trying to parse them
+								break;
+							}
 							if (LayoutDetails.Instance.GetCurrentMarkup().IsWordRequest(sLine))
 							 {
 
@@ -864,55 +872,68 @@ namespace Layout
 								}
 							}
 							
-							if (ListOfParsePages != null)
-							{
-								// Now we go through the pages and write them into the text file
-								// feb 19 2010 - added because chapter notes were not coming out in alphaetical
-								ListOfParsePages.Sort ();
-								
-								foreach (string notetoopen in ListOfParsePages) {
-									//	DrawingTest.NotePanel panel = ((mdi)_CORE_GetActiveChild()).page_Visual.GetPanelByName(notetoopen);
-									NoteDataInterface note = LayoutDetails.Instance.CurrentLayout.FindNoteByName(notetoopen);	
 
-									if (note != null)
-									{
-
-									// may 2013
-									// if a panel is specified then we open each note on that panel?
-										if (note.ListOfSubnotes() != null)
-										{
-											// we don't know about panels directly at this level
-											// so we query if there are subnotes
-											// IF SO: then we parse them
-											foreach (string s in note.ListOfSubnotes())
-											{
-												NoteDataInterface subnote = LayoutDetails.Instance.CurrentLayout.FindNoteByName(s);	
-											//	subnote = LayoutDetails.Instance.CurrentLayout.GoToNote(subnote);
-												if (null != subnote)
-												{
-													TotalWords = TotalWords + WriteANote(subnote, bGetWords, ref sWordInformation, writer);
-												}
-											}
-										}
-										else
-										{
-											// just a normal note
-											TotalWords = TotalWords + WriteANote(note, bGetWords, ref sWordInformation, writer);
-										}
-
-									}
-								} //open each note list
-							}//list not nulls
 							//                            panel.Dispose(); Don't think I can do this becauseit would dlette hte note, benig an ojbect
-							ListOfParsePages = null;
+							// may 2013 - moving the iteration outside generation loopListOfParsePages = null;
 							
 						}
 					} else {
+						// not an index
 						SaveTextLineByLine (writer, LinesOfText, "");
 					}
-					
+
+
+					if (ListOfParsePages != null)
+					{
+						// Now we go through the pages and write them into the text file
+						// feb 19 2010 - added because chapter notes were not coming out in alphaetical
+						ListOfParsePages.Sort ();
+
+						foreach (string notetoopen in ListOfParsePages) {
+							//	DrawingTest.NotePanel panel = ((mdi)_CORE_GetActiveChild()).page_Visual.GetPanelByName(notetoopen);
+							NoteDataInterface note = LayoutDetails.Instance.CurrentLayout.FindNoteByName(notetoopen);	
+							
+							if (note != null)
+							{
+								
+								// may 2013
+								// if a panel is specified then we open each note on that panel?
+								if (note.ListOfSubnotes() != null)
+								{
+									// we don't know about panels directly at this level
+									// so we query if there are subnotes
+									// IF SO: then we parse them
+
+									// may 27 2013 - also need to sort subpages coming from a panel
+
+									List<string> subpages = note.ListOfSubnotes();
+									subpages.Sort ();
+									foreach (string s in subpages)
+									{
+										NoteDataInterface subnote = LayoutDetails.Instance.CurrentLayout.FindNoteByName(s);	
+										//	subnote = LayoutDetails.Instance.CurrentLayout.GoToNote(subnote);
+										if (null != subnote)
+										{
+											TotalWords = TotalWords + WriteANote(subnote, bGetWords, ref sWordInformation, writer);
+										}
+									}
+								}
+								else
+								{
+									// just a normal note
+									TotalWords = TotalWords + WriteANote(note, bGetWords, ref sWordInformation, writer);
+								}
+								
+							}
+						} //open each note list
+					}//list not nulls
+
 					writer.Close ();
 					writer.Dispose ();
+
+
+
+
 					if (sWordInformation != "") {
 						string sResult = Loc.Instance.GetStringFmt ("Total Words:{0}\n{1}", TotalWords.ToString (), sWordInformation);
 						Clipboard.SetText (sResult);
