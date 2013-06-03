@@ -181,7 +181,12 @@ namespace Testing
 			// could not actually replicate the bug but figured I'd leave this in as a baseline.
 			PerformTest("bug002.txt");
 		}
-
+		[Test]
+		public void MultipleAlignments_AndExtraBulletAtListEnd()
+		{
+			// could not actually replicate the bug but figured I'd leave this in as a baseline.
+			PerformTest("multiplealignments.txt");
+		}
 		[Test]
 		public void TestHeadings()
 		{
