@@ -56,6 +56,8 @@ namespace Layout
 		#region formcontrols
 		protected RichTextExtended richBox ;
 		protected ToolStripComboBox MarkupCombo;
+		// right -click toggles
+		protected NoteNavigation bookMarkView = null;
 		#endregion
 
 		// mutex to prevent markup list from calling update when loading
@@ -207,7 +209,8 @@ namespace Layout
 			richBox.TextChanged += HandleTextChanged;
 			richBox.ReadOnly = this.ReadOnly;
 			richBox.HideSelection = false; // must be able to see focus form other controls
-
+			captionLabel.MouseDown += HandleMouseDownOnCaptionLabel;
+			//CaptionLabel.MouseHover += HandleCaptionMouseHover;
 			MarkupCombo = new ToolStripComboBox ();
 			MarkupCombo.ToolTipText = Loc.Instance.GetString ("AddIns allow text notes to format text. A global option controls the default markup to use on notes but this may be overridden here.");
 		//	LayoutDetails.Instance.BuildMarkupComboBox (MarkupCombo);
@@ -237,6 +240,38 @@ namespace Layout
 			// we use markup tag to indicate whether the data on the markup combo has changed to avoid slowness in save
 			MarkupCombo.Tag = false;
 			loadingcombo = false;
+		}
+
+
+		void HandleMouseDownOnCaptionLabel (object sender, MouseEventArgs e)
+		{
+			if (e.Button == MouseButtons.Right) {
+				if (ParentNotePanel != null) {
+
+					if (null == bookMarkView || bookMarkView.Visible == false)
+					{
+						if (null != bookMarkView)
+						{
+							ParentNotePanel.Controls.Remove(bookMarkView);
+						}
+							
+						bookMarkView = new NoteNavigation (this);
+						bookMarkView.Location = new Point (richBox.Location.X, richBox.Location.Y);
+					
+						bookMarkView.Height = richBox.Height;
+						bookMarkView.Width = (int)richBox.Width / 2;
+						bookMarkView.Visible = true;
+						bookMarkView.Dock = DockStyle.Left;
+						ParentNotePanel.Controls.Add (bookMarkView);
+						bookMarkView.UpdateListOfBookmarks();
+
+					}
+					else
+					{
+						bookMarkView.Visible = false;
+					}
+				}
+			}
 		}
 
 		void HandleRichTextSelectionChanged (object sender, EventArgs e)
@@ -410,6 +445,15 @@ namespace Layout
 		{
 			richBox.SaveFile (sFile, RichTextBoxStreamType.RichText);
 		}
+
+		public void ScrollToNearPosition ()
+		{
+			if (richBox != null) {
+				richBox.ScrollNearPosition(richBox.SelectionStart);
+			}
+		}
+
+	
 	}
 }
 

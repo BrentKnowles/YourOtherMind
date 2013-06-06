@@ -84,6 +84,10 @@ namespace Layout
 		{
 			return false;
 		}
+		public System.Collections.Generic.List<TreeItem> BuildList (NoteDataXML_RichText RichText)
+		{
+			return null;
+		}
 	}
 }
 

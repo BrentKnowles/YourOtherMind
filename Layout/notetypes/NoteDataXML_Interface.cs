@@ -93,6 +93,8 @@ namespace Layout
 				CaptionLabel.SuspendLayout (); //minor, fraction of a second savings
 				CaptionLabel.Font = app.captionFont;   //1
 				this.CaptionLabel.Height = app.nHeaderHeight; //2
+			//	SystemInformation.MouseHoverTime = 1000;
+			
 
 
 				ParentNotePanel.BorderStyle = app.mainPanelBorderStyle; //3
@@ -110,6 +112,8 @@ namespace Layout
 			return app;
 
 		}
+
+	
 		 
 		// this is overrideen by children to updat their own controls colors
 		protected virtual void DoChildAppearance (Layout.AppearanceClass app)

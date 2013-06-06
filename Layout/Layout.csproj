@@ -81,6 +81,7 @@
     <Compile Include="RichText\CursorPositionclass.cs" />
     <Compile Include="notetypes\timeline\StringListConverter.cs" />
     <Compile Include="NoteTypeDetails.cs" />
+    <Compile Include="NoteNavigation.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

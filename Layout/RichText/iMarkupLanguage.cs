@@ -43,8 +43,22 @@ namespace Layout
 		bool IsOver(string incoming);
 		bool IsGroupRequest(string incoming);
 		ArrayList GetListOfPages(string sLine, ref bool bGetWords);
-
+		List<TreeItem> BuildList (NoteDataXML_RichText RichText);
 		void DoPaint(PaintEventArgs e, int Start, int End, RichTextBox RichText);
+	}
+
+	public class TreeItem :IComparable {
+		public string Name;
+		public int Level; 
+		public int Position; // position in text
+		public TreeItem(string name, int level, int position) {
+			Name = name;
+			Level = level;
+			Position = position;
+		}
+		public int CompareTo(object other) {
+			return Position.CompareTo(((TreeItem)other).Position);
+		}
 	}
 }
 
