@@ -47,7 +47,18 @@ namespace CoreUtilities
 		#region const
 		// when to write out the log
 
-		protected const int BUFFER_LINES=20; 
+		protected int bUFFER_LINES=20;
+
+		public int BUFFER_LINES {
+			get {
+				return bUFFER_LINES;
+			}
+			set {
+				bUFFER_LINES = value;
+			}
+		}
+
+ 
 		public const string LOG_FILE = "yom2013log.txt";
 		#endregion
 
@@ -149,6 +160,17 @@ namespace CoreUtilities
 				Line(Routine, Problem, Details, Loud.ACRITICAL);
 		}
 
+		// this allows us to override the console writing behavior
+		// useful for unity
+		public Action<string> ConsoleWriter = null;
+		void ConsoleIt (string log)
+		{
+			if (ConsoleWriter == null) {
+				Console.WriteLine (log);
+			} else {
+				ConsoleWriter(log);
+			}
+		}
 	
 	
 		//[Conditional("SHOWLOGS")]
@@ -177,9 +199,13 @@ namespace CoreUtilities
 				if (null == LogLines) LogLines = new List<string>();
 
 				LogLines.Add (log);
-				if (OutputToConstoleToo) Console.WriteLine(log);
+				if (OutputToConstoleToo)
+				{
+					ConsoleIt(log);
 
-				if (LogLines.Count >= BUFFER_LINES) {
+				}
+
+				if (LogLines.Count >= bUFFER_LINES) {
 					WriteLog ();
 				}
 			}

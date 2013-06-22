@@ -132,6 +132,10 @@
       <Project>{9FF7431C-7CEC-4806-8242-7766EFB8DF5D}</Project>
       <Name>Addin_Worklog</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\Addins\Addin_YourothermindMarkup\Addin_YourothermindMarkup.csproj">
+      <Project>{A04A0908-E383-4ED9-9DBA-FB1B63041CB4}</Project>
+      <Name>Addin_YourothermindMarkup</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="ClassesUsedInTesting\" />

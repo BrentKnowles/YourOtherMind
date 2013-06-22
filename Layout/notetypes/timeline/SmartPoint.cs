@@ -38,11 +38,13 @@ namespace Timeline
 		public int x;
 		public int y;
 		public string s;
-		public SmartPoint(int x, int y, string s)
+		public string label;
+		public SmartPoint(int x, int y, string s, string caption)
 		{
 			this.x = x;
 			this.y = y;
 			this.s = s;
+			this.label = caption;
 		}
 	}
 }

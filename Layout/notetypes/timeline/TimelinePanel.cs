@@ -42,6 +42,7 @@ namespace Timeline
 	public class NotePanelTimeline : Panel
 	{
 		#region variables
+		private Hashtable colorHash;
 		public	Color GradientColor1 = Color.Pink;
 		public	Color GradientColor2 = Color.Green;
 		public LinearGradientMode GradientMode= LinearGradientMode.Horizontal;
@@ -236,6 +237,7 @@ namespace Timeline
 			this.panel1.Controls.Add(this.panelZoomIn);
 			this.panel1.Controls.Add(this.panelZoomOut);
 			this.panel1.Cursor = System.Windows.Forms.Cursors.SizeAll;
+		//	this.panel1.MouseHover+= HandleMouseHover;;
 			this.panel1.Paint += new System.Windows.Forms.PaintEventHandler(this.panel1_Paint);
 			this.panel1.MouseDown += new System.Windows.Forms.MouseEventHandler(this.panel1_MouseDown);
 			this.panel1.Resize += new System.EventHandler(this.panel1_Resize);
@@ -315,6 +317,31 @@ namespace Timeline
 			this.ResumeLayout(false);
 			
 		}
+
+//		void HandleMouseHover (object sender, EventArgs e)
+//		{
+//			if (smartPoints != null)
+//			{
+//				foreach(SmartPoint smart in smartPoints)
+//				{
+//					Point point = System.Windows.Forms.Cursor.Current.HotSpot;
+//					if ( (point.X >= smart.x && point.X <= smart.x+10) && (point.Y >= smart.y && point.Y <= smart.y+10))
+//					{
+//						//Message Box.Show(smart.s);
+//						//VirtualDesktop myParent = (VirtualDesktop)this.Parent.Parent;
+//						if (smart.s != null && smart.s.Length > 0 && smart.s[0] == '*')
+//						{
+//							// may 2012 - if clicking on a note from a DataTable we
+//							// should pop open the secondary information
+//							NewMessage.Show(smart.s);
+//						}
+//						//else
+//						//	myParent.OpenNoteWindow(smart.s, this, this.Left, this.Height);
+//						return;
+//					}
+//				}
+//			}
+//		}
 #endregion
 		
 	
@@ -325,13 +352,16 @@ namespace Timeline
 		/// </summary>
 		/// <param name="s"></param>
 		/// <param name="nNumberFound"></param>
+		/// <param name="AutoIcon">if > 0 will generate an auto icon, with this number</param>
 		private void AddTimelineNote(string s, int nImage, ref int nNumberFound,
 		                             int i,
 		                             System.Windows.Forms.PaintEventArgs e,
-		                             string sCaption)
+		                             string sCaption, int cellWidth, int AutoIcon, string ColumnData3, int chapter)
 		{ // october 20 2008 - filters out entries with DELETE_ENtry to allow proper deletion
 			// if (sCaption != DELETE_ENTRY)
 			{
+			
+
 				int nVert = 0; // starts off stacking vertically but will do one more colum
 				
 				// this keeps track of how many we found so that we can
@@ -349,23 +379,105 @@ namespace Timeline
 				
 				int nImageIndex = nImage;
 				
+				string originalcaption = sCaption;
+				
+				if (sCaption != "" && sCaption != DELETE_ENTRY/*and option to show aptions*/)
+				{
+					bool adjusted = false;
+
+					while (e.Graphics.MeasureString(sCaption, dayTextFont).Width+1 > cellWidth)
+					{
+						sCaption = sCaption.Substring(0, sCaption.Length/2);
+						adjusted = true;
+//						e.Graphics.DrawString(newCaption, dayTextFont, dayTextBrush, nLeft + 16,
+//						                      nTop);
+					}
+					//else
+					{
+						if (true == adjusted)
+						{
+							sCaption = sCaption +"...";
+						}
+					e.Graphics.DrawString(sCaption, dayTextFont, dayTextBrush, nLeft + 16,
+					                      nTop);
+						if (false == adjusted)
+						{
+							// now blank the captionb ecause we DO NOT WANT
+							// a tooltip for those that don't need it
+							originalcaption = "";
+						}
+					}
+				}
+
+
+
 				if (nImageIndex != -1)
 				{
-
+					
 					if (nImageIndex > imageList1.Images.Count-1)
 					{
 						// to avoid user putting in icons that do not exist
 						nImageIndex = 0;
 					}
+					if (AutoIcon > 0)
+					{
+						if (colorHash == null)
+						{
+							colorHash = new Hashtable();
+						}
+						Color[] ColorsToUse = new Color[10]{Color.Blue, Color.Red, Color.Green, Color.Yellow, Color.Purple,
+							Color.Black, Color.White, Color.Brown, Color.LightBlue, Color.Orange};
+						int ColorToUseIdx = 0;
+						//we halve the count because we are adding both COLOR and COUNT PER CATEGORY
+						// so we have 2x as many entries
+						if (colorHash.Count/2 < ColorsToUse.Length-1)
+						{
+							ColorToUseIdx = colorHash.Count/2;
+						}
+						Color ColorForBackGround = Color.Black;
+						if (colorHash[ColumnData3] == null)
+						{
+							colorHash.Add (ColumnData3, ColorsToUse[ColorToUseIdx]);
+							ColorForBackGround = ColorsToUse[ColorToUseIdx];
+						}
+						else
+						{
+							ColorForBackGround = (Color)colorHash[ColumnData3];
+						}
+						General.TextToImageAppearance app = new General.TextToImageAppearance();
+						app.BackgroundColor = ColorForBackGround;
+						app.FrameColor = Color.White;
+						app.TitleColor = CoreUtilities.TextUtils.InvertColor(app.BackgroundColor);
+						app.TitleFont = new Font("Garamond", 10.0f, FontStyle.Bold);
 
+						// now we need to figure out the number of items (because some columns can be double upped and we want to autoincrmenet numbers
+						int numbertoshow = 1;
+						if (colorHash[ColumnData3+"count"] == null)
+						{
+							colorHash.Add (ColumnData3+"count", 1);
+						}
+						else
+						{
+							colorHash[ColumnData3+"count"] = ((int)colorHash[ColumnData3+"count"])+1;
+							numbertoshow =  ((int)colorHash[ColumnData3+"count"]);
+						}
+						string sChapter ="";
+						string spacing = " ";
+						if (chapter > 0)
+						{
+							sChapter = "(" + chapter.ToString()+")";
+							// we trim this up a bit so it does not take up too much room
+							spacing = "";
+						}
+						Bitmap b = CoreUtilities.General.CreateBitmapImageFromText(spacing+ numbertoshow+sChapter+spacing,"", General.FromTextStyles.CUSTOM, -1,app, null);
+
+						e.Graphics.DrawImage(b, nLeft, nTop);
+					}
+							else
+							{
 					e.Graphics.DrawImage(imageList1.Images[nImageIndex], nLeft, nTop);
-					smartPoints.Add(new SmartPoint(nLeft, nTop, s));
-				}
-				
-				if (sCaption != "" && sCaption != DELETE_ENTRY/*and option to show aptions*/)
-				{
-					e.Graphics.DrawString(sCaption, dayTextFont, dayTextBrush, nLeft + 16,
-					                      nTop);
+						}
+					smartPoints.Add(new SmartPoint(nLeft, nTop, s, originalcaption));
 				}
 			}
 		}
@@ -377,6 +489,8 @@ namespace Timeline
 		/// <param name="e"></param>
 		private void panel1_Paint(object sender, System.Windows.Forms.PaintEventArgs e)
 		{
+			// clear this because we keep count of certain albels
+			colorHash = null;
 
 			if (MyTimeline.IsLoaded() == false) return;
 
@@ -563,7 +677,7 @@ namespace Timeline
 									if (compareDate == myDate)
 									{
 										AddTimelineNote(mHoliday.sText, mHoliday.nIcon, ref nNumberFound
-										                , i,e, mHoliday.sCaption);
+										                , i,e, mHoliday.sCaption, dayPanelWidth, 0, "",0);
 									}
 								}
 								
@@ -678,12 +792,57 @@ namespace Timeline
 												//                                                foreach (DataRow row in table.appearance.dataSource.Tables[0].Rows)
 												foreach (DataRowView row in view)
 												{
-													DateTime compareDate = newGenericDate.SafeDateParse(row[0].ToString()); // DateTime.Parse(s);
+													DateTime compareDate;
+													// if other then blank then this holds the type of plot category (i.e., rising action)
+													string lookup = Constants.BLANK;
+													// do string replacement for "plot" dates
+													int lookupi = 0;
+													// we pass extra information in to annotate the plot view
+													int chapter = 0;
+													if (row[0].ToString()[0] == '*')
+													{
+														// now remove the * and check the string to generate a fake date
+														lookup = row[0].ToString();
+														lookup = lookup.Replace ("*", "").Trim ();
+														string[] values = lookup.Split (new char[1] {';'}, StringSplitOptions.RemoveEmptyEntries);
+														compareDate =newGenericDate.SafeDateParse("01/01/1999"); 
+														if (values != null && values.Length > 0)
+														{
+															lookup = values[0];
+
+															Int32.TryParse (lookup, out lookupi);
+
+															switch (lookupi)
+															{
+															case 1: compareDate =newGenericDate.SafeDateParse("01/01/1999"); break;
+															case 2: compareDate =newGenericDate.SafeDateParse("02/01/1999"); break;
+															case 3: compareDate =newGenericDate.SafeDateParse("01/02/1999"); break;
+															case 4: compareDate =newGenericDate.SafeDateParse("02/02/1999"); break;
+															case 5: compareDate =newGenericDate.SafeDateParse("03/02/1999"); break;
+															case 6: compareDate =newGenericDate.SafeDateParse("04/02/1999"); break;
+															case 7: compareDate =newGenericDate.SafeDateParse("05/02/1999"); break;
+																// climax
+															case 8: compareDate =newGenericDate.SafeDateParse("06/01/1999"); break;
+															case 9: compareDate =newGenericDate.SafeDateParse("06/02/1999"); break;
+																// conclusion
+															case 10: compareDate =newGenericDate.SafeDateParse("07/01/1999"); break;
+															}
+
+															if (values.Length == 2)
+															{
+																Int32.TryParse(values[1], out chapter);
+															}
+														}
+
+													}
+													else
+														compareDate = newGenericDate.SafeDateParse(row[0].ToString()); // DateTime.Parse(s);
 													if (compareDate == myDate)
 													{
 														int icon = 0;
 														
 														int icon_idx = CurrentVersionofTableForTHisTimeline.dataSource.Columns.IndexOf("icon");
+														int data3_idx = CurrentVersionofTableForTHisTimeline.dataSource.Columns.IndexOf("Data3");
 														if (icon_idx < 0)
 														{
 															// try with capital
@@ -707,11 +866,12 @@ namespace Timeline
 														
 														string title = /*row[2].ToString() + "|"+*/row[3].ToString();
 														string description = row[2].ToString();
+														string data3 = row[data3_idx].ToString();
 														// tables assumed to be pattern on EventTable
 														// with *at least* first column  = the date
 														// third column the STRING title
 														AddTimelineNote("*" + description, icon,
-														                ref nNumberFound, i, e, title);
+														                ref nNumberFound, i, e, title, dayPanelWidth, lookupi,data3, chapter);
 													}
 												}
 											}
@@ -1098,7 +1258,7 @@ namespace Timeline
 			}
 			
 		}
-		
+		ToolTip tips = new ToolTip();
 		/// <summary>
 		/// Change to hand cursor when overf a note
 		/// </summary>
@@ -1115,14 +1275,23 @@ namespace Timeline
 			{
 				foreach(SmartPoint smart in smartPoints)
 				{
-					if ( (e.X >= smart.x && e.X <= smart.x+10) && (e.Y >= smart.y && e.Y <= smart.y+10))
+					if ( (e.X >= smart.x && e.X <= smart.x+10) && (e.Y >= smart.y && e.Y <= smart.y+10) )
 					{
 						//Mess ageBox.Show(smart.s);
 						Cursor = Cursors.Hand;
+						if (smart.label != Constants.BLANK && string.IsNullOrEmpty(tips.GetToolTip(this)))
+						{
+							tips.Show (smart.label, this, new Point(e.X, e.Y));
+						}
 						return;
 					}
 					else
 					{
+						if (!string.IsNullOrEmpty(tips.GetToolTip(this)))
+						{
+							// hide any visible tooltip
+							tips.Hide (this);
+						}
 						Cursor = Cursors.SizeAll;
 					}
 				}

@@ -132,7 +132,7 @@ namespace Layout
 						LastNode.Nodes.Add (newItem);
 				    
 					} else
-				if (item.Level == LastLevel) {
+				if (item.Level == LastLevel && LastNode.Parent != null) {
 						// we add to the parent of the lastNode?
 						LastNode.Parent.Nodes.Add (newItem);
 					} else {
@@ -152,7 +152,14 @@ namespace Layout
 							LastNode.Parent.Nodes.Add (newItem);
 						} catch (Exception) {
 							// we had poorly formatted data
+							try
+							{
 							LastNode.Nodes [0].Nodes.Add (Loc.Instance.GetStringFmt ("Heading Mismatch {0}", item.Name));
+							}
+							catch (Exception)
+							{
+								LastNode.Nodes.Add (Loc.Instance.GetStringFmt ("Error building {0}. Perhaps a heading has spaces after the trailing delimeter?", item.Name));
+							}
 						}
 					}
 //
@@ -193,16 +200,29 @@ namespace Layout
 
 				// parses the text
 				List<TreeItem> items = BuildList ();
+				if (items != null)
+				{
 				// add current location
 				items.Add (new TreeItem(Loc.Instance.GetString("Last Position"), 0, RichText.SelectionStart));
 				// builds the treeview
 				PopulateTree(this, items );
+				}
 
 				this.ExpandAll();
 			} else {
 				throw new Exception("No richtext was passed into UpdateListOfBookmarks");
 			}
 
+		}
+		/// <summary>
+		/// Retrieves the number of nodes. For testing.
+		/// </summary>
+		/// <returns>
+		/// The of nodes.
+		/// </returns>
+		public int NumberOfNodes ()
+		{
+			return this.GetNodeCount(true);
 		}
 	}
 }

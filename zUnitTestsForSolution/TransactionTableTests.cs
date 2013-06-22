@@ -166,6 +166,13 @@ namespace Testing
 		{
 			TransactionsTable eventTable = SetupForEventTests();
 			LayoutDetails.Instance.TransactionsList = eventTable;
+			System.Windows.Forms.Form form = new System.Windows.Forms.Form();
+			form.Show ();
+			LayoutDetails.Instance.GetAppearanceFromStorage = _TestSingleTon.Instance.GetAppearanceFromStorage;
+			YOM2013.DefaultLayouts.CreateASystemLayout(form,null);
+			LayoutDetails.Instance.SystemLayout = new Layout.LayoutPanel (CoreUtilities.Constants.BLANK, true);
+			LayoutDetails.Instance.SystemLayout.LoadLayout (LayoutPanel.SYSTEM_LAYOUT, false, null); 
+			form.Controls.Add (LayoutDetails.Instance.SystemLayout);
 
 			Worklog.JournalPanel Journal = new Worklog.JournalPanel("A", null);
 

@@ -32,6 +32,7 @@ using Layout;
 using LayoutPanels;
 using database;
 using CoreUtilities;
+using YourOtherMind;
 
 namespace Testing
 {
@@ -806,6 +807,71 @@ namespace Testing
 			//Assert.AreEqual (0, panelA.CountNotes (), "Panel A holds one note");
 			Assert.AreEqual (6, panel.CountNotes (), "Total notes SHOULD BE 6 :  (1 + 1 note on it)panel A + (1)panelB + basicNote +DefaultNote = 5  + (NEW) LinkTable = 6");
 
+		}
+		[Test]
+		public void TestNavigationNote()
+		{
+			NoteDataXML_RichText texter = new NoteDataXML_RichText(100, 100);
+
+			System.Windows.Forms .Form form = new System.Windows.Forms.Form ();
+			_TestSingleTon.Instance._SetupForLayoutPanelTests ();
+			
+			FAKE_LayoutPanel panel = new FAKE_LayoutPanel (CoreUtilities.Constants.BLANK, false);
+			form.Controls.Add (panel);
+			form.Show ();
+			
+			//NOTE: For now remember that htis ADDS 1 Extra notes
+			panel.NewLayout ("mynewpanel", true, null);
+
+			panel.AddNote(texter);
+
+			texter.GetRichTextBox().Text = "";
+
+			NoteNavigation bookMarkView = new NoteNavigation (texter);
+
+			// Test 1: Tests that no crash happens when we don't have a proper markup assigned
+			bookMarkView.UpdateListOfBookmarks();
+
+
+			LayoutDetails.Instance.SetCurrentMarkup(new iMarkupYourOtherMind());
+			// Test 2: Same test. No crash still.
+			bookMarkView.UpdateListOfBookmarks();
+			string TestText = @"7 minutes
+Bus crash over cliff in Ecuador
+Lost style flash leading to salvation
+ddd[[f]]
+=Dog=
+
+=Dog 2=
+The |whatis|this|
+===error===
+The |firstssafdfsf|day of the ghoose|
+The |linkfdfgdfgdfg|dfdgdfgedfgdnded|";
+				texter.GetRichTextBox().Text = TestText;
+			// test 3: some text
+			bookMarkView.UpdateListOfBookmarks();
+
+			// Main Level Node +1
+			// Dog +1
+			// Dog 2 + 1
+			// <Make Up Node to insert between Dog 2 and Error> +1
+			// Error + 1
+			// Current Position (Automated Node) + 1
+			// = 6
+			Assert.AreEqual (6, bookMarkView.NumberOfNodes());
+
+			texter.GetRichTextBox().Text = "[[~scene]]";
+			bookMarkView.UpdateListOfBookmarks();
+			Assert.AreEqual (3, bookMarkView.NumberOfNodes());
+			texter.GetRichTextBox().Text = @"Hello.
+=h1=
+=h2=
+=h3=
+=h4=
+=h1=
+";
+			bookMarkView.UpdateListOfBookmarks();
+			Assert.AreEqual (7, bookMarkView.NumberOfNodes());
 		}
 
 		[TearDown] public void Cleanup()

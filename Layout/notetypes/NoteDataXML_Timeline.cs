@@ -41,7 +41,7 @@ namespace Layout
 	{
 
 		#region xml_variables
-
+		ToolStripMenuItem RowFilterStrip;
 		List<string> listoftableguids;
 
 		/// <summary>
@@ -68,7 +68,19 @@ namespace Layout
 			}
 		}
 
-
+		List<string> rowHistory = new List<string>();
+		[Editor(@"System.Windows.Forms.Design.StringCollectionEditor," +
+		        "System.Design, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a",
+		        typeof(System.Drawing.Design.UITypeEditor))]
+		[TypeConverter(typeof(Layout.StringListConverter))]
+		public List<string> RowHistory {
+			get {
+				return rowHistory;
+			}
+			set {
+				rowHistory = value;
+			}
+		}
 
 		bool hideZoomOutPanel=false;
 		[Description("Hides the 'month' panel.")]
@@ -243,12 +255,12 @@ namespace Layout
 
 			Timeline.BringToFront ();
 
-			ToolStripMenuItem RowFilterStrip = 
+			RowFilterStrip = 
 				LayoutDetails.BuildMenuPropertyEdit (Loc.Instance.GetString ("Row Filter: {0}"), RowFilter, Loc.Instance.GetString ("Filter via the columns on the table associated with this timeline."), HandleRowFilterChange);
 
 
 
-			ToolStripSeparator sep = new ToolStripSeparator();
+			ToolStripSeparator sep = new ToolStripSeparator ();
 
 
 			ToolStripComboBox dropper = new ToolStripComboBox ();
@@ -303,8 +315,8 @@ namespace Layout
 			} catch (Exception) {
 				dates.Value = DateTime.Today;
 			}
-			dates.ValueChanged+= HandleValueCurrentdateChanged;
-			ToolStripControlHost dateToolStrip = new ToolStripControlHost(dates);
+			dates.ValueChanged += HandleValueCurrentdateChanged;
+			ToolStripControlHost dateToolStrip = new ToolStripControlHost (dates);
 			dateToolStrip.ToolTipText = Loc.Instance.GetString ("Select a date to center the timeline on that date.");
 
 
@@ -314,6 +326,14 @@ namespace Layout
 			properties.DropDownItems.Add (iconsPerColumn);
 			properties.DropDownItems.Add (RowFilterStrip);
 			properties.DropDownItems.Add (dateToolStrip);
+
+
+			// add hjistory to RowFilterStrip
+			foreach (string history in RowHistory) {
+				ToolStripMenuItem test = new ToolStripMenuItem (history);
+				test.Click += delegate(object sender, EventArgs e){  RowFilter = RowFilterStrip.Text = test.Text; Timeline.Refresh();};
+				RowFilterStrip.DropDownItems.Add (test);
+			}
 
 			//
 			//
@@ -349,6 +369,27 @@ namespace Layout
 
 				// update based on filter setting
 				Timeline.Refresh ();
+
+				// add it to menu
+				ToolStripMenuItem test = new ToolStripMenuItem (rowfilter);
+				test.Click += delegate(object sender2, EventArgs e2) {  RowFilter = RowFilterStrip.Text = test.Text; Timeline.Refresh();};
+				RowFilterStrip.DropDownItems.Add (test);
+
+
+				// now add it to underlyin gdata
+				if (RowHistory != null)
+				{
+					if (RowHistory.Count == 5)
+					{
+						RowHistory.Insert (0, rowfilter);
+						// we know we have one at position 5 because count was 5 before (which meant position 4) and we added one
+						RowHistory.RemoveAt(5);
+					}
+					else
+					{
+						RowHistory.Insert (0, rowfilter);
+					}
+				}
 			}
 		}
 

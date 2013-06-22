@@ -259,7 +259,8 @@ namespace Layout
 						bookMarkView.Location = new Point (richBox.Location.X, richBox.Location.Y);
 					
 						bookMarkView.Height = richBox.Height;
-						bookMarkView.Width = (int)richBox.Width / 2;
+						bookMarkView.Width = ((int)richBox.Width / 2);
+						if (bookMarkView.Width > 200) bookMarkView.Width = 200;
 						bookMarkView.Visible = true;
 						bookMarkView.Dock = DockStyle.Left;
 						ParentNotePanel.Controls.Add (bookMarkView);
@@ -395,28 +396,26 @@ namespace Layout
 		/// Will adjust the zoom of a richtext
 		/// </summary>
 		/// <param name="nCurrent"></param>
-		public void ZoomToggle()
+		public void ZoomToggle ()
 		{
 			float nCurrent = richBox.ZoomFactor;
 			
-			if (nCurrent == 1.0f)
-			{
+			if (nCurrent == 1.0f) {
 				richBox.ZoomFactor = 1.25f;
-			}
-			if (nCurrent == 1.25f)
-			{
+			} else
+			if (nCurrent == 1.25f) {
 				richBox.ZoomFactor = 1.50f;
-			}
-			if (nCurrent == 1.50f)
-			{
+			} else
+			if (nCurrent == 1.50f) {
 				richBox.ZoomFactor = 1.75f;
-			}
-			if (nCurrent == 1.75f)
-			{
+			} else
+			if (nCurrent == 1.75f) {
 				richBox.ZoomFactor = 2.0f;
-			}
-			if (nCurrent == 2.0f)
-			{
+			} else
+			if (nCurrent == 2.0f) {
+				richBox.ZoomFactor = 1.0f;
+			} else {
+				// if any other value (i.e., by mouse zoom) we reset
 				richBox.ZoomFactor = 1.0f;
 			}
 		}
