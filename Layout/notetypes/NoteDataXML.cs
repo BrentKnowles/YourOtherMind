@@ -123,6 +123,7 @@ namespace Layout
 
 			this.Caption = Note.Caption;
 			this.Data1 = Note.Data1;
+			this.Appearance = Note.Appearance;
 
 		}
 

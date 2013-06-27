@@ -202,6 +202,61 @@ namespace Timeline
 			
 		}
 		/// <summary>
+		/// Gets the safe date from day of year.
+		/// 
+		/// Takes daycounter (say day 3) and figures out the date from this
+		/// </summary>
+		/// <returns>
+		/// The safe date from day of year.
+		/// </returns>
+		/// <param name='daycounter'>
+		/// Daycounter.
+		/// </param>
+		public DateTime GetSafeDateFromDayOfYear (int daycounter)
+		{
+	
+		
+			int Year = 1999;
+			int Day = 1;
+			int Month = 1;
+
+			// first find the month
+			int totaldaysfoundsofar = 0;
+
+			for (int i = 0 ; i < this.ZoomOutDetails.Count;i++)
+			{
+				totaldaysfoundsofar = totaldaysfoundsofar + ZoomInPanels[i];
+				if (daycounter <= totaldaysfoundsofar)
+				{
+					// we have found our month
+					Month = i;
+
+					// say 2 months. Month 1 has 3 days. Month 2 has 4 days. We are looking for 6 (which sould Day #3 of Month 2)
+					// can't we just minus the days from MOnth 1 away and that gives us the day here?
+					Day = daycounter;
+					if (Month > 0)
+					{
+						// if we are past the first month, subject the days from all the preceding months
+						for (int j = Month-1; j >=0; j--)
+						{
+							Day = Day - ZoomInPanels[j];
+
+						}
+					}
+					// now add +1 to month because all references expect this
+					Month++;
+					break;
+				}
+			}
+			//TODO: add unit test for all this
+
+			string finalDate = String.Format ("{0}/{1}/{2}",Day,Month,Year);
+			//CoreUtilities.NewMessage.Show ("Date is " + finalDate + " for " + daycounter);
+			return newGenericDate.SafeDateParse(finalDate);
+
+		}
+
+		/// <summary>
 		/// reutrns the total number of days in the year
 		/// </summary>
 		/// <returns></returns>

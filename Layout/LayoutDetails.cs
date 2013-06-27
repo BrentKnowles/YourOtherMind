@@ -860,8 +860,8 @@ namespace Layout
 
 							if (LayoutDetails.Instance.GetCurrentMarkup().IsGroupRequest(sLine)) {
 								
-								ListOfParsePages = LayoutDetails.Instance.GetCurrentMarkup().GetListOfPages(sLine, ref bGetWords);
-								
+								ArrayList tmp   = LayoutDetails.Instance.GetCurrentMarkup().GetListOfPages(sLine, ref bGetWords);
+								ListOfParsePages.AddRange(tmp);
 								// we have a group
 								
 							} else {

@@ -67,6 +67,16 @@ namespace Layout
 				listoftableguids = value;
 			}
 		}
+		private int dayPanelWidth=100;
+		// the size of each "day" in width
+		public int DayPanelWidth {
+			get {
+				return dayPanelWidth;
+			}
+			set {
+				dayPanelWidth = value;
+			}
+		}
 
 		List<string> rowHistory = new List<string>();
 		[Editor(@"System.Windows.Forms.Design.StringCollectionEditor," +
@@ -252,7 +262,7 @@ namespace Layout
 			Timeline = new NotePanelTimeline (this);
 			Timeline.Dock = DockStyle.Fill;
 			ParentNotePanel.Controls.Add (Timeline);
-
+			Timeline.dayPanelWidth = DayPanelWidth;
 			Timeline.BringToFront ();
 
 			RowFilterStrip = 
@@ -304,8 +314,12 @@ namespace Layout
 			numbers.Value = IconsPerColumn;
 			numbers.ValueChanged += HandleIconsPerColumnValueChanged;
 			numbers.Minimum = 1;
-			numbers.Maximum = 6;
+			numbers.Maximum = 10;
 			ToolStripControlHost iconsPerColumn = new ToolStripControlHost (numbersPanel);
+
+
+			// Day Width
+			ToolStripControlHost setDayWidth = BuildDayWidth(dropper.BackColor);
 
 
 			DateTimePicker dates = new DateTimePicker ();
@@ -324,6 +338,7 @@ namespace Layout
 			properties.DropDownItems.Add (sep);
 			properties.DropDownItems.Add (dropper);
 			properties.DropDownItems.Add (iconsPerColumn);
+			properties.DropDownItems.Add (setDayWidth);
 			properties.DropDownItems.Add (RowFilterStrip);
 			properties.DropDownItems.Add (dateToolStrip);
 
@@ -351,6 +366,50 @@ namespace Layout
 			Timeline.HideZoomPanel(this.HideZoomOutPanel);
 
 
+		}
+
+		ToolStripControlHost BuildDayWidth (System.Drawing.Color backColor)
+		{
+			NumericUpDown numbers = new NumericUpDown ();
+			
+			
+			Panel numbersPanel = new Panel ();
+			numbersPanel.Name = "numbers2";
+			numbersPanel.BackColor =backColor;
+			Label numbersLabel = new Label ();
+			numbersLabel.Left = 0;
+			//numbersLabel.Dock = DockStyle.Left;
+			numbersLabel.Text = Loc.Instance.GetString ("Day Width: ");
+			numbersLabel.AutoSize = false;
+			numbersLabel.Width = 85;
+			numbers.Left = 90;
+			numbers.Width = 45;
+			//numbersLabel.AutoSize = true;
+			//numbers.Dock = DockStyle.Right;
+			
+			numbersPanel.Controls.Add (numbersLabel);
+			numbersPanel.Controls.Add (numbers);
+			numbersLabel.BringToFront ();
+			//numbersPanel.Dock = DockStyle.Fill;
+			
+			
+
+
+			numbers.Minimum = 90;
+			numbers.Maximum = 300;
+			numbers.Value = DayPanelWidth;
+			numbers.ValueChanged += HandleDayWidthValueChanged;;
+			ToolStripControlHost daywidth = new ToolStripControlHost (numbersPanel);
+			return daywidth;
+		}
+
+		void HandleDayWidthValueChanged (object sender, EventArgs e)
+		{
+			DayPanelWidth = (int)(sender as NumericUpDown).Value;
+			
+			Timeline.dayPanelWidth = DayPanelWidth;
+			Timeline.Refresh();
+			SetSaveRequired(true);
 		}
 
 		void HandleHideMonthsClick (object sender, EventArgs e)

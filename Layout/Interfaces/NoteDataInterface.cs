@@ -45,7 +45,7 @@ namespace Layout
 		bool Visible{get;set;}
 		DockStyle Dock {get; set;}
 		bool ReadOnly { get; set; }
-
+		string Appearance{get;set;}
 		/// <summary>
 		/// This field will be used to store RTF text in the TextBox, A Link to the picture file for Picture Notes, et cetera.
 		/// </summary>

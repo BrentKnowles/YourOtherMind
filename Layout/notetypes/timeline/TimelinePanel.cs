@@ -28,6 +28,7 @@
 //###
 using System;
 using System.Collections;
+using System.Collections.Generic;
 
 using System.ComponentModel;
 using System.Drawing;
@@ -76,7 +77,7 @@ namespace Timeline
 		private System.Windows.Forms.Panel panelZoomIn;
 		public System.Windows.Forms.Panel panelZoomOut;
 		public int Year = 0;
-		const int dayPanelWidth = 100;
+		public int dayPanelWidth = 100;
 		
 		int nHalfwayDay = 0;
 		int nHalfwayMonth = 0;
@@ -353,7 +354,7 @@ namespace Timeline
 		/// <param name="s"></param>
 		/// <param name="nNumberFound"></param>
 		/// <param name="AutoIcon">if > 0 will generate an auto icon, with this number</param>
-		private void AddTimelineNote(string s, int nImage, ref int nNumberFound,
+		private void AddTimelineNote (string description, int nImage, ref int nNumberFound,
 		                             int i,
 		                             System.Windows.Forms.PaintEventArgs e,
 		                             string sCaption, int cellWidth, int AutoIcon, string ColumnData3, int chapter)
@@ -367,8 +368,7 @@ namespace Timeline
 				// this keeps track of how many we found so that we can
 				// stak them on top of one another
 				nNumberFound++;
-				if (nNumberFound > MyTimeline.IconsPerColumn)
-				{
+				if (nNumberFound > MyTimeline.IconsPerColumn) {
 					nVert = nVert + 20;
 					nNumberFound = 1;
 					
@@ -381,103 +381,105 @@ namespace Timeline
 				
 				string originalcaption = sCaption;
 				
-				if (sCaption != "" && sCaption != DELETE_ENTRY/*and option to show aptions*/)
-				{
+				if (sCaption != "" && sCaption != DELETE_ENTRY/*and option to show aptions*/) {
 					bool adjusted = false;
 
-					while (e.Graphics.MeasureString(sCaption, dayTextFont).Width+1 > cellWidth)
-					{
-						sCaption = sCaption.Substring(0, sCaption.Length/2);
+					while (e.Graphics.MeasureString(sCaption, dayTextFont).Width+1 > cellWidth) {
+						sCaption = sCaption.Substring (0, sCaption.Length / 2);
 						adjusted = true;
 //						e.Graphics.DrawString(newCaption, dayTextFont, dayTextBrush, nLeft + 16,
 //						                      nTop);
 					}
 					//else
 					{
-						if (true == adjusted)
-						{
-							sCaption = sCaption +"...";
+						if (true == adjusted) {
+							sCaption = sCaption + "...";
 						}
-					e.Graphics.DrawString(sCaption, dayTextFont, dayTextBrush, nLeft + 16,
-					                      nTop);
-						if (false == adjusted)
+						int positionModifier = 0;
+						if (AutoIcon > 0)
 						{
+							// adjust the size with use
+							positionModifier = 6;
+							if (chapter > 0) {
+								positionModifier = positionModifier + 6;
+								if (chapter >9)
+								{
+									positionModifier = positionModifier + 2;
+								}
+							}
+						}
+						e.Graphics.DrawString (sCaption, dayTextFont, dayTextBrush, nLeft + 16 + positionModifier,
+					                      nTop);
+						if (false == adjusted) {
 							// now blank the captionb ecause we DO NOT WANT
 							// a tooltip for those that don't need it
 							originalcaption = "";
 						}
+
+
+
 					}
 				}
 
 
 
-				if (nImageIndex != -1)
-				{
+				if (nImageIndex != -1) {
 					
-					if (nImageIndex > imageList1.Images.Count-1)
-					{
+					if (nImageIndex > imageList1.Images.Count - 1) {
 						// to avoid user putting in icons that do not exist
 						nImageIndex = 0;
 					}
-					if (AutoIcon > 0)
-					{
-						if (colorHash == null)
-						{
-							colorHash = new Hashtable();
+					if (AutoIcon > 0) {
+						if (colorHash == null) {
+							colorHash = new Hashtable ();
 						}
 						Color[] ColorsToUse = new Color[10]{Color.Blue, Color.Red, Color.Green, Color.Yellow, Color.Purple,
 							Color.Black, Color.White, Color.Brown, Color.LightBlue, Color.Orange};
 						int ColorToUseIdx = 0;
 						//we halve the count because we are adding both COLOR and COUNT PER CATEGORY
 						// so we have 2x as many entries
-						if (colorHash.Count/2 < ColorsToUse.Length-1)
-						{
-							ColorToUseIdx = colorHash.Count/2;
+						if (colorHash.Count / 2 < ColorsToUse.Length - 1) {
+							ColorToUseIdx = colorHash.Count / 2;
 						}
 						Color ColorForBackGround = Color.Black;
-						if (colorHash[ColumnData3] == null)
-						{
-							colorHash.Add (ColumnData3, ColorsToUse[ColorToUseIdx]);
-							ColorForBackGround = ColorsToUse[ColorToUseIdx];
+						if (colorHash [ColumnData3] == null) {
+							colorHash.Add (ColumnData3, ColorsToUse [ColorToUseIdx]);
+							ColorForBackGround = ColorsToUse [ColorToUseIdx];
+						} else {
+							ColorForBackGround = (Color)colorHash [ColumnData3];
 						}
-						else
-						{
-							ColorForBackGround = (Color)colorHash[ColumnData3];
-						}
-						General.TextToImageAppearance app = new General.TextToImageAppearance();
+						General.TextToImageAppearance app = new General.TextToImageAppearance ();
 						app.BackgroundColor = ColorForBackGround;
 						app.FrameColor = Color.White;
-						app.TitleColor = CoreUtilities.TextUtils.InvertColor(app.BackgroundColor);
-						app.TitleFont = new Font("Garamond", 10.0f, FontStyle.Bold);
+						app.TitleColor = CoreUtilities.TextUtils.InvertColor (app.BackgroundColor);
+						app.TitleFont = new Font ("Garamond", 10.0f, FontStyle.Bold);
 
 						// now we need to figure out the number of items (because some columns can be double upped and we want to autoincrmenet numbers
 						int numbertoshow = 1;
-						if (colorHash[ColumnData3+"count"] == null)
-						{
-							colorHash.Add (ColumnData3+"count", 1);
+						if (colorHash [ColumnData3 + "count"] == null) {
+							colorHash.Add (ColumnData3 + "count", 1);
+						} else {
+							colorHash [ColumnData3 + "count"] = ((int)colorHash [ColumnData3 + "count"]) + 1;
+							numbertoshow = ((int)colorHash [ColumnData3 + "count"]);
 						}
-						else
-						{
-							colorHash[ColumnData3+"count"] = ((int)colorHash[ColumnData3+"count"])+1;
-							numbertoshow =  ((int)colorHash[ColumnData3+"count"]);
-						}
-						string sChapter ="";
+						string sChapter = "";
 						string spacing = " ";
-						if (chapter > 0)
-						{
-							sChapter = "(" + chapter.ToString()+")";
+						if (chapter > 0) {
+							sChapter = "(" + chapter.ToString () + ")";
 							// we trim this up a bit so it does not take up too much room
 							spacing = "";
 						}
-						Bitmap b = CoreUtilities.General.CreateBitmapImageFromText(spacing+ numbertoshow+sChapter+spacing,"", General.FromTextStyles.CUSTOM, -1,app, null);
+						Bitmap b = CoreUtilities.General.CreateBitmapImageFromText (spacing + numbertoshow + sChapter + spacing, "", General.FromTextStyles.CUSTOM, -1, app, null);
 
-						e.Graphics.DrawImage(b, nLeft, nTop);
+						e.Graphics.DrawImage (b, nLeft, nTop);
+					} else {
+						e.Graphics.DrawImage (imageList1.Images [nImageIndex], nLeft, nTop);
 					}
-							else
-							{
-					e.Graphics.DrawImage(imageList1.Images[nImageIndex], nLeft, nTop);
-						}
-					smartPoints.Add(new SmartPoint(nLeft, nTop, s, originalcaption));
+					if (description != "" && description != null && description != "*") {
+						// add description to mouseover text
+						originalcaption = originalcaption + Environment.NewLine + description;
+					}
+					smartPoints.Add (new SmartPoint (nLeft, nTop, description, originalcaption));
 				}
 			}
 		}
@@ -533,8 +535,9 @@ namespace Timeline
 				//e.Graphics.DrawLine(new Pen(Color.Black), 0, 0, Width, Height);
 				Pen dayPanelPen = new Pen(Color.Gray);
 				
-				
-				int dayTextWidth = dayPanelWidth/2 + 50;
+
+				// 50 works when cell width = 100
+				int dayTextWidth = dayPanelWidth/2 + dayPanelWidth/2;//50;
 				int dayTextHeight = (int) (thisPanel.Height / 1.25);
 				
 				int nDaysInCurrentMonth = 0; //calendar.GetDaysInMonth(Year, 10);
@@ -658,6 +661,7 @@ namespace Timeline
 							nHalfwayYear = Year;
 						}
 						// display day
+
 						e.Graphics.DrawString(String.Format(sMonth, nDayNumber), dayTextFont, dayTextBrush, (i-1)*dayTextWidth,
 						                      dayTextHeight);
 						
@@ -812,21 +816,44 @@ namespace Timeline
 
 															Int32.TryParse (lookup, out lookupi);
 
-															switch (lookupi)
+
+
+															int TotalDays  = this.calendar.DaysTotal();
+															bool foundone = false;
+															// if the numbers passed exceed total time in year
+															// we lump everything onto the last day of the year
+															for (int daycounter=1; daycounter <= TotalDays; daycounter++)
 															{
-															case 1: compareDate =newGenericDate.SafeDateParse("01/01/1999"); break;
-															case 2: compareDate =newGenericDate.SafeDateParse("02/01/1999"); break;
-															case 3: compareDate =newGenericDate.SafeDateParse("01/02/1999"); break;
-															case 4: compareDate =newGenericDate.SafeDateParse("02/02/1999"); break;
-															case 5: compareDate =newGenericDate.SafeDateParse("03/02/1999"); break;
-															case 6: compareDate =newGenericDate.SafeDateParse("04/02/1999"); break;
-															case 7: compareDate =newGenericDate.SafeDateParse("05/02/1999"); break;
-																// climax
-															case 8: compareDate =newGenericDate.SafeDateParse("06/01/1999"); break;
-															case 9: compareDate =newGenericDate.SafeDateParse("06/02/1999"); break;
-																// conclusion
-															case 10: compareDate =newGenericDate.SafeDateParse("07/01/1999"); break;
+																// we have found the day # that matches the requested passed in
+																if (daycounter == lookupi)
+																{
+																	compareDate = calendar.GetSafeDateFromDayOfYear(daycounter);
+																	foundone = true;
+																	break;
+																}
 															}
+
+															if (false == foundone)
+															{
+																compareDate = calendar.GetSafeDateFromDayOfYear(TotalDays);
+															}
+
+
+//															switch (lookupi)
+//															{
+//															case 1: compareDate =newGenericDate.SafeDateParse("01/01/1999"); break;
+//															case 2: compareDate =newGenericDate.SafeDateParse("02/01/1999"); break;
+//															case 3: compareDate =newGenericDate.SafeDateParse("01/02/1999"); break;
+//															case 4: compareDate =newGenericDate.SafeDateParse("02/02/1999"); break;
+//															case 5: compareDate =newGenericDate.SafeDateParse("03/02/1999"); break;
+//															case 6: compareDate =newGenericDate.SafeDateParse("04/02/1999"); break;
+//															case 7: compareDate =newGenericDate.SafeDateParse("05/02/1999"); break;
+//																// climax
+//															case 8: compareDate =newGenericDate.SafeDateParse("01/03/1999"); break;
+//															case 9: compareDate =newGenericDate.SafeDateParse("02/03/1999"); break;
+//																// conclusion
+//															case 10: compareDate =newGenericDate.SafeDateParse("01/04/1999"); break;
+//															}
 
 															if (values.Length == 2)
 															{

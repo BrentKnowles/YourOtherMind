@@ -39,6 +39,7 @@ namespace Layout
 		public enum FormatText {BOLD, STRIKETHRU, ZOOM, LINE, BULLET, BULLETNUMBER, DEFAULTFONT, DATE, UNDERLINE, ITALIC};
 		// if this is the value set on the dropdown then we use the defined default in OPTIONS
 		const string defaultmarkup = "Default"; 
+		const int MAX_NAVIGATION_WIDTH = 300;
 		#region XML
 		string markuplanguage="Default";
 
@@ -260,7 +261,7 @@ namespace Layout
 					
 						bookMarkView.Height = richBox.Height;
 						bookMarkView.Width = ((int)richBox.Width / 2);
-						if (bookMarkView.Width > 200) bookMarkView.Width = 200;
+						if (bookMarkView.Width > MAX_NAVIGATION_WIDTH) bookMarkView.Width = MAX_NAVIGATION_WIDTH;
 						bookMarkView.Visible = true;
 						bookMarkView.Dock = DockStyle.Left;
 						ParentNotePanel.Controls.Add (bookMarkView);
