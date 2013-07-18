@@ -1292,26 +1292,26 @@ namespace Layout
 		}
 		public override void MoveNote (string GUIDOfNoteToMove, string GUIDOfLayoutToMoveItTo)
 		{
-			lg.Instance.Line("LayoutPanel->MoveNote", ProblemType.MESSAGE, String.Format ("moving note {0} to panel {1}", 
+			lg.Instance.Line ("LayoutPanel->MoveNote", ProblemType.MESSAGE, String.Format ("moving note {0} to panel {1}", 
 			                                                                              GUIDOfNoteToMove, GUIDOfLayoutToMoveItTo), Loud.ACRITICAL);
 			// Take 1 was using LayoutDatabase
 
 			// Take 2 - just manipulating the note arrays here and then saving?
 
 			//  a. find note we want to move
-		//	NoteDataXML_Panel newPanel = null;
+			//	NoteDataXML_Panel newPanel = null;
 			NoteDataInterface movingNote = null;
 
 			System.Collections.ObjectModel.ReadOnlyCollection<NoteDataInterface> notes = Notes.GetNotes ();
-			int PositionOfNewPanel=-1;
+			int PositionOfNewPanel = -1;
 			// try to resolve a 'missing parent' noteproblem with TestMovingNotes unit test
 			for (int i = 0; i < notes.Count; i++) {
 
-				if (notes[i].GuidForNote == GUIDOfLayoutToMoveItTo && notes[i].IsPanel == true) {
-					PositionOfNewPanel=i;
+				if (notes [i].GuidForNote == GUIDOfLayoutToMoveItTo && notes [i].IsPanel == true) {
+					PositionOfNewPanel = i;
 				}
-				if (notes[i].GuidForNote == GUIDOfNoteToMove) {
-					movingNote = notes[i];
+				if (notes [i].GuidForNote == GUIDOfNoteToMove) {
+					movingNote = notes [i];
 					
 				}
 			}
@@ -1364,18 +1364,18 @@ namespace Layout
 
 						upstreamLayout.AddNote (movingNote);
 						upstreamLayout.SaveLayout ();
+				
 					
 					}
 				}
 			} else {
 
-				if (-1 == PositionOfNewPanel)
-				{
-					throw new Exception("PositionOfNewPanel is still -1. We did not find the panel with guid = " + GUIDOfLayoutToMoveItTo);
+				if (-1 == PositionOfNewPanel) {
+					throw new Exception ("PositionOfNewPanel is still -1. We did not find the panel with guid = " + GUIDOfLayoutToMoveItTo);
 				}
 
 
-				if (/*newPanel == null*/ null==notes[PositionOfNewPanel] || null==movingNote) {
+				if (/*newPanel == null*/ null == notes [PositionOfNewPanel] || null == movingNote) {
 					NewMessage.Show (Loc.Instance.Cat.GetString ("Destination or note was null. No move"));
 					return;
 				}
@@ -1391,10 +1391,10 @@ namespace Layout
 
 				// THe Add has to HAPPEN first because the Index gets Changed (and hence would be messed up)
 				// but still runing into issues
-				NoteDataXML_Panel NewPanel =(NoteDataXML_Panel)notes[PositionOfNewPanel];
+				NoteDataXML_Panel NewPanel = (NoteDataXML_Panel)notes [PositionOfNewPanel];
 
 				Notes.RemoveNote (movingNote);
-				NewPanel.AddNote(movingNote);
+				NewPanel.AddNote (movingNote);
 
 			}
 			/*
@@ -1427,7 +1427,7 @@ namespace Layout
 //
 //			}
 
-			this.RefreshTabs();
+			this.RefreshTabs ();
 			//  b. 
 
 
@@ -1443,6 +1443,10 @@ namespace Layout
 			*/
 			// need to reload the Layout We Added To First before saving this layotu
 			//SaveTo();
+
+			if (movingNote != null) {
+				movingNote.RebuildLinkAfterMove();
+			}
 		}
 
 		public override System.Collections.ArrayList GetAllNotes()

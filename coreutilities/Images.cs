@@ -251,6 +251,8 @@ namespace CoreUtilities
 			
 			if (backImage != null)
 			{
+//				ImageAttributes attr = new ImageAttributes();
+//				attr.
 				objGraphics.DrawImage(backImage, 0, 0, intWidth, intHeight);
 			}
 			

@@ -63,7 +63,9 @@ namespace Layout
 		//FACT was trying to avoid storing a reference to actual Layout but the need to update the list (and handle the Property grid) made it so)
 		protected LayoutPanelBase Layout;
 
-
+		public virtual void RebuildLinkAfterMove()
+		{
+		}
 		/// <summary>
 		/// Gets or sets the get storyboard preview. //this propery is able to be overridden in CHILD classes, so a PictureNote might return a filename
 		/// </summary>

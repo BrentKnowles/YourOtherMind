@@ -77,6 +77,14 @@ namespace Layout
 		}
 
 
+		public override void RebuildLinkAfterMove()
+		{
+			// requires LayoutGuid and ChildGuid to still be valid, which I'm not sure of
+			string originalLink = String.Format (CoreUtilities.Links.LinkTableRecord.PageLinkFormatString, LayoutGuid,ChildGuid);
+			SetLink (originalLink);
+
+		}
+
 		protected override void DoBuildChildren (LayoutPanelBase Layout)
 		{
 			base.DoBuildChildren (Layout);

@@ -256,7 +256,7 @@ namespace Layout
 
 
 			ToolStripMenuItem TableCaptionLabel = 
-				LayoutDetails.BuildMenuPropertyEdit (Loc.Instance.GetString("Table Caption: {0}"), TableCaption,Loc.Instance.GetString ("When generating random data this caption will be used to present the results."),HandleTableCaptionKeyDown );
+				LayoutDetails.BuildMenuPropertyEdit (Loc.Instance.GetString("Table Caption: {0}"), TableCaption,Loc.Instance.GetString ("When generating random data this caption will be used to present the results."),HandleNoteLinkNameChange );
 
 
 
@@ -280,7 +280,7 @@ namespace Layout
 			base.RespondToReadOnlyChange ();
 			Table.ReadOnly = this.ReadOnly;
 		}
-		void HandleTableCaptionKeyDown (object sender, KeyEventArgs e)
+		void HandleNoteLinkNameChange (object sender, KeyEventArgs e)
 		{
 			string tablecaption = TableCaption;
 			LayoutDetails.HandleMenuLabelEdit (sender, e, ref tablecaption, SetSaveRequired);

@@ -314,7 +314,7 @@ namespace Layout
 			numbers.Value = IconsPerColumn;
 			numbers.ValueChanged += HandleIconsPerColumnValueChanged;
 			numbers.Minimum = 1;
-			numbers.Maximum = 10;
+			numbers.Maximum = 20;
 			ToolStripControlHost iconsPerColumn = new ToolStripControlHost (numbersPanel);
 
 

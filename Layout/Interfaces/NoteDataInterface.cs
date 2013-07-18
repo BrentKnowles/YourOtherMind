@@ -74,7 +74,8 @@ namespace Layout
 		string GetLinkData ();
 
 
-
+		// only used when moving a LINK note to a Subpanel
+		void RebuildLinkAfterMove();
 
 		// Methods
 		#region methods

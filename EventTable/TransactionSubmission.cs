@@ -139,8 +139,8 @@ namespace Transactions
 		}
 
 		public DateTime SubmissionDate {
-			get {return 	DateTime.Parse (RowData[TransactionsTable.DATE.Index].ToString());}
-
+			get { return 	DateTime.Parse (RowData [TransactionsTable.DATE.Index].ToString ());}
+			set { RowData [TransactionsTable.DATE.Index] = value;}
 		}
 
 		public DateTime ReplyDate {

@@ -216,19 +216,28 @@ namespace Layout
 
 		//	AdjustHeightOfLayoutSearchPanel (); This already gets called when the note type is chosen
 		}
+	
+		// must be called in the Refresh Method
+		void StoreHistoryText ()
+		{
+
+			string Value = TextEditor.Text;
+			if (Value != Constants.BLANK) {
+				
+				if (TextEditor.Items.IndexOf (Value) == -1)
+					TextEditor.Items.Insert (0, (Value));
+				SetSaveRequired(true);
+			}
+			// we do not add if the text is already there
+
+		}
 
 		void HandleTextEditKeyPress (object sender, KeyPressEventArgs e)
 		{
 			if (e.KeyChar == (char)Keys.Enter) {
 				Refresh ();
 				LayoutDetails.SupressBeep (e);
-				string Value = TextEditor.Text;
-				if (Value != Constants.BLANK) {
-					// we do not add if the text is already there
-					if (TextEditor.Items.IndexOf(Value) == -1)
-						TextEditor.Items.Insert (0,(Value));
-					SetSaveRequired(true);
-				}
+
 			}
 		}
 
@@ -321,6 +330,8 @@ namespace Layout
 				if (Modes.LAYOUTSONCURRENTLAYOUT == _mode) {
 				UpdateListOfNotesFromCurrentLayout();
 			}
+
+			StoreHistoryText ();
 		}
 
 		/// <summary>

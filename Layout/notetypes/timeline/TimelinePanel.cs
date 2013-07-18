@@ -357,7 +357,7 @@ namespace Timeline
 		private void AddTimelineNote (string description, int nImage, ref int nNumberFound,
 		                             int i,
 		                             System.Windows.Forms.PaintEventArgs e,
-		                             string sCaption, int cellWidth, int AutoIcon, string ColumnData3, int chapter)
+		                             string sCaption, int cellWidth, int AutoIcon, string ColumnData3, int chapter, int ColorOverride)
 		{ // october 20 2008 - filters out entries with DELETE_ENtry to allow proper deletion
 			// if (sCaption != DELETE_ENTRY)
 			{
@@ -421,6 +421,11 @@ namespace Timeline
 					}
 				}
 
+				// if imageindex was not set then just default to 0
+				if (-1 == nImageIndex)
+				{
+					nImageIndex = 0;
+				}
 
 
 				if (nImageIndex != -1) {
@@ -433,11 +438,23 @@ namespace Timeline
 						if (colorHash == null) {
 							colorHash = new Hashtable ();
 						}
-						Color[] ColorsToUse = new Color[10]{Color.Blue, Color.Red, Color.Green, Color.Yellow, Color.Purple,
-							Color.Black, Color.White, Color.Brown, Color.LightBlue, Color.Orange};
+						const int ColorCount = 12;
+
+						Color[] ColorsToUse = new Color[ColorCount]{Color.Blue, Color.Red, Color.Green, Color.Yellow, Color.Purple,
+							Color.Black, Color.White, Color.Brown, Color.LightBlue, Color.Orange, Color.Beige, Color.MediumTurquoise};
+
+						// if we are the first in an entry (see below) the frame color will be changed to GOLD
+						//Color FrameColor = Color.White;
+						FontStyle fontStyle = FontStyle.Bold;
 						int ColorToUseIdx = 0;
 						//we halve the count because we are adding both COLOR and COUNT PER CATEGORY
 						// so we have 2x as many entries
+
+						if (ColorOverride >-1 && ColorOverride < ColorCount)
+						{
+							ColorToUseIdx = ColorOverride;
+						}
+						else
 						if (colorHash.Count / 2 < ColorsToUse.Length - 1) {
 							ColorToUseIdx = colorHash.Count / 2;
 						}
@@ -445,14 +462,25 @@ namespace Timeline
 						if (colorHash [ColumnData3] == null) {
 							colorHash.Add (ColumnData3, ColorsToUse [ColorToUseIdx]);
 							ColorForBackGround = ColorsToUse [ColorToUseIdx];
+
+							// This means this is the first in an entry added
+							//FrameColor = Color.Gold;
+							fontStyle = fontStyle | FontStyle.Underline;
+
 						} else {
 							ColorForBackGround = (Color)colorHash [ColumnData3];
 						}
 						General.TextToImageAppearance app = new General.TextToImageAppearance ();
 						app.BackgroundColor = ColorForBackGround;
-						app.FrameColor = Color.White;
+					//	app.TopWidth = 100;
+						//app.FrameColor = FrameColor;
+
+					//	app.LeftWidth = 5;
+
 						app.TitleColor = CoreUtilities.TextUtils.InvertColor (app.BackgroundColor);
-						app.TitleFont = new Font ("Garamond", 10.0f, FontStyle.Bold);
+						//app.
+
+						app.TitleFont = new Font ("Garamond", 10.0f, fontStyle);
 
 						// now we need to figure out the number of items (because some columns can be double upped and we want to autoincrmenet numbers
 						int numbertoshow = 1;
@@ -469,7 +497,13 @@ namespace Timeline
 							// we trim this up a bit so it does not take up too much room
 							spacing = "";
 						}
-						Bitmap b = CoreUtilities.General.CreateBitmapImageFromText (spacing + numbertoshow + sChapter + spacing, "", General.FromTextStyles.CUSTOM, -1, app, null);
+						Image backOfAutoIcon = null;
+						if (nImageIndex > 0)
+						{
+							backOfAutoIcon = imageList1.Images [nImageIndex];
+				
+						}
+						Bitmap b = CoreUtilities.General.CreateBitmapImageFromText (spacing + numbertoshow + sChapter + spacing, "", General.FromTextStyles.CUSTOM, -1, app, backOfAutoIcon);
 
 						e.Graphics.DrawImage (b, nLeft, nTop);
 					} else {
@@ -681,7 +715,7 @@ namespace Timeline
 									if (compareDate == myDate)
 									{
 										AddTimelineNote(mHoliday.sText, mHoliday.nIcon, ref nNumberFound
-										                , i,e, mHoliday.sCaption, dayPanelWidth, 0, "",0);
+										                , i,e, mHoliday.sCaption, dayPanelWidth, 0, "",0,-1);
 									}
 								}
 								
@@ -870,6 +904,8 @@ namespace Timeline
 														
 														int icon_idx = CurrentVersionofTableForTHisTimeline.dataSource.Columns.IndexOf("icon");
 														int data3_idx = CurrentVersionofTableForTHisTimeline.dataSource.Columns.IndexOf("Data3");
+														int data4_idx = CurrentVersionofTableForTHisTimeline.dataSource.Columns.IndexOf("Data4");
+
 														if (icon_idx < 0)
 														{
 															// try with capital
@@ -894,11 +930,18 @@ namespace Timeline
 														string title = /*row[2].ToString() + "|"+*/row[3].ToString();
 														string description = row[2].ToString();
 														string data3 = row[data3_idx].ToString();
+														string data4 = row[data4_idx].ToString();
+
+														int data4_i = -1;
+														if (data4 != Constants.BLANK && Int32.TryParse(data4, out data4_i) == false)
+														{
+															data4_i = -1;
+														}
 														// tables assumed to be pattern on EventTable
 														// with *at least* first column  = the date
 														// third column the STRING title
 														AddTimelineNote("*" + description, icon,
-														                ref nNumberFound, i, e, title, dayPanelWidth, lookupi,data3, chapter);
+														                ref nNumberFound, i, e, title, dayPanelWidth, lookupi,data3, chapter, data4_i);
 													}
 												}
 											}
