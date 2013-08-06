@@ -54,11 +54,13 @@ namespace Layout
 
 	
 		HeaderBar header = null;
+		ToolStrip formatBar= null;
+		ToolStrip bar = null;
 		#endregion
 
 		protected LayoutInterface Notes = null;
 		#region gui
-		ToolStrip bar = null;
+
 		private Panel noteCanvas;
 		override public Panel NoteCanvas {
 			get { return noteCanvas;}
@@ -193,7 +195,7 @@ namespace Layout
 		/// </summary>
 		private void BuildFormatToolbar ()
 		{
-			ToolStrip formatBar = new ToolStrip();
+			 formatBar = new ToolStrip();
 			formatBar.Parent = this;
 			formatBar.Dock = DockStyle.Top;
 
@@ -586,71 +588,66 @@ namespace Layout
 		/// <returns>
 		/// The random table details.
 		/// </returns>
-		string GetRandomTableDetails(string identifier)
+		string GetRandomTableDetails (string identifier)
 		{
 			this.Cursor = Cursors.WaitCursor;
-			try
-			{
-				string[] pars = identifier.Split(new char[1] {'|'});
+			string returnresult = Constants.BLANK;
+
+			try {
+				string[] pars = identifier.Split (new char[1] {'|'});
 				
-				string LayoutName = pars[0];
+				string LayoutName = pars [0];
 				string tableString = Constants.BLANK;
-				if (pars.Length > 1)
-				{
-					tableString = pars[1];
+				if (pars.Length > 1) {
+					tableString = pars [1];
 				}
 				
 			
-				if (MasterOfLayouts.ExistsByName(LayoutName) == true)
-				{
-					string LayoutGUID = MasterOfLayouts.GetGuidFromName(LayoutName);
+				if (MasterOfLayouts.ExistsByName (LayoutName) == true) {
+					string LayoutGUID = MasterOfLayouts.GetGuidFromName (LayoutName);
 					//LayoutDatabase randompageLayout = new LayoutDatabase(LayoutGUID);
-					LayoutPanel temporaryLayoutPanel = new LayoutPanel("", false);
-					temporaryLayoutPanel.LoadLayout(LayoutGUID, false, TextEditContextStrip);
+					LayoutPanel temporaryLayoutPanel = new LayoutPanel ("", false);
+					temporaryLayoutPanel.LoadLayout (LayoutGUID, false, TextEditContextStrip);
 					//randompageLayout.LoadFrom(temporaryLayoutPanel);
 
 					// now search for the note (the table)
-				if (Constants.BLANK == tableString)
-				{
-					// no table was defined so we look for a table named start
-					tableString = "start";
-				}
+					if (Constants.BLANK == tableString) {
+						// no table was defined so we look for a table named start
+						tableString = "start";
+					}
 					
-				tableString = tableString.ToLower();
-					NoteDataInterface table = temporaryLayoutPanel.FindNoteByName(tableString);
+					tableString = tableString.ToLower ();
+					NoteDataInterface table = temporaryLayoutPanel.FindNoteByName (tableString);
 				
 					bool found = false;
-					if (table != null && table is NoteDataXML_Table)
-					{
+					if (table != null && table is NoteDataXML_Table) {
 						// now convert the note to a proper object (with a layout to reference, which is needed when looking for notes on a SUBPANEL)
-						table = temporaryLayoutPanel.GoToNote(table);
-						if (table != null)
-						{
+						table = temporaryLayoutPanel.GoToNote (table);
+						if (table != null) {
 							found = true;
-							return 	((NoteDataXML_Table)table).GetRandomTableResults ();
+							returnresult = 	((NoteDataXML_Table)table).GetRandomTableResults ();
 						}
 					}
 
 
-					if (false == found)
-					{
-						NewMessage.Show (Loc.Instance.GetStringFmt("This was not a valid table. Is there a table named {0} on the layout {1}?", tableString,LayoutName));
+					if (false == found) {
+						NewMessage.Show (Loc.Instance.GetStringFmt ("This was not a valid table. Is there a table named {0} on the layout {1}?", tableString, LayoutName));
 					}
 					temporaryLayoutPanel.Dispose ();
-				}
-				else
-				{
-					NewMessage.Show (Loc.Instance.GetStringFmt("The layout named {0} does not exist", LayoutName));
+				} else {
+					NewMessage.Show (Loc.Instance.GetStringFmt ("The layout named {0} does not exist", LayoutName));
 				}
 			
 	
+			} catch (Exception ex) {
+				NewMessage.Show (ex.ToString ());
 			}
-			catch (Exception ex)
-			{
-				NewMessage.Show(ex.ToString());
+			// july 2013 - trying to guarantee a change back to default.
+			while (this.Cursor != Cursors.Default) {
+				this.Cursor = Cursors.Default;
 			}
-			this.Cursor = Cursors.Default;
-			return Constants.BLANK;
+
+			return returnresult;
 		}
 
 		/// <summary>
@@ -1055,8 +1052,11 @@ namespace Layout
 				//Notes = null;
 				//NewMessage.Show ("That note does not exist");
 			} else {
-				if (this.header != null)
+				if (this.header != null) {
 					header.UpdateHeader ();
+		
+
+				}
 				UpdateListOfNotes ();
 				//	NewMessage.Show (String.Format ("Name={0}, Status={1}", Notes.Name, Notes.Status));
 			}
@@ -1088,12 +1088,30 @@ namespace Layout
 			// notes on the page have been updated
 			foreach (NoteDataInterface note in LayoutDetails.Instance.UpdateAfterLoadList) {
 
-				note.UpdateAfterLoad();
+				note.UpdateAfterLoad ();
 			
 			}
 
-			LayoutDetails.Instance.UpdateAfterLoadList = new List<NoteDataInterface>();
+			LayoutDetails.Instance.UpdateAfterLoadList = new List<NoteDataInterface> ();
 
+			// July 2013 -- adding merging
+			if (header != null) {
+				header.headerBar.AllowMerge = true;
+				if (formatBar != null) {
+					formatBar.AllowMerge = true;
+					if (ToolStripManager.Merge (formatBar, header.headerBar) == true)
+					{
+						formatBar.Visible = false;
+					}
+				}
+				if (bar != null) {
+					bar.AllowMerge = true;
+					if (ToolStripManager.Merge (bar, header.headerBar) == true)
+					{
+						bar.Visible = false;
+					}
+				}
+			}
 		}
 
 		private void UpdateLayoutToolbar()
@@ -2035,6 +2053,21 @@ namespace Layout
 				tabsBar.ForeColor = app.captionForeground;
 			}
 
+		}
+		public override int HeightOfToolbars ()
+		{
+			int heightacc = 0;
+			if (this.header != null) heightacc = heightacc+this.header.height;
+			if (this.formatBar != null) heightacc = heightacc + this.formatBar.Height;
+			if (this.bar != null) heightacc = heightacc + this.bar.Height;
+			if (this.tabsBar != null) heightacc = heightacc + this.tabsBar.Height;
+			return heightacc;
+		}
+		public override void DisableLayout (bool off)
+		{
+			if (header != null) {
+				header.Disable(off);
+			}
 		}
 	}
 }

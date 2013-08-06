@@ -48,6 +48,9 @@ namespace Layout
 		protected ToolStripDropDownButton properties; 
 		protected ToolStripLabel captionLabel;
 		protected ToolStripButton ReadOnlyButton;
+
+		protected ToolStripButton MaximizeButton;
+		protected ToolStripButton MinimizeButton;
 		#endregion
 
 	
@@ -185,7 +188,7 @@ namespace Layout
 			CaptionLabel.Items.Add (properties);
 
 
-			ToolStripButton MinimizeButton = new ToolStripButton ();
+			 MinimizeButton = new ToolStripButton ();
 			//MinimizeButton.Text = "--";
 
 			MinimizeButton.Image = CoreUtilities.FileUtils.GetImage_ForDLL ("application_put.png");
@@ -194,7 +197,7 @@ namespace Layout
 
 
 
-			ToolStripButton MaximizeButton = new ToolStripButton ();
+			 MaximizeButton = new ToolStripButton ();
 			//MaximizeButton.Text = "[  ]";
 			MaximizeButton.Image = CoreUtilities.FileUtils.GetImage_ForDLL ("application_xp.png");
 			MaximizeButton.ToolTipText = Loc.Instance.GetString ("Fills available screen");
@@ -626,7 +629,15 @@ namespace Layout
 			}
 		
 		}
-
+		/// <summary>
+		/// Override this method to have child classes respond to a change of Caption
+		/// </summary>
+		/// <param name='cap'>
+		/// Cap.
+		/// </param>
+		protected virtual void CaptionChanged(string cap)
+		{
+		}
 		void HandleCaptionEditorKeyDown (object sender, KeyEventArgs e)
 		{
 			if (e.KeyCode == Keys.Enter) {
@@ -638,6 +649,7 @@ namespace Layout
 				{
 					// commit the change to the caption
 					Caption = (sender as ToolStripTextBox).Text;
+					CaptionChanged(Caption);
 					SetSaveRequired (true);
 					// so we don't need to call update for such a simple change
 					captionLabel.Text = Caption; 
@@ -664,6 +676,30 @@ namespace Layout
 		//	((NoteDataXML)propertyGrid.SelectedObject).Update(Layout);
 			((NoteDataXML)propertyGrid.SelectedObject).UpdateLocation();
 			SetSaveRequired(true);
+			// close the Property View after pressing this button (July 2013)
+			TogglePropertyView ();
+		}
+
+		void TogglePropertyView ()
+		{
+			PropertyPanel.Visible = !PropertyPanel.Visible;
+			if (PropertyPanel.Visible == true) {
+				if (propertyGrid == null) {
+					propertyGrid = new PropertyGrid ();
+					propertyGrid.SelectedObject = this;
+					//	propertyGrid.PropertyValueChanged+= HandlePropertyValueChanged;
+					propertyGrid.Parent = PropertyPanel;
+					propertyGrid.Dock = DockStyle.Fill;
+				}
+				ParentNotePanel.AutoScroll = true;
+				PropertyPanel.AutoScroll = true;
+				//PropertyPanel.SendToBack();
+				//CaptionLabel.BringToFront();
+				CaptionLabel.SendToBack ();
+			}
+			else {
+				ParentNotePanel.AutoScroll = false;
+			}
 		}
 
 
@@ -671,30 +707,7 @@ namespace Layout
 		void HandlePropertiesClick (object sender, EventArgs e)
 		{
 
-			PropertyPanel.Visible = !PropertyPanel.Visible;
-			if (PropertyPanel.Visible == true) {
-
-				if (propertyGrid == null)
-				{
-				propertyGrid = new PropertyGrid();
-				propertyGrid.SelectedObject = this;
-				
-			//	propertyGrid.PropertyValueChanged+= HandlePropertyValueChanged;
-				propertyGrid.Parent = PropertyPanel;
-				
-				propertyGrid.Dock = DockStyle.Fill;
-				}
-				ParentNotePanel.AutoScroll = true;
-
-				PropertyPanel.AutoScroll = true;
-				//PropertyPanel.SendToBack();
-				//CaptionLabel.BringToFront();
-				CaptionLabel.SendToBack ();
-
-			} else {
-				ParentNotePanel.AutoScroll = false;
-
-			}
+			TogglePropertyView ();
 		}
 		/// <summary>
 		/// Handles the popup menu folder.

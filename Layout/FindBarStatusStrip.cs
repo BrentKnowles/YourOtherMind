@@ -314,7 +314,12 @@ namespace Layout
 
 		void UpdateSearchMatches (int i, int i2)
 		{
-			SearchMatchesFound.Text = Loc.Instance.GetStringFmt("{0}/{1} Found", i.ToString (), i2.ToString ());
+			SearchMatchesFound.Text = Loc.Instance.GetStringFmt ("{0}/{1} Found", i.ToString (), i2.ToString ());
+
+			// we want to beep when things not found BUT not if we weren't looking for anything in the first place (July 2013)
+			if (Searchbox.Text != Constants.BLANK && i2 == 0) {
+				Console.Beep();
+			}
 		}
 
 		void HandleNextClick (object sender, EventArgs e)

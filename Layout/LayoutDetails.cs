@@ -178,6 +178,27 @@ namespace Layout
 		public Action<string, string> LoadLayoutRef= null;
 		public Action<string> UpdateTitle = null;
 
+
+		private appframe.MainFormBase MainForm = null;
+
+		public void SetMainForm (appframe.MainFormBase mainForm)
+		{
+			MainForm = mainForm;
+		}
+		/// <summary>
+		/// Wrapper to run a hot-key from SOMEWHERE other than a key press
+		/// </summary>
+		/// <param name='code'>
+		/// Code.
+		/// </param>
+		public void ManualRunHotkeyOperation (string code)
+		{
+			if (MainForm != null) {
+				MainForm.ManualRunHotkeyOperation(code);
+			}
+		}
+
+
 		// in rare case of harddrive failure this variable can be set and checked when the application closes to prevent saving empty files (December 2012)
 		// for YOM this is Set ONLY IN MainformBase
 		public bool ForceShutdown = false; 

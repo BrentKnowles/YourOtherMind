@@ -329,11 +329,19 @@ namespace Layout
 #endregion;
 
 		#region methods
-
+	
+		protected virtual string GetIcon ()
+		{
+			return @"%*application_form_edit.png";
+		}
 		public virtual void GetStoryboardData (out string sCaption, out string sValue, out int type, out string extraField)
 		{
-			sCaption = Caption;
+			
+			//sCaption = Caption+@"%C:\Users\Public\Pictures\PhotoStage\001.jpg";;
+			sCaption = Caption+GetIcon();
+			//sCaption = Caption;
 			sValue = this.GuidForNote;
+			//sValue = @"Title%C:\Users\Public\Pictures\PhotoStage\001.jpg";
 			type = 0;
 			extraField = this.GuidForNote;
 		}

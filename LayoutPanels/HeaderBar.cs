@@ -43,7 +43,7 @@ namespace LayoutPanels
 		#region interfaceelements
 		LayoutPanel Layout;
 		LayoutInterface Notes;
-		ToolStrip headerBar = null;
+		public ToolStrip headerBar = null;
 		ContextMenuStrip Notebook;
 		ContextMenuStrip Sections;
 		ContextMenuStrip Subtypes;
@@ -75,6 +75,11 @@ namespace LayoutPanels
 
 		
 		}
+
+		public int height {
+			get { return headerBar.Height;}
+		}
+
 		private void HeaderToolbar ()
 		{
 			headerBar = new ToolStrip();
@@ -167,6 +172,17 @@ namespace LayoutPanels
 			(sender as ToolStripDropDownButton).DropDownItems.Add (backColor);
 			//(sender as ToolStripDropDownButton).DropDownItems.Add (tabMenu);
 		}
+		Color old = Color.Black;
+		// used to show the user that the layout they are in is no longer 'active'
+		public void Disable (bool off)
+		{
+			if (true == off) {
+				old = NameOfLayout.ForeColor;
+				NameOfLayout.ForeColor = Color.Red;
+			} else {
+				NameOfLayout.ForeColor = old;
+			}
+		}
 
 		void HandleBackColorChanged (object sender, EventArgs e)
 		{
@@ -257,6 +273,7 @@ namespace LayoutPanels
 
 
 				 NameOfLayout = new ToolStripLabel ();
+				NameOfLayout.Click+= NameOfLayoutClick;
 				NameOfLayout.Text = Notes.Name;
 				int DaysSinceLastEdit = (DateTime.Now - Notes.DateEdited).Days;
 				string an_S = "";
@@ -385,6 +402,18 @@ namespace LayoutPanels
 				headerBar.Items.Add (properties);
 				headerBar.Items.Add (Info);
 			}
+		}
+
+		void NameOfLayoutClick (object sender, EventArgs e)
+		{
+			LayoutDetails.Instance.CurrentLayout = this.Layout;
+			// we do not want to set Subpanels as the CurrentLayout!
+			if (this.Layout.GetIsSystemLayout == true) {
+				if (null == LayoutDetails.Instance.CurrentLayout) {
+					NewMessage.Show (Loc.Instance.GetString ("No Window defined"));
+				}
+			}
+			Disable(false);
 		}
 
 		void HandleKeyLabelClick (object sender, EventArgs e)

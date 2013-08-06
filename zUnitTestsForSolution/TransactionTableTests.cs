@@ -164,6 +164,7 @@ namespace Testing
 		[Test]
 		public void QueryTests()
 		{
+			_TestSingleTon.Instance._SetupForLayoutPanelTests ();
 			TransactionsTable eventTable = SetupForEventTests();
 			LayoutDetails.Instance.TransactionsList = eventTable;
 			System.Windows.Forms.Form form = new System.Windows.Forms.Form();

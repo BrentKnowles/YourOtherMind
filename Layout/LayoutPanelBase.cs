@@ -37,6 +37,7 @@ namespace Layout
 	{
 		public const string SYSTEM_LAYOUT ="system";
 
+		public abstract void DisableLayout (bool off);
 
 		bool systemNote = false;
 
@@ -58,7 +59,9 @@ namespace Layout
 				systemNote = value;
 			}
 		}
-
+		// used for auto window assignment
+		public abstract int HeightOfToolbars ();
+		
 		public LayoutPanelBase ()
 		{
 		

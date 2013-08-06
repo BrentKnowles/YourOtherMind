@@ -69,13 +69,31 @@ namespace Layout
 			//CaptionLabel.Visible = false;
 
 		//	Maximize(true);
+			ParentNotePanel.Leave+= HandleLeave;
 			//Parent.Enter+= HandleEnter;
-			ParentNotePanel.MouseEnter+= HandleMouseEnter;
+			//ParentNotePanel.GotFocus+= HandleGotFocus;
+			//ParentNotePanel.MouseEnter+= HandleMouseEnter;
 			ParentNotePanel.BringToFront();
 			//Parent.Dock = System.Windows.Forms.DockStyle.Left;
 			Dock = DockStyle.Fill;
 			UpdateLocation();
 		//	Parent.BringToFront();
+		}
+
+		void HandleLeave (object sender, EventArgs e)
+		{
+			//NewMessage.Show ("leave");
+			// This is still not fool proof (July 2013)
+			Save ();
+			GetChildLayout().DisableLayout(true);
+		//	ParentNotePanel.Enabled = false;
+
+		}
+
+		void HandleGotFocus (object sender, EventArgs e)
+		{
+			// never worked the way I needed
+			//NewMessage.Show ("Got Focus for " + Caption);
 		}
 
 		/// <summary>
@@ -158,8 +176,15 @@ namespace Layout
 		/// </param>
 		void HandleMouseEnter (object sender, EventArgs e)
 		{
+
+			// July 2013 - Disabled this entirely Move this to a click on the NAME label... Document
+
 			// do not worry about lack of return value here or anything because we are setting the layout in the loop
-			GetChildLayout(); 
+			// July 2013 - Update. Yes, do worry about the lack of return. At some point I changed the behavior on this and it broke things.
+//			LayoutDetails.Instance.CurrentLayout = GetChildLayout ();
+//			if (null == LayoutDetails.Instance.CurrentLayout) {
+//				NewMessage.Show (Loc.Instance.GetString ("No Window defined"));
+//			}
 		}
 
 		void HandleEnter (object sender, EventArgs e)

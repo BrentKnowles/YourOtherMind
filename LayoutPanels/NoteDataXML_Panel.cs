@@ -95,6 +95,10 @@ namespace LayoutPanels
 			return layout.GetAllNotes();
 
 		}
+		protected override string GetIcon ()
+		{
+			return @"%*folder.png";
+		}
 		// names of subnotes, if a panel or equivalent notes (used for accessiblity as NoteDataXML_Panel not alwasy available)
 		/// <summary>
 		/// Lists the of subnotes. JUST THE NAMES

@@ -537,8 +537,14 @@ namespace YOM2013
 			Windows.DropDownOpening += HandleWindowsMenuDropDownOpening;
 
 
-		
+			GetNoteMenu ().DropDownItems.Add(new ToolStripSeparator());
+			ToolStripMenuItem InsertRTF = new ToolStripMenuItem(Loc.Instance.GetString ("Insert RTF Template"));
+			ToolStripMenuItem ExportRTF = new ToolStripMenuItem(Loc.Instance.GetString ("Export as RTF file"));
 
+			InsertRTF.Click+= HandleInsertRTFClick;;
+			ExportRTF.Click+= HandleExportRTFClick;
+			GetNoteMenu ().DropDownItems.Add (InsertRTF);
+			GetNoteMenu ().DropDownItems.Add (ExportRTF);
 
 			// Adding in right order to Main Menu
 
@@ -605,6 +611,60 @@ namespace YOM2013
 			UpdateTimer.Interval = 1000;// 1 sec //5000; // 5 sec. I am experimenting with using the timer for multiple functions. It checks status update every 5 sconds
 			UpdateTimer.Tick+= HandleUpdateTimerTick;
 			UpdateTimer.Start ();
+		}
+
+		void HandleExportRTFClick (object sender, EventArgs e)
+		{
+			if (LayoutDetails.Instance.CurrentLayout != null) {
+				if (LayoutDetails.Instance.CurrentLayout.CurrentTextNote != null)
+				{ 
+					SaveFileDialog dialog = new SaveFileDialog();
+					dialog.Title = Loc.Instance.GetString ("Save As Rich Text");
+					dialog.Filter = RTFFilter;
+					dialog.OverwritePrompt = true;
+					if (dialog.ShowDialog() == DialogResult.OK)
+					{
+						LayoutDetails.Instance.CurrentLayout.CurrentTextNote.GetRichTextBox().SaveFile(dialog.FileName);
+					}
+					return;
+				}
+			}
+			NewMessage.Show (Loc.Instance.GetString ("Please select an appropriate text note, first."));
+		}
+
+		string RTFFilter=Loc.Instance.GetString ("Rich Text (*.rtf)|*.rtf");
+
+		void HandleInsertRTFClick (object sender, EventArgs e)
+		{
+			if (LayoutDetails.Instance.CurrentLayout != null) {
+				if (LayoutDetails.Instance.CurrentLayout.CurrentTextNote != null) {
+					OpenFileDialog openFileDialog1 = new OpenFileDialog ();
+					openFileDialog1.Filter = RTFFilter;
+					openFileDialog1.InitialDirectory = LayoutDetails.Instance.Path;// paths.TemplatePath;
+					if (openFileDialog1.ShowDialog () == DialogResult.OK) {
+						// oct 2009 - instead of overwriting existing information let's try and 
+						//    copy existing text, preserving it
+
+						RichTextBox temp = new RichTextBox();
+						temp.LoadFile (openFileDialog1.FileName);
+						temp.SelectAll();
+						temp.Copy ();
+
+						LayoutDetails.Instance.CurrentLayout.CurrentTextNote.GetRichTextBox().Paste ();
+
+
+						return;
+					}
+
+				}
+				else
+				{
+					NewMessage.Show (Loc.Instance.GetString ("Please select an appropriate text note, first."));
+				}
+			} else {
+				NewMessage.Show (Loc.Instance.GetString ("Please select an appropriate text note, first."));
+			}
+		
 		}
 
 		void HandleNagClick (object sender, EventArgs e)
@@ -832,6 +892,21 @@ namespace YOM2013
 		}
 		void HandleFormClosing (object sender, FormClosingEventArgs e)
 		{
+
+
+
+			// July 2013 - now that I started working with two Layouts open side by side
+			// realizes that they are not being saved -- only the active one was.
+			foreach (LayoutsInMemory layoutstruct in LayoutsOpen) {
+				if (layoutstruct.Container.GetChildLayout().GetSaveRequired == true)
+				{
+					layoutstruct.Container.GetChildLayout().SaveLayout();
+				}
+				
+
+
+			}
+
 			if (LayoutDetails.Instance.SystemLayout != null) {
 				// changing the System will overwrite any system changes made 
 				// if the page has actually been loaded
@@ -879,8 +954,11 @@ namespace YOM2013
 			Hotkeys.Add (new KeyData(Loc.Instance.GetString ("Highlight Green"), 	HighlightGreen, Keys.Control,  Keys.OemMinus,mainform, true, "highlightgreen"));
 			Hotkeys.Add (new KeyData(Loc.Instance.GetString ("Highlight Light Blue"), 	HighlightLightBlue, Keys.Control,  Keys.D1,mainform, true, "highlightlightblue"));
 			Hotkeys.Add (new KeyData(Loc.Instance.GetString ("Highlight Peach"), 	HighlightPeach, Keys.Control,  Keys.D2,mainform, true, "highlightpeach"));
+			Hotkeys.Add (new KeyData(Loc.Instance.GetString ("Extend View"), 	Screens_AcrossTwo, Keys.Control,  Keys.W,mainform, true, "2screen"));
 
 
+			// this is used in case we want to run hotkey assigned operations outside of an actual keypress. We do this with the HandleHotkey...
+			LayoutDetails.Instance.SetMainForm(this);
 
 		//	Hotkeys.Add (new KeyData(Loc.Instance.GetString ("ZZZ"), 	ReloadSystem, Keys.Control,  Keys.D3,mainform, true, "reloadsystem"));
 			// temporary to test the form thing
@@ -1634,6 +1712,8 @@ namespace YOM2013
 							// I moved it to behind the call
 
 								newLayout.LoadLayout (guidtoload, false, TextEditContextStrip);
+							// July 2013 - Need this for the new "Arrange Windows" feature
+							MDIHOST.Caption = newLayout.Caption;
 							LayoutDetails.Instance.CurrentLayout = newLayout;	
 
 
@@ -1674,7 +1754,9 @@ namespace YOM2013
 			}
 			mutex_IsLoading = false; 
 		}
-
+		/// <summary>
+		/// Refreshs the windows menu. The list of open layouts
+		/// </summary>
 		void RefreshWindowsMenu ()
 		{
 			Windows.DropDownItems.Clear ();
@@ -1732,6 +1814,7 @@ namespace YOM2013
 				panel.ParentNotePanel.BringToFront ();
 				panel.ParentNotePanel.Focus ();
 				LayoutDetails.Instance.CurrentLayout = layoutPanel;
+			layoutPanel.DisableLayout(false);
 				panel.Flash ();
 				UpdateFooter (FootMessageType.SWITCHWINDOWS, Loc.Instance.GetStringFmt ("Switching to Layout: {0}", layoutPanel.Caption));
 

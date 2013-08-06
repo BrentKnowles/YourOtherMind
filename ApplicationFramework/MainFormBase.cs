@@ -124,7 +124,7 @@ namespace appframe
 			// HOTKEYS
 			
 		
-			Hotkeys.Add (new KeyData ("Dual Screen", Test, Keys.Control, Keys.W, Constants.BLANK, false, "dualscreenguid"));
+			//Hotkeys.Add (new KeyData ("Dual Screen", Test, Keys.Control, Keys.W, Constants.BLANK, false, "dualscreenguid"));
 			
 			HotKeyConfig hotKeyConfig = new HotKeyConfig(Storage, ref Hotkeys, GetValidDatabase);
 			optionPanels.Add(hotKeyConfig);
@@ -235,6 +235,25 @@ namespace appframe
 		}
 
 		/// <summary>
+		/// Manuals the run hotkey operation.
+		/// 
+		/// This was initially created for  the Button Note AddIn, so it could access any hotkey assignment
+		/// and invoke from a button press.
+		/// </summary>
+		/// <param name='code'>
+		/// Code.
+		/// </param>
+		public void ManualRunHotkeyOperation (string code)
+		{
+			foreach (KeyData keysy in Hotkeys) {
+				if (keysy.GetGUID() == code)
+				{
+					keysy.Command(keysy.Defaultinput);
+				}
+			}
+		}
+
+		/// <summary>
 		/// Handles the form key down.
 		/// </summary>
 		/// <param name='sender'>
@@ -245,6 +264,7 @@ namespace appframe
 		/// </param>
 		void HandleFormKeyDown (object sender, KeyEventArgs e)
 		{
+
 
 			foreach (KeyData keysy in Hotkeys) {
 				bool proceed = true;
@@ -280,11 +300,7 @@ namespace appframe
 			}
 
 		}
-		void Test(bool b)
-		{
-			NewMessage.Show ("hi");
-			//return true;
-		}
+
 
 
 
@@ -638,6 +654,7 @@ namespace appframe
 			int nTotalWith = 0;
 			int nSmallestHeight = 100000;
 			int BiggestHeight = 0;
+			int LeftMost = 100000;
 			foreach (Screen screen in currentScreen) {
 				nTotalWith = nTotalWith + screen.WorkingArea.Width;
 				if (screen.WorkingArea.Height > BiggestHeight) {
@@ -646,9 +663,15 @@ namespace appframe
 				if (screen.WorkingArea.Height < nSmallestHeight) {
 					nSmallestHeight = screen.WorkingArea.Height;
 				}
+				if (screen.WorkingArea.Left < LeftMost)
+				{
+					LeftMost = screen.WorkingArea.Left;
+				}
 			}
+
 			this.Top = currentScreen [0].WorkingArea.Top;
-			this.Left = currentScreen[0].WorkingArea.Left;
+			//this.Left = currentScreen[0].WorkingArea.Left;
+			this.Left = LeftMost;
 			this.Width = nTotalWith;
 			this.Height = nSmallestHeight;
 			if (true == MaxHeight) {

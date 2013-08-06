@@ -209,7 +209,10 @@ namespace Layout
 
 		}
 
-
+		protected override string GetIcon ()
+		{
+			return @"%*timeline_marker.png";
+		}
 		protected override void CommonConstructorBehavior ()
 		{
 			base.CommonConstructorBehavior ();

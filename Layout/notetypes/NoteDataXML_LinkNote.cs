@@ -76,7 +76,10 @@ namespace Layout
 
 		}
 
-
+		protected override string GetIcon ()
+		{
+			return @"%*link.png";
+		}
 		public override void RebuildLinkAfterMove()
 		{
 			// requires LayoutGuid and ChildGuid to still be valid, which I'm not sure of

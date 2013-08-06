@@ -179,6 +179,10 @@ namespace Layout
 			Columns= ColumnOverride;
 
 		}
+		protected override string GetIcon ()
+		{
+			return @"%*table_go.png";
+		}
 		/// <summary>
 		/// Builds the default columns.
 		/// 

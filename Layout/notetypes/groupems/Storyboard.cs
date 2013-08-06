@@ -541,11 +541,39 @@ namespace Storyboards
 				// NO need to store image indexes
 
              
+				// july 2013 - if we pass a resource in, we try to load it form resource
+				if (sThumbnailImage != Constants.BLANK && sThumbnailImage[0] == '*')
+				{
+					int imageKey = imageList.Images.IndexOfKey(sThumbnailImage);
+					if (imageKey == -1)
+					{
+						try
+						{
+							sThumbnailImage = sThumbnailImage.Replace ("*", "");
+						// add new
+						Image image = CoreUtilities.FileUtils.GetImage_ForDLL(sThumbnailImage);
+
+						//Image image = Image.FromFile (sThumbnailImage);
+						imageList.Images.Add (sThumbnailImage, image);
+						nIdx = imageList.Images.Count - 1;
+						imageListLarge.Images.Add (sThumbnailImage, image);
+						}
+						catch (Exception)
+						{
+
+						}
+					}
+					else
+					{
+						// use existing
+						nIdx = imageKey;
+					}
+				}
 
 				// Jan 2010 if the title is parseable with text%link we use link instead
 				// of the otherimage (for character page thumbnails)
                 
-               
+
 
 
 				if (File.Exists (sThumbnailImage) == true) {
@@ -556,7 +584,11 @@ namespace Storyboards
 
 				}
 
-				sSubfolder = "Picture";
+				// if we've set the image to be for a specified note type, we don't want it to say Picture July 2013
+				if (false == bFakePic)
+				{
+					sSubfolder = "Picture";
+				}
 
 			}
 			// add record to arraylist

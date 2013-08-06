@@ -75,6 +75,10 @@ namespace Layout
 		{
 
 		}
+		protected override string GetIcon ()
+		{
+			return @"%*book.png";
+		}
 
 		private iMarkupLanguage SelectedMarkup {
 			get {

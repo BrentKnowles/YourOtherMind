@@ -111,6 +111,10 @@
       <Project>{015AC0C9-2F05-45BE-AD21-5A475AACA2D7}</Project>
       <Name>TransactionSystem</Name>
     </ProjectReference>
+    <ProjectReference Include="..\MEF_Interfaces\MEF_Interfaces.csproj">
+      <Project>{2E366A51-224A-4C3B-90D6-FE8C81C9EB78}</Project>
+      <Name>MEF_Interfaces</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="icons\application_form_edit.png">
@@ -178,6 +182,33 @@
     </EmbeddedResource>
     <EmbeddedResource Include="icons\arrow_refresh.png">
       <LogicalName>arrow_refresh.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\book.png">
+      <LogicalName>book.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\bug.png">
+      <LogicalName>bug.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\link.png">
+      <LogicalName>link.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\note_edit.png">
+      <LogicalName>note_edit.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\control_play.png">
+      <LogicalName>control_play.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\table_go.png">
+      <LogicalName>table_go.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\timeline_marker.png">
+      <LogicalName>timeline_marker.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\user.png">
+      <LogicalName>user.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\folder.png">
+      <LogicalName>folder.png</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
 </Project>
