@@ -370,10 +370,32 @@ namespace Storyboards
         /// <summary>
         /// splitter distance -- where the splitter bar is, stored in StickItPage
         /// </summary>
-        public int SplitterPosition
-        {
-            get { return splitContainer1.SplitterDistance; }
-            set { splitContainer1.SplitterDistance = value; }
+        public int SplitterPosition {
+			get { return splitContainer1.SplitterDistance; }
+			set {
+				try {
+					splitContainer1.SplitterDistance = value;
+				} catch
+			(Exception) {
+					// This happens on Storyboards maximized inside of the panel and means we cannot RESTORe the sizer.
+					// I've tried to move the initialization code in NoteDataXML_GroupEm,  and that did FIX this but 
+					// broke GroupEms that were not in Panels!!
+					// August 2013
+					// So I've removed the crash but we've lost the ability to retain the sizing information inside the panel because
+					// nothing we set it to seems safe.
+				//	NewMessage.Show ("boom");
+					// set it to 25%
+					try
+					{
+					splitContainer1.SplitterDistance = (int)(splitContainer1.ClientSize.Width * 0.25);
+					}
+					catch (Exception)
+					{
+						//  just leaeve it alone
+						// this seems to happen if the Control is inside a Panel
+					}
+				}
+			}
         }
 
         /// <summary>

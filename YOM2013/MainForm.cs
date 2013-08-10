@@ -768,7 +768,10 @@ namespace YOM2013
 						if (LayoutDetails.Instance.CurrentLayout.GetFindbar () != null) {
 							string selection = "";
 							if (LayoutDetails.Instance.CurrentLayout.CurrentTextNote != null) {
-								selection = LayoutDetails.Instance.CurrentLayout.CurrentTextNote.GetRichTextBox ().SelectedText;
+								if (LayoutDetails.Instance.CurrentLayout.CurrentTextNote.GetRichTextBox ()!= null)
+								{
+									selection = LayoutDetails.Instance.CurrentLayout.CurrentTextNote.GetRichTextBox ().SelectedText;
+								}
 							}
 							LayoutDetails.Instance.CurrentLayout.GetFindbar ().UpdateSelection (selection, false);
 						}

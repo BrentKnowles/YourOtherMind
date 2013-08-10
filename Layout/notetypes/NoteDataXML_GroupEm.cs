@@ -107,6 +107,9 @@ namespace Layout
 			StoryBoard.Dock = DockStyle.Fill;
 
 
+
+
+
 			ParentNotePanel.Controls.Add (StoryBoard);
 			StoryBoard.BringToFront();
 			StoryBoard.Enter+= (object sender, EventArgs e) => 	BringToFrontAndShow();;
@@ -122,6 +125,7 @@ namespace Layout
 			StoryBoard.NeedSave += HandleNeedSave;
 
 			StoryBoard.ViewStyle = this.ViewStyle;
+			/*here*/
 			if (this.Storyboard_ShowPreview == true)
 			{
 				StoryBoard.ShowPreview();
@@ -131,7 +135,7 @@ namespace Layout
 				// make it run through autmoated test
 				if (true == StoryBoard.Visible )
 				{
-				StoryBoard.SplitterPosition = this.Storyboard_SplitterSetting;
+					StoryBoard.SplitterPosition = this.Storyboard_SplitterSetting;
 				}
 			}
 

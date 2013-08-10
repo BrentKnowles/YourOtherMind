@@ -223,9 +223,19 @@ namespace Layout
 
 			string Value = TextEditor.Text;
 			if (Value != Constants.BLANK) {
-				
-				if (TextEditor.Items.IndexOf (Value) == -1)
+
+				int CurrentIndex = TextEditor.Items.IndexOf (Value);
+				if (CurrentIndex == -1)
 					TextEditor.Items.Insert (0, (Value));
+				else
+				{
+					// August 2013
+					// Remove the old entry and add the new entry
+					// this will mean that entries we go back to often, will bump back to the 
+					// top of the list (and stay on it)
+					TextEditor.Items.Remove (Value);
+					TextEditor.Items.Insert (0, (Value));
+				}
 				SetSaveRequired(true);
 			}
 			// we do not add if the text is already there

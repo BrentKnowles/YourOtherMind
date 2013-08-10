@@ -293,22 +293,27 @@ namespace Layout
 			LinkTableRecord result = Array.Find (Layout.GetLinkTable ().GetRecords (), LinkTableRecord => LinkTableRecord.sExtra == String.Format (CoreUtilities.Links.LinkTableRecord.PageLinkFormatString, Layout.GUID,this.GuidForNote));
 			
 			//string file = String.Format (CoreUtilities.Links.LinkTableRecord.PageLinkFormatString, LayoutGuid, ChildGuid);
-			
+
+
+			// August 2013 -- moved this out of the results==null routine BEACAUSE we need this to be updated when
+			//editing a link too! Not just on the initial creation
+			string newCaption = Constants.BLANK;
+			// may 2013 - if we have a * it means we have a caption encoded at end of string and this neesd to be removed.
+			if (file.IndexOf("*") > -1)
+			{
+				string[] details = file.Split(new char[1]{'*'});
+				if (details != null && details.Length == 2)
+				{
+					file = details[0];
+					newCaption = details[1];
+					this.Caption = newCaption;
+				}
+			}
+
 			if (result == null) {
 				// add new
 				result = new LinkTableRecord();
-				string newCaption = Constants.BLANK;
-				// may 2013 - if we have a * it means we have a caption encoded at end of string and this neesd to be removed.
-				if (file.IndexOf("*") > -1)
-				{
-					string[] details = file.Split(new char[1]{'*'});
-					if (details != null && details.Length == 2)
-					{
-						file = details[0];
-						newCaption = details[1];
-						this.Caption = newCaption;
-					}
-				}
+
 
 				result.sFileName = file;
 
