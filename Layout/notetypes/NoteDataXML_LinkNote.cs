@@ -210,33 +210,33 @@ namespace Layout
 		/// <param name='note'>
 		/// Note.
 		/// </param>
-		private void SetData(NoteDataInterface note)
+		private void SetData (NoteDataInterface note)
 		{
-			string link = note.GetLinkData();
-			if (General.IsGraphicFile(link))
-			{
+			string link = note.GetLinkData ();
+			if (General.IsGraphicFile (link)) {
 				// A linknote will not benefit from the smart file finding that a NotePicture might do in tracking down a missing file
-				if (File.Exists (link) == true)
-				{
-				
-				if (null == Pic)
-				{
-					Pic = new PictureBox();
+				if (File.Exists (link) == true) {
+
+					//trying to figure out why refresh does not work (Aug 2013) -- getting rid of it fixed things
+					//if (null == Pic)
+					{
+						Pic = new PictureBox ();
 						ParentNotePanel.Controls.Add (Pic);
 						Pic.SizeMode = PictureBoxSizeMode.StretchImage;
-					
-				}
-					Pic.Dock = DockStyle.Fill;
-					Pic.Visible = true;
-					richBox.Visible = false;
 
-					Pic.Image = Image.FromFile (link);
-					// we store this for use when a storyboard wants to link to a linked iamge
-					Pic.Image.Tag = link;
-				}
-				else
-				{
-					this.richBox.Text= Loc.Instance.GetStringFmt("The file {0} does not exist. If the original note displays correctly it might be that the file is not actually in the location set. Doublecheck.", link);
+						//}
+						Pic.Dock = DockStyle.Fill;
+						Pic.Visible = true;
+						richBox.Visible = false;
+
+						Pic.Image = Image.FromFile (link);
+						// we store this for use when a storyboard wants to link to a linked iamge
+						Pic.Image.Tag = link;
+					//	NewMessage.Show (link);
+					}
+				
+				} else {
+																						this.richBox.Text = Loc.Instance.GetStringFmt ("The file {0} does not exist. If the original note displays correctly it might be that the file is not actually in the location set. Doublecheck.", link);
 				}
 			}
 			else
