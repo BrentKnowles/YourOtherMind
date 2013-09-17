@@ -282,13 +282,17 @@ namespace Layout
 			}
 
 		}
+		public System.Collections.ArrayList GetAllNotes ()
+		{
+			return GetAllNotes (true);
+		}
 		/// <summary>
 		/// Gets all notes.
 		/// </summary>
 		/// <returns>
 		/// The all notes.
 		/// </returns>
-		public System.Collections.ArrayList GetAllNotes ()
+		public System.Collections.ArrayList GetAllNotes (bool addChildren)
 		{
 			System.Collections.ArrayList result = new System.Collections.ArrayList ();
 			if (null == dataForThisLayout) {
@@ -297,7 +301,10 @@ namespace Layout
 			foreach (NoteDataInterface data in dataForThisLayout) {
 				lg.Instance.Line("LayoutDatabase->GetAllNotes", ProblemType.TEMPORARY, String.Format ("GetAllNotes.AddingNoteGUID {0}",data.GuidForNote));
 				result.Add (data);
+				if (true == addChildren)
+				{
 				 AddChildrenToGetList(data,  result);
+				}
 
 			}
 			return result;

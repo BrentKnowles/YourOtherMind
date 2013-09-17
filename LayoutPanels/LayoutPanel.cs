@@ -1523,10 +1523,26 @@ namespace Layout
 		/// <param name='name'>
 		/// Name.
 		/// </param>
-		public override NoteDataInterface FindNoteByName(string name)
+		public override NoteDataInterface FindNoteByName (string name)
 		{
+			ArrayList notes_tmp = new ArrayList(); //Notes.GetAllNotes(); 
+			return FindNoteByName(name, ref notes_tmp);
+		}
+
+		public override NoteDataInterface FindNoteByName(string name, ref ArrayList notes_tmp)
+		{
+			// we only fill this if we have passed a null list in
+			// this allows us to use the SAME list when doing 
+			// multiple queries -- such as is the case when doing Fact Parsing
+			// September 16 2013
+			if (null == notes_tmp || notes_tmp.Count <= 0)
+			{
+
+
+				notes_tmp =Notes.GetAllNotes(); 
+			}
 			// go through list of notes until we find a match
-			foreach (NoteDataInterface note in Notes.GetAllNotes()) {
+			foreach (NoteDataInterface note in notes_tmp) {
 				if (note.Caption == name)
 				{
 					return note;
@@ -1697,7 +1713,10 @@ namespace Layout
 							}
 							else
 							{
-							FindBar.DoFind (TextToFindInRichEdit, false, CurrentTextNote.GetRichTextBox (),0);
+								if (FindBar != null)
+								{
+									FindBar.DoFind (TextToFindInRichEdit, false, CurrentTextNote.GetRichTextBox (),0);
+								}
 							}
 						}
 					}

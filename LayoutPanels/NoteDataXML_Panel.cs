@@ -118,6 +118,22 @@ namespace LayoutPanels
 			return output;
 		}
 		/// <summary>
+		/// Lists the of subnotes as notes. For faster access to the subnotes of a subpanel. (September 16 2013)
+		/// </summary>
+		/// <returns>
+		/// The of subnotes as notes.
+		/// </returns>
+		public override System.Collections.Generic.List<NoteDataInterface> ListOfSubnotesAsNotes ()
+		{
+			System.Collections.Generic.List<NoteDataInterface> output = new System.Collections.Generic.List<NoteDataInterface> ();
+			LayoutDatabase layout = new LayoutDatabase(this.GuidForNote);
+			layout.LoadFrom(null);
+			foreach (NoteDataInterface note in layout.GetAllNotes()) {
+				output.Add(note);
+			}
+			return output;
+		}
+		/// <summary>
 		/// Adds the note. (during a move operation. Called from LayoutPanel)
 		/// </summary>
 		/// <param name='note'>

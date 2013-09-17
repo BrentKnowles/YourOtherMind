@@ -519,6 +519,10 @@ namespace Layout
 		{
 			return null;
 		}
+		public virtual System.Collections.Generic.List<NoteDataInterface> ListOfSubnotesAsNotes ()
+		{
+			return null;
+		}
 	
 
 #endregion;

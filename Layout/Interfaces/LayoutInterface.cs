@@ -99,6 +99,7 @@ namespace Layout
 		System.Collections.ObjectModel.ReadOnlyCollection<NoteDataInterface>  GetNotes();
 		NoteDataInterface[] GetNotesSorted ();
 		System.Collections.ArrayList GetAllNotes ();
+		System.Collections.ArrayList GetAllNotes (bool addChildren);
 		NoteDataInterface GetNoteByGUID(string GUID);
 		System.Collections.Generic.List<NoteDataInterface> GetAvailableFolders ();
 		bool IsNoteExistsInLayout(string NoteGUID);

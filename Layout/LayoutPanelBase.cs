@@ -237,6 +237,7 @@ namespace Layout
 		public abstract void DeleteNote(NoteDataInterface NoteToDelete);
 		public abstract System.Collections.ArrayList GetAllNotes();
 		public abstract NoteDataInterface FindNoteByName(string name);
+		public abstract  NoteDataInterface FindNoteByName(string name, ref System.Collections.ArrayList notes_tmp);
 		public abstract NoteDataInterface FindNoteByGuid (string guid);
 		public abstract NoteDataInterface GoToNote(NoteDataInterface note);
 		public abstract  NoteDataInterface GetNoteOnSameLayout(string GUID, bool GoTo);
