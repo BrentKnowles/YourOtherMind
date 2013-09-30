@@ -517,9 +517,15 @@ namespace YOM2013
 			NagMenu.Checked = false;
 		
 			NagMenu.Click+= HandleNagClick;;
-			
+
+
 			GetToolMenu().DropDownItems.Add (NagMenu);
 
+			GetToolMenu().DropDownItems.Add (new ToolStripSeparator());
+
+			ToolStripMenuItem SystemMenu = new ToolStripMenuItem(Loc.Instance.GetString ("System"));
+			SystemMenu.Click+= (object sender, EventArgs e) => DoOpenSystemWindow(true);
+			GetToolMenu().DropDownItems.Add (SystemMenu);
 
 			ToolStripMenuItem ExportCurrent = new ToolStripMenuItem(Loc.Instance.GetString ("Export Current Layout"));
 			ToolStripMenuItem ImportToCurrent = new ToolStripMenuItem(Loc.Instance.GetString ("Import Layout"));
@@ -611,6 +617,21 @@ namespace YOM2013
 			UpdateTimer.Interval = 1000;// 1 sec //5000; // 5 sec. I am experimenting with using the timer for multiple functions. It checks status update every 5 sconds
 			UpdateTimer.Tick+= HandleUpdateTimerTick;
 			UpdateTimer.Start ();
+		}
+
+		/// <summary>
+		/// Dos the open system window.
+		/// </summary>
+		/// <returns>
+		/// The open system window.
+		/// </returns>
+		void DoOpenSystemWindow (bool obj)
+		{
+			// the boolean is simply there for hotkey compatbiliy 
+
+			// will open a sytem window
+//			LoadLayout(LayoutPanel.SYSTEM_LAYOUT,"");
+			LayoutDetails.Instance.SystemLayout.BringNoteToFront ("system_sidedock");
 		}
 
 		void HandleExportRTFClick (object sender, EventArgs e)
@@ -958,6 +979,8 @@ namespace YOM2013
 			Hotkeys.Add (new KeyData(Loc.Instance.GetString ("Highlight Light Blue"), 	HighlightLightBlue, Keys.Control,  Keys.D1,mainform, true, "highlightlightblue"));
 			Hotkeys.Add (new KeyData(Loc.Instance.GetString ("Highlight Peach"), 	HighlightPeach, Keys.Control,  Keys.D2,mainform, true, "highlightpeach"));
 			Hotkeys.Add (new KeyData(Loc.Instance.GetString ("Extend View"), 	Screens_AcrossTwo, Keys.Control,  Keys.W,mainform, true, "2screen"));
+
+			Hotkeys.Add (new KeyData(Loc.Instance.GetString ("Open System Window"), 	DoOpenSystemWindow, Keys.Control,  Keys.Q,mainform, true, "opensesame"));
 
 
 			// this is used in case we want to run hotkey assigned operations outside of an actual keypress. We do this with the HandleHotkey...

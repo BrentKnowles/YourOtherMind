@@ -617,12 +617,13 @@ namespace Storyboards
 			ListViewItem item = null;
 			item = listView.Items.Add (record.sFileName, sTitle, nIdx);
 
-
+			//*September 2013 -I am removing this code because I *think* it is no longer needed
+			/*
 			// truncate text, so it is never too long (to attempt fixing the losing item error)
 			if (item.Text.Length > 20) {
 				item.Text = item.Text.Substring(0, 20);
 			}
-
+			*/
             item.Tag =  record;
 
 
