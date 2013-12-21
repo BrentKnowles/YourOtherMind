@@ -2088,6 +2088,21 @@ namespace Layout
 				header.Disable(off);
 			}
 		}
+//		protected override void OnGotFocus (EventArgs e)
+//		{
+//			base.OnGotFocus (e);
+//			NewMessage.Show ("Blam");
+//		}
+		protected override void OnEnter (EventArgs e)
+		{
+			base.OnEnter (e);
+			//December 2013 - I was sure this DID NOT WORK the last time I tried to get it
+			// to switch active layouts. Today it seems to work, which worries me
+			if (LayoutDetails.Instance.CurrentLayout != null && LayoutDetails.Instance.CurrentLayout.Caption != this.Caption) {
+				LayoutDetails.Instance.CurrentLayout = this;
+			}
+			//NewMessage.Show ("enter");
+		}
 	}
 }
 
