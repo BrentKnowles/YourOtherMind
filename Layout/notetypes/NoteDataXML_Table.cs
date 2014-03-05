@@ -152,6 +152,7 @@ namespace Layout
 		}
 
 		#endregion
+
 		public virtual void CommonConstructor ()
 		{
 			Caption = Loc.Instance.Cat.GetString("Table");
@@ -161,7 +162,7 @@ namespace Layout
 			//dataSource = new DataSet("Table");
 			//dataSource = new DataTable(); // A new datasource is already being created when column default is made.
 			BuildDefaultColumns();
-			
+
 			// the table is created when the columns are manifested
 		}
 
@@ -575,7 +576,7 @@ namespace Layout
 					nMin = ranges [0].nMin;
 					nMax = ranges [ranges.Length - 1].nMax;
 					// roll the die
-					Random r = new Random ();
+					Random r= LayoutDetails.Instance.RandomNumbers;
 					nValue = nModifier + r.Next (nMin, nMax + 1);
 				
 					// if the value, with modifier, is now greater than the max, then set it to max
@@ -773,7 +774,7 @@ namespace Layout
 			if (true == RandomResult)
 			{
 				int length = randomizeresult.Length;
-				Random r = new Random();
+				Random r = LayoutDetails.Instance.RandomNumbers;
 				int nValue = r.Next(0, length);
 				sResults = String.Format("{0}: {1}", captionoverrideforrandomresultset, randomizeresult[nValue]);
 

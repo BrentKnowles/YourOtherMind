@@ -151,6 +151,15 @@ namespace Testing
 			result.FancyCharacters = true;
 			PerformTest("fancycharacters.txt", result);
 		}
+
+		[Test]
+		public void BugHTMLBroke()
+		{
+			
+			
+			PerformTest("bughtml.txt");
+		}
+
 		[Test]
 		public void Bug001()
 		{
@@ -193,6 +202,15 @@ namespace Testing
 			PerformTest("headings.txt");
 		}
 
+		[Test]
+		public void TestBulletTagMisMatch()
+		{
+			// January 2014
+			// noticing some bullet lists start with <ul></ul> and then go onto <li>... never open and close properly
+			// cannot figure out why.
+			// This is an example of such a broken entity.
+			PerformTest ("bullettagmismatch.txt");
+		}
 		[Test]
 		public void TestBullets()
 		{
