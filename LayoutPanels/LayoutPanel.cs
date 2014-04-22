@@ -2084,8 +2084,12 @@ namespace Layout
 		}
 		public override void DisableLayout (bool off)
 		{
+			//20/04/2014
+			// This is not doing anything? I think I'm confused about which LayoutPanel I'm disabling/
+			//this.Enabled = !off;
 			if (header != null) {
 				header.Disable(off);
+			
 			}
 		}
 //		protected override void OnGotFocus (EventArgs e)
@@ -2096,12 +2100,27 @@ namespace Layout
 		protected override void OnEnter (EventArgs e)
 		{
 			base.OnEnter (e);
+		//	NewMessage.Show ("Current Layout = " + LayoutDetails.Instance.CurrentLayout.Caption + " Incoming Layout = " + this.Caption);
+			//21/04/2013 -- Yep I had to remove this again (which I thought I already had -- it prevent PANELS FROM SAVING AND LOADING!?!?!!?!?!?!?)
 			//December 2013 - I was sure this DID NOT WORK the last time I tried to get it
 			// to switch active layouts. Today it seems to work, which worries me
 			if (LayoutDetails.Instance.CurrentLayout != null && LayoutDetails.Instance.CurrentLayout.Caption != this.Caption) {
-				LayoutDetails.Instance.CurrentLayout = this;
+			//	NewMessage.Show (this.Caption);
+				if (this.GetIsChild == false)
+				{
+					LayoutDetails.Instance.CurrentLayout = this;
+				}
 			}
 			//NewMessage.Show ("enter");
+		}
+		/// <summary>
+		/// Tests the force error.
+		/// I need to make sure if I mess with OnEnter that I can 
+		/// run a unit test MoveNoteOutofParent to make sure I don't make Panels failed to save! 
+		/// </summary>
+		public override void TestForceError()
+		{
+			OnEnter (new EventArgs());
 		}
 	}
 }

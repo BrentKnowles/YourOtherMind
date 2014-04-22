@@ -86,9 +86,10 @@ namespace LayoutPanels
 			headerBar.Parent = (Control)Layout;
 			headerBar.Dock = DockStyle.Top;
 			headerBar.Visible = true;
-			
+
 			
 		}
+
 		/// <summary>
 		/// Releases all resource used by the <see cref="LayoutPanels.HeaderBar"/> object.
 		/// </summary>
@@ -173,14 +174,29 @@ namespace LayoutPanels
 			//(sender as ToolStripDropDownButton).DropDownItems.Add (tabMenu);
 		}
 		Color old = Color.Black;
-		// used to show the user that the layout they are in is no longer 'active'
+		// used to show the user that the layout they are in is no longer 'active'\
+		/// <summary>
+		/// Disable the specified off.
+		/// </summary>
+		/// <param name='off'>
+		/// If set to <c>true</c> off.
+		/// </param>
 		public void Disable (bool off)
 		{
 			if (true == off) {
 				old = NameOfLayout.ForeColor;
 				NameOfLayout.ForeColor = Color.Red;
+				//20/04/2014
+				// Attempting to place an element in front you need to click.
+				this.Layout.Enabled = false;
+
 			} else {
 				NameOfLayout.ForeColor = old;
+				//20/04/2014
+				// Attempting to place an element in front you need to click.
+				this.Layout.Enabled = true;
+				//Not ideal but just forcing the enabled disabled would prevent errors... though make things awkawrd.
+
 			}
 		}
 
@@ -264,143 +280,192 @@ namespace LayoutPanels
 				e.SuppressKeyPress = true;
 			}
 		}
-		
+		private const string removeme = "removeme";
 		public void UpdateHeader ()
 		{
-			if (false == Layout.GetIsChild && false == Layout.GetIsSystemLayout ) {
-				headerBar.Items.Clear ();
+			try {
+				if (false == Layout.GetIsChild && false == Layout.GetIsSystemLayout) {
+					//headerBar.Items.Clear ();
+					for (int deleters=headerBar.Items.Count-1; deleters >=0; deleters--) {
+						// failed
+//					if (headerBar.Items[deleters].MergeIndex == -1)
+//					{
+//						headerBar.Items.Remove (headerBar.Items[deleters]);
+//					}
+						if (headerBar.Items [deleters].Tag != null) {
+							//NewMessage.Show (headerBar.Items[deleters].Tag.ToString ());
+							if (headerBar.Items [deleters].Tag.Equals (removeme)) {
+								headerBar.Items.Remove (headerBar.Items [deleters]);
+							}
+						}
+//					}
+					}
+					// 21/04/2014 - because I merged toolbars I now need to "protect" the merged in bars from being deleted with an Items.Clear
+					//   so we tag the ones we want to remove.
 
-
-
-				 NameOfLayout = new ToolStripLabel ();
-				NameOfLayout.Click+= NameOfLayoutClick;
-				NameOfLayout.Text = Notes.Name;
-				int DaysSinceLastEdit = (DateTime.Now - Notes.DateEdited).Days;
-				string an_S = "";
-				if (DaysSinceLastEdit != 1) an_S = "s";
-				NameOfLayout.ToolTipText = Loc.Instance.GetStringFmt("{0} day{1} since this layout last edited", DaysSinceLastEdit,an_S);
+					NameOfLayout = new ToolStripLabel ();
+					NameOfLayout.Tag = removeme;
+					NameOfLayout.Click += NameOfLayoutClick;
+					NameOfLayout.Text = Notes.Name;
+					int DaysSinceLastEdit = (DateTime.Now - Notes.DateEdited).Days;
+					string an_S = "";
+					if (DaysSinceLastEdit != 1)
+						an_S = "s";
+					NameOfLayout.ToolTipText = Loc.Instance.GetStringFmt ("{0} day{1} since this layout last edited", DaysSinceLastEdit, an_S);
 			
 
-				 starControl = new Stars();
-				starControl.SetStars("1", Notes.Stars);
-				starControl.RatingChanged+= HandleRatingChanged;
-				//starControl.UpdateStars();
+					starControl = new Stars ();
+					starControl.Tag = removeme;
+					starControl.SetStars ("1", Notes.Stars);
+					starControl.RatingChanged += HandleRatingChanged;
+					//starControl.UpdateStars();
 
 
-				headerBar.Items.Add (NameOfLayout);
-				headerBar.Items.Add (starControl);
-				string[] keywords_list = GetKeywords();
-				foreach (string keyword in keywords_list)
-				{
+					headerBar.Items.Insert (0, NameOfLayout);
+					headerBar.Items.Insert (1, starControl);
 
-					// build floating labels
-					ToolStripLabel keylabel = new ToolStripLabel();
-					keylabel.LinkBehavior = LinkBehavior.AlwaysUnderline;
-					keylabel.IsLink = true;
-					keylabel.Text = keyword;
-					keylabel.Click+= HandleKeyLabelClick;
-					headerBar.Items.Add(keylabel);
+
+
+					ToolStripLabel keywords = new ToolStripLabel ();
+					keywords.Tag = removeme;
+					keywords.Font = new Font (keywords.Font.FontFamily, 8);
+					keywords.LinkBehavior = LinkBehavior.AlwaysUnderline;
+					keywords.IsLink = true;
+					keywords.Text = Loc.Instance.GetString ("(Edit)");
+					keywords.ToolTipText = Loc.Instance.GetString ("Click here to adjust the keywords associated with this layout.");
+					keywords.Click += HandleKeywordsClick;
+
+				
+					ToolStripDropDownButton properties = new ToolStripDropDownButton ();
+					properties.Tag = removeme;
+					properties.Text = Loc.Instance.GetString ("Properties");
+					properties.DropDownOpening += HandlePropertiesDropDownOpening;
+				
+					ToolStripButton Info = new ToolStripButton ();
+					Info.Tag = "removeme";
+
+					Info.Text = Loc.Instance.GetString ("Info"); 
+					Info.Click += HandleInfoClick;
+
+					//
+					///////// - Location settings
+					/// 
+					Notebook = new ContextMenuStrip ();
+					Notebook.Tag = removeme;
+					Sections = new ContextMenuStrip ();
+					Sections.Tag = removeme;
+					Subtypes = new ContextMenuStrip ();
+					Subtypes.Tag = removeme;
+					Status = new ContextMenuStrip ();
+					Status.Tag = removeme;
+
+					if (Notes.Notebook == Constants.BLANK)
+						Notes.Notebook = Loc.Instance.GetString ("All");
+					if (Notes.Subtype == Constants.BLANK)
+						Notes.Subtype = Loc.Instance.GetString ("None");
+					if (Notes.Status == Constants.BLANK)
+						Notes.Status = Loc.Instance.GetString ("None");
+					//Notebook.Text = Notes.Notebook;
+					//			Notebook.Opening += HandleDropDownOpening;;
+
+					//ToolStripMenuItem Location = new ToolStripMenuItem();
+					ToolStripDropDownButton Location = new ToolStripDropDownButton ();
+					Location.Tag = removeme;
+					Location.AutoSize = true;
+					// this title will be replaced by the actual Notebook|Section when loaded, this only appears if blank
+					Location.Text = Loc.Instance.GetString ("Filters");
+					//Location.ShowItemToolTips = Loc.Instance.GetString ("Set the Notebook and Section for this Layout");
+
+
+					LocationNotebook = new ToolStripMenuItem ();
+					LocationNotebook.Tag = removeme;
+					LocationNotebook.Name = "locationnotebook";
+					LocationNotebook.Text = Notes.Notebook;
+					LocationNotebook.AutoSize = true;
+					LocationNotebook.DropDown = Notebook;
+					LocationNotebook.ToolTipText = Loc.Instance.GetString ("Choose the notebook for this layout");
+
+
+					SectionsItem = new ToolStripMenuItem ();
+					SectionsItem.Tag = removeme;
+					SectionsItem.Name = "sectionsitem";
+					SectionsItem.AutoSize = true;
+					SectionsItem.Text = Notes.Section;
+					SectionsItem.DropDown = Sections;
+					SectionsItem.ToolTipText = Loc.Instance.GetStringFmt ("Choose the section of the notebook {0} for this layout", Notes.Notebook);
+
+
+					SubtypeItem = new ToolStripMenuItem ();
+					SubtypeItem.Tag = removeme;
+					SubtypeItem.Name = "subtypeitem";
+					SubtypeItem.AutoSize = true;
+					SubtypeItem.Text = Notes.Subtype;
+					SubtypeItem.DropDown = Subtypes;
+					SubtypeItem.ToolTipText = Loc.Instance.GetString ("Choose the subtype for this layout");
+
+
+					StatusItem = new ToolStripMenuItem ();
+					StatusItem.Tag = removeme;
+					StatusItem.Name = "statusitem";
+					StatusItem.AutoSize = true;
+					StatusItem.Text = Notes.Status;
+					StatusItem.DropDown = Status;
+					StatusItem.ToolTipText = Loc.Instance.GetString ("Choose the status for this layout");
+
+					Location.DropDownItems.Add (LocationNotebook);
+					Location.DropDownItems.Add (SectionsItem);
+					Location.DropDownItems.Add (SubtypeItem);
+					Location.DropDownItems.Add (StatusItem);
+					Location.DropDownOpening += HandleDropDownOpening;
+					//Location.DropDown = Notebook;
+					//Location.DropIItems.Add (LocationNotebook);
+
+
+
+
+
+					//
+					// - General settings
+					//
+					headerBar.TabIndex = 0;
+					//headerBar.BringToFront();
+					headerBar.Font = new Font (headerBar.Font.FontFamily, 12);
+					lg.Instance.Line ("HeaderBar.UpdateHeader", ProblemType.MESSAGE, "Header should be visible");
+
+					// Adding
+
+
+
+		
+
+					headerBar.Items.Insert (2, Location);
+					headerBar.Items.Insert (3, properties);
+					headerBar.Items.Insert (4, Info);
+					headerBar.Items.Insert (5, keywords);
+					string[] keywords_list = GetKeywords ();
+					foreach (string keyword in keywords_list) {
+					
+						// build floating labels
+						ToolStripLabel keylabel = new ToolStripLabel ();
+						keylabel.Tag = removeme;
+						keylabel.LinkBehavior = LinkBehavior.AlwaysUnderline;
+						keylabel.IsLink = true;
+						keylabel.Text = keyword;
+						keylabel.Click += HandleKeyLabelClick;
+						headerBar.Items.Insert (6, keylabel);
+					}
+
+
+					// can't do this because after th e merge, the other ones get the tag too
+//				for (int deleters=headerBar.Items.Count-1; deleters >=0; deleters--)
+//				{
+//					headerBar.Items[deleters].Tag = removeme;
+//				}
+
 				}
-
-
-				ToolStripLabel keywords = new ToolStripLabel();
-				keywords.Font = new Font(keywords.Font.FontFamily, 8);
-				keywords.LinkBehavior = LinkBehavior.AlwaysUnderline;
-				keywords.IsLink = true;
-				keywords.Text = Loc.Instance.GetString("(Edit)");
-				keywords.ToolTipText = Loc.Instance.GetString ("Click here to adjust the keywords associated with this layout.");
-				keywords.Click+= HandleKeywordsClick;
-
-				
-				ToolStripDropDownButton properties = new ToolStripDropDownButton();
-				properties.Text = Loc.Instance.GetString("Properties");
-				properties.DropDownOpening+= HandlePropertiesDropDownOpening;
-				
-				ToolStripButton Info = new ToolStripButton();
-
-				Info.Text = Loc.Instance.GetString ("Info"); 
-				Info.Click += HandleInfoClick;
-
-				//
-				///////// - Location settings
-				/// 
-				Notebook = new ContextMenuStrip();
-				Sections = new ContextMenuStrip();
-				Subtypes = new ContextMenuStrip();
-				Status = new ContextMenuStrip();
-
-
-				if (Notes.Notebook == Constants.BLANK) Notes.Notebook = Loc.Instance.GetString("All");
-				if (Notes.Subtype == Constants.BLANK) Notes.Subtype = Loc.Instance.GetString ("None");
-				if (Notes.Status == Constants.BLANK) Notes.Status = Loc.Instance.GetString("None");
-				//Notebook.Text = Notes.Notebook;
-	//			Notebook.Opening += HandleDropDownOpening;;
-
-				//ToolStripMenuItem Location = new ToolStripMenuItem();
-				ToolStripDropDownButton Location = new ToolStripDropDownButton();
-				Location.AutoSize = true;
-				// this title will be replaced by the actual Notebook|Section when loaded, this only appears if blank
-				Location.Text = Loc.Instance.GetString("Filters");
-				//Location.ShowItemToolTips = Loc.Instance.GetString ("Set the Notebook and Section for this Layout");
-
-
-				LocationNotebook = new ToolStripMenuItem();
-				LocationNotebook.Name = "locationnotebook";
-				LocationNotebook.Text=Notes.Notebook;
-				LocationNotebook.AutoSize = true;
-				LocationNotebook.DropDown = Notebook;
-				LocationNotebook.ToolTipText = Loc.Instance.GetString("Choose the notebook for this layout");
-
-
-				SectionsItem = new ToolStripMenuItem();
-				SectionsItem.Name = "sectionsitem";
-				SectionsItem.AutoSize = true;
-				SectionsItem.Text = Notes.Section;
-				SectionsItem.DropDown = Sections;
-				SectionsItem.ToolTipText = Loc.Instance.GetStringFmt("Choose the section of the notebook {0} for this layout", Notes.Notebook);
-
-
-				SubtypeItem = new ToolStripMenuItem();
-				SubtypeItem.Name = "subtypeitem";
-				SubtypeItem.AutoSize = true;
-				SubtypeItem.Text = Notes.Subtype;
-				SubtypeItem.DropDown = Subtypes;
-				SubtypeItem.ToolTipText = Loc.Instance.GetString("Choose the subtype for this layout");
-
-
-				StatusItem = new ToolStripMenuItem();
-				StatusItem.Name = "statusitem";
-				StatusItem.AutoSize = true;
-				StatusItem.Text = Notes.Status;
-				StatusItem.DropDown = Status;
-				StatusItem.ToolTipText = Loc.Instance.GetString("Choose the status for this layout");
-
-				Location.DropDownItems.Add (LocationNotebook);
-				Location.DropDownItems.Add (SectionsItem);
-				Location.DropDownItems.Add (SubtypeItem);
-				Location.DropDownItems.Add (StatusItem);
-				Location.DropDownOpening+= HandleDropDownOpening;
-				//Location.DropDown = Notebook;
-				//Location.DropIItems.Add (LocationNotebook);
-
-
-
-
-
-				//
-				// - General settings
-				//
-				headerBar.TabIndex = 0;
-				//headerBar.BringToFront();
-				headerBar.Font = new Font(headerBar.Font.FontFamily, 12);
-				lg.Instance.Line("HeaderBar.UpdateHeader", ProblemType.MESSAGE, "Header should be visible");
-
-				// Adding
-
-				headerBar.Items.Add (keywords);
-				headerBar.Items.Add (Location);
-				headerBar.Items.Add (properties);
-				headerBar.Items.Add (Info);
+			}
+			catch (Exception ex) {
+				NewMessage.Show (ex.ToString ());
 			}
 		}
 

@@ -554,12 +554,24 @@ namespace Layout
 		{
 			Maximize(true);
 		}
-
+/// <summary>
+/// Brings to front and show.
+/// </summary>
 		public void BringToFrontAndShow ()
 		{
 			if (ParentNotePanel == null) {
 				NewMessage.Show (Loc.Instance.GetStringFmt ("The note {0} with guid={1} does not have a valid parent.", this.Caption, this.GuidForNote));
 			} else {
+
+				// 20/04/2014 -- we enable note if disabled DID NOT WORK.
+//				if (this.Layout != null)
+//				{
+//					// disable false means ACTIVE
+//					this.Layout.DisableLayout(false);
+//				}
+
+
+
 				// we always make the note visible if showing
 				this.Visible = true;
 				ParentNotePanel.Visible = true;
@@ -580,6 +592,9 @@ namespace Layout
 				}
 				//MOVE THIS TO BRINGTOFRONT override... basically whenever you want to bring a note to front, if system, we will amke the active note
 				RespondToNoteSelection();
+
+
+
 			}
 		}
 

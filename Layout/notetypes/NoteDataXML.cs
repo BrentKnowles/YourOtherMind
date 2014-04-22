@@ -47,6 +47,8 @@ namespace Layout
 	[Serializable]
 	public partial class NoteDataXML : NoteDataInterface, IComparable, IDisposable
 	{
+
+
 		#region constants
 
 		const string BLANK = "";

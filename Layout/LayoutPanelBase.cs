@@ -364,7 +364,7 @@ namespace Layout
 		public abstract void FilterByKeyword (string text);
 
 		public abstract void ColorToolBars (AppearanceClass app);
-		
+		public abstract void TestForceError();
 	}
 
 

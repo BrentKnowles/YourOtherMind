@@ -110,7 +110,7 @@ namespace Layout
 		void CreateLinkTableIfNecessary(NoteDataXML_Table table, LayoutPanelBase LayoutPanelToLoadNoteOnto);
 		NoteDataXML_SystemOnly GetAvailableSystemNote (LayoutPanelBase LayoutPanel);
 		//List<LayoutDetails.NameAndGuid> GetListOfLayouts (string filter);
-
+	
 	}
 }
 

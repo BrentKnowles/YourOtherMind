@@ -129,6 +129,7 @@ namespace Testing
 			panel.SaveLayout();
 			form.Dispose ();
 		}
+		[Ignore]
 		[Test]
 		public void SpeedTest ()
 		{
@@ -743,11 +744,14 @@ namespace Testing
 				_TestSingleTon.Instance._SetupForLayoutPanelTests ();
 				
 				FAKE_LayoutPanel panel = new FAKE_LayoutPanel (CoreUtilities.Constants.BLANK, false);
+		
+			LayoutDetails.Instance.CurrentLayout = panel;
 				form.Controls.Add (panel);
 				form.Show ();
 				
 				//NOTE: For now remember that htis ADDS 1 Extra notes
 				panel.NewLayout ("mynewpanel", true, null);
+			panel.SetCaption("TheMainPanel");
 				NoteDataXML basicNote = new NoteDataXML ();
 				basicNote.Caption = "note1";
 				
@@ -774,6 +778,7 @@ namespace Testing
 				
 				
 				panel.AddNote (panelA);  // 1
+
 				panel.AddNote (panelB);  // 2
 				//panelA.CreateParent(panel); should not need to call this when doing LayoutPanel.AddNote because it calls CreateParent insid eof it
 				
@@ -784,12 +789,24 @@ namespace Testing
 				
 				panelA.AddNote (basicNote);  // Panel A has 1 note
 				basicNote.CreateParent (panelA.myLayoutPanel ());  // DO need to call it when adding notes like this (to a subpanel, I think)
+			basicNote.BringToFrontAndShow();
+			NoteDataXML_RichText textNote = new NoteDataXML_RichText();
+			textNote.Caption = "howdy";
+		//	((FAKE_LayoutPanel)panelA.GetPanelsLayout()).SetCaption("boohowcrashmenow");
+			panelA.AddNote (textNote);
+			textNote.CreateParent(panelA.myLayoutPanel());
+
+			textNote.BringToFrontAndShow();
+			textNote.TestEnter ();
+			panelA.GetPanelsLayout().TestForceError();
+			// the current layout can never be set to a subplayout
+			Assert.AreNotEqual(panelA.GetPanelsLayout(), LayoutDetails.Instance.CurrentLayout, "the current layout can never be set to a subplayout");
 				panel.SaveLayout ();
-				Assert.AreEqual (1, panelA.CountNotes (), "Panel A holds one note");  // So this counts as  + 2
+				Assert.AreEqual (2, panelA.CountNotes (), "Panel A holds TWo note");  // So this counts as  + 2
 				
 				// so we have (1 + 1 note on it)panel A + (1)panelB + basicNote +DefaultNote = 5  + (NEW) LinkTable = 6
 				_w.output ("STARTCOUNT");
-				Assert.AreEqual (6, panel.CountNotes (), "Total notes SHOULD BE 6 :  (1 + 1 note on it)panel A + (1)panelB + basicNote +DefaultNote = 5  + (NEW) LinkTable = 6");
+				Assert.AreEqual (7, panel.CountNotes (), "Total notes SHOULD BE 7 :  (1 + 1 note on it)panel A + (1+1textnote)panelB + basicNote +DefaultNote = 5  + (NEW) LinkTable = 6");
 				
 				_w.output ("ENDCOUNT");
 
@@ -799,13 +816,13 @@ namespace Testing
 				// it should still ahve saved
 
 			panelA.myLayoutPanel ().MoveNote(basicNote.GuidForNote, "up");
-			Assert.AreEqual (0, panelA.CountNotes (), "Panel A holds one note");
-			Assert.AreEqual (6, panel.CountNotes (), "Total notes SHOULD BE 6 :  (1 + 1 note on it)panel A + (1)panelB + basicNote +DefaultNote = 5  + (NEW) LinkTable = 6");
+			Assert.AreEqual (1, panelA.CountNotes (), "Panel A holds 1 note -- because we moved one out");
+			Assert.AreEqual (7, panel.CountNotes (), "Total notes SHOULD BE 6 :  (1 + 1 note on it)panel A + (1)panelB + basicNote +DefaultNote = 5  + (NEW) LinkTable = 6");
 			panel = null;
 			panel = new FAKE_LayoutPanel (CoreUtilities.Constants.BLANK, false);
 			panel.LoadLayout("mynewpanel", false, null);
 			//Assert.AreEqual (0, panelA.CountNotes (), "Panel A holds one note");
-			Assert.AreEqual (6, panel.CountNotes (), "Total notes SHOULD BE 6 :  (1 + 1 note on it)panel A + (1)panelB + basicNote +DefaultNote = 5  + (NEW) LinkTable = 6");
+			Assert.AreEqual (7, panel.CountNotes (), "Total notes SHOULD BE 6 :  (1 + 1 note on it)panel A + (1)panelB + basicNote +DefaultNote = 5  + (NEW) LinkTable = 6");
 
 		}
 		[Test]

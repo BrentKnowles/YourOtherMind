@@ -71,6 +71,14 @@ namespace Layout
 			base.CommonConstructorBehavior ();
 			Caption = Loc.Instance.Cat.GetString("Text Note");
 		}
+		public void TestEnter ()
+		{
+			// for testing only
+			richBox.Focus ();
+			richBox.Text = "boo who";
+			Layout.Focus();
+			Layout.TestForceError();
+		}
 		public NoteDataXML_RichText () : base()
 		{
 

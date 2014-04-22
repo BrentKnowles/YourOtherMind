@@ -201,7 +201,24 @@ namespace Testing
 		{
 			PerformTest("headings.txt");
 		}
-
+		[Test]
+		public void chapter8()
+		{
+			// January 2014
+			// noticing some bullet lists start with <ul></ul> and then go onto <li>... never open and close properly
+			// cannot figure out why.
+			// This is an example of such a broken entity.
+			PerformTest ("chapter8.txt");
+		}
+		[Test]
+		public void chapter8stib()
+		{
+			// January 2014
+			// noticing some bullet lists start with <ul></ul> and then go onto <li>... never open and close properly
+			// cannot figure out why.
+			// This is an example of such a broken entity.
+			PerformTest ("chapter8stub.txt");
+		}
 		[Test]
 		public void TestBulletTagMisMatch()
 		{
@@ -210,6 +227,26 @@ namespace Testing
 			// cannot figure out why.
 			// This is an example of such a broken entity.
 			PerformTest ("bullettagmismatch.txt");
+		}
+		[Test]
+		public void crash1()
+		{
+			// January 2014
+			// noticing some bullet lists start with <ul></ul> and then go onto <li>... never open and close properly
+			// cannot figure out why.
+			// This is an example of such a broken entity.
+			PerformTest ("crash1.txt");
+		}
+
+		[Test]
+		public void bugformatatstartofsceneitalic()
+		{
+			PerformTest("bugformatatstartofsceneitalic.txt");
+		}
+		[Test]
+		public void bugformatatstartofscene()
+		{
+			PerformTest("bugformatatstartofscene.txt");
 		}
 		[Test]
 		public void TestBullets()
