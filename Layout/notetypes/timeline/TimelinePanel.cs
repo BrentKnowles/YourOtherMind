@@ -837,7 +837,7 @@ namespace Timeline
 													int lookupi = 0;
 													// we pass extra information in to annotate the plot view
 													int chapter = 0;
-													if (row[0].ToString()[0] == '*')
+													if ( row != null && row[0] != null && row[0].ToString().Length > 0 && row[0].ToString()[0] == '*')
 													{
 														// now remove the * and check the string to generate a fake date
 														lookup = row[0].ToString();
