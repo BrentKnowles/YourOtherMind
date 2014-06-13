@@ -39,7 +39,7 @@ namespace Layout
 		public enum FormatText {BOLD, STRIKETHRU, ZOOM, LINE, BULLET, BULLETNUMBER, DEFAULTFONT, DATE, UNDERLINE, ITALIC};
 		// if this is the value set on the dropdown then we use the defined default in OPTIONS
 		const string defaultmarkup = "Default"; 
-		const int MAX_NAVIGATION_WIDTH = 300;
+
 		#region XML
 		string markuplanguage="Default";
 
@@ -263,20 +263,30 @@ namespace Layout
 
 					if (null == bookMarkView || bookMarkView.Visible == false)
 					{
-						if (null != bookMarkView)
+//						if (null != bookMarkView)
+//						{
+//							ParentNotePanel.Controls.Remove(bookMarkView);
+//						}
+						// 13/06/2014 - to make widen work we need to keep the control around
+
+						bool NeedToAdd = false;
+						if (null == bookMarkView)
 						{
-							ParentNotePanel.Controls.Remove(bookMarkView);
+							bookMarkView = new NoteNavigation (this);
+							NeedToAdd = true;
 						}
-							
-						bookMarkView = new NoteNavigation (this);
+
 						bookMarkView.Location = new Point (richBox.Location.X, richBox.Location.Y);
 					
 						bookMarkView.Height = richBox.Height;
 						bookMarkView.Width = ((int)richBox.Width / 2);
-						if (bookMarkView.Width > MAX_NAVIGATION_WIDTH) bookMarkView.Width = MAX_NAVIGATION_WIDTH;
+						if (bookMarkView.Width > bookMarkView.MAX_NAVIGATION_WIDTH) bookMarkView.Width = bookMarkView.MAX_NAVIGATION_WIDTH;
 						bookMarkView.Visible = true;
 						bookMarkView.Dock = DockStyle.Left;
-						ParentNotePanel.Controls.Add (bookMarkView);
+						if (NeedToAdd)
+						{
+							ParentNotePanel.Controls.Add (bookMarkView);
+						}
 						bookMarkView.UpdateListOfBookmarks();
 
 					}

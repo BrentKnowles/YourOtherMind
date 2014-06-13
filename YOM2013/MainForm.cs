@@ -981,6 +981,7 @@ namespace YOM2013
 			Hotkeys.Add (new KeyData(Loc.Instance.GetString ("Extend View"), 	Screens_AcrossTwo, Keys.Control,  Keys.W,mainform, true, "2screen"));
 
 			Hotkeys.Add (new KeyData(Loc.Instance.GetString ("Open System Window"), 	DoOpenSystemWindow, Keys.Control,  Keys.Q,mainform, true, "opensesame"));
+			Hotkeys.Add (new KeyData(Loc.Instance.GetString ("Toggle to Last Window"), 	HotkeyToggleToSecondaryForm, Keys.None,  Keys.F1,mainform,true, "secondarywindow99"));
 
 
 			// this is used in case we want to run hotkey assigned operations outside of an actual keypress. We do this with the HandleHotkey...
@@ -1545,15 +1546,33 @@ namespace YOM2013
 				CurrentLayout.Parent.Dock = lastDockStyle;
 			}*/
 		}
+		/// <summary>
+		/// Hotkeies the toggle to secondary form.
+		/// </summary>
+		/// <param name='b'>
+		/// If set to <c>true</c> b.
+		/// </param>
+		void HotkeyToggleToSecondaryForm(bool b)
+		{
+
+			//if (e.KeyCode == Keys.F1) {
+
+				if (LastMainForm != null)
+				{
+					LastMainForm.Activate();
+				}
+
+		}
 		void HandleMainFormKeyDown (object sender, KeyEventArgs e)
 		{
 
 			if (e.KeyCode == Keys.Escape) {
 				// do cancel operations if need
-				LayoutDetails.Instance.ClearDraggingOfNotesOnALayout();
+				LayoutDetails.Instance.ClearDraggingOfNotesOnALayout ();
 				
-			}
+			} 
 		}
+
 
 
 		/// <summary>

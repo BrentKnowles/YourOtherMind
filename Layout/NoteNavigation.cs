@@ -3,6 +3,7 @@ using System.Windows.Forms;
 using System.Collections.Generic;
 using CoreUtilities;
 using System.Text.RegularExpressions;
+using System.Drawing;
 
 namespace Layout
 {
@@ -13,7 +14,71 @@ namespace Layout
 		NoteDataXML_RichText RichText= null;
 		ContextMenu Menu = new System.Windows.Forms.ContextMenu();
 		MenuItem goTo = null;
+		MenuItem widen = null;
+		MenuItem clipboard = null;
 
+	     private int mAX_NAVIGATION_WIDTH = 300;
+
+		public int MAX_NAVIGATION_WIDTH {
+			get {
+				return mAX_NAVIGATION_WIDTH;
+			}
+			set {
+			
+				mAX_NAVIGATION_WIDTH = value;
+				this.Width = mAX_NAVIGATION_WIDTH;
+			}
+		}
+
+		/// <summary>
+		/// Handles the widen click.
+		/// 
+		/// Allows user to adjust size so fi more detail is on the individual nodes it can bee seen.
+		/// </summary>
+		/// <param name='sender'>
+		/// Sender.
+		/// </param>
+		/// <param name='e'>
+		/// E.
+		/// </param>
+		void HandleWidenClick (object sender, EventArgs e)
+		{
+			MAX_NAVIGATION_WIDTH =MAX_NAVIGATION_WIDTH  + 100;
+		}
+
+
+
+		void HandleClipboardClick (object sender, EventArgs e)
+		{
+			string result = CallRecursive(this);
+			Clipboard.SetText (result);
+		}
+		private string PrintRecursive(TreeNode treeNode)
+		{
+			// Print the node.
+			//System.Diagnostics.Debug.WriteLine(treeNode.Text);
+			//MessageBox.Show(treeNode.Text);
+			string result = treeNode.Text;
+			// Print each node recursively.
+			foreach (TreeNode tn in treeNode.Nodes)
+			{
+				result = String.Format ("{0}\n\t{1}", result,PrintRecursive(tn));
+			}
+			return result;
+		}
+		
+		// Call the procedure using the TreeView.
+		private string CallRecursive(TreeView treeView)
+		{
+			// Print each node recursively.
+			TreeNodeCollection nodes = treeView.Nodes;
+			string result = "";
+			foreach (TreeNode n in nodes)
+			{
+				result = String.Format ("{0}\n{1}", result, PrintRecursive(n));
+			}
+			return result;
+		}
 		public NoteNavigation (NoteDataXML_RichText richText)
 
 		{
@@ -27,12 +92,77 @@ namespace Layout
 			goTo.Enabled = false;
 			goTo.Click+= HandleGoToClick;
 
+			widen = new MenuItem();
+			widen.Text = Loc.Instance.GetString("Widen");
+			widen.Enabled = true;
+			widen.Click+= HandleWidenClick;
+
+
+			clipboard = new MenuItem();
+			clipboard.Text = Loc.Instance.GetString("Clipboard");
+			clipboard.Enabled = true;
+			clipboard.Click+= HandleClipboardClick;
+
 			Menu.MenuItems.Add (refreshMenu);
 			Menu.MenuItems.Add (goTo);
+			Menu.MenuItems.Add (widen);
+			Menu.MenuItems.Add (clipboard);
 		//	this.NodeMouseClick += HandleNodeMouseClick;
 			this.ContextMenu = Menu;
 			Menu.Popup+= HandlePopup;
 			this.ShowNodeToolTips = false;
+
+			this.DrawMode = TreeViewDrawMode.OwnerDrawText;
+			this.DrawNode+= HandleDrawNode;
+		}
+
+		/// <summary>
+		/// Each semicolon will be removed and the words given a DIFFERENT COLOR
+		/// to help review scene lists in a nicer format.
+		/// </summary>
+		/// <param name='sender'>
+		/// Sender.
+		/// </param>
+		/// <param name='e'>
+		/// E.
+		/// </param>
+		void HandleDrawNode (object sender, DrawTreeNodeEventArgs e)
+		{
+			string[] texts = e.Node.Text.Split (new char[1]{';'}, 
+			StringSplitOptions.RemoveEmptyEntries);
+			const int MaxColors = 5;
+			Color[] colors = new Color[MaxColors] {Color.Black, Color.Red, Color.Blue, Color.Magenta, Color.Green};
+			SizeF s;
+			s = new SizeF(0,0);
+			for (int i = 0; i < texts.Length && i < MaxColors; i++) {
+
+				using (Font font = new Font(this.Font, FontStyle.Regular)) {
+
+					using (Brush brush = new SolidBrush(colors[i])) {
+
+						if (i > 0)
+						{
+							SizeF newSize =  e.Graphics.MeasureString(texts[i-1], font);
+							s.Height = newSize.Height + s.Height;
+							s.Width = newSize.Width + s.Width;
+						}
+
+						e.Graphics.DrawString(texts[i], font, brush, e.Bounds.Left + (int)s.Width, e.Bounds.Top);
+						//e.Graphics.DrawString (texts [0], font, brush, e.Bounds.Left, e.Bounds.Top);
+					}
+//					if (texts.Length >= 2)
+//					{
+//						// measaure first words and add us at the end.
+//						SizeF s = e.Graphics.MeasureString(texts[0], font);
+//						using (Brush brush = new SolidBrush(Color.Red)) {
+//							e.Graphics.DrawString(texts[1], font, brush, e.Bounds.Left + (int)s.Width, e.Bounds.Top);
+//						}
+//					}
+				}
+
+			}
+
+		
 		}
 
 		void HandleGoToClick (object sender, EventArgs e)

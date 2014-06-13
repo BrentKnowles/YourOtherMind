@@ -252,7 +252,10 @@ namespace appframe
 				}
 			}
 		}
-
+		/// <summary>
+		/// Secondary forms set this, so that F1 from main app can toggle back to them.
+		/// </summary> 
+		public Form LastMainForm = null;
 		/// <summary>
 		/// Handles the form key down.
 		/// </summary>
@@ -264,7 +267,7 @@ namespace appframe
 		/// </param>
 		void HandleFormKeyDown (object sender, KeyEventArgs e)
 		{
-
+		//	NewMessage.Show ("Here ");
 
 			foreach (KeyData keysy in Hotkeys) {
 				bool proceed = true;
@@ -272,9 +275,11 @@ namespace appframe
 				// if you want a form to inherit this behavior it needs to have this += assigned
 				if (keysy.FormName != Constants.BLANK)
 				{
+				//	NewMessage.Show ("Attempting " + keysy.FormName + " " + (sender as Form).Name);
 					proceed = false;
 					if (sender is Form)
 					{
+						//NewMessage.Show ("testing " + keysy.FormName + " " + (sender as Form).Name);
 						//
 						if (keysy.FormName == (sender as Form).Name)
 						    {
@@ -577,6 +582,16 @@ namespace appframe
 		}
 		protected virtual void OptionsClosed()
 		{
+		}
+		/// <summary>
+		/// Setups the secondary form to have hotkeys.
+		/// </summary>
+		/// <param name='thisForm'>
+		/// This form.
+		/// </param>
+		public void SetupSecondaryFormToHaveHotkeys (Form thisForm)
+		{
+			thisForm.KeyDown += HandleFormKeyDown;
 		}
 		/// <summary>
 		/// Handles the options button click.

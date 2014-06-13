@@ -694,6 +694,7 @@ namespace Testing
 		[Test]
 		public void TestDeleteNote()
 		{
+			_TestSingleTon.Instance._SetupForLayoutPanelTests();
 			// add a note with specific label
 			FAKE_LayoutPanel layoutPanel = new FAKE_LayoutPanel (CoreUtilities.Constants.BLANK, false);
 			//FakeLayoutDatabase layout = new FakeLayoutDatabase ("testguid");

@@ -100,7 +100,7 @@ namespace Testing
 				//String line = fileR.ReadToEnd();
 				result.Add (line);
 			}
-
+			fileR.Close();
 			return result;
 		}
 
@@ -151,6 +151,20 @@ namespace Testing
 			result.FancyCharacters = true;
 			PerformTest("fancycharacters.txt", result);
 		}
+		[Test]
+		public void Multilevelbullet()
+		{
+			
+			
+			PerformTest("multilevelbullet.txt");
+		}
+		[Test]
+		public void MoreThanThreeBulletLevels()
+		{
+			
+			
+			PerformTest("morelevelsthan3.txt");
+		}
 
 		[Test]
 		public void BugHTMLBroke()
@@ -183,6 +197,23 @@ namespace Testing
 			result.FancyCharacters = false;
 			result.ConvertToEmDash = true;
 			PerformTest("emdash.txt", result);
+		}
+		[Test]
+		public void ReplaceParagraphTags()
+		{
+			ControlFile result =  ControlFile.Default;
+			
+			
+			
+			result.ListOfTags=new string[1]{"game|''"};
+			result.ConverterType = ControlFile.convertertype.epub;
+			result.MultiLineFormats= new string[1]{"past"};
+			result.MultiLineFormatsValues = new string[1]{"blockquote2"};
+			result.Zipper =_TestSingleTon.Zipper;
+			result.FancyCharacters = false;
+			result.ConvertToEmDash = true;
+			result.EpubRemoveDoublePageTags = true;
+			PerformTest("replaceparagraphtags.txt", result);
 		}
 		[Test]
 		public void Bug002()
@@ -253,19 +284,84 @@ namespace Testing
 		{
 			PerformTest("bullet.txt");
 		}
+		// I removed this text because I did fix the issue when I added the Multilevelbullet test 08/05/2014
+//		[Test]
+//		public void TestBrokenBullets()
+//		{
+//			// We accept this will break  but test to make sure it is never invisibly fixed. (see FAQ:  http://yourothermind.com/yourothermind-2013/using-yourothermind-2013/addin_sendtextaway/)
+//			PerformTest("bulletbroken.txt");
+//		}
 		[Test]
-		public void TestBrokenBullets()
+		public void LazyDesignerTest2_BreakComments()
 		{
-			// We accept this will break  but test to make sure it is never invisibly fixed. (see FAQ:  http://yourothermind.com/yourothermind-2013/using-yourothermind-2013/addin_sendtextaway/)
-			PerformTest("bulletbroken.txt");
+			PerformTest("lazydesignerbreakcomment.txt");
+		}
+		[Test]
+		public void ChatMode()
+		{
+			ControlFile result =  ControlFile.Default;
+			
+			
+			
+			result.ListOfTags=new string[1]{"game|''"};
+
+			result.ConverterType = ControlFile.convertertype.epub;
+			result.MultiLineFormats= new string[1]{"past"};
+			result.MultiLineFormatsValues = new string[1]{"blockquote2"};
+			result.Zipper =_TestSingleTon.Zipper;
+			result.FancyCharacters = true;
+
+
+			result.ChatMode = 0;
+			PerformTest("chatmode.txt", result);
+			result.ChatMode = 1;
+			PerformTest("chatmode.txt", result, "chatmodeitalic.txt","");
+			result.ChatMode = 2;
+			PerformTest("chatmode.txt", result, "chatmodebold.txt","");
+		}
+		[Test]
+		public void LazyDesignerTestNumberBulletLevel()
+		{
+			// this was actually my fault -- I did not end a list properly
+			PerformTest("lazydesigner_numberbulleterror.txt");
+		}
+		
+		[Test]
+		public void endchapter()
+		{
+			PerformTest("endchapter.txt", null, "", "endnote");
 		}
 
+			[Test]
+			public void lazydesigner_greaterthan_lessthanwithhtml()
+		{
+			PerformTest("lazydesigner_greaterthan_lessthanwithhtml.txt");
+		}
+		[Test]
+		public void LazyDesignerTest1()
+		{
+			PerformTest("lazydesignerbug1.txt");
+		}
+		[Test]
+		public void LinksToOtherFilesinEpub()
+		{
+			PerformTest("linkstootherfilesinepub.txt");
+		}
 		[Test]
 		public void TestNumberBullets()
 		{
 			PerformTest("numberbullet.txt");
 		}
-
+[Test]
+		public void CharacterCount()
+		{
+			Assert.AreEqual(3,sendePub2.CountCharacters("***Booyah", '*'));
+			Assert.AreEqual(5,sendePub2.CountCharacters("*****Booyah", '*'));
+			Assert.AreEqual(1,sendePub2.CountCharacters("*Booyah hey.!", '*'));
+			Assert.AreEqual(2,sendePub2.CountCharacters("**Booyah hey.! What else eh\nsnakes!", '*', false));
+			Assert.AreEqual(3,sendePub2.CountCharacters("**Booyah hey.! What else* eh\nsnakes!", '*', false));
+			Assert.AreEqual(2,sendePub2.CountCharacters("**Booyah hey.! What else* eh\nsnakes!", '*', true));
+		}
 
 		[Test]
 		public void TestInlineFormat()
@@ -300,12 +396,19 @@ namespace Testing
 
 		void PerformTest (string simpletxt)
 		{
-			PerformTest (simpletxt, null);
+			PerformTest (simpletxt, null,"", "");
 		}
 		void PerformTest (string simpletxt, ControlFile overrideControl)
 		{
+			PerformTest (simpletxt, overrideControl,"", "");
+		}
+		void PerformTest (string simpletxt, ControlFile overrideControl, string overrideoutput, string overridepreface)
+		{
 			ControlFile Controller = Setup (simpletxt, overrideControl);
 			string Incoming = simpletxt;
+
+
+
 			string FileToTest = Path.Combine (PathToSendAwayUnitTestingFIles, Incoming);
 			
 			sendePub2 SendAwayIt = new sendePub2 ();
@@ -315,10 +418,18 @@ namespace Testing
 			
 			string FileOutput = Path.Combine (PathToOutput, sendePub2.GetDateDirectory);
 			FileOutput = Path.Combine (FileOutput, "oebps");
-			FileOutput = Path.Combine (FileOutput, "preface.xhtml");
+			if (overridepreface == "") {
+				FileOutput = Path.Combine (FileOutput, "preface.xhtml");
+			} else {
+				FileOutput = Path.Combine (FileOutput,overridepreface+".xhtml");
+			}
 			
 			Assert.True (File.Exists (FileOutput), "NOt found " + FileOutput);
-			
+
+			if (overrideoutput != "") {
+				Incoming = overrideoutput;
+			}
+
 			// now test the file for identicality
 			string FileToCompareItTo = Path.Combine (PathToProper, Incoming);
 			if (File.Exists (FileToCompareItTo) == false) {
