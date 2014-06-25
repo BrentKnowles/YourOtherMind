@@ -348,6 +348,228 @@ namespace Testing
 			PerformTest("linkstootherfilesinepub.txt");
 		}
 		[Test]
+		public void Novel_Open_Blanklinke()
+		{
+			ControlFile result =  ControlFile.Default;
+			
+			
+			
+			result.ListOfTags=new string[1]{"game|''"};
+			
+			result.ConverterType = ControlFile.convertertype.epub;
+			result.MultiLineFormats= new string[1]{"past"};
+			result.MultiLineFormatsValues = new string[1]{"blockquote2"};
+			result.Zipper =_TestSingleTon.Zipper;
+			result.FancyCharacters = true;
+			result.NovelMode = true;
+			
+			PerformTest("novel_open_blank_error.txt", result);
+		}
+
+		[Test]
+		public void Novel_Facts_Paragraphs()
+		{
+			ControlFile result =  ControlFile.Default;
+			
+			
+			
+			result.ListOfTags=new string[1]{"game|''"};
+			
+			result.ConverterType = ControlFile.convertertype.epub;
+			result.MultiLineFormats= new string[1]{"past"};
+			result.MultiLineFormatsValues = new string[1]{"blockquote2"};
+			result.Zipper =_TestSingleTon.Zipper;
+			result.FancyCharacters = true;
+			result.NovelMode = true;
+
+			PerformTest("novel_facts_paragraphs.txt", result);
+		}
+
+		[Test]
+		public void Novel_factafterscene()
+		{
+			ControlFile result =  ControlFile.Default;
+			
+			
+			
+			result.ListOfTags=new string[1]{"game|''"};
+			
+			result.ConverterType = ControlFile.convertertype.epub;
+			result.MultiLineFormats= new string[1]{"past"};
+			result.MultiLineFormatsValues = new string[1]{"blockquote2"};
+			result.Zipper =_TestSingleTon.Zipper;
+			result.FancyCharacters = true;
+			result.NovelMode = true;
+			
+			PerformTest("novel_factafterscene.txt", result);
+		}
+		[Test]
+		public void Novel_factafterscene_WITHOUTCOMMA()
+		{
+			ControlFile result =  ControlFile.Default;
+			
+			
+			
+			result.ListOfTags=new string[1]{"game|''"};
+			
+			result.ConverterType = ControlFile.convertertype.epub;
+			result.MultiLineFormats= new string[1]{"past"};
+			result.MultiLineFormatsValues = new string[1]{"blockquote2"};
+			result.Zipper =_TestSingleTon.Zipper;
+			result.FancyCharacters = true;
+			result.NovelMode = true;
+			
+			PerformTest("novel_factaftersceneWITHOUTCOMMA.txt", result);
+		}
+		[Test]
+		public void novel_past_andblank()
+		{
+			ControlFile result =  ControlFile.Default;
+			
+			
+			
+			result.ListOfTags=new string[1]{"game|''"};
+			
+			result.ConverterType = ControlFile.convertertype.epub;
+			result.MultiLineFormats= new string[1]{"past"};
+			result.MultiLineFormatsValues = new string[1]{"blockquote2"};
+			result.Zipper =_TestSingleTon.Zipper;
+			result.FancyCharacters = true;
+			result.NovelMode = true;
+			
+			PerformTest("novel_past_andblank.txt", result,"", "Chapter_1");
+		}
+		[Test]
+		public void novel_inlinep()
+		{
+			ControlFile result =  ControlFile.Default;
+			
+			
+			
+			result.ListOfTags=new string[1]{"game|''"};
+			
+			result.ConverterType = ControlFile.convertertype.epub;
+			result.MultiLineFormats= new string[1]{"past"};
+			result.MultiLineFormatsValues = new string[1]{"blockquote2"};
+			result.Zipper =_TestSingleTon.Zipper;
+			result.FancyCharacters = true;
+			result.NovelMode = true;
+			
+			PerformTest("novel_inlinep.txt", result,"", "Chapter_1");
+		}
+		[Test]
+		public void novel_fact_endofline()
+		{
+			ControlFile result =  ControlFile.Default;
+			
+			
+			
+			result.ListOfTags=new string[1]{"game|''"};
+			
+			result.ConverterType = ControlFile.convertertype.epub;
+			result.MultiLineFormats= new string[1]{"past"};
+			result.MultiLineFormatsValues = new string[1]{"blockquote2"};
+			result.Zipper =_TestSingleTon.Zipper;
+			result.FancyCharacters = true;
+			result.NovelMode = true;
+			
+			PerformTest("novel_fact_endofline.txt", result);
+		}
+		[Test]
+		public void novel_fact_endoflinequestion()
+		{
+			ControlFile result =  ControlFile.Default;
+			
+			
+			
+			result.ListOfTags=new string[1]{"game|''"};
+			
+			result.ConverterType = ControlFile.convertertype.epub;
+			result.MultiLineFormats= new string[1]{"past"};
+			result.MultiLineFormatsValues = new string[1]{"blockquote2"};
+			result.Zipper =_TestSingleTon.Zipper;
+			result.FancyCharacters = true;
+			result.NovelMode = true;
+			
+			PerformTest("novel_fact_endoflinequestion.txt", result);
+		}
+		[Test]
+		public void novel_fact_endoflineexclaim()
+		{
+			ControlFile result =  ControlFile.Default;
+			
+			
+			
+			result.ListOfTags=new string[1]{"game|''"};
+			
+			result.ConverterType = ControlFile.convertertype.epub;
+			result.MultiLineFormats= new string[1]{"past"};
+			result.MultiLineFormatsValues = new string[1]{"blockquote2"};
+			result.Zipper =_TestSingleTon.Zipper;
+			result.FancyCharacters = true;
+			result.NovelMode = true;
+			
+			PerformTest("novel_fact_endoflineexclaim.txt", result);
+		}
+
+		[Test]
+		public void novel_preludeerror()
+		{
+			ControlFile result =  ControlFile.Default;
+			
+			
+			
+			result.ListOfTags=new string[1]{"game|''"};
+			result.ConvertToEmDash = true;
+			result.ConverterType = ControlFile.convertertype.epub;
+			result.MultiLineFormats= new string[1]{"past"};
+			result.MultiLineFormatsValues = new string[1]{"blockquote2"};
+			result.Zipper =_TestSingleTon.Zipper;
+			result.FancyCharacters = true;
+			result.NovelMode = true;
+			
+			PerformTest("novel_preludeerror.txt", result);
+		}
+
+		[Test]
+		public void novel_fact_space_before()
+		{
+			ControlFile result =  ControlFile.Default;
+			
+			
+			
+			result.ListOfTags=new string[1]{"game|''"};
+			result.ConvertToEmDash = true;
+			result.ConverterType = ControlFile.convertertype.epub;
+			result.MultiLineFormats= new string[1]{"past"};
+			result.MultiLineFormatsValues = new string[1]{"blockquote2"};
+			result.Zipper =_TestSingleTon.Zipper;
+			result.FancyCharacters = true;
+			result.NovelMode = true;
+			
+			PerformTest("novel_fact_space_before.txt", result);
+		}
+
+
+		[Test]
+		public void novel_fact_endoflinehyphen()
+		{
+			ControlFile result =  ControlFile.Default;
+			
+			
+			
+			result.ListOfTags=new string[1]{"game|''"};
+			result.ConvertToEmDash = true;
+			result.ConverterType = ControlFile.convertertype.epub;
+			result.MultiLineFormats= new string[1]{"past"};
+			result.MultiLineFormatsValues = new string[1]{"blockquote2"};
+			result.Zipper =_TestSingleTon.Zipper;
+			result.FancyCharacters = true;
+			result.NovelMode = true;
+			
+			PerformTest("novel_fact_endoflinehyphen.txt", result);
+		}
+		[Test]
 		public void TestNumberBullets()
 		{
 			PerformTest("numberbullet.txt");

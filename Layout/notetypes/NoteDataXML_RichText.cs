@@ -383,7 +383,13 @@ namespace Layout
 		/// </value>
 		[XmlIgnore]
 		public string SelectedText {
-			get { return richBox.SelectedText;}
+			get { 
+				if (richBox != null)
+				{
+					return richBox.SelectedText;
+				}
+				return Constants.BLANK;
+			}
 			set { richBox.SelectedText = value;}
 		}
 		[XmlIgnore]

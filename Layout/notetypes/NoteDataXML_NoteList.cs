@@ -33,6 +33,7 @@ using System.Data;
 using System.Collections;
 using System.Collections.Generic;
 
+
 namespace Layout
 {
 	/// <summary>
@@ -52,6 +53,16 @@ namespace Layout
 
 		public override int defaultHeight { get { return 600; } }
 		public override int defaultWidth { get { return 200; } }
+		private bool searchDetailsDock =true;// true = dock on bottom
+
+		public bool SearchDetailsDock {
+			get {
+				return searchDetailsDock;
+			}
+			set {
+				searchDetailsDock = value;
+			}
+		}
 
 		#endregion
 		#region variables
@@ -98,15 +109,15 @@ namespace Layout
 		#endregion
 
 		#region formcontrols
-		ListBox list;
-		Label count;
-		Label blurb;
+		protected ListBox list;
+		protected Label count;
+		protected Label blurb;
 		ComboBox TextEditor = null;
 		ComboBox  CurrentFilterDropDown  = null;
 		CheckBox FullTextSearch = null;
-		Panel SearchDetails = null;
-		ComboBox mode = null;
-		Button  refresh = null;
+		protected Panel SearchDetails = null;
+		protected ComboBox mode = null;
+		protected Button  refresh = null;
 		#endregion
 
 		public NoteDataXML_NoteList () : base()
@@ -140,7 +151,9 @@ namespace Layout
 		
 
 			SearchDetails = new Panel ();
-			SearchDetails.Dock = DockStyle.Bottom;
+
+			AdjustDockingOfSearchPanel();
+
 
 
 			CurrentFilterDropDown = new ComboBox ();
@@ -211,12 +224,34 @@ namespace Layout
 			refresh.Click += HandleRefreshClick;
 
 
+			//Menu Stuff
 
+			 TokenItem = new ToolStripMenuItem(Loc.Instance.GetString("Dock on Bottom?"));
+			TokenItem.CheckOnClick = true;
+			TokenItem.Click += (object sender, EventArgs e) => {
+				searchDetailsDock = (sender as ToolStripMenuItem).Checked;
+				AdjustDockingOfSearchPanel();
+				this.SetSaveRequired(true);
+			};
+			if (searchDetailsDock) TokenItem.Checked = true; else TokenItem.Checked= false;
+                                  
+			
+			properties.DropDownItems.Add (new ToolStripSeparator());
+			properties.DropDownItems.Add (TokenItem);
 	
 
 		//	AdjustHeightOfLayoutSearchPanel (); This already gets called when the note type is chosen
 		}
-	
+		protected ToolStripMenuItem TokenItem;
+		private void AdjustDockingOfSearchPanel()
+		{
+			if (searchDetailsDock) {
+				SearchDetails.Dock = DockStyle.Bottom;
+			} else {
+				SearchDetails.Dock = DockStyle.Top;
+				SearchDetails.SendToBack();
+			}
+		}
 		// must be called in the Refresh Method
 		void StoreHistoryText ()
 		{
@@ -259,7 +294,9 @@ namespace Layout
 //			}
 		}
 
-
+		/// <summary>
+		/// Loads the list of potential queries into the combo boxes.
+		/// </summary>
 		public override void UpdateAfterLoad ()
 		{
 			System.Collections.Generic.List<string> queries = new List<string> ();
@@ -290,6 +327,15 @@ namespace Layout
 			case Modes.LAYOUTSONCURRENTLAYOUT: mode.SelectedIndex = 2; break;
 			}
 		}
+		/// <summary>
+		/// Handles the selected index last query changed.
+		/// </summary>
+		/// <param name='sender'>
+		/// Sender.
+		/// </param>
+		/// <param name='e'>
+		/// E.
+		/// </param>
 		void HandleSelectedIndexLastQueryChanged (object sender, EventArgs e)
 		{
 
@@ -302,6 +348,16 @@ namespace Layout
 				//NewMessage.Show ("Did not set");
 			}
 		}
+
+		/// <summary>
+		/// Handles the note list click. --> Grabbing the record which may or may note bopened later
+		/// </summary>
+		/// <param name='sender'>
+		/// Sender.
+		/// </param>
+		/// <param name='e'>
+		/// E.
+		/// </param>
 		void HandleNoteListClick (object sender, EventArgs e)
 		{
 			switch (Mode) {
@@ -409,6 +465,12 @@ namespace Layout
 			}
 		}
 
+		/// <summary>
+		/// Updates the list of layouts.
+		/// </summary>
+		/// <param name='_CurrentFilter'>
+		/// _ current filter.
+		/// </param>
 		void UpdateListOfLayouts (string _CurrentFilter)
 		{
 			this.list.DataSource = null;

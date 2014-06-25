@@ -2122,6 +2122,41 @@ namespace Layout
 		{
 			OnEnter (new EventArgs());
 		}
+
+		/// <summary>
+		/// Gets the random note. For the Advisor plugin.
+		/// </summary>
+		/// <returns>
+		/// The random note.
+		/// </returns>
+		public NoteDataInterface GetRandomNote ()
+		{
+
+			ArrayList theNotes = this.GetAllNotes ();
+			NoteDataInterface result = null;
+			if (theNotes != null && theNotes.Count > 0) {
+
+				bool done = false;
+				while (!done)
+				{
+					if (theNotes.Count <=0) return null;
+					int randomResult = LayoutDetails.Instance.RandomNumbers.Next (0, theNotes.Count - 1);
+					result = (NoteDataInterface)theNotes[randomResult];
+					if (result.GuidForNote == LinkTable.STICKY_TABLE)
+					{
+						// found linktable. Remove it
+						theNotes.Remove (result);
+					}
+					else
+					{
+						done = true;
+					}
+				}
+
+			}
+
+			return result;
+		}
 	}
 }
 

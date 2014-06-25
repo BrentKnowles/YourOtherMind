@@ -344,8 +344,20 @@ namespace Timeline
 //			}
 //		}
 #endregion
+		const int ColorCount = 20;
+		Color[] ColorsToUse = new Color[ColorCount]{Color.Blue, Color.Red, Color.Green, Color.Yellow, Color.Purple,
+			Color.Black, Color.White, Color.Brown, Color.LightBlue, Color.Orange, Color.Beige, Color.MediumTurquoise,
+		Color.FromArgb(255,102,102),
+		Color.FromArgb(255,178,102),
+		Color.FromArgb(255,255,102),
+			Color.FromArgb(178,255,102),
+			Color.FromArgb(165,42,42),
+			Color.FromArgb(255,140,0),
+			Color.FromArgb(238,232,170),
+			Color.FromArgb(189,183,107)
 		
-	
+		
+		};
 		
 		
 		/// <summary>
@@ -438,10 +450,9 @@ namespace Timeline
 						if (colorHash == null) {
 							colorHash = new Hashtable ();
 						}
-						const int ColorCount = 12;
+				
 
-						Color[] ColorsToUse = new Color[ColorCount]{Color.Blue, Color.Red, Color.Green, Color.Yellow, Color.Purple,
-							Color.Black, Color.White, Color.Brown, Color.LightBlue, Color.Orange, Color.Beige, Color.MediumTurquoise};
+				
 
 						// if we are the first in an entry (see below) the frame color will be changed to GOLD
 						//Color FrameColor = Color.White;

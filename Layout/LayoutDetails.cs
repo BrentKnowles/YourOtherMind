@@ -177,7 +177,30 @@ namespace Layout
 
 		public Action<string, string> LoadLayoutRef= null;
 		public Action<string> UpdateTitle = null;
+		private bool titleUpdateSuspended = false;
 
+		/// <summary>
+		/// Gets a value indicating whether this instance is title suspended.
+		/// </summary>
+		/// <value>
+		/// <c>true</c> if this instance is title suspended; otherwise, <c>false</c>.
+		/// </value>
+		public bool IsTitleSuspended {
+			get {
+				return titleUpdateSuspended;
+			}
+
+		}
+		/// <summary>
+		/// Suspends the title update.
+		/// </summary>
+		/// <param name='Suspend'>
+		/// If set to <c>true</c> suspend.
+		/// </param>
+		public void SuspendTitleUpdate (bool Suspend)
+		{
+			titleUpdateSuspended = Suspend;
+		}
 
 		private appframe.MainFormBase MainForm = null;
 

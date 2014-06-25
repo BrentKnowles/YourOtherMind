@@ -293,6 +293,10 @@ namespace Layout
 		{
 			return GetListOfLayouts(filter, Constants.BLANK, false, null);
 		}
+		public static List<NameAndGuid> GetListOfLayouts (string filter, string likename, bool FullTextSearch, LayoutPanelBase OverrideLayoutToUseToFindTable)
+		{
+			return GetListOfLayouts(filter, likename, FullTextSearch, OverrideLayoutToUseToFindTable, Constants.BLANK);
+		}
 		/// <summary>
 		/// Gets the list of layouts.
 		/// </summary>
@@ -302,8 +306,9 @@ namespace Layout
 		/// <param name='filter'>
 		/// Filter.
 		/// </param>
+		/// <param name="OverrideLayoutToUseToFindTable">>
 			/// 
-		public static List<NameAndGuid> GetListOfLayouts (string filter, string likename, bool FullTextSearch, LayoutPanelBase OverrideLayoutToUseToFindTable)
+		public static List<NameAndGuid> GetListOfLayouts (string filter, string likename, bool FullTextSearch, LayoutPanelBase OverrideLayoutToUseToFindTable, string OverrideQuery)
 		{
 			List<NameAndGuid> result = new List<NameAndGuid> ();
 			try {
@@ -356,12 +361,22 @@ namespace Layout
 
 
 
+
 				// Add a name filter
 				if (false == FullTextSearch && Constants.BLANK != likename) {
 					test = String.Format ("and name like '%{0}%'", likename);
 				} else if (true == FullTextSearch) {
 					// modify the query to handle full text searching
 					test = String.Format ("and xml like '%{0}%'", likename);
+
+
+					
+					// 18/06/2014
+					// Override layout query
+					if (OverrideQuery != Constants.BLANK)
+					{
+						test = OverrideQuery;
+					}
 
 					// we need to find subpanel items too
 					// this is, text stored in subpanel needs to register too, though this will be tricky.
@@ -370,8 +385,14 @@ namespace Layout
 				dbConstants.SUBPANEL, 1, String.Format (" order by {0} COLLATE NOCASE", dbConstants.NAME), test);
 				}
 
+				
+				// 18/06/2014
+				// Override layout query
+				if (OverrideQuery != Constants.BLANK)
+				{
+					test = OverrideQuery;
+				}
 
-		
 
 				List<object[]> myList = MyDatabase.GetValues (dbConstants.table_name, new string[4] {dbConstants.GUID, dbConstants.NAME, dbConstants.BLURB
 			,dbConstants.WORDS},
