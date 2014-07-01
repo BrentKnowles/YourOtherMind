@@ -62,7 +62,7 @@ namespace Layout
 		{
 			return false;
 		}
-		public ArrayList GetListOfPages (string s, ref bool b)
+		public ArrayList GetListOfPages (string s, ref bool b, LayoutPanelBase usedLayout)
 		{
 			b = false;
 			return null;

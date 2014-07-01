@@ -360,6 +360,43 @@ namespace Layout
 				throw new Exception("A reference needs to be set in the MainForm to the method to use when loading a new method. That did not happen today.");
 			}
 		}
+
+		/// <summary>
+		/// Loads the layout.
+		///  30/06/2014
+		///  - can pass text that the layout attempts to find on the child note
+		/// </summary>
+		/// <param name='guid'>
+		/// GUID.
+		/// </param>
+		/// <param name='childGuid'>
+		/// Child GUID.
+		/// </param>
+		/// <param name='TextToSearchForOnChild'>
+		/// Text to search for on child.
+		/// </param>
+		public void LoadLayout (string guid, string childGuid, string TextToSearchForOnChild)
+		{
+			if (null != LoadLayoutRef) {
+				LoadLayoutRef (guid, childGuid);
+
+
+
+				if (CurrentLayout != null && CurrentLayout.CurrentTextNote != null)
+				{
+					FindBarStatusStrip find = CurrentLayout.GetFindbar();
+					if (find != null)
+					{
+						CurrentLayout.FocusOnFindBar();
+
+						find.DoFind (TextToSearchForOnChild, false, CurrentLayout.CurrentTextNote.GetRichTextBox() ,0);
+					}
+				}
+			} else {
+				throw new Exception("A reference needs to be set in the MainForm to the method to use when loading a new method. That did not happen today.");
+			}
+		}
+
 		public void LoadLayout (string guid)
 		{
 			
@@ -904,7 +941,7 @@ namespace Layout
 
 							if (LayoutDetails.Instance.GetCurrentMarkup().IsGroupRequest(sLine)) {
 								
-								ArrayList tmp   = LayoutDetails.Instance.GetCurrentMarkup().GetListOfPages(sLine, ref bGetWords);
+								ArrayList tmp   = LayoutDetails.Instance.GetCurrentMarkup().GetListOfPages(sLine, ref bGetWords, LayoutDetails.Instance.CurrentLayout);
 								ListOfParsePages.AddRange(tmp);
 								// we have a group
 								

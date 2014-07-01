@@ -223,6 +223,7 @@ namespace Layout
 		public abstract void SaveLayout();
 		//public abstract  void LoadLayout(string GUID);
 		public abstract void LoadLayout (string _GUID, bool IsSubPanel, ContextMenuStrip textEditorContextStrip);
+		public abstract void LoadLayout (string _GUID, bool IsSubPanel, ContextMenuStrip textEditorContextStrip, bool NoSaveMode);
 
 	//	public abstract  void AddNote();
 		public abstract void AddNote(NoteDataInterface note);

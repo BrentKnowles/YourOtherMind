@@ -42,7 +42,7 @@ namespace Layout
 		string CleanWordRequest(string incoming);
 		bool IsOver(string incoming);
 		bool IsGroupRequest(string incoming);
-		ArrayList GetListOfPages(string sLine, ref bool bGetWords);
+		ArrayList GetListOfPages(string sLine, ref bool bGetWords, LayoutPanelBase usedLayout);
 		List<TreeItem> BuildList (NoteDataXML_RichText RichText);
 		void DoPaint(PaintEventArgs e, int Start, int End, RichTextBox RichText);
 	}

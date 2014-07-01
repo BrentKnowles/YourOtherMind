@@ -90,6 +90,8 @@ namespace YOM2013
 	
 		private void UpdateTitle (string newTitle)
 		{
+
+			// 
 			if (LayoutDetails.Instance.IsTitleSuspended == false) {
 				if (newTitle != this.Text) {
 					this.Text = newTitle;

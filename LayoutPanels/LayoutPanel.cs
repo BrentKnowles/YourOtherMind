@@ -955,6 +955,12 @@ namespace Layout
 
 		public override void SaveLayout ()
 		{
+
+			if (noSaveMode) {
+				NewMessage.Show ("We attempted to save this layout but we are set to NoSaveMode, which should only be used for remote notes.");
+				return;
+			}
+
 			if (null != Notes) {
 				lg.Instance.Line("LayoutPanel.SaveLayout", ProblemType.MESSAGE, "Saved");
 
@@ -1013,7 +1019,17 @@ namespace Layout
 		
 		}
 
-
+		public override void LoadLayout (string _GUID, bool IsSubPanel, System.Windows.Forms.ContextMenuStrip textEditorContextStrip)
+		{
+			LoadLayout (_GUID, IsSubPanel, textEditorContextStrip, false);
+		}
+		/// <summary>
+		/// The no save mode.
+		/// 
+		/// 25/06/2014 -- if this is true then the Layout will be unable to save
+		///    -- I added this for certain remote lookups to prevent something really bad from happening.
+		/// </summary>
+		private bool noSaveMode = false;
 	/// <summary>
 	/// Loads the layout.
 	/// </summary>
@@ -1026,8 +1042,9 @@ namespace Layout
 	///<param name="textEditorContextStrip">
     ///Specifies the toolbar to use
 	///</param>
-		public override void LoadLayout (string _GUID, bool IsSubPanel, ContextMenuStrip textEditorContextStrip)
+		public override void LoadLayout (string _GUID, bool IsSubPanel, ContextMenuStrip textEditorContextStrip, bool NoSaveMode)
 		{
+			noSaveMode = NoSaveMode;
 			TextEditContextStrip = textEditorContextStrip;
 			//NewMessage.Show (_GUID);
 			// super important to track parent child relationships
@@ -1621,7 +1638,16 @@ namespace Layout
 		public override NoteDataInterface GoToNote (NoteDataInterface note)
 		{
 			note = GetNote (note);
-			ShowAndFlash(note);
+			ShowAndFlash (note);
+
+			// 30/06/ 2014 -- possible error maker
+			// For Fact NOTE TYPE, I want clicks to bring me to the ntoe and do a search
+			// which means when GoToNote is called and it is a richtext, I'd like to set the richtext
+			// ThIS COULD BREAK EVERYTHING!
+			if (null != note && note is NoteDataXML_RichText) {
+				CurrentTextNote = (NoteDataXML_RichText) note;
+			}
+
 			return note;
 //			// at this point if the note does not have a parent (because it is a subnote and this is not instantiated when 
 //			// searching
