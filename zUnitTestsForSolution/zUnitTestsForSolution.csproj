@@ -77,6 +77,7 @@
     <Compile Include="ADDIN_Archive_Test.cs" />
     <Compile Include="ADDIN_SendAway_Test.cs" />
     <Compile Include="ADDIN_Submissions_Test.cs" />
+    <Compile Include="ADDIN_Fact.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
@@ -135,6 +136,10 @@
     <ProjectReference Include="..\..\Addins\Addin_YourothermindMarkup\Addin_YourothermindMarkup.csproj">
       <Project>{A04A0908-E383-4ED9-9DBA-FB1B63041CB4}</Project>
       <Name>Addin_YourothermindMarkup</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Addins\Addin_Fact\Addin_Fact.csproj">
+      <Project>{35EB45A4-41A2-4B1D-A17C-532725B11A38}</Project>
+      <Name>Addin_Fact</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

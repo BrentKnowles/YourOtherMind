@@ -52,6 +52,7 @@ namespace Layout
 
 		#region formcontrols
 		protected TablePanel Table= null;
+		protected ToolStripButton useHeadingStyleOption = null;
 		#endregion
 
 		#region variables
@@ -269,13 +270,22 @@ namespace Layout
 			ToolStripMenuItem NextTableLabel =
 				LayoutDetails.BuildMenuPropertyEdit (Loc.Instance.GetString("Next Table: {0}"), NextTable,Loc.Instance.GetString ("Set a value here and if the random results of this table resolve without finding a 'NextTable' in the table itself, it will proceed with randomization on the table specified here."),HandleNextTableKeyDown );
 
-
+			useHeadingStyleOption = new ToolStripButton();
+			useHeadingStyleOption.Text = Loc.Instance.GetString ("Use Heading Styled Captions");
+			useHeadingStyleOption.CheckOnClick = true;
+			useHeadingStyleOption.Checked = useHeadingStyleForCaption;
+			useHeadingStyleOption.Click+= (object sender, EventArgs e) => 
+			{
+				SetSaveRequired(true);
+				useHeadingStyleForCaption= useHeadingStyleOption.Checked;
+			};
 
 
 
 			properties.DropDownItems.Add (new ToolStripSeparator());
 			properties.DropDownItems.Add (TableCaptionLabel);
 			properties.DropDownItems.Add (NextTableLabel);
+			properties.DropDownItems.Add (useHeadingStyleOption);
 			CaptionLabel.ResumeLayout();
 		}
 
@@ -365,7 +375,7 @@ namespace Layout
 				}
 				string sNextTable = NextTable; // can't use the actual nexttable field
 				string sResult = GenerateAllResults (ref sNextTable, dataSource, _caption,
-							                                        Caption, Layout);
+							                                        Caption, Layout, useHeadingStyleForCaption);
 				return sResult;
 			}
 			return Loc.Instance.GetString ("No data found in random table");
@@ -381,7 +391,7 @@ namespace Layout
 		/// 
 		/// </summary>
 		/// <returns></returns>
-		public static string GenerateAllResults (ref string nextTable, DataTable currentTable, string Title, string Core_Table, LayoutPanelBase Layout)
+		public static string GenerateAllResults (ref string nextTable, DataTable currentTable, string Title, string Core_Table, LayoutPanelBase Layout, bool useHeadingStyle)
 		{
 			
 			// probably should save first too but not sure
@@ -396,7 +406,7 @@ namespace Layout
 			NoteDataInterface[] notes = new NoteDataInterface[notelist.Count];
 			notelist.CopyTo (notes);
 
-			resultReturn sResult = GenerateResult(0, currentTable, ref nextTable, Title,notes);
+			resultReturn sResult = GenerateResult(0, currentTable, ref nextTable, Title,notes, useHeadingStyle);
 			
 			
 			
@@ -470,7 +480,7 @@ namespace Layout
 					{
 						nextTable = table.NextTable; // this is clearing the row field!
 					}
-					newResult = GenerateResult(sResult.nModifier, (DataTable)table.dataSource, ref nextTable, _caption, notes);
+					newResult = GenerateResult(sResult.nModifier, (DataTable)table.dataSource, ref nextTable, _caption, notes, useHeadingStyle);
 					
 					
 					
@@ -523,7 +533,7 @@ namespace Layout
 		/// </summary>
 		/// <param name="nModifier">Some tables influence the value of the next table. Generally this should be 0</param>
 		/// 
-		public static resultReturn GenerateResult (int nModifier, DataTable currentTable, ref string nextTable, string Title, NoteDataInterface[] notes)
+		public static resultReturn GenerateResult (int nModifier, DataTable currentTable, ref string nextTable, string Title, NoteDataInterface[] notes, bool useHeadingStyle)
 		{
 			resultReturn returner = new resultReturn ();
 			returner.nModifier = 0;
@@ -641,7 +651,7 @@ namespace Layout
 				if (sResult.ToLower ().IndexOf ("lookup") > -1) {
 				
 					// NewMessage.Show("lookup found");
-					sResult = lookup (sResult, currentTable, notes);
+					sResult = lookup (sResult, currentTable, notes, useHeadingStyle);
 				
 				}
 			
@@ -667,7 +677,7 @@ namespace Layout
 		/// <returns>
 		/// Keep in mind that the result might be multiple Rows!
 		/// </returns>
-		private static string lookup(string sQuery, DataTable currentTable, NoteDataInterface[] notes)
+		private static string lookup(string sQuery, DataTable currentTable, NoteDataInterface[] notes, bool useHeadingStyle)
 		{
 			
 			sQuery = sQuery.Replace("(", "");
@@ -776,20 +786,29 @@ namespace Layout
 				int length = randomizeresult.Length;
 				Random r = LayoutDetails.Instance.RandomNumbers;
 				int nValue = r.Next(0, length);
-				sResults = String.Format("{0}: {1}", captionoverrideforrandomresultset, randomizeresult[nValue]);
+				if (useHeadingStyle)
+				{
+					sResults = String.Format("={0}=\n {1}", captionoverrideforrandomresultset, randomizeresult[nValue]);
+				}
+				else
+				{
+					sResults = String.Format("{0}: {1}", captionoverrideforrandomresultset, randomizeresult[nValue]);
+				}
 
 				if (randomizeresult_nexttable != null && randomizeresult_nexttable.Length >0 && randomizeresult_nexttable[nValue].IndexOf("lookup") > -1)
 				{
 					// we have a lookup value in the next table
 					// go do that lookup
 					string sResult = randomizeresult_nexttable[nValue];
-					sResults = sResults + Environment.NewLine + lookup(sResult, currentTable, notes);
+					sResults = sResults + Environment.NewLine + lookup(sResult, currentTable, notes, useHeadingStyle);
 				}
 				
 			}
 			
 			return sResults;
 		}
+		public bool useHeadingStyleForCaption = false;
+
 		/// <summary>
 		/// Gets the values for column.
 		/// returns a list of strings for that column. Used for system tables on the system layout

@@ -45,6 +45,7 @@ namespace Layout
 		ArrayList GetListOfPages(string sLine, ref bool bGetWords, LayoutPanelBase usedLayout);
 		List<TreeItem> BuildList (NoteDataXML_RichText RichText);
 		void DoPaint(PaintEventArgs e, int Start, int End, RichTextBox RichText);
+		List<string> GetMainHeadings (RichTextBox box);
 	}
 
 	public class TreeItem :IComparable {

@@ -1,6 +1,6 @@
 // NoteDataXML_RichText.cs
 //
-// Copyright (c) 2013 Brent Knowles (http://www.brentknowles.com)
+// Copyright (c) 2013-2014 Brent Knowles (http://www.brentknowles.com)
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -59,7 +59,13 @@ namespace Layout
 		protected ToolStripComboBox MarkupCombo;
 		// right -click toggles
 		protected NoteNavigation bookMarkView = null;
+		protected TabNavigation tabView = null;
+		protected ToolStripComboBox extraItemsToShow = null;
 		#endregion
+
+		public ExtraItemsToShow extraItemsToShow_value = ExtraItemsToShow.NONE;
+		public enum ExtraItemsToShow {NONE, OUTLINE, HEADING_TABS, BOTH};
+
 
 		// mutex to prevent markup list from calling update when loading
 		private bool loadingcombo = false;
@@ -250,12 +256,88 @@ namespace Layout
 				richBox.MarkupOverride = (iMarkupLanguage)MarkupCombo.SelectedItem;
 			}
 
+
+			extraItemsToShow = new ToolStripComboBox();
+			extraItemsToShow.Items.AddRange(Enum.GetNames(typeof(ExtraItemsToShow)));
+			extraItemsToShow.DropDownStyle = ComboBoxStyle.DropDownList;
+			properties.DropDownItems.Add (extraItemsToShow);
+
+			extraItemsToShow.SelectedIndex = (int)extraItemsToShow_value;
+			extraItemsToShow.ToolTipText = Loc.Instance.GetString ("Reselect this to refresh after editing text.");
+			extraItemsToShow.SelectedIndexChanged+= (object sender, EventArgs e) => {
+				extraItemsToShow_value = (ExtraItemsToShow)extraItemsToShow.SelectedIndex;
+				SetSaveRequired(true);
+				UpdateExtraView();
+			};
+
 			// we use markup tag to indicate whether the data on the markup combo has changed to avoid slowness in save
 			MarkupCombo.Tag = false;
 			loadingcombo = false;
+
+			tabView = new TabNavigation(richBox);
+			tabView.Parent = ParentNotePanel;
+			tabView.Dock = DockStyle.Top;
+			//tabView.SendToBack();
+			tabView.BringToFront();
+
+			AddBookmarkView ();
+			UpdateExtraView();
+			richBox.BringToFront();
+			//CaptionLabel.BringToFront();
 		}
+		/// <summary>
+		/// Updates the extra view.
+		/// 
+		/// Decides which extra elements to show, depending on user set options
+		/// </summary>
+		private void UpdateExtraView ()
+		{
+			switch (extraItemsToShow_value) {
+			case ExtraItemsToShow.NONE:
+				tabView.Visible = false;
+				bookMarkView.Visible = false;
+				break;
+			case ExtraItemsToShow.HEADING_TABS:
+				tabView.Visible = true;
+				bookMarkView.Visible = false;
+				tabView.UpdateView();
+				break;
+			case ExtraItemsToShow.OUTLINE: 
+				tabView.Visible = false;
+				bookMarkView.Visible= true;
+				AddBookmarkView ();
+				break;
+			case ExtraItemsToShow.BOTH:
+				tabView.Visible = true;
+				bookMarkView.Visible = true;
+				tabView.UpdateView();
+				AddBookmarkView ();
+				break;
+			}
 
-
+		}
+		private void AddBookmarkView ()
+		{
+			bool NeedToAdd = false;
+			if (null == bookMarkView)
+			{
+				bookMarkView = new NoteNavigation (this);
+				NeedToAdd = true;
+			}
+			
+			bookMarkView.Location = new Point (richBox.Location.X, richBox.Location.Y);
+			
+			bookMarkView.Height = richBox.Height;
+			bookMarkView.Width = ((int)richBox.Width / 2);
+			if (bookMarkView.Width > bookMarkView.MAX_NAVIGATION_WIDTH) bookMarkView.Width = bookMarkView.MAX_NAVIGATION_WIDTH;
+			bookMarkView.Visible = true;
+			bookMarkView.Dock = DockStyle.Left;
+			if (NeedToAdd)
+			{
+				ParentNotePanel.Controls.Add (bookMarkView);
+			}
+			bookMarkView.UpdateListOfBookmarks();
+		}
 		void HandleMouseDownOnCaptionLabel (object sender, MouseEventArgs e)
 		{
 			if (e.Button == MouseButtons.Right) {
@@ -268,26 +350,9 @@ namespace Layout
 //							ParentNotePanel.Controls.Remove(bookMarkView);
 //						}
 						// 13/06/2014 - to make widen work we need to keep the control around
+						AddBookmarkView(); // we do call this in buildchildren now
 
-						bool NeedToAdd = false;
-						if (null == bookMarkView)
-						{
-							bookMarkView = new NoteNavigation (this);
-							NeedToAdd = true;
-						}
 
-						bookMarkView.Location = new Point (richBox.Location.X, richBox.Location.Y);
-					
-						bookMarkView.Height = richBox.Height;
-						bookMarkView.Width = ((int)richBox.Width / 2);
-						if (bookMarkView.Width > bookMarkView.MAX_NAVIGATION_WIDTH) bookMarkView.Width = bookMarkView.MAX_NAVIGATION_WIDTH;
-						bookMarkView.Visible = true;
-						bookMarkView.Dock = DockStyle.Left;
-						if (NeedToAdd)
-						{
-							ParentNotePanel.Controls.Add (bookMarkView);
-						}
-						bookMarkView.UpdateListOfBookmarks();
 
 					}
 					else

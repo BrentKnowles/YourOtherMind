@@ -29,6 +29,7 @@
 using System;
 using CoreUtilities;
 using System.Windows.Forms;
+using System.Collections.Generic;
 using System.Collections;
 
 namespace Layout
@@ -38,7 +39,10 @@ namespace Layout
 		public MarkupLanguageNone ()
 		{
 		}
-
+		public List<string> GetMainHeadings (RichTextBox box)
+		{
+			return null;
+		}
 		public override string ToString ()
 		{
 			return nameAndIdentifier;
