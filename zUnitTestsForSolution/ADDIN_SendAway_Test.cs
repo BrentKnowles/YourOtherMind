@@ -475,6 +475,53 @@ namespace Testing
 			
 			PerformTest("novel_fact_endofline.txt", result);
 		}
+
+
+		[Test]
+		public void chaptertitlesintoc()
+		{
+			ControlFile result =  ControlFile.Default;
+			
+			
+			
+			result.ListOfTags=new string[1]{"game|''"};
+			
+			result.ConverterType = ControlFile.convertertype.epub;
+			result.MultiLineFormats= new string[1]{"past"};
+			result.MultiLineFormatsValues = new string[1]{"blockquote2"};
+			result.Zipper =_TestSingleTon.Zipper;
+			result.FancyCharacters = true;
+			result.RemoveTabs = false;
+			result.SceneBreakHasTab = true;
+			result.OverrideStyleSheet = @"C:\Users\Public\Documents\YourOtherMind\YourOtherMind\files\SendTextAwayControlFiles\stylesheet.css";
+			result.NovelMode = true;
+			result.ChapterTitleOffset = -2;
+			result.ArealValidatorSafe_Align = true;
+			
+			PerformTest("chaptertitlesintoc.txt", result,"", "toc");
+		}
+		[Test]
+		public void BetterAlign()
+		{
+			ControlFile result =  ControlFile.Default;
+			
+			
+			
+			result.ListOfTags=new string[1]{"game|''"};
+			
+			result.ConverterType = ControlFile.convertertype.epub;
+			result.MultiLineFormats= new string[1]{"past"};
+			result.MultiLineFormatsValues = new string[1]{"blockquote2"};
+			result.Zipper =_TestSingleTon.Zipper;
+			result.FancyCharacters = true;
+			result.RemoveTabs = false;
+			result.SceneBreakHasTab = true;
+			result.OverrideStyleSheet = @"C:\Users\Public\Documents\YourOtherMind\YourOtherMind\files\SendTextAwayControlFiles\stylesheet.css";
+			result.NovelMode = true;
+			result.ArealValidatorSafe_Align = true;
+			
+			PerformTest("betteralign.txt", result,"", "Chapter_1");
+		}
 		[Test]
 		public void novel_fact_endoflinequestion()
 		{

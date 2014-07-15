@@ -86,6 +86,11 @@ namespace Layout
 		/// </summary>
 		private void Parse ()
 		{
+
+			if (Disposing || IsDisposed) return;
+			// don't waste time redrawing if not visible.08/07/2014
+			if (this.Visible == false) return;
+
 			this.TabPages.Clear ();
 			// - look for all = = matches (Steal YOMMarkup Code)
 			List<string> tabs = LayoutDetails.Instance.GetCurrentMarkup ().GetMainHeadings (textBox);

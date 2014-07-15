@@ -224,7 +224,7 @@ namespace Layout
 			richBox.Dock = DockStyle.Fill;
 			richBox.BringToFront ();
 			richBox.Rtf = this.Data1;
-			richBox.SelectionChanged+= HandleRichTextSelectionChanged;
+			richBox.SelectionChanged += HandleRichTextSelectionChanged;
 			richBox.TextChanged += HandleTextChanged;
 			richBox.ReadOnly = this.ReadOnly;
 			richBox.HideSelection = false; // must be able to see focus form other controls
@@ -232,9 +232,9 @@ namespace Layout
 			//CaptionLabel.MouseHover += HandleCaptionMouseHover;
 			MarkupCombo = new ToolStripComboBox ();
 			MarkupCombo.ToolTipText = Loc.Instance.GetString ("AddIns allow text notes to format text. A global option controls the default markup to use on notes but this may be overridden here.");
-		//	LayoutDetails.Instance.BuildMarkupComboBox (MarkupCombo);
+			//	LayoutDetails.Instance.BuildMarkupComboBox (MarkupCombo);
 
-			BuildDropDownList();
+			BuildDropDownList ();
 
 			properties.DropDownItems.Add (MarkupCombo);
 			MarkupCombo.SelectedIndexChanged += HandleSelectedIndexChanged;
@@ -244,8 +244,7 @@ namespace Layout
 			// just show default if we have not overridden this
 			if (Markuplanguage == defaultmarkup) {
 				MarkupCombo.Text = defaultmarkup;
-			}
-			else
+			} else
 			if (SelectedMarkup != null) {
 				for (int i = 0; i < MarkupCombo.Items.Count; i++) {
 					if (MarkupCombo.Items [i].GetType () == SelectedMarkup.GetType ()) {
@@ -257,30 +256,36 @@ namespace Layout
 			}
 
 
-			extraItemsToShow = new ToolStripComboBox();
-			extraItemsToShow.Items.AddRange(Enum.GetNames(typeof(ExtraItemsToShow)));
+			extraItemsToShow = new ToolStripComboBox ();
+			extraItemsToShow.Items.AddRange (Enum.GetNames (typeof(ExtraItemsToShow)));
 			extraItemsToShow.DropDownStyle = ComboBoxStyle.DropDownList;
 			properties.DropDownItems.Add (extraItemsToShow);
 
 			extraItemsToShow.SelectedIndex = (int)extraItemsToShow_value;
 			extraItemsToShow.ToolTipText = Loc.Instance.GetString ("Reselect this to refresh after editing text.");
-			extraItemsToShow.SelectedIndexChanged+= (object sender, EventArgs e) => {
+			extraItemsToShow.SelectedIndexChanged += (object sender, EventArgs e) => {
 				extraItemsToShow_value = (ExtraItemsToShow)extraItemsToShow.SelectedIndex;
-				SetSaveRequired(true);
-				UpdateExtraView();
+				SetSaveRequired (true);
+				UpdateExtraView ();
 			};
 
 			// we use markup tag to indicate whether the data on the markup combo has changed to avoid slowness in save
 			MarkupCombo.Tag = false;
 			loadingcombo = false;
 
-			tabView = new TabNavigation(richBox);
+			tabView = new TabNavigation (richBox);
+			tabView.Visible = false;
 			tabView.Parent = ParentNotePanel;
 			tabView.Dock = DockStyle.Top;
 			//tabView.SendToBack();
-			tabView.BringToFront();
+			tabView.BringToFront ();
 
+			if (null == bookMarkView) {
+				bookMarkView = new NoteNavigation (this);
+			}
+			bookMarkView.Visible = false;
 			AddBookmarkView ();
+
 			UpdateExtraView();
 			richBox.BringToFront();
 			//CaptionLabel.BringToFront();
@@ -319,8 +324,7 @@ namespace Layout
 		private void AddBookmarkView ()
 		{
 			bool NeedToAdd = false;
-			if (null == bookMarkView)
-			{
+			if (null == bookMarkView) {
 				bookMarkView = new NoteNavigation (this);
 				NeedToAdd = true;
 			}
@@ -329,14 +333,16 @@ namespace Layout
 			
 			bookMarkView.Height = richBox.Height;
 			bookMarkView.Width = ((int)richBox.Width / 2);
-			if (bookMarkView.Width > bookMarkView.MAX_NAVIGATION_WIDTH) bookMarkView.Width = bookMarkView.MAX_NAVIGATION_WIDTH;
-			bookMarkView.Visible = true;
+			if (bookMarkView.Width > bookMarkView.MAX_NAVIGATION_WIDTH)
+				bookMarkView.Width = bookMarkView.MAX_NAVIGATION_WIDTH;
+
 			bookMarkView.Dock = DockStyle.Left;
-			if (NeedToAdd)
-			{
+			if (NeedToAdd) {
 				ParentNotePanel.Controls.Add (bookMarkView);
 			}
-			bookMarkView.UpdateListOfBookmarks();
+			if (true == bookMarkView.Visible) {
+				bookMarkView.UpdateListOfBookmarks ();
+			}
 		}
 		void HandleMouseDownOnCaptionLabel (object sender, MouseEventArgs e)
 		{
@@ -349,10 +355,11 @@ namespace Layout
 //						{
 //							ParentNotePanel.Controls.Remove(bookMarkView);
 //						}
+
 						// 13/06/2014 - to make widen work we need to keep the control around
 						AddBookmarkView(); // we do call this in buildchildren now
-
-
+						bookMarkView.Visible = true;
+						bookMarkView.UpdateListOfBookmarks ();
 
 					}
 					else

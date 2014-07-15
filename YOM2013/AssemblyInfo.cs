@@ -46,11 +46,12 @@ using System.Runtime.CompilerServices;
 // and "{Major}.{Minor}.{Build}.*" will update just the revision.
 
 /*
+ * 1.5.7   - Yom Tweaks 2
  * 1.5.2.* - Fact note support
  * 1.4.2.* - F1 will toggle into Proofreader (for mouse-less proofreading)
  */
 
-[assembly: AssemblyVersion("1.5.3.*")]
+[assembly: AssemblyVersion("1.5.7.*")]
 
 // The following attributes are used to specify the signing key for the assembly, 
 // if desired. See the Mono documentation for more information about signing.

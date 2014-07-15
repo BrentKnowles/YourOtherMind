@@ -1,6 +1,6 @@
 // LayoutPanel.cs
 //
-// Copyright (c) 2013 Brent Knowles (http://www.brentknowles.com)
+// Copyright (c) 2013  2014 Brent Knowles (http://www.brentknowles.com)
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -149,12 +149,37 @@ namespace Layout
 		/// </value>
 		public override NoteDataXML_RichText CurrentTextNote {
 			get {
+
+				//14/07/2014
+				if (currentTextNote != null)
+				{
+					if (currentTextNote.GetRichTextBox().Focused == false)
+					{
+						NewMessage.Show (Loc.Instance.GetStringFmt("The Text Box that thinks it is active is NOT focused. My note name is {0} and my layout is {1}", currentTextNote.Caption, this.Caption));
+					}
+				}
+
+
 				return currentTextNote;
 			}
 			set {
 				//currentTextNote = value;
+
+
+
+
+
 				if (value != null)
 				{
+
+					//13/07/2014 - trying to stop editing notes that are not actually active!
+					if (value.GetRichTextBox().Focused == false)
+					{
+						// we should not set focus under certain situations
+						NewMessage.Show (Loc.Instance.GetStringFmt("I am not focused but you are trying to make me so. My note name is {0} and my layout is {1}", value.Caption, this.Caption));
+					}
+
+
 				// remove changed handler from previous textnote
 				if (currentTextNote != null)
 				{

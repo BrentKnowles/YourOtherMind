@@ -258,7 +258,7 @@ namespace Layout
 		}
 		void PopulateTree (TreeView tree, List<TreeItem> items)
 		{
-			if (items != null) {
+			if (items != null && this != null && tree != null && tree.Nodes != null) {
 				tree.Nodes.Clear ();
 				List<TreeNode> roots = new List<TreeNode> ();
 				tree.Nodes.Add (Loc.Instance.GetString ("Note"));
@@ -271,6 +271,8 @@ namespace Layout
 					// else if LESS_THAN, we add to previous??
 
 					TreeNode newItem = new TreeNode (item.Name);
+					try
+					{
 					newItem.Tag = item.Position;
 
 					if (null == LastNode) {
@@ -320,9 +322,15 @@ namespace Layout
 							}
 						}
 					}
+
 //
 					LastNode = newItem;
 					LastLevel = item.Level;
+					}
+					catch (System.Exception ex)
+					{
+						NewMessage.Show ("RichTextParent = " + RichText.Caption+ "item level = " + item.Level+ "item.name = "+item.Name +"item = " + item.ToString () + " --  " + ex.ToString ());
+					}
 //				if (item.Level == roots.Count)
 //					roots.Add (roots [roots.Count - 1].LastNode);
 //				TreeNode newItem = new TreeNode(item.Name);
@@ -351,24 +359,30 @@ namespace Layout
 		/// </summary>
 		public void UpdateListOfBookmarks ()
 		{
+			if (Disposing || IsDisposed) return;
+			// don't waste time redrawing if not visible.08/07/2014
+			if (this.Visible == false) return;
 
-			if (null != RichText) {
-				this.Nodes.Clear ();
-				//List<TreeNode> roots = new List<TreeNode>();
+			try {
+				if (null != RichText && this.Nodes != null && this != null) {
+					this.Nodes.Clear ();
+					//List<TreeNode> roots = new List<TreeNode>();
 
-				// parses the text
-				List<TreeItem> items = BuildList ();
-				if (items != null)
-				{
-				// add current location
-				items.Add (new TreeItem(Loc.Instance.GetString("Last Position"), 0, RichText.SelectionStart));
-				// builds the treeview
-				PopulateTree(this, items );
+					// parses the text
+					List<TreeItem> items = BuildList ();
+					if (items != null) {
+						// add current location
+						items.Add (new TreeItem (Loc.Instance.GetString ("Last Position"), 0, RichText.SelectionStart));
+						// builds the treeview
+						PopulateTree (this, items);
+					}
+
+					this.ExpandAll ();
+				} else {
+					throw new Exception ("No richtext was passed into UpdateListOfBookmarks");
 				}
-
-				this.ExpandAll();
-			} else {
-				throw new Exception("No richtext was passed into UpdateListOfBookmarks");
+			} catch (System.Exception ex) {
+				NewMessage.Show (ex.ToString ());
 			}
 
 		}
