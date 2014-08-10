@@ -1,6 +1,6 @@
 // MainForm.cs
 //
-// Copyright (c) 2013 Brent Knowles (http://www.brentknowles.com)
+// Copyright (c) 2013-2014 Brent Knowles (http://www.brentknowles.com)
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -440,7 +440,7 @@ namespace YOM2013
 			
 
 			this.KeyDown += HandleMainFormKeyDown;
-		
+			//this.MouseMove+= HandleMouseMove; this don't bubble up. Doesn't work
 
 			SetupMessageBox ();
 			LayoutsOpen = new List<LayoutsInMemory> ();
@@ -622,6 +622,13 @@ namespace YOM2013
 			UpdateTimer.Tick+= HandleUpdateTimerTick;
 			UpdateTimer.Start ();
 		}
+
+//		void HandleMouseMove (object sender, MouseEventArgs e)
+//		{
+//			if (AmIFaded) {
+//				UnFade();
+//			}
+//		}
 
 		/// <summary>
 		/// Dos the open system window.
@@ -964,38 +971,64 @@ namespace YOM2013
 		{
 			string mainform = "mainform";
 			Hotkeys.Add (new KeyData (Loc.Instance.GetString ("Save"), this.Save, Keys.Control, Keys.S, mainform, true, "saveguid"));
-			Hotkeys.Add (new KeyData(Loc.Instance.GetString ("Toggle View"), 	ToggleCurrentNoteMaximized, Keys.None,  Keys.F6,mainform, true, "toggleviewguid"));
-			Hotkeys.Add (new KeyData(Loc.Instance.GetString ("Bold"), 	Bold, Keys.Control,  Keys.B,mainform, true, "boldguid"));
-			Hotkeys.Add (new KeyData(Loc.Instance.GetString ("Strike"), 	Strike, Keys.Alt,  Keys.S,mainform, true, "strikeguid"));
-			Hotkeys.Add (new KeyData(Loc.Instance.GetString ("Find"), 	FindBarFocus, Keys.Control,  Keys.F,mainform, true, "findbarguid"));
-			Hotkeys.Add (new KeyData(Loc.Instance.GetString ("Line"), 	Line, Keys.Control,  Keys.L,mainform, true, "format_line_guid"));
-			Hotkeys.Add (new KeyData(Loc.Instance.GetString ("Bullet"), 	Bullet, Keys.Control,  Keys.G,mainform, true, "format_bullet_normal"));
-			Hotkeys.Add (new KeyData(Loc.Instance.GetString ("Bullet, Numbered"), 	BulletNumber, Keys.Control,  Keys.N,mainform, true, "format_bullet_Number"));
+			Hotkeys.Add (new KeyData (Loc.Instance.GetString ("Toggle View"), ToggleCurrentNoteMaximized, Keys.None, Keys.F6, mainform, true, "toggleviewguid"));
+			Hotkeys.Add (new KeyData (Loc.Instance.GetString ("Bold"), Bold, Keys.Control, Keys.B, mainform, true, "boldguid"));
+			Hotkeys.Add (new KeyData (Loc.Instance.GetString ("Strike"), Strike, Keys.Alt, Keys.S, mainform, true, "strikeguid"));
+			Hotkeys.Add (new KeyData (Loc.Instance.GetString ("Find"), FindBarFocus, Keys.Control, Keys.F, mainform, true, "findbarguid"));
+			Hotkeys.Add (new KeyData (Loc.Instance.GetString ("Line"), Line, Keys.Control, Keys.L, mainform, true, "format_line_guid"));
+			Hotkeys.Add (new KeyData (Loc.Instance.GetString ("Bullet"), Bullet, Keys.Control, Keys.G, mainform, true, "format_bullet_normal"));
+			Hotkeys.Add (new KeyData (Loc.Instance.GetString ("Bullet, Numbered"), BulletNumber, Keys.Control, Keys.N, mainform, true, "format_bullet_Number"));
 		
-			Hotkeys.Add (new KeyData(Loc.Instance.GetString ("Date"), 	InsertDate, Keys.Control,  Keys.D,mainform, true, "format_date"));
-			Hotkeys.Add (new KeyData(Loc.Instance.GetString ("Underline"), 	Underline, Keys.Control,  Keys.U,mainform, true, "format_underline"));
-			Hotkeys.Add (new KeyData(Loc.Instance.GetString ("Italic"), 	Italic, Keys.Control,  Keys.I,mainform, true, "format_italic"));
-			Hotkeys.Add (new KeyData(Loc.Instance.GetString ("Paste To Match"), 	PasteTomatch, Keys.Alt,  Keys.V,mainform, true, "paste2match"));
+			Hotkeys.Add (new KeyData (Loc.Instance.GetString ("Date"), InsertDate, Keys.Control, Keys.D, mainform, true, "format_date"));
+			Hotkeys.Add (new KeyData (Loc.Instance.GetString ("Underline"), Underline, Keys.Control, Keys.U, mainform, true, "format_underline"));
+			Hotkeys.Add (new KeyData (Loc.Instance.GetString ("Italic"), Italic, Keys.Control, Keys.I, mainform, true, "format_italic"));
+			Hotkeys.Add (new KeyData (Loc.Instance.GetString ("Paste To Match"), PasteTomatch, Keys.Alt, Keys.V, mainform, true, "paste2match"));
 
-			Hotkeys.Add (new KeyData(Loc.Instance.GetString ("Highlight Yellow"), 	HighlightYellow, Keys.Control,  Keys.OemOpenBrackets,mainform, true, "highlightyellow"));
-			Hotkeys.Add (new KeyData(Loc.Instance.GetString ("Highlight Red"), 	HighlightRed, Keys.Control,  Keys.OemCloseBrackets,mainform, true, "highlightred"));
-			Hotkeys.Add (new KeyData(Loc.Instance.GetString ("Highlight Green"), 	HighlightGreen, Keys.Control,  Keys.OemMinus,mainform, true, "highlightgreen"));
-			Hotkeys.Add (new KeyData(Loc.Instance.GetString ("Highlight Light Blue"), 	HighlightLightBlue, Keys.Control,  Keys.D1,mainform, true, "highlightlightblue"));
-			Hotkeys.Add (new KeyData(Loc.Instance.GetString ("Highlight Peach"), 	HighlightPeach, Keys.Control,  Keys.D2,mainform, true, "highlightpeach"));
-			Hotkeys.Add (new KeyData(Loc.Instance.GetString ("Extend View"), 	Screens_AcrossTwo, Keys.Control,  Keys.W,mainform, true, "2screen"));
+			Hotkeys.Add (new KeyData (Loc.Instance.GetString ("Highlight Yellow"), HighlightYellow, Keys.Control, Keys.OemOpenBrackets, mainform, true, "highlightyellow"));
+			Hotkeys.Add (new KeyData (Loc.Instance.GetString ("Highlight Red"), HighlightRed, Keys.Control, Keys.OemCloseBrackets, mainform, true, "highlightred"));
+			Hotkeys.Add (new KeyData (Loc.Instance.GetString ("Highlight Green"), HighlightGreen, Keys.Control, Keys.OemMinus, mainform, true, "highlightgreen"));
+			Hotkeys.Add (new KeyData (Loc.Instance.GetString ("Highlight Light Blue"), HighlightLightBlue, Keys.Control, Keys.D1, mainform, true, "highlightlightblue"));
+			Hotkeys.Add (new KeyData (Loc.Instance.GetString ("Highlight Peach"), HighlightPeach, Keys.Control, Keys.D2, mainform, true, "highlightpeach"));
+			Hotkeys.Add (new KeyData (Loc.Instance.GetString ("Extend View"), Screens_AcrossTwo, Keys.Control, Keys.W, mainform, true, "2screen"));
 
-			Hotkeys.Add (new KeyData(Loc.Instance.GetString ("Open System Window"), 	DoOpenSystemWindow, Keys.Control,  Keys.Q,mainform, true, "opensesame"));
-			Hotkeys.Add (new KeyData(Loc.Instance.GetString ("Toggle to Last Window"), 	HotkeyToggleToSecondaryForm, Keys.None,  Keys.F1,mainform,true, "secondarywindow99"));
+			Hotkeys.Add (new KeyData (Loc.Instance.GetString ("Open System Window"), DoOpenSystemWindow, Keys.Control, Keys.Q, mainform, true, "opensesame"));
+			Hotkeys.Add (new KeyData (Loc.Instance.GetString ("Toggle to Last Window"), HotkeyToggleToSecondaryForm, Keys.None, Keys.F1, mainform, true, "secondarywindow99"));
+
+
+
+			Hotkeys.Add (new KeyData (Loc.Instance.GetString ("Fade"), ToggleFade, Keys.None, Keys.F12, mainform, true, "fade1"));
 
 
 			// this is used in case we want to run hotkey assigned operations outside of an actual keypress. We do this with the HandleHotkey...
-			LayoutDetails.Instance.SetMainForm(this);
+			LayoutDetails.Instance.SetMainForm (this);
 
-		//	Hotkeys.Add (new KeyData(Loc.Instance.GetString ("ZZZ"), 	ReloadSystem, Keys.Control,  Keys.D3,mainform, true, "reloadsystem"));
+			//	Hotkeys.Add (new KeyData(Loc.Instance.GetString ("ZZZ"), 	ReloadSystem, Keys.Control,  Keys.D3,mainform, true, "reloadsystem"));
 			// temporary to test the form thing
 			//Hotkeys.Add (new KeyData(Loc.Instance.GetString ("test"),Test , Keys.Control, Keys.Q, "optionform", true, "testguid"));
-			base.BuildAndProcessHotKeys(Storage);
+			base.BuildAndProcessHotKeys (Storage);
 		}
+		bool AmIFaded = false;
+		void ToggleFade (bool obj)
+		{
+			if (AmIFaded) UnFade(); else Fade ();
+		}
+		void Fade ()
+		{
+			if (LayoutDetails.Instance.CurrentLayout != null) {
+				LayoutDetails.Instance.CurrentLayout.Parent.Visible = false;
+				AmIFaded = true;
+				this.Opacity = 0.9;
+
+			}
+		}
+		void UnFade()
+		{
+		if (LayoutDetails.Instance.CurrentLayout != null) {	LayoutDetails.Instance.CurrentLayout.Parent.Visible = true;
+				AmIFaded = false;
+				this.Opacity = 1;
+			}
+		}
+
 
 //		void ReloadSystem (bool obj)
 //		{

@@ -155,7 +155,8 @@ namespace Layout
 				{
 					if (currentTextNote.GetRichTextBox().Focused == false)
 					{
-						NewMessage.Show (Loc.Instance.GetStringFmt("The Text Box that thinks it is active is NOT focused. My note name is {0} and my layout is {1}", currentTextNote.Caption, this.Caption));
+						if (FindBar != null) FindBar.SetCurrentNoteText(Loc.Instance.GetStringFmt("The Text Box that thinks it is active is NOT focused. My note name is {0} and my layout is {1}", currentTextNote.Caption, this.Caption));
+						//NewMessage.Show (Loc.Instance.GetStringFmt("The Text Box that thinks it is active is NOT focused. My note name is {0} and my layout is {1}", currentTextNote.Caption, this.Caption));
 					}
 				}
 
@@ -176,7 +177,11 @@ namespace Layout
 					if (value.GetRichTextBox().Focused == false)
 					{
 						// we should not set focus under certain situations
-						NewMessage.Show (Loc.Instance.GetStringFmt("I am not focused but you are trying to make me so. My note name is {0} and my layout is {1}", value.Caption, this.Caption));
+						if (FindBar != null)
+						{
+							FindBar.SetCurrentNoteText(Loc.Instance.GetStringFmt("I am not focused but you are trying to make me so. My note name is {0} and my layout is {1}", value.Caption, this.Caption));
+						}
+						
 					}
 
 
@@ -790,6 +795,9 @@ namespace Layout
 			NoteCanvas.Parent = this;
 			NoteCanvas.BringToFront();
 			this.AutoScroll = true;
+//			this.MouseMove+= (object sender, MouseEventArgs e) => {
+//				NewMessage.Show ("hi");
+//			};
 			//this.Enter += HandleGotFocus;
 			//this.MouseEnter+=HandleGotFocus;
 

@@ -501,6 +501,55 @@ namespace Testing
 			PerformTest("chaptertitlesintoc.txt", result,"", "toc");
 		}
 		[Test]
+		public void fancysectionbreak()
+		{
+			ControlFile result =  ControlFile.Default;
+			
+			
+			
+			result.ListOfTags=new string[1]{"game|''"};
+			
+			result.ConverterType = ControlFile.convertertype.epub;
+			result.MultiLineFormats= new string[1]{"past"};
+			result.MultiLineFormatsValues = new string[1]{"blockquote2"};
+			result.Zipper =_TestSingleTon.Zipper;
+			result.FancyCharacters = false;
+			result.RemoveTabs = false;
+			result.SceneBreakHasTab = true;
+			result.OverrideStyleSheet = @"C:\Users\Public\Documents\YourOtherMind\YourOtherMind\files\SendTextAwayControlFiles\stylesheet.css";
+			result.NovelMode = true;
+			result.ArealValidatorSafe_Align = true;
+			result.CustomEllip = true;
+			result.Overridesectionbreak = "src=\".\\images\\fleuron.png\" height=\"39px\" width=\"100px\"";
+			
+			PerformTest("fancysectionbreak.txt", result);
+		}
+
+		[Test]
+		public void ellip_new()
+		{
+			ControlFile result =  ControlFile.Default;
+			
+			
+
+			result.ListOfTags=new string[1]{"game|''"};
+			
+			result.ConverterType = ControlFile.convertertype.epub;
+			result.MultiLineFormats= new string[1]{"past"};
+			result.MultiLineFormatsValues = new string[1]{"blockquote2"};
+			result.Zipper =_TestSingleTon.Zipper;
+			result.FancyCharacters = false;
+			result.RemoveTabs = false;
+			result.SceneBreakHasTab = true;
+			result.OverrideStyleSheet = @"C:\Users\Public\Documents\YourOtherMind\YourOtherMind\files\SendTextAwayControlFiles\stylesheet.css";
+			result.NovelMode = true;
+			result.ArealValidatorSafe_Align = true;
+			result.CustomEllip = true;
+
+			PerformTest("ellip_new.txt", result);
+		}
+
+		[Test]
 		public void BetterAlign()
 		{
 			ControlFile result =  ControlFile.Default;
