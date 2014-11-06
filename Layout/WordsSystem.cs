@@ -41,10 +41,13 @@ namespace Layout
 		/// <summary>
 		/// Count words with Regex.
 		/// </summary>
-		private static int CountWords1(string s)
+		private static int CountWords1 (string s)
 		{
-			MatchCollection collection = Regex.Matches(s, @"[\S]+");
-			return collection.Count;
+			MatchCollection collection = Regex.Matches (s, @"[\S]+");
+			if (collection != null) {
+				return collection.Count;
+			}
+			return -1;
 		}
 		public virtual int CountWords(string Text)
 		{

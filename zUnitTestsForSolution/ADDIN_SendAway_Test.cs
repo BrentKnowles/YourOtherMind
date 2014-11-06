@@ -365,7 +365,58 @@ namespace Testing
 			
 			PerformTest("novel_open_blank_error.txt", result);
 		}
+		[Test]
+		public void emdashnospace()
+		{
+			ControlFile result =  ControlFile.Default;
+			
+			
+			
+			result.ListOfTags=new string[1]{"game|''"};
+			
+			result.ConverterType = ControlFile.convertertype.epub;
+			result.MultiLineFormats= new string[1]{"past"};
+			result.MultiLineFormatsValues = new string[1]{"blockquote2"};
+			result.Zipper =_TestSingleTon.Zipper;
+			result.FancyCharacters = true;
+			result.RemoveTabs = false;
+			result.SceneBreakHasTab = true;
+			result.OverrideStyleSheet = @"C:\Users\Public\Documents\YourOtherMind\YourOtherMind\files\SendTextAwayControlFiles\stylesheet.css";
+			result.NovelMode = true;
+			result.ChapterTitleOffset = -2;
+			result.UnderlineShouldBeItalicInstead=true;
+			result.ArealValidatorSafe_Align = true;
+			result.ConvertToEmDash = true;
+			result.Emdash_removespacesbeforeafter = true;
+			
+			
+			PerformTest("emdashnospace.txt", result);
+		}
+		[Test]
+		public void shortstorytest1()
+		{
+			ControlFile result =  ControlFile.Default;
+			
+			
+			
+			result.ListOfTags=new string[1]{"game|''"};
+			
+			result.ConverterType = ControlFile.convertertype.epub;
+			result.MultiLineFormats= new string[1]{"past"};
+			result.MultiLineFormatsValues = new string[1]{"blockquote2"};
+			result.Zipper =_TestSingleTon.Zipper;
+			result.FancyCharacters = true;
+			result.RemoveTabs = false;
+			result.SceneBreakHasTab = true;
+			result.OverrideStyleSheet = @"C:\Users\Public\Documents\YourOtherMind\YourOtherMind\files\SendTextAwayControlFiles\stylesheet.css";
+			result.NovelMode = true;
+			result.ChapterTitleOffset = -2;
+			result.UnderlineShouldBeItalicInstead=true;
+			result.ArealValidatorSafe_Align = true;
 
+			
+			PerformTest("shortstorytest1.txt", result,"", "Chapter_1");
+		}
 		[Test]
 		public void Novel_Facts_Paragraphs()
 		{

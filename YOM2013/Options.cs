@@ -80,10 +80,11 @@ struct checkBoxOptions
 				defaultValue =defaultvalue;
 			}
 }
-		checkBoxOptions[] booleanValues = new checkBoxOptions[3] {
+		checkBoxOptions[] booleanValues = new checkBoxOptions[4] {
 			new checkBoxOptions(Loc.Instance.GetString("Autosave?"), "autosave", "tt", true),
 			new checkBoxOptions(Loc.Instance.GetString("Multiple Screens - Set Height to Highest?"), "multiscreenhigh", "tt", false),
-			new checkBoxOptions(Loc.Instance.GetString ("Beta Updates (allows updating to beta versions)"), "betaversions","tt", false)
+			new checkBoxOptions(Loc.Instance.GetString ("Beta Updates (allows updating to beta versions)"), "betaversions","tt", false),
+			new checkBoxOptions(Loc.Instance.GetString ("Increase Memory Usage (more layouts open at one time)"), "memory_high","tt", false)
 		};
 
 		string dataPath = CoreUtilities.Constants.BLANK;
@@ -121,7 +122,12 @@ struct checkBoxOptions
 				return GetOption ("multiscreenhigh", defaultValue.defaultValue);
 			}
 		}
-
+		public bool HighMemory {
+			get {
+				checkBoxOptions defaultValue = Array.Find (booleanValues,checkBoxOptions => checkBoxOptions.columnKey == "memory_high");
+				return GetOption ("memory_high", defaultValue.defaultValue);
+			}
+		}
 		private bool GetOption (string option, bool defaultValue)
 		{
 			BaseDatabase db = CreateDatabase ();

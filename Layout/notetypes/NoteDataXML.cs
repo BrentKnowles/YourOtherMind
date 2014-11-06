@@ -183,6 +183,29 @@ namespace Layout
 			set{ parent = value;}
 		}
 
+
+		private string notedocks="";
+		/// <summary>
+		/// Gets or sets the notedocks.
+		/// A semi colon delimitted list of note docks
+		/// 
+		/// i.e., note1*44159e01-b2c6-4b1f-9b68-8d3c85755f14*[[chapter1]]
+		/// note1  - the name on the button
+		/// next is a guide
+		/// finally an anchor (optional). Will attempt to jump here in text.
+		/// </summary>
+		/// <value>
+		/// The notedocks.
+		/// </value>
+		public string Notedocks {
+			get {
+				return notedocks;
+			}
+			set {
+				notedocks = value;
+			}
+		}
+
 		private string appearance = "classic";
 		// Sets the visual appearance
 		public string Appearance {

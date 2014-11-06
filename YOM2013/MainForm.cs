@@ -1724,8 +1724,10 @@ namespace YOM2013
 					LayoutDetails.Instance.SystemLayout.SaveLayout ();
 				}
 			}
-
-			if (System.Diagnostics.Process.GetCurrentProcess ().PrivateMemorySize64 > 500000000) {
+			int memorylimit = 400000000;
+			// 03/11/2014 added an option to increase allowable memory limits
+			if (Settings.HighMemory) memorylimit = memorylimit *2;
+			if (System.Diagnostics.Process.GetCurrentProcess ().PrivateMemorySize64 > memorylimit) {
 				NewMessage.Show (Loc.Instance.GetString ("You have many layouts open and your memory use is growing too high. Please close some layouts before opening new."));
 				return;
 			}

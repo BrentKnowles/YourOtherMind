@@ -1,6 +1,6 @@
 // LayoutDatabase.cs
 //
-// Copyright (c) 2013 Brent Knowles (http://www.brentknowles.com)
+// Copyright (c) 2013 - 2014  Brent Knowles (http://www.brentknowles.com)
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -908,7 +908,18 @@ namespace Layout
 		/// </returns>
 		public bool SaveTo ()
 		{
+			//
+			// MAJOR
+			// - Testing for Read Only.
+			// - Ran into an issue where I was backing up files and got an Exception inside of YOM because I hit SAVE
+			//   at the same time.
+			// - Here we test if the file is readonly
 
+			System.IO.FileInfo fInfo = new System.IO.FileInfo(LayoutDetails.Instance.YOM_DATABASE);
+			if (fInfo == null || fInfo.IsReadOnly) {
+				NewMessage.Show ("The database is in read only mode right now. Wait a second and try again.");
+				return false;
+			}
 			DateEdited = DateTime.Now;
 
 			bool saveworked= false;

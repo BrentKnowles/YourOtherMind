@@ -57,8 +57,21 @@ namespace CoreUtilities
 		public string GetString(string msg)
 		{
 			return Cat.GetString(msg);
-		}
 
+		}
+		/// <summary>
+		/// An even faster short-cut so you don't have to type 'instance' each time
+		/// </summary>
+		/// <returns>
+		/// The string.
+		/// </returns>
+		/// <param name='msg'>
+		/// Message.
+		/// </param>
+		public static string GetStr (string msg)
+		{
+			return Loc.Instance.GetString(msg);
+		}
 		/// <summary>
 		/// 
 		/// </summary>

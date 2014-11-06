@@ -173,9 +173,12 @@ namespace Layout
 		/// <returns>
 		/// The as text.
 		/// </returns>
-		public string GetAsText()
+		public string GetAsText ()
 		{
-			return richBox.Text;
+			if (richBox != null) {
+				return richBox.Text;
+			}
+			return "";
 		}
 		public string[] Lines()
 		{
@@ -236,6 +239,13 @@ namespace Layout
 
 			BuildDropDownList ();
 
+			properties.DropDownItems.Add (new ToolStripSeparator());
+
+			ToolStripButton fullScreen = new ToolStripButton();
+			fullScreen.Text = Loc.GetStr("Fullscreen");
+			fullScreen.Click+= HandleFullScreenClick;
+			properties.DropDown.Items.Add (fullScreen);
+
 			properties.DropDownItems.Add (MarkupCombo);
 			MarkupCombo.SelectedIndexChanged += HandleSelectedIndexChanged;
 			MarkupCombo.DropDownStyle = ComboBoxStyle.DropDownList;
@@ -290,6 +300,20 @@ namespace Layout
 			richBox.BringToFront();
 			//CaptionLabel.BringToFront();
 		}
+
+		void HandleFullScreenClick (object sender, EventArgs e)
+		{
+			FullScreenEditor editor = new FullScreenEditor (this);
+
+			// we don't care how it closes; there is no cancel
+			// we force an OK result
+			if (editor.ShowDialog() != DialogResult.Retry ) {
+
+			
+				this.richBox.Rtf = editor.GetRTF();
+				this.Save ();
+			}
+		}
 		/// <summary>
 		/// Updates the extra view.
 		/// 
@@ -305,20 +329,26 @@ namespace Layout
 			case ExtraItemsToShow.HEADING_TABS:
 				tabView.Visible = true;
 				bookMarkView.Visible = false;
-				tabView.UpdateView();
+				tabView.UpdateView ();
 				break;
 			case ExtraItemsToShow.OUTLINE: 
 				tabView.Visible = false;
-				bookMarkView.Visible= true;
+				bookMarkView.Visible = true;
 				AddBookmarkView ();
 				break;
 			case ExtraItemsToShow.BOTH:
 				tabView.Visible = true;
 				bookMarkView.Visible = true;
-				tabView.UpdateView();
+				tabView.UpdateView ();
 				AddBookmarkView ();
 				break;
 			}
+
+//			if (bookMarkView.Visible == true) {
+//				//NewMessage.Show ("true");
+//				bookMarkView.BringToFront();
+//			}
+			//else NewMessage.Show ("false");
 
 		}
 		private void AddBookmarkView ()
@@ -328,6 +358,7 @@ namespace Layout
 				bookMarkView = new NoteNavigation (this);
 				NeedToAdd = true;
 			}
+		
 			
 			bookMarkView.Location = new Point (richBox.Location.X, richBox.Location.Y);
 			
@@ -337,7 +368,7 @@ namespace Layout
 				bookMarkView.Width = bookMarkView.MAX_NAVIGATION_WIDTH;
 
 			bookMarkView.Dock = DockStyle.Left;
-			if (NeedToAdd) {
+			if (NeedToAdd || bookMarkView.Parent == null) {
 				ParentNotePanel.Controls.Add (bookMarkView);
 			}
 			if (true == bookMarkView.Visible) {

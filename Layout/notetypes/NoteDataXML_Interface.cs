@@ -29,6 +29,7 @@
 using System;
 using System.Windows.Forms;
 using System.Drawing;
+using System.Collections.Generic;
 using CoreUtilities;
 using System.Xml.Serialization;
 
@@ -105,6 +106,18 @@ namespace Layout
 				this.CaptionLabel.BackColor = app.captionBackground; //4
 				this.CaptionLabel.ForeColor = app.captionForeground; //5
 
+				foreach (ToolStripItem item in this.CaptionLabel.Items)
+				{
+					//
+					// intending this to COLOR the new NoteDock buttons ONLY 03/11/2014
+					//
+					if (item.Tag != null && item.Tag.ToString() == "NoteDock")
+					{
+						item.BackColor = app.captionForeground;
+						item.ForeColor = app.captionBackground;
+					}
+				}
+
 				DoChildAppearance (app);
 				CaptionLabel.ResumeLayout ();
 
@@ -132,7 +145,7 @@ namespace Layout
 
 			ParentNotePanel = new NotePanel (this);
 			//ParentNotePanel.Visible = false;
-		//	ParentNotePanel.SuspendLayout ();
+			//	ParentNotePanel.SuspendLayout ();
 
 			
 			ParentNotePanel.Visible = true;
@@ -153,8 +166,8 @@ namespace Layout
 			CaptionLabel = new ToolStrip ();
 			// must be false for height to matter
 			CaptionLabel.AutoSize = false;
-	//		CaptionLabel.SuspendLayout ();
-			CaptionLabel.Click+= (object sender, EventArgs e) => BringToFrontAndShow();
+			//		CaptionLabel.SuspendLayout ();
+			CaptionLabel.Click += (object sender, EventArgs e) => BringToFrontAndShow ();
 			CaptionLabel.DoubleClick += HandleCaptionLabelDoubleClick;
 			CaptionLabel.MouseDown += HandleMouseDown;
 			CaptionLabel.MouseUp += HandleMouseUp;
@@ -170,7 +183,7 @@ namespace Layout
 
 
 			captionLabel = new ToolStripLabel (this.Caption);
-			captionLabel.ToolTipText = Loc.Instance.GetString("TIP: Doubleclick this to set the note to its regular size");
+			captionLabel.ToolTipText = Loc.Instance.GetString ("TIP: Doubleclick this to set the note to its regular size");
 
 			captionLabel.MouseDown += HandleMouseDown;
 			captionLabel.MouseUp += HandleMouseUp;
@@ -188,7 +201,7 @@ namespace Layout
 			CaptionLabel.Items.Add (properties);
 
 
-			 MinimizeButton = new ToolStripButton ();
+			MinimizeButton = new ToolStripButton ();
 			//MinimizeButton.Text = "--";
 
 			MinimizeButton.Image = CoreUtilities.FileUtils.GetImage_ForDLL ("application_put.png");
@@ -197,7 +210,7 @@ namespace Layout
 
 
 
-			 MaximizeButton = new ToolStripButton ();
+			MaximizeButton = new ToolStripButton ();
 			//MaximizeButton.Text = "[  ]";
 			MaximizeButton.Image = CoreUtilities.FileUtils.GetImage_ForDLL ("application_xp.png");
 			MaximizeButton.ToolTipText = Loc.Instance.GetString ("Fills available screen");
@@ -259,18 +272,18 @@ namespace Layout
 			// APPEARANCE
 			//
 			//
-			 AppearanceSet = new ToolStripMenuItem();
+			AppearanceSet = new ToolStripMenuItem ();
 
 		
 						
 			
-			ContextMenuStrip AppearanceMenu = new ContextMenuStrip();
+			ContextMenuStrip AppearanceMenu = new ContextMenuStrip ();
 
-			ToolStripLabel empty = new ToolStripLabel("BB");
+			ToolStripLabel empty = new ToolStripLabel ("BB");
 			AppearanceMenu.Items.Add (empty);
 
 			AppearanceSet.DropDown = AppearanceMenu;
-			AppearanceMenu.Opening+= HandleAppearanceMenuOpening;
+			AppearanceMenu.Opening += HandleAppearanceMenuOpening;
 			properties.DropDownItems.Add (AppearanceSet);
 			//
 			//
@@ -296,8 +309,7 @@ namespace Layout
 			foreach (string s in Enum.GetNames(typeof(DockStyle))) {
 				count++;
 				(DockPicker).Items.Add (s);
-				if (s == this.Dock.ToString ())
-				{
+				if (s == this.Dock.ToString ()) {
 					found = count;
 				}
 			}
@@ -312,11 +324,11 @@ namespace Layout
 			// LOCK
 			//
 			//
-			ToolStripButton LockState = new ToolStripButton();
+			ToolStripButton LockState = new ToolStripButton ();
 			LockState.Text = Loc.Instance.GetString ("Lock");
 			LockState.Checked = this.LockState;
 			LockState.CheckOnClick = true;
-			LockState.Click+= HandleLockStateClick;
+			LockState.Click += HandleLockStateClick;
 			properties.DropDownItems.Add (LockState);
 
 
@@ -351,28 +363,40 @@ namespace Layout
 			}
 		
 			if (true == IsLinkable) {
-				ToolStripButton linkNote = new ToolStripButton();
-				linkNote.Text  = Loc.Instance.GetString("Create a Link To This Note");
+				ToolStripButton linkNote = new ToolStripButton ();
+				linkNote.Text = Loc.Instance.GetString ("Create a Link To This Note");
 				properties.DropDownItems.Add (linkNote);
-				linkNote.Click+= HandleLinkNoteClick;
+				linkNote.Click += HandleLinkNoteClick;
 
 			}
 
-			ToolStripButton copyNote = new ToolStripButton();
+			ToolStripButton copyNote = new ToolStripButton ();
 			copyNote.Text = Loc.Instance.GetString ("Copy Note");
 			properties.DropDownItems.Add (copyNote);
-			copyNote.Click+= (object sender, EventArgs e) => Layout.CopyNote(this);
+			copyNote.Click += (object sender, EventArgs e) => Layout.CopyNote (this);
 
-			properties.DropDownItems.Add (new ToolStripSeparator());
-			ToolStripButton menuProperties = new ToolStripButton();
+			properties.DropDownItems.Add (new ToolStripSeparator ());
+
+			ToolStripButton menuProperties = new ToolStripButton ();
 			menuProperties.Text = Loc.Instance.Cat.GetString ("Properties");
 			properties.DropDownItems.Add (menuProperties);
-			menuProperties.Click+= HandlePropertiesClick;
+			menuProperties.Click += HandlePropertiesClick;
 
 
+			// 04/11/2014
+			// TODO REMOVE
+			// If I ever build a cleaner system for setting up notedocks this can be removed
+			// but for now we display the GUID as a clickable button
+			// that puts in on the clipboard
+			ToolStripButton menuGUIDButton = new ToolStripButton();
+			menuGUIDButton.Text = this.GuidForNote;
+			menuGUIDButton.Click+= (object sender, EventArgs e) => {
+				Clipboard.SetText(this.GuidForNote);
+			};
+			properties.DropDownItems.Add (menuGUIDButton);
 
 
-			PropertyPanel = new Panel();
+			PropertyPanel = new Panel ();
 			PropertyPanel.Visible = false;
 			PropertyPanel.Parent = ParentNotePanel;
 			PropertyPanel.Height = 300;
@@ -380,12 +404,12 @@ namespace Layout
 			PropertyPanel.AutoScroll = true;
 
 
-			Button CommitChanges = new Button();
-			CommitChanges.Text = Loc.Instance.Cat.GetString("Update Note");
+			Button CommitChanges = new Button ();
+			CommitChanges.Text = Loc.Instance.Cat.GetString ("Update Note");
 			CommitChanges.Parent = PropertyPanel;
 			CommitChanges.Dock = DockStyle.Bottom;
 			CommitChanges.Click += HandleCommitChangesClick;
-			CommitChanges.BringToFront();
+			CommitChanges.BringToFront ();
 
 
 
@@ -403,6 +427,16 @@ namespace Layout
 			Layout = _Layout;
 
 
+			ToolStripMenuItem TokenItem = 
+				LayoutDetails.BuildMenuPropertyEdit (Loc.Instance.GetString("Note Dock String: {0}"), 
+				                                     this.Notedocks,
+				                                     Loc.Instance.GetString ("example: note1*44159e01-b2c6-4b1f-9b68-8d3c85755f14*[[chapter1]]."),
+				                                     HandleTokenChange );
+
+			properties.DropDownItems.Add (TokenItem);
+			BuildNoteDocks();
+
+
 
 			// February 17 2013 - needed to ensure that children build their controls before Updateappearance is called
 			DoBuildChildren(_Layout);
@@ -410,6 +444,241 @@ namespace Layout
 			UpdateAppearance ();
 
 		}
+
+		/// <summary>
+		/// Builds the notedocks.
+		/// </summary>
+		void BuildNoteDocks ()
+		{
+			try {
+
+				// step 1: delete any existing notedocks
+
+				if (CaptionLabel != null && CaptionLabel.Items != null && CaptionLabel.Items.Count > 0)
+					for (int i = CaptionLabel.Items.Count-1; i >=0; i--) {
+						ToolStripItem control = (ToolStripItem)CaptionLabel.Items [i];
+						if (control.Tag != null) {
+							if (control.Tag.ToString () == "NoteDock") {
+								CaptionLabel.Items.Remove ((ToolStripItem)control);
+							}
+						}
+					}
+
+				//
+				// 03/11/2014
+				//
+				// Add custom button links (to give user ability to pair development notes with chapters)
+				//
+				//string customNoteLinks = "note1*44159e01-b2c6-4b1f-9b68-8d3c85755f14*chapter1;[[wordcount]]*44159e01-b2c6-4b1f-9b68-8d3c85755f14*chapter1";
+			
+				// quick test just fake it
+				//foreach (string link in customNoteLinks)
+				{
+					// breakdown strings
+					string[] links = this.Notedocks.Split (new char[1]{';'}, StringSplitOptions.RemoveEmptyEntries);
+					if (links != null && links.Length > 0) {
+						foreach (string link_unit in links) {
+							string[] units = link_unit.Split (new char[1]{'*'}, StringSplitOptions.RemoveEmptyEntries);
+						
+							// anchor optional
+							if (units != null && units.Length >= 2) {
+								ToolStripButton noteLink = new ToolStripButton ();
+							
+								noteLink.Text = units [0];
+								//							// tag contains GUID plus anchor reference.
+								//							noteLink.Tag =  units[1];
+								//
+								//							// final anchor is optional
+								//							if (units.Length == 3)
+								//							{
+								//								noteLink.Tag = units[1] + "*" + units[2];
+								//							}
+							
+								noteLink.Tag = "NoteDock";
+
+								if (units [0] == "[[wordcount]]") {
+									noteLink.Text = "<press for word count>";
+									noteLink.Click += (object sender, EventArgs e) => 
+									{
+										if (this.IsPanel) {
+											int maxwords = 0;
+
+											int maxwords2=0; // able to show three numbers. Document 0/2309 (next stage) / 99999 max
+
+											Int32.TryParse (units [1], out maxwords);
+											if (units.Length == 3)
+											{
+												Int32.TryParse (units [2], out maxwords2);
+											}
+											int words = 0;
+											//NewMessage.Show ("boo");
+											// iterate through all notes
+											foreach (NoteDataInterface note_ in this.ListOfSubnotesAsNotes()) {
+												//NewMessage.Show (note_.Caption);
+												if (note_ is NoteDataXML_RichText) {
+													// fetch word count
+													//((NoteDataXML_RichText)note_).GetRichTextBox().
+
+													if (LayoutDetails.Instance.WordSystemInUse != null)
+													{
+														try{
+															// we fetch data1 because the actual rich text box is NOT loaded
+															// but I found the word count quite excessive so we load it instead
+															RichTextBox faker = new RichTextBox();
+															faker.Rtf = ((NoteDataXML_RichText)note_).Data1;
+															string ftext = faker.Text;
+															faker.Dispose ();
+															words = words + LayoutDetails.Instance.WordSystemInUse.CountWords(ftext);
+														}
+														catch(System.Exception)
+														{
+															NewMessage.Show (Loc.GetStr("ERROR: Internal Word System Word Counting Error"));
+														}
+													}
+													else
+													{
+														NewMessage.Show (Loc.GetStr("Is there a Word system installed for counting words?"));
+													}
+												}
+											}
+											if (maxwords2 > 0) {
+												noteLink.Text = String.Format ("{0}/{1}/{2}", words, maxwords, maxwords2);
+											}
+											else
+											if (maxwords > 0) {
+												noteLink.Text = String.Format ("{0}/{1}", words, maxwords);
+											} else {
+												noteLink.Text = String.Format ("{0}", words);
+											}
+										} else {
+											NewMessage.Show (Loc.Instance.GetString ("Word Count only works if attached to a Layout Note"));
+										}
+									
+									
+									};
+								} else
+									noteLink.Click += (object sender, EventArgs e) => {
+								
+										string theNoteGuid = units [1];
+								
+										string linkanchor = "";
+										if (units.Length == 3) {
+											linkanchor = units [2];
+										}
+								
+										LayoutPanelBase SuperParent = null;
+										if (this.Layout.GetIsChild == true)
+											SuperParent = this.Layout.GetAbsoluteParent ();
+										else
+											SuperParent = this.Layout;
+								
+										NoteDataInterface theNote = this.Layout.GetNoteOnSameLayout (theNoteGuid, false);
+								
+										//NewMessage.Show ("hi " + theNoteGuid);
+
+										// GetNonteOnSameLayout always returns a valid note.
+										if (theNote != null && theNote.Caption != "findme") {
+											//
+											// Toggle Visibility State
+											//
+									
+											if (theNote.Visible == true) {
+												//NewMessage.Show ("Hide");
+												theNote.Visible = false;
+												theNote.UpdateLocation ();
+											} else {
+												//NewMessage.Show ("Show");
+												int theNewX = this.Location.X;
+												int theNewY = this.Location.Y;
+										
+										
+										
+										
+												if (this.Layout.GetIsChild) {
+													//NewMessage.Show ("child");
+													//ok this seems convulted but I need to get the Note containing this layout
+													// and there does not seem to be a short cut for it.
+													string GuidOfLayoutNote = this.Layout.GUID;
+											
+													NoteDataInterface parentNote = SuperParent.GetNoteOnSameLayout (GuidOfLayoutNote, false);
+													if (parentNote != null) {
+														//NewMessage.Show (GuidOfLayoutNote);
+														// if we are a child then use the coordinates of the layoutpanel itself
+														theNewX = parentNote.Location.X;
+														theNewY = parentNote.Location.Y;
+														theNote.Height = Math.Max (0, parentNote.Height / 2);
+														theNote.Width = Math.Max (0, parentNote.Width - 4);
+													} else {
+														NewMessage.Show ("Parent note with GUID was blank " + GuidOfLayoutNote);
+													}
+												} else {
+													// get width and height from non-layout enclosed note
+													theNote.Height = Math.Max (0, this.Height / 2);
+													theNote.Width = Math.Max (0, this.Width - 4);
+												}
+										
+										
+												// now offset a bit
+												theNewX = theNewX + 25;
+												theNewY = theNewY + 100;
+										
+												theNote.Location = new Point (theNewX, theNewY);
+										
+												theNote.Visible = true;
+										
+												theNote.UpdateLocation (); // so size changes stick
+
+												//theNote.BringToFrontAndShow ();
+
+											theNote = this.Layout.GetNoteOnSameLayout (theNoteGuid, true, linkanchor);
+
+											}
+									
+									
+											//	this.Layout.GoToNote(theNote);
+										} else {
+											NewMessage.Show (Loc.Instance.GetStringFmt ("The guid {0} was null", theNoteGuid));
+										}
+									}; // The click
+							
+								CaptionLabel.Items.Add (noteLink);
+								// do this after adding to INHERIT the proper styles from TOOLBAR
+								// reverse color scheme
+								// coloring should happen in UPDATE apeparance
+								//							Color foreC = CaptionLabel.BackColor;
+								//							Color backC = CaptionLabel.ForeColor;
+								noteLink.Font = new Font (noteLink.Font.FontFamily, noteLink.Font.Size - 1);
+								//							noteLink.BackColor = app.captionBackground;;
+								//							noteLink.ForeColor = backC;
+							}
+						}
+					}
+				}
+
+			} catch (System.Exception ex) {
+				NewMessage.Show (ex.ToString ());
+			}
+		}
+
+		/// <summary>
+		/// Handles the token change.
+		/// </summary>
+		/// <param name='sender'>
+		/// Sender.
+		/// </param>
+		/// <param name='e'>
+		/// E.
+		/// </param>
+		void HandleTokenChange (object sender, KeyEventArgs e)
+		{
+			string tablecaption = Notedocks;
+			LayoutDetails.HandleMenuLabelEdit (sender, e, ref tablecaption, SetSaveRequired);
+			Notedocks = tablecaption;
+
+			// whenever this changes we rebuild the notedocks
+			BuildNoteDocks();
+		}
+
 		protected virtual void DoBuildChildren(LayoutPanelBase _Layout)
 		{
 			// children ned to modify this (basically it is their version of CreatePraent)
@@ -438,6 +707,7 @@ namespace Layout
 			this.Appearance = (sender as ToolStripButton).Text;
 			UpdateAppearance();
 		}
+
 
 		void HandleLockStateClick (object sender, EventArgs e)
 		{
@@ -577,8 +847,24 @@ namespace Layout
 				ParentNotePanel.Visible = true;
 				ParentNotePanel.BringToFront ();
 
+
+
 				if (this.Layout != null)
 				{
+					//
+					// MAJOR
+					// 05/11/2014
+					// This might have side-effects but the CurrentTextNote as only being set when OnEnter fired on the NoteDamaXML_RichText.cs
+					// THE PROBLEM?
+					// - this did not fire under most circumstances! Clicking a link to go to a note, for example. The cursor changed to the new text note
+					//   but things like Word Count/Text Operations DID NOT.
+					//  
+					if (this is NoteDataXML_RichText)
+					{
+						((NoteDataXML_RichText)this).GetRichTextBox().Focus ();
+						Layout.CurrentTextNote = (NoteDataXML_RichText)this;
+
+					}
 					if (this.Layout.GetIsChild == true)
 					{
 						// get its Panel note somehow?

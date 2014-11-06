@@ -83,6 +83,7 @@
     <Compile Include="NoteTypeDetails.cs" />
     <Compile Include="NoteNavigation.cs" />
     <Compile Include="RichText\TabNavigation.cs" />
+    <Compile Include="RichText\FullScreenEditor.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
