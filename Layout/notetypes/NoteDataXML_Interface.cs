@@ -431,7 +431,7 @@ namespace Layout
 				LayoutDetails.BuildMenuPropertyEdit (Loc.Instance.GetString("Note Dock String: {0}"), 
 				                                     this.Notedocks,
 				                                     Loc.Instance.GetString ("example: note1*44159e01-b2c6-4b1f-9b68-8d3c85755f14*[[chapter1]]."),
-				                                     HandleTokenChange );
+				                                     HandleTokenChange,25 );
 
 			properties.DropDownItems.Add (TokenItem);
 			BuildNoteDocks();

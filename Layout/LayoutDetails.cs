@@ -502,7 +502,10 @@ namespace Layout
 			TypesA.CopyTo(ArrayOfTypes);
 			return ArrayOfTypes;
 		}
-
+		public static ToolStripMenuItem BuildMenuPropertyEdit (string Label, string Title, string ToolTip, KeyEventHandler action)
+		{
+			return BuildMenuPropertyEdit(Label, Title, ToolTip, action, -1);
+		}
 	/// <summary>
 	/// Convenience function to make it easier to build Menu option that show the 'Field' and then allow a sideclick to edit them.
 	/// </summary>
@@ -518,13 +521,20 @@ namespace Layout
 	/// <param name='action'>
 	/// Action.
 	/// </param>
-		public static ToolStripMenuItem BuildMenuPropertyEdit (string Label, string Title, string ToolTip, KeyEventHandler action)
+		public static ToolStripMenuItem BuildMenuPropertyEdit (string Label, string Title, string ToolTip, KeyEventHandler action, int truncate)
 		{
 
 		
 
 			ToolStripMenuItem TableCaptionLabel = new ToolStripMenuItem ();
 			TableCaptionLabel.Text = String.Format (Label, Title);
+			// 
+			// Truncate text if specified
+			//
+			if (truncate > 0 && truncate < TableCaptionLabel.Text.Length) {
+				TableCaptionLabel.Text = TableCaptionLabel.Text.Substring(0, truncate) + "...";
+			}
+
 			TableCaptionLabel.ToolTipText = ToolTip;
 			ContextMenuStrip TableCaptionMenu = new ContextMenuStrip ();
 			ToolStripTextBox TableCaptionText = new ToolStripTextBox ();
