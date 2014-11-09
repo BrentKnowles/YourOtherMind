@@ -168,7 +168,7 @@ namespace Layout
 			CaptionLabel.AutoSize = false;
 			//		CaptionLabel.SuspendLayout ();
 			CaptionLabel.Click += (object sender, EventArgs e) => BringToFrontAndShow ();
-			CaptionLabel.DoubleClick += HandleCaptionLabelDoubleClick;
+		//	CaptionLabel.DoubleClick += HandleCaptionLabelDoubleClick;
 			CaptionLabel.MouseDown += HandleMouseDown;
 			CaptionLabel.MouseUp += HandleMouseUp;
 			CaptionLabel.MouseLeave += HandleMouseLeave;
@@ -189,8 +189,8 @@ namespace Layout
 			captionLabel.MouseUp += HandleMouseUp;
 			//captionLabel.MouseLeave += HandleMouseLeave;
 			captionLabel.MouseMove += HandleMouseMove;
-
-
+			captionLabel.DoubleClickEnabled = true;
+			captionLabel.DoubleClick+= HandleCaptionLabelDoubleClick;
 
 			CaptionLabel.Items.Add (captionLabel);
 			//if (Caption == "")				NewMessage.Show ("Caption is blank");
@@ -790,8 +790,9 @@ namespace Layout
 
 		void HandleCaptionLabelDoubleClick (object sender, EventArgs e)
 		{
-
-			Maximize(!IsMaximized);
+			if (sender != null ) {
+				Maximize (!IsMaximized);
+			}
 		}
 
 	
